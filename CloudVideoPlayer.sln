@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31410.223
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudVideoPlayer.Website", "CloudVideoPlayer.Website\CloudVideoPlayer.Website.csproj", "{8E18F432-7FCF-4F4C-9E03-E67D7857AF61}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudVideoPlayer.Components", "CloudVideoPlayer.Components\CloudVideoPlayer.Components.csproj", "{5F609609-9FBE-4AA9-8E09-462D744673BE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8E18F432-7FCF-4F4C-9E03-E67D7857AF61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E18F432-7FCF-4F4C-9E03-E67D7857AF61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E18F432-7FCF-4F4C-9E03-E67D7857AF61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E18F432-7FCF-4F4C-9E03-E67D7857AF61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F609609-9FBE-4AA9-8E09-462D744673BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F609609-9FBE-4AA9-8E09-462D744673BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F609609-9FBE-4AA9-8E09-462D744673BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F609609-9FBE-4AA9-8E09-462D744673BE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0E2B2251-4D4B-4031-8703-54146C8A2312}
+	EndGlobalSection
+EndGlobal

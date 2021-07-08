@@ -1,0 +1,27 @@
+{
+	"builds": [
+		{
+			"name": "dev",
+			"js": {
+				"minify": true,
+				"sourceMap": false,
+				"declaration": false,
+				"webClean": true
+			}
+		}
+	],
+	"files": [
+		{
+			"output": "wwwroot/cloudvideoplayer.css",
+			"input": "wwwroot/cloudvideoplayer.less"
+		},
+		{
+			"output": "wwwroot/cloudvideoplayer.js",
+			"input": "wwwroot/cloudvideoplayer.ts"
+		},
+		{
+			"output": "CloudVideoPlayer.razor.css",
+			"input": "CloudVideoPlayer.razor.less"
+		}
+	]
+}

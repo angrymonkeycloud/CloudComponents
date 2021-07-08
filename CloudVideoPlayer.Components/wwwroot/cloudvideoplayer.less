@@ -1,0 +1,37 @@
+﻿.cloudvideoplayer {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+
+	&-video {
+		height: 100%;
+		width: 100%;
+		position: absolute;
+		inset: 0;
+		background-color: #000;
+		z-index: -1;
+
+		video {
+			height: 100%;
+			width: 100%;
+		}
+	}
+
+	&-info,
+	&-controls,
+	&-progress {
+		background-color: rgba(0, 0, 0, .4);
+		padding: 10px;
+		color: #fff;
+	}
+
+	&-info{
+		
+	}
+
+	&-controls{
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+	}
+}

@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noEmitOnError": false,
+    "removeComments": false,
+    "sourceMap": true,
+    "module": "ES6",
+    "target": "ES5",
+    "lib": [ "ES2015", "DOM" ]
+  },
+  "exclude": [
+    "node_modules",
+    "wwwroot"
+  ]
+}
