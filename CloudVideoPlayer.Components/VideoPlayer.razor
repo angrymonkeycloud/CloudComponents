@@ -1,9 +1,9 @@
 ﻿@inject VideoPlayerJsInterop js
 
-<div class="cloudvideoplayer">
+<div @ref="ComponentElement" class="cloudvideoplayer">
 
     <div class="cloudvideoplayer-video">
-        <video @ref="VideoElement" src="@VideoUrl"></video>
+        <video src="@VideoUrl"></video>
     </div>
 
     <div class="cloudvideoplayer-info">
@@ -12,8 +12,19 @@
 
     <div class="cloudvideoplayer-controls">
         <div class="cloudvideoplayer-controls-left">
-            <button class="cloudvideoplayer-play" @onclick="PlayVideo">Play</button>
-            <button class="cloudvideoplayer-pause">Pause</button>
+            <button class="cloudvideoplayer-play" @onclick="PlayVideo">
+                <svg viewBox="0 0 36 40">
+                    <path class="cloudvideoplayer-svg-fill" d="M34.5,19.1C34.5,19.1,34.5,19.1,34.5,19.1c0-0.5-0.2-0.8-0.6-1L6.5,3.2l0,0C6.3,3.1,6.1,3.1,5.9,3.1h0
+	                c0,0,0,0,0,0c-0.6,0-1.1,0.5-1.1,1.1v29.7l0,0v0c0,0.6,0.5,1.1,1.1,1.1c0.2,0,0.4-0.1,0.5-0.1l27.4-14.9l0,0
+	                C34.2,19.9,34.5,19.5,34.5,19.1L34.5,19.1z M7.1,6.1l23.9,12.9L7.1,32V6.1L7.1,6.1z" />
+                </svg>
+            </button>
+            <button class="cloudvideoplayer-pause" @onclick="PauseVideo">
+                <svg viewBox="0 0 36 40">
+                    <path class="cloudvideoplayer-svg-fill" d="M11.8,36L11.8,36c-1.5,0-2.8-1.3-2.8-2.8V6.9c0-1.5,1.3-2.8,2.8-2.8h0c1.5,0,2.8,1.3,2.8,2.8v26.3 C14.6,34.7,13.3,36,11.8,36z" />
+                    <path class="cloudvideoplayer-svg-fill" d="M24.6,36L24.6,36c-1.5,0-2.8-1.3-2.8-2.8V6.9c0-1.5,1.3-2.8,2.8-2.8h0c1.5,0,2.8,1.3,2.8,2.8v26.3 C27.4,34.7,26.2,36,24.6,36z" />
+                </svg>
+            </button>
             <button class="cloudvideoplayer-stop" @onclick="StopVideo">Stop</button>
         </div>
 
@@ -22,7 +33,8 @@
         </div>
 
         <div class="cloudvideoplayer-controls-right">
-            <button class="cloudvideoplayer-fullscreen">Full Screen</button>
+            <button class="cloudvideoplayer-enterfullscreen" @onclick="EnterFullScreen">Full Screen</button>
+            <button class="cloudvideoplayer-exitfullscreen" @onclick="ExitFullScreen">Exit Full Screen</button>
         </div>
     </div>
 
@@ -42,21 +54,36 @@
     [Parameter]
     public VideoPlayerSettings Settings { get; set; }
 
-    private ElementReference VideoElement { get; set; }
+    private ElementReference ComponentElement { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await js.Init(VideoElement);
+            await js.Init(ComponentElement);
     }
 
     public async Task PlayVideo()
     {
-        await js.Play(VideoElement);
+        await js.Play(ComponentElement);
+    }
+
+    public async Task PauseVideo()
+    {
+        await js.Pause(ComponentElement);
+    }
+
+    public async Task EnterFullScreen()
+    {
+        await js.EnterFullScreen(ComponentElement);
+    }
+
+    public async Task ExitFullScreen()
+    {
+        await js.ExitFullScreen(ComponentElement);
     }
 
     public async Task StopVideo()
     {
-        await js.Stop(VideoElement);
+        await js.Stop(ComponentElement);
     }
 }

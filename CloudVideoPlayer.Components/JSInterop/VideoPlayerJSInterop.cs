@@ -15,23 +15,39 @@ namespace AngryMonkey.Cloud.Components
 			   "import", "./_content/AngryMonkey.Cloud.Components/cloudvideoplayer.min.js").AsTask());
 		}
 
-		public async ValueTask Init(ElementReference video)
+		public async ValueTask Init(ElementReference component)
 		{
 			var module = await moduleTask.Value;
 
-			await module.InvokeVoidAsync("init", video);
+			await module.InvokeVoidAsync("init", component);
 		}
 
-		public async ValueTask Play(ElementReference video)
+		public async ValueTask Play(ElementReference component)
 		{
 			var module = await moduleTask.Value;
-			await module.InvokeVoidAsync("play", video);
+			await module.InvokeVoidAsync("play", component);
 		}
 
-		public async ValueTask Stop(ElementReference video)
+		public async ValueTask Pause(ElementReference component)
 		{
 			var module = await moduleTask.Value;
-			await module.InvokeVoidAsync("stop", video);
+			await module.InvokeVoidAsync("pause", component);
+		}
+
+		public async ValueTask Stop(ElementReference component)
+		{
+			var module = await moduleTask.Value;
+			await module.InvokeVoidAsync("stop", component);
+		}
+		public async ValueTask EnterFullScreen(ElementReference component)
+		{
+			var module = await moduleTask.Value;
+			await module.InvokeVoidAsync("enterFullScreen", component);
+		}
+		public async ValueTask ExitFullScreen(ElementReference component)
+		{
+			var module = await moduleTask.Value;
+			await module.InvokeVoidAsync("exitFullScreen", component);
 		}
 
 		public async ValueTask DisposeAsync()

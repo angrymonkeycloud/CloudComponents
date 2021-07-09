@@ -18,6 +18,35 @@
 		}
 	}
 
+	button {
+		background: none;
+		border: none;
+		color: #fff;
+		cursor: pointer;
+		opacity: .6;
+		transition: opacity .2s ease-in-out;
+
+		.cloudvideoplayer {
+			&-svg {
+				&-fill {
+					fill: #fff;
+				}
+			}
+		}
+
+		&:hover {
+			opacity: 1;
+		}
+	}
+
+	&-play,
+	&-pause {
+		svg {
+			width: 30px;
+			height: 30px;
+		}
+	}
+
 	&-info,
 	&-controls,
 	&-progress {
@@ -26,12 +55,43 @@
 		color: #fff;
 	}
 
-	&-info{
-		
+	&-info {
 	}
 
-	&-controls{
+	&-controls {
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr;
+	}
+
+	&-pause {
+		display: none;
+	}
+
+	&._playing {
+		.cloudvideoplayer {
+			&-play {
+				display: none;
+			}
+
+			&-pause {
+				display: inline-block;
+			}
+		}
+	}
+
+	&-exitfullscreen {
+		display: none;
+	}
+
+	&._fullscreen {
+		.cloudvideoplayer {
+			&-enterfullscreen {
+				display: none;
+			}
+
+			&-exitfullscreen {
+				display: inline-block;
+			}
+		}
 	}
 }

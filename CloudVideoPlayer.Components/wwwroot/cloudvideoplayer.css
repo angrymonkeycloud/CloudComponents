@@ -16,6 +16,25 @@
   height: 100%;
   width: 100%;
 }
+.cloudvideoplayer button {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s ease-in-out;
+}
+.cloudvideoplayer button .cloudvideoplayer-svg-fill {
+  fill: #fff;
+}
+.cloudvideoplayer button:hover {
+  opacity: 1;
+}
+.cloudvideoplayer-play svg,
+.cloudvideoplayer-pause svg {
+  width: 30px;
+  height: 30px;
+}
 .cloudvideoplayer-info,
 .cloudvideoplayer-controls,
 .cloudvideoplayer-progress {
@@ -26,4 +45,22 @@
 .cloudvideoplayer-controls {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+}
+.cloudvideoplayer-pause {
+  display: none;
+}
+.cloudvideoplayer._playing .cloudvideoplayer-play {
+  display: none;
+}
+.cloudvideoplayer._playing .cloudvideoplayer-pause {
+  display: inline-block;
+}
+.cloudvideoplayer-exitfullscreen {
+  display: none;
+}
+.cloudvideoplayer._fullscreen .cloudvideoplayer-enterfullscreen {
+  display: none;
+}
+.cloudvideoplayer._fullscreen .cloudvideoplayer-exitfullscreen {
+  display: inline-block;
 }
