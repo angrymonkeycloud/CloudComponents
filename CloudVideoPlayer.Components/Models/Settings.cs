@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AngryMonkey.Cloud.VideoPlayer.Components
+namespace AngryMonkey.Cloud.Components
 {
-    public class CloudVideoPlayerSettings
+    public class VideoPlayerSettings
     {
 		public bool ShowVolumeButton { get; set; }
 	}

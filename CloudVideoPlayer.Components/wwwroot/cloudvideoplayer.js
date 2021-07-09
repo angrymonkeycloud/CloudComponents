@@ -1,8 +1,9 @@
-var exports = {};
-var CloudVideoPlayer = /** @class */ (function () {
-    function CloudVideoPlayer() {
-    }
-    return CloudVideoPlayer;
-}());
-{ CloudVideoPlayer };
-
+export function init(video) {
+}
+export function play(video) {
+    video.play();
+}
+export function stop(video) {
+    video.pause();
+    video.currentTime = 0;
+}

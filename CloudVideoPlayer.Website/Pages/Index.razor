@@ -1,9 +1,16 @@
 ﻿@page "/"
 
-<CloudVideoPlayer Title="Welcome Lebanon :)" Settings="@(
-new CloudVideoPlayerSettings() {
+<VideoPlayer Title="Welcome Lebanon :)" VideoUrl="https://angrymonkey.blob.core.windows.net/general/Good%20Morning%20Lebanon.mp4" Settings="@(
+new VideoPlayerSettings() {
     ShowVolumeButton = true
 }
 )">
+</VideoPlayer>
 
-</CloudVideoPlayer>
+
+<VideoPlayer Title="Default Video" VideoUrl="https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4" Settings="@(
+new VideoPlayerSettings() {
+    ShowVolumeButton = true
+}
+)">
+</VideoPlayer>

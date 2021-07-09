@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <AssemblyName>AngryMonkey.Cloud.VideoPlayer.Components</AssemblyName>
-    <RootNamespace>AngryMonkey.Cloud.VideoPlayer.Components</RootNamespace>
+    <AssemblyName>AngryMonkey.Cloud.Components</AssemblyName>
+    <RootNamespace>AngryMonkey.Cloud.Components</RootNamespace>
 		<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
   </PropertyGroup>
 
@@ -14,6 +14,15 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.0-preview.5.21301.17" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update=".mateconfig.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="tsconfig.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

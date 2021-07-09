@@ -5,8 +5,7 @@
 			"js": {
 				"minify": true,
 				"sourceMap": false,
-				"declaration": false,
-				"webClean": true
+				"declaration": false
 			}
 		}
 	],
@@ -18,10 +17,6 @@
 		{
 			"output": "wwwroot/cloudvideoplayer.js",
 			"input": "wwwroot/cloudvideoplayer.ts"
-		},
-		{
-			"output": "CloudVideoPlayer.razor.css",
-			"input": "CloudVideoPlayer.razor.less"
 		}
 	]
 }

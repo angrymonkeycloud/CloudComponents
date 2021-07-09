@@ -1,0 +1,62 @@
+﻿@inject VideoPlayerJsInterop js
+
+<div class="cloudvideoplayer">
+
+    <div class="cloudvideoplayer-video">
+        <video @ref="VideoElement" src="@VideoUrl"></video>
+    </div>
+
+    <div class="cloudvideoplayer-info">
+        <div class="cloudvideoplayer-title">@Title</div>
+    </div>
+
+    <div class="cloudvideoplayer-controls">
+        <div class="cloudvideoplayer-controls-left">
+            <button class="cloudvideoplayer-play" @onclick="PlayVideo">Play</button>
+            <button class="cloudvideoplayer-pause">Pause</button>
+            <button class="cloudvideoplayer-stop" @onclick="StopVideo">Stop</button>
+        </div>
+
+        <div class="cloudvideoplayer-controls-middle">
+            <span class="cloudvideoplayer-duration"></span>
+        </div>
+
+        <div class="cloudvideoplayer-controls-right">
+            <button class="cloudvideoplayer-fullscreen">Full Screen</button>
+        </div>
+    </div>
+
+    <div class="cloudvideoplayer-progress">
+    </div>
+
+</div>
+
+@code {
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string VideoUrl { get; set; }
+
+    [Parameter]
+    public VideoPlayerSettings Settings { get; set; }
+
+    private ElementReference VideoElement { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await js.Init(VideoElement);
+    }
+
+    public async Task PlayVideo()
+    {
+        await js.Play(VideoElement);
+    }
+
+    public async Task StopVideo()
+    {
+        await js.Stop(VideoElement);
+    }
+}
