@@ -1,0 +1,47 @@
+.cloudprogressbar {
+  margin-top: 30vh;
+  display: grid;
+  grid-template-areas: 'left middle right';
+  grid-template-columns: 0 max-content 1fr;
+  align-items: center;
+}
+.cloudprogressbar-left,
+.cloudprogressbar-right {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.5);
+  background-color: #fff;
+  position: relative;
+}
+.cloudprogressbar-left {
+  grid-area: left;
+}
+.cloudprogressbar-right {
+  grid-area: right;
+}
+.cloudprogressbar-middle {
+  grid-area: middle;
+}
+.cloudprogressbar-middle button {
+  padding: 0;
+  z-index: 1;
+}
+.cloudprogressbar-middle button .cloudprogressbar-circle {
+  fill: transparent;
+  stroke: #fff;
+  stroke-width: 3px;
+}
+.cloudprogressbar button {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  /*opacity: .6;*/
+  transition: opacity 0.2s ease-in-out;
+}
+.cloudprogressbar button .cloudvideoplayer-svg-fill {
+  fill: #fff;
+}
+.cloudprogressbar button:hover {
+  opacity: 1;
+}

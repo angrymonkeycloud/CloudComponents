@@ -20,6 +20,7 @@ namespace AngryMonkey.Cloud.VideoPlayer.Website
 
 			builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 			builder.Services.AddScoped(typeof(VideoPlayerJsInterop));
+			builder.Services.AddScoped(typeof(ProgressBarJsInterop));
 
 			await builder.Build().RunAsync();
 		}

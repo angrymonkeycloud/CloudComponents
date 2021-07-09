@@ -17,6 +17,14 @@
 		{
 			"output": "wwwroot/cloudvideoplayer.js",
 			"input": "wwwroot/cloudvideoplayer.ts"
+		},
+		{
+			"output": "wwwroot/cloudprogressbar.css",
+			"input": "wwwroot/cloudprogressbar.less"
+		},
+		{
+			"output": "wwwroot/cloudprogressbar.js",
+			"input": "wwwroot/cloudprogressbar.ts"
 		}
 	]
 }

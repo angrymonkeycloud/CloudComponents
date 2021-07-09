@@ -1,0 +1,43 @@
+﻿@inject ProgressBarJsInterop js
+
+<div class="cloudprogressbar" @ref="ComponentElement">
+    <div class="cloudprogressbar-left"></div>
+    <div class="cloudprogressbar-middle">
+        <button @onmousedown="MouseDown">
+            <svg viewBox="0 0 40 40" width="@CircleSize" height="@CircleSize">
+                <circle class="cloudprogressbar-circle" cx="20" cy="20" r="18" />
+            </svg>
+        </button>
+    </div>
+    <div class="cloudprogressbar-right"></div>
+</div>
+
+@code {
+    private ElementReference ComponentElement { get; set; }
+
+    [Parameter]
+    public double BufferValue { get; set; }
+
+    [Parameter]
+    public double Value { get; set; }
+
+    [Parameter]
+    public double Total { get; set; }
+
+    [Parameter]
+    public double Step { get; set; } = 1;
+
+    [Parameter]
+    public int CircleSize { get; set; } = 30;
+
+    private async Task MouseDown(MouseEventArgs e)
+    {
+        await js.MouseDown(ComponentElement);
+    }
+
+    [JSInvokable]
+    public void Test()
+    {
+        Console.WriteLine("Test");
+    }
+}

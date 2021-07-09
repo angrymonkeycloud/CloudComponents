@@ -1,4 +1,16 @@
-﻿.cloudvideoplayer{
+﻿.cloudvideoplayer {
 	width: 800px;
-	height: 500px;
+	height: 450px;
+}
+
+.cloudprogressbar{
+	width: 600px;
+	margin-left: 50px;
+}
+
+body{
+	height: 100vh;
+	background-image: url(/bg.jpg);
+	background-size: cover;
+	background-repeat: no-repeat;
 }
