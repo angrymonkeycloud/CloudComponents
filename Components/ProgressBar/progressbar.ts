@@ -2,7 +2,7 @@
 
 function mouseMove(component: HTMLElement, moveArgs: MouseEvent, maxMoveDistance: number) {
 
-	let moveDistance = moveArgs.clientX - component.getBoundingClientRect().left - (component.querySelector('.cloudprogressbar-middle').clientWidth / 2);
+	let moveDistance = moveArgs.clientX - component.getBoundingClientRect().left - (component.querySelector('.amc-progressbar-middle').clientWidth / 2);
 
 	if (moveDistance < 0)
 		moveDistance = 0;
@@ -17,7 +17,7 @@ function mouseMove(component: HTMLElement, moveArgs: MouseEvent, maxMoveDistance
 
 export function mouseDown(component: HTMLElement) {
 
-	const maxMoveDistance = component.clientWidth - component.querySelector('.cloudprogressbar-middle').clientWidth;
+	const maxMoveDistance = component.clientWidth - component.querySelector('.amc-progressbar-middle').clientWidth;
 
 	const listener = function (moveArgs: MouseEvent) { mouseMove(component, moveArgs, maxMoveDistance); };
 

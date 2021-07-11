@@ -1,4 +1,6 @@
-﻿.cloudvideoplayer {
+﻿@import '../General/css/common.less';
+
+.amc-videoplayer {
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -26,7 +28,7 @@
 		opacity: .6;
 		transition: opacity .2s ease-in-out;
 
-		.cloudvideoplayer {
+		.amc-videoplayer {
 			&-svg {
 				&-fill {
 					fill: #fff;
@@ -97,7 +99,7 @@
 			width: 20px;
 			z-index: 1;
 
-			.cloudvideoplayer-svg-fill {
+			.amc-videoplayer-svg-fill {
 				fill: transparent;
 				stroke: #fff;
 				stroke-width: 3px;
@@ -106,7 +108,7 @@
 	}
 
 	&._playing {
-		.cloudvideoplayer {
+		.amc-videoplayer {
 			&-play {
 				display: none;
 			}
@@ -122,7 +124,7 @@
 	}
 
 	&._fullscreen {
-		.cloudvideoplayer {
+		.amc-videoplayer {
 			&-enterfullscreen {
 				display: none;
 			}

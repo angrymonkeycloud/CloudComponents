@@ -1,9 +1,9 @@
-﻿.cloudvideoplayer {
+﻿.amc-videoplayer {
 	width: 800px;
 	height: 450px;
 }
 
-.cloudprogressbar{
+.amc-progressbar {
 	width: 600px;
 	margin-left: 50px;
 }

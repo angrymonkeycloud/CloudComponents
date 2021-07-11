@@ -12,7 +12,7 @@ namespace AngryMonkey.Cloud.Components
 		public ProgressBarJsInterop(IJSRuntime jsRuntime)
 		{
 			moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-			   "import", "./_content/AngryMonkey.Cloud.Components/progressbar.min.js").AsTask());
+			   "import", "./_content/AngryMonkey.Cloud.Components/progressbar/progressbar.min.js").AsTask());
 		}
 		public async ValueTask MouseDown(ElementReference component)
 		{

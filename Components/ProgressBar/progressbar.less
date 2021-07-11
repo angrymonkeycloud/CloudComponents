@@ -1,4 +1,6 @@
-﻿.cloudprogressbar {
+﻿@import '../General/css/common.less';
+
+.amc-progressbar {
 	margin-top: 30vh;
 	display: grid;
 	grid-template-areas: 'left middle right';
@@ -29,7 +31,7 @@
 			padding: 0;
 			z-index: 1;
 
-			.cloudprogressbar-circle {
+			.amc-progressbar-circle {
 				fill: transparent;
 				stroke: #fff;
 				stroke-width: 3px;
@@ -45,7 +47,7 @@
 		/*opacity: .6;*/
 		transition: opacity .2s ease-in-out;
 
-		.cloudvideoplayer {
+		.amc-progressbar {
 			&-svg {
 				&-fill {
 					fill: #fff;

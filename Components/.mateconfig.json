@@ -11,19 +11,19 @@
 	],
 	"files": [
 		{
-			"output": "wwwroot/videoplayer.css",
+			"output": "wwwroot/videoplayer/videoplayer.css",
 			"input": "VideoPlayer/videoplayer.less"
 		},
 		{
-			"output": "wwwroot/videoplayer.js",
+			"output": "wwwroot/videoplayer/videoplayer.js",
 			"input": "VideoPlayer/videoplayer.ts"
 		},
 		{
-			"output": "wwwroot/progressbar.css",
+			"output": "wwwroot/progressbar/progressbar.css",
 			"input": "ProgressBar/progressbar.less"
 		},
 		{
-			"output": "wwwroot/progressbar.js",
+			"output": "wwwroot/progressbar/progressbar.js",
 			"input": "ProgressBar/progressbar.ts"
 		}
 	]

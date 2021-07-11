@@ -1,16 +1,16 @@
 ﻿@namespace AngryMonkey.Cloud.Components
 @inject ProgressBarJsInterop js
 
-<div class="cloudprogressbar" @ref="ComponentElement">
-    <div class="cloudprogressbar-left"></div>
-    <div class="cloudprogressbar-middle">
+<div class="amc-progressbar" @ref="ComponentElement">
+    <div class="amc-progressbar-left"></div>
+    <div class="amc-progressbar-middle">
         <button @onmousedown="MouseDown">
             <svg viewBox="0 0 40 40" width="@CircleSize" height="@CircleSize">
-                <circle class="cloudprogressbar-circle" cx="20" cy="20" r="18" />
+                <circle class="amc-progressbar-circle" cx="20" cy="20" r="18" />
             </svg>
         </button>
     </div>
-    <div class="cloudprogressbar-right"></div>
+    <div class="amc-progressbar-right"></div>
 </div>
 
 @code {

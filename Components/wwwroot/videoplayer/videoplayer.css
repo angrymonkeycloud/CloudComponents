@@ -1,10 +1,10 @@
-.cloudvideoplayer {
+.amc-videoplayer {
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
 }
-.cloudvideoplayer-video {
+.amc-videoplayer-video {
   height: 100%;
   width: 100%;
   position: absolute;
@@ -12,11 +12,11 @@
   background-color: #000;
   z-index: -1;
 }
-.cloudvideoplayer-video video {
+.amc-videoplayer-video video {
   height: 100%;
   width: 100%;
 }
-.cloudvideoplayer button {
+.amc-videoplayer button {
   background: none;
   border: none;
   color: #fff;
@@ -24,45 +24,45 @@
   opacity: 0.6;
   transition: opacity 0.2s ease-in-out;
 }
-.cloudvideoplayer button .cloudvideoplayer-svg-fill {
+.amc-videoplayer button .amc-videoplayer-svg-fill {
   fill: #fff;
 }
-.cloudvideoplayer button:hover {
+.amc-videoplayer button:hover {
   opacity: 1;
 }
-.cloudvideoplayer-play svg,
-.cloudvideoplayer-pause svg {
+.amc-videoplayer-play svg,
+.amc-videoplayer-pause svg {
   width: 30px;
   height: 30px;
 }
-.cloudvideoplayer-info,
-.cloudvideoplayer-controls,
-.cloudvideoplayer-progress {
+.amc-videoplayer-info,
+.amc-videoplayer-controls,
+.amc-videoplayer-progress {
   background-color: rgba(0, 0, 0, 0.4);
   padding: 10px;
   color: #fff;
 }
-.cloudvideoplayer-controls {
+.amc-videoplayer-controls {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
 }
-.cloudvideoplayer-pause {
+.amc-videoplayer-pause {
   display: none;
 }
-.cloudvideoplayer-progress {
+.amc-videoplayer-progress {
   display: grid;
   grid-template-areas: 'line circle line';
   grid-template-columns: 300px 20px 200px;
   align-items: center;
 }
-.cloudvideoplayer-progress-line {
+.amc-videoplayer-progress-line {
   grid-area: line;
   width: 100%;
   height: 1px;
   background-color: rgba(255, 255, 255, 0.5);
   position: relative;
 }
-.cloudvideoplayer-progress-line::after {
+.amc-videoplayer-progress-line::after {
   content: '';
   position: absolute;
   background-color: #fff;
@@ -71,29 +71,29 @@
   left: 0;
   width: 40%;
 }
-.cloudvideoplayer-progress-circle {
+.amc-videoplayer-progress-circle {
   grid-area: circle;
   height: 20px;
   width: 20px;
   z-index: 1;
 }
-.cloudvideoplayer-progress-circle .cloudvideoplayer-svg-fill {
+.amc-videoplayer-progress-circle .amc-videoplayer-svg-fill {
   fill: transparent;
   stroke: #fff;
   stroke-width: 3px;
 }
-.cloudvideoplayer._playing .cloudvideoplayer-play {
+.amc-videoplayer._playing .amc-videoplayer-play {
   display: none;
 }
-.cloudvideoplayer._playing .cloudvideoplayer-pause {
+.amc-videoplayer._playing .amc-videoplayer-pause {
   display: inline-block;
 }
-.cloudvideoplayer-exitfullscreen {
+.amc-videoplayer-exitfullscreen {
   display: none;
 }
-.cloudvideoplayer._fullscreen .cloudvideoplayer-enterfullscreen {
+.amc-videoplayer._fullscreen .amc-videoplayer-enterfullscreen {
   display: none;
 }
-.cloudvideoplayer._fullscreen .cloudvideoplayer-exitfullscreen {
+.amc-videoplayer._fullscreen .amc-videoplayer-exitfullscreen {
   display: inline-block;
 }
