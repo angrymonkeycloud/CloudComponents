@@ -1,4 +1,4 @@
-﻿import { dotNetHelper } from './DotNet';
+﻿import { dotNetHelper } from '../General/js/DotNet';
 
 function mouseMove(component: HTMLElement, moveArgs: MouseEvent, maxMoveDistance: number) {
 

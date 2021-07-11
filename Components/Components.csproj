@@ -7,6 +7,14 @@
 		<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Include="General\js\DotNet.d.ts" />
+    <Content Include="ProgressBar\progressbar.less" />
+    <Content Include="ProgressBar\progressbar.ts" />
+    <Content Include="VideoPlayer\videoplayer.less" />
+    <Content Include="VideoPlayer\videoplayer.ts" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />
@@ -23,6 +31,10 @@
     <Content Update="tsconfig.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>

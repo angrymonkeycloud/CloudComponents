@@ -11,20 +11,20 @@
 	],
 	"files": [
 		{
-			"output": "wwwroot/cloudvideoplayer.css",
-			"input": "wwwroot/cloudvideoplayer.less"
+			"output": "wwwroot/videoplayer.css",
+			"input": "VideoPlayer/videoplayer.less"
 		},
 		{
-			"output": "wwwroot/cloudvideoplayer.js",
-			"input": "wwwroot/cloudvideoplayer.ts"
+			"output": "wwwroot/videoplayer.js",
+			"input": "VideoPlayer/videoplayer.ts"
 		},
 		{
-			"output": "wwwroot/cloudprogressbar.css",
-			"input": "wwwroot/cloudprogressbar.less"
+			"output": "wwwroot/progressbar.css",
+			"input": "ProgressBar/progressbar.less"
 		},
 		{
-			"output": "wwwroot/cloudprogressbar.js",
-			"input": "wwwroot/cloudprogressbar.ts"
+			"output": "wwwroot/progressbar.js",
+			"input": "ProgressBar/progressbar.ts"
 		}
 	]
 }

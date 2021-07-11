@@ -1,4 +1,5 @@
-﻿@inject VideoPlayerJsInterop js
+﻿@namespace AngryMonkey.Cloud.Components
+@inject VideoPlayerJsInterop js
 
 <div class="cloudvideoplayer" @ref="ComponentElement">
 
@@ -59,7 +60,7 @@
     public string VideoUrl { get; set; }
 
     [Parameter]
-    public VideoPlayerSettings Settings { get; set; }
+    public Components.VideoPlayerSettings Settings { get; set; }
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
