@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CloudVideoPlayer.Components\CloudVideoPlayer.Components.csproj" />
+    <ProjectReference Include="..\Components\Components.csproj" />
   </ItemGroup>
 
 </Project>
