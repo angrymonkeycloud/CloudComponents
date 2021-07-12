@@ -22,6 +22,20 @@ namespace AngryMonkey.Cloud.Components
 			await module.InvokeVoidAsync("init", component);
 		}
 
+		public async ValueTask ChangeCurrentTime(ElementReference component, double newCurrentTime)
+		{
+			var module = await moduleTask.Value;
+
+			await module.InvokeVoidAsync("changeCurrentTime", component, newCurrentTime);
+		}
+
+		public async ValueTask<VideoInfo> GetVideoInfo(ElementReference component)
+		{
+			var module = await moduleTask.Value;
+
+			return await module.InvokeAsync<VideoInfo>("getVideoInfo", component);
+		}
+
 		public async ValueTask Play(ElementReference component)
 		{
 			var module = await moduleTask.Value;

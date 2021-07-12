@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AngryMonkey.Cloud.Components
 {
-    public class VideoPlayerSettings
+	public class VideoPlayerSettings
     {
 		public bool ShowVolumeButton { get; set; }
 	}

@@ -1,4 +1,28 @@
+function sleep(ms) {
+    return new Promise(function (resolve) { return setTimeout(resolve, ms); });
+}
+var VideoInfo = /** @class */ (function () {
+    function VideoInfo() {
+    }
+    return VideoInfo;
+}());
 export function init(component) {
+    var video = component.querySelector('video');
+    video.onloadeddata = function () {
+        var evt = document.createEvent("HTMLEvents");
+        evt.initEvent("load", false, true);
+        video.dispatchEvent(evt);
+    };
+}
+export function getVideoInfo(component) {
+    var video = component.querySelector('video');
+    var videoInfo = new VideoInfo();
+    videoInfo.Duration = video.duration.toString();
+    return videoInfo;
+}
+export function changeCurrentTime(component, newCurrentTime) {
+    var video = component.querySelector('video');
+    video.currentTime = newCurrentTime;
 }
 export function play(component) {
     component.classList.add('_playing');

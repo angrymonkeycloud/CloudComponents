@@ -5,6 +5,10 @@
   grid-template-columns: 0 max-content 1fr;
   align-items: center;
 }
+.amc-progressbar input[type="range"] {
+  /*grid-column: span 3;*/
+  display: none !important;
+}
 .amc-progressbar-left,
 .amc-progressbar-right {
   width: 100%;

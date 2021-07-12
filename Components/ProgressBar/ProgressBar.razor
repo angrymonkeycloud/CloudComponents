@@ -11,6 +11,8 @@
         </button>
     </div>
     <div class="amc-progressbar-right"></div>
+
+    <input type="range" max="@Total" min="0" value="@Value" @onchange="RangeValuChanged" />
 </div>
 
 @code {
@@ -20,7 +22,7 @@
     public double BufferValue { get; set; }
 
     [Parameter]
-    public double Value { get; set; }
+    public double Value { get; set; } = 0;
 
     [Parameter]
     public double Total { get; set; }
@@ -31,14 +33,29 @@
     [Parameter]
     public int CircleSize { get; set; } = 30;
 
+    [Parameter]
+    public EventCallback<ChangeEventArgs> OnChange { get; set; }
+
+    private async Task RangeValuChanged(ChangeEventArgs args)
+    {
+        double newValue = Convert.ToDouble(args.Value);
+
+        if (Value == newValue)
+            return;
+
+        Value = newValue;
+
+        await OnChange.InvokeAsync(new ChangeEventArgs() { Value = Value });
+    }
+
     private async Task MouseDown(MouseEventArgs e)
     {
         await js.MouseDown(ComponentElement);
     }
 
-    [JSInvokable]
-    public void Test()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Console.WriteLine("Test");
+        if (firstRender)
+            await js.Init(ComponentElement);
     }
 }
