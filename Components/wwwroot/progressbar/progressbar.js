@@ -34,3 +34,12 @@ export function mouseDown(component) {
         range.dispatchEvent(evt);
     };
 }
+export function repaint(component, value) {
+    var range = component.querySelector(hiddenInputRange);
+    var total = Number(range.max);
+    if (value === null || value === undefined)
+        value = Number(range.value);
+    var maxMoveDistance = component.clientWidth - component.querySelector('.amc-progressbar-middle').clientWidth;
+    var moveDistance = value * maxMoveDistance / total;
+    component.style.setProperty('grid-template-columns', moveDistance + 'px max-content 1fr');
+}

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace AngryMonkey.Cloud.Components
@@ -62,6 +63,18 @@ namespace AngryMonkey.Cloud.Components
 		{
 			var module = await moduleTask.Value;
 			await module.InvokeVoidAsync("exitFullScreen", component);
+		}
+		public async Task Implement(ElementReference component, Dictionary<VideoEvents, VideoStateOptions> videoEventOptions, VideoEvents eventName)
+		{
+			VideoStateOptions options = new VideoStateOptions()
+			{
+				All = true
+			};
+			videoEventOptions?.TryGetValue(eventName, out options);
+
+			var module = await moduleTask.Value;
+
+			await module.InvokeVoidAsync("registerCustomEventHandler", component, eventName.ToString().ToLower(), options.GetPayload());
 		}
 
 		public async ValueTask DisposeAsync()

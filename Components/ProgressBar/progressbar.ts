@@ -61,3 +61,18 @@ export function mouseDown(component: HTMLElement) {
 		range.dispatchEvent(evt);
 	}
 }
+
+export function repaint(component: HTMLElement, value: number) {
+	const range: HTMLInputElement = component.querySelector(hiddenInputRange);
+
+	const total = Number(range.max);
+
+	if (value === null || value === undefined)
+		value = Number(range.value);
+
+	const maxMoveDistance = component.clientWidth - component.querySelector('.amc-progressbar-middle').clientWidth;
+
+	const moveDistance = value * maxMoveDistance / total;
+
+	component.style.setProperty('grid-template-columns', moveDistance + 'px max-content 1fr')
+}

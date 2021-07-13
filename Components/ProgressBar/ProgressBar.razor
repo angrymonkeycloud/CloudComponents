@@ -23,6 +23,7 @@
 
     [Parameter]
     public double Value { get; set; } = 0;
+    private double _value = 0;
 
     [Parameter]
     public double Total { get; set; }
@@ -35,6 +36,22 @@
 
     [Parameter]
     public EventCallback<ChangeEventArgs> OnChange { get; set; }
+
+    private async Task OnValueChanged()
+    {
+        await js.Repaint(ComponentElement, Value);
+    }
+
+    protected override async void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (Value != _value)
+        {
+            _value = Value;
+            await OnValueChanged();
+        }
+    }
 
     private async Task RangeValuChanged(ChangeEventArgs args)
     {

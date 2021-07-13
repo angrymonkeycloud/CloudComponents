@@ -1,4 +1,6 @@
-﻿namespace AngryMonkey.Cloud.Components
+﻿using System.Collections.Generic;
+
+namespace AngryMonkey.Cloud.Components
 {
 	public class VideoInfo
 	{

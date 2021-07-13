@@ -28,6 +28,13 @@ namespace AngryMonkey.Cloud.Components
 			await module.InvokeVoidAsync("init", component);
 		}
 
+		public async ValueTask Repaint(ElementReference component, double value)
+		{
+			var module = await moduleTask.Value;
+
+			await module.InvokeVoidAsync("repaint", component, value);
+		}
+
 		public async ValueTask DisposeAsync()
 		{
 			if (moduleTask.IsValueCreated)

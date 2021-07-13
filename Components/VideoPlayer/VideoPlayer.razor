@@ -4,7 +4,7 @@
 <div class="amc-videoplayer" @ref="ComponentElement">
 
     <div class="amc-videoplayer-video">
-        <video src="@VideoUrl" @onload="VideoLoaded"></video>
+        <video src="@VideoUrl" @onload="VideoLoaded" @onchange="OnVideoChange"></video>
     </div>
 
     <div class="amc-videoplayer-info">
@@ -58,6 +58,23 @@
     public double CurrentTime { get; set; } = 0;
 
     [Parameter]
+    public Action<VideoState> TimeUpdate { get; set; }
+
+    [Parameter]
+    public EventCallback<VideoState> TimeUpdateEvent { get; set; }
+    bool TimeUpdateRequired => TimeUpdate is object;
+    bool TimeUpdateEventRequired => TimeUpdateEvent.HasDelegate;
+    bool EventFiredEventRequired => EventFiredEvent.HasDelegate;
+    bool EventFiredRequired => EventFired is object;
+    [Parameter] public Action<VideoEventData> EventFired { get; set; }
+    [Parameter] public EventCallback<VideoEventData> EventFiredEvent { get; set; }
+    bool RegisterTimeUpdate => TimeUpdateEventRequired || TimeUpdateRequired;
+
+    [Parameter]
+    public Dictionary<VideoEvents, VideoStateOptions> VideoEventOptions { get; set; }
+    bool RegisterEventFired => EventFiredEventRequired || EventFiredRequired;
+
+    [Parameter]
     public Components.VideoPlayerSettings Settings { get; set; }
 
     public async Task DurationChange(ChangeEventArgs args)
@@ -65,10 +82,33 @@
         await js.ChangeCurrentTime(ComponentElement, Convert.ToDouble(args.Value));
     }
 
+    public async Task OnVideoChange(ChangeEventArgs args)
+    {
+        VideoEventData eventData = JsonSerializer.Deserialize<VideoEventData>((string)args.Value);
+
+        switch (eventData.EventName)
+        {
+            case VideoEvents.TimeUpdate:
+                CurrentTime = eventData.State.CurrentTime;
+                break;
+
+            default: break;
+        }
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
+        {
             await js.Init(ComponentElement);
+
+            await Implement(VideoEvents.TimeUpdate);
+        }
+    }
+
+    async Task Implement(VideoEvents eventName)
+    {
+        await js.Implement(ComponentElement, VideoEventOptions, eventName);
     }
 
     public async Task VideoLoaded()
@@ -100,6 +140,7 @@
 
     public async Task StopVideo()
     {
+        CurrentTime = 0;
         await js.Stop(ComponentElement);
     }
 }
