@@ -3,10 +3,11 @@
   grid-template-areas: 'left middle right';
   grid-template-columns: 0 max-content 1fr;
   align-items: center;
+  cursor: pointer;
 }
 .amc-progressbar input[type="range"] {
-  grid-column: span 3;
-  /*display: none !important;*/
+  /*grid-column: span 3;*/
+  display: none !important;
 }
 .amc-progressbar-left,
 .amc-progressbar-right {
@@ -38,7 +39,6 @@
   background: none;
   border: none;
   color: #fff;
-  cursor: pointer;
   /*opacity: .6;*/
   transition: opacity 0.2s ease-in-out;
 }

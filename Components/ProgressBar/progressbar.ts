@@ -2,23 +2,9 @@
 
 const hiddenInputRange = 'input[type="range"]';
 
-export function init(component: HTMLElement) {
+function updatePosition(component: HTMLElement, clientX: number, maxMoveDistance: number) {
 
-	const range: HTMLInputElement = component.querySelector(hiddenInputRange);
-
-	const total = Number(range.max);
-	const value = Number(range.value);
-
-	const maxMoveDistance = component.clientWidth - component.querySelector('.amc-progressbar-middle').clientWidth;
-
-	const moveDistance = value * maxMoveDistance / total;
-
-	component.style.setProperty('grid-template-columns', moveDistance + 'px max-content 1fr')
-}
-
-function mouseMove(component: HTMLElement, moveArgs: MouseEvent, maxMoveDistance: number) {
-
-	let moveDistance = moveArgs.clientX - component.getBoundingClientRect().left - (component.querySelector('.amc-progressbar-middle').clientWidth / 2);
+	let moveDistance = clientX - component.getBoundingClientRect().left - (component.querySelector('.amc-progressbar-middle').clientWidth / 2);
 
 	if (moveDistance < 0)
 		moveDistance = 0;
@@ -37,7 +23,9 @@ function mouseMove(component: HTMLElement, moveArgs: MouseEvent, maxMoveDistance
 	range.value = value.toString();
 }
 
-export function mouseDown(component: HTMLElement) {
+export function mouseDown(component: HTMLElement, clientX: number) {
+
+	component["IsUserInput"] = true;
 
 	const range: HTMLInputElement = component.querySelector(hiddenInputRange);
 
@@ -45,11 +33,16 @@ export function mouseDown(component: HTMLElement) {
 
 	const maxMoveDistance = component.clientWidth - component.querySelector('.amc-progressbar-middle').clientWidth;
 
-	const listener = function (moveArgs: MouseEvent) { mouseMove(component, moveArgs, maxMoveDistance); };
+	const listener = function (moveArgs: MouseEvent) { updatePosition(component, moveArgs.clientX, maxMoveDistance); };
+
+	updatePosition(component, clientX, maxMoveDistance);
 
 	document.addEventListener('mousemove', listener);
 
 	document.onmouseup = function () {
+
+		component["IsUserInput"] = false;
+
 		document.removeEventListener('mousemove', listener);
 
 		if (range.value === oldValue)
@@ -62,10 +55,18 @@ export function mouseDown(component: HTMLElement) {
 	}
 }
 
-export function repaint(component: HTMLElement, value: number) {
+export function repaint(component: HTMLElement, value?: number, total?: number) {
+
+	if (component["IsUserInput"] && component["IsUserInput"] === true)
+		return;
+
+	if (!component.querySelector)
+		return;
+
 	const range: HTMLInputElement = component.querySelector(hiddenInputRange);
 
-	const total = Number(range.max);
+	if (total === null || total === undefined)
+		total = Number(range.max);
 
 	if (value === null || value === undefined)
 		value = Number(range.value);

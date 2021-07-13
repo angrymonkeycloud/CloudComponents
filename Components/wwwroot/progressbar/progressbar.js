@@ -1,14 +1,6 @@
 var hiddenInputRange = 'input[type="range"]';
-export function init(component) {
-    var range = component.querySelector(hiddenInputRange);
-    var total = Number(range.max);
-    var value = Number(range.value);
-    var maxMoveDistance = component.clientWidth - component.querySelector('.amc-progressbar-middle').clientWidth;
-    var moveDistance = value * maxMoveDistance / total;
-    component.style.setProperty('grid-template-columns', moveDistance + 'px max-content 1fr');
-}
-function mouseMove(component, moveArgs, maxMoveDistance) {
-    var moveDistance = moveArgs.clientX - component.getBoundingClientRect().left - (component.querySelector('.amc-progressbar-middle').clientWidth / 2);
+function updatePosition(component, clientX, maxMoveDistance) {
+    var moveDistance = clientX - component.getBoundingClientRect().left - (component.querySelector('.amc-progressbar-middle').clientWidth / 2);
     if (moveDistance < 0)
         moveDistance = 0;
     if (moveDistance > maxMoveDistance)
@@ -19,13 +11,16 @@ function mouseMove(component, moveArgs, maxMoveDistance) {
     var value = moveDistance * total / maxMoveDistance;
     range.value = value.toString();
 }
-export function mouseDown(component) {
+export function mouseDown(component, clientX) {
+    component["IsUserInput"] = true;
     var range = component.querySelector(hiddenInputRange);
     var oldValue = range.value;
     var maxMoveDistance = component.clientWidth - component.querySelector('.amc-progressbar-middle').clientWidth;
-    var listener = function (moveArgs) { mouseMove(component, moveArgs, maxMoveDistance); };
+    var listener = function (moveArgs) { updatePosition(component, moveArgs.clientX, maxMoveDistance); };
+    updatePosition(component, clientX, maxMoveDistance);
     document.addEventListener('mousemove', listener);
     document.onmouseup = function () {
+        component["IsUserInput"] = false;
         document.removeEventListener('mousemove', listener);
         if (range.value === oldValue)
             return;
@@ -34,9 +29,14 @@ export function mouseDown(component) {
         range.dispatchEvent(evt);
     };
 }
-export function repaint(component, value) {
+export function repaint(component, value, total) {
+    if (component["IsUserInput"] && component["IsUserInput"] === true)
+        return;
+    if (!component.querySelector)
+        return;
     var range = component.querySelector(hiddenInputRange);
-    var total = Number(range.max);
+    if (total === null || total === undefined)
+        total = Number(range.max);
     if (value === null || value === undefined)
         value = Number(range.value);
     var maxMoveDistance = component.clientWidth - component.querySelector('.amc-progressbar-middle').clientWidth;
