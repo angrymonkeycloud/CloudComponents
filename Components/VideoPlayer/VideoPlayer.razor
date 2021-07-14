@@ -1,5 +1,5 @@
 ﻿@namespace AngryMonkey.Cloud.Components
-@inject VideoPlayerJsInterop js
+@inject IJSRuntime jsRuntime
 
 <div class="amc-videoplayer" @ref="ComponentElement">
 
@@ -48,6 +48,9 @@
 @code {
     private ElementReference ComponentElement { get; set; }
 
+    private Task<IJSObjectReference> _module;
+    private Task<IJSObjectReference> Module => _module ??= GeneralMethods.GetIJSObjectReference(jsRuntime, "videoplayer/videoplayer.js");
+
     [Parameter]
     public string Title { get; set; }
 
@@ -79,8 +82,12 @@
 
     public async Task DurationChange(ChangeEventArgs args)
     {
-        await js.ChangeCurrentTime(ComponentElement, Convert.ToDouble(args.Value));
+        var module = await Module;
+
+        await module.InvokeVoidAsync("changeCurrentTime", ComponentElement, Convert.ToDouble(args.Value));
     }
+
+
 
     public async Task OnVideoChange(ChangeEventArgs args)
     {
@@ -100,7 +107,9 @@
     {
         if (firstRender)
         {
-            await js.Init(ComponentElement);
+            var module = await Module;
+
+            await module.InvokeVoidAsync("init", ComponentElement);
 
             await Implement(VideoEvents.TimeUpdate);
         }
@@ -108,39 +117,67 @@
 
     async Task Implement(VideoEvents eventName)
     {
-        await js.Implement(ComponentElement, VideoEventOptions, eventName);
+
+        VideoStateOptions options = new VideoStateOptions() { All = true };
+        VideoEventOptions?.TryGetValue(eventName, out options);
+
+        var module = await Module;
+
+        await module.InvokeVoidAsync("registerCustomEventHandler", ComponentElement, eventName.ToString().ToLower(), options.GetPayload());
     }
 
     public async Task VideoLoaded()
     {
-        VideoInfo videoInfo = await js.GetVideoInfo(ComponentElement);
+        var module = await Module;
+
+        VideoInfo videoInfo = await module.InvokeAsync<VideoInfo>("getVideoInfo", ComponentElement);
 
         Duration = Convert.ToDouble(videoInfo.Duration);
     }
 
     public async Task PlayVideo()
     {
-        await js.Play(ComponentElement);
+        var module = await Module;
+
+        await module.InvokeVoidAsync("play", ComponentElement);
     }
 
     public async Task PauseVideo()
     {
-        await js.Pause(ComponentElement);
+        var module = await Module;
+
+        await module.InvokeVoidAsync("pause", ComponentElement);
     }
 
     public async Task EnterFullScreen()
     {
-        await js.EnterFullScreen(ComponentElement);
+        var module = await Module;
+
+        await module.InvokeVoidAsync("enterFullScreen", ComponentElement);
     }
 
     public async Task ExitFullScreen()
     {
-        await js.ExitFullScreen(ComponentElement);
+        var module = await Module;
+
+        await module.InvokeVoidAsync("exitFullScreen", ComponentElement);
     }
 
     public async Task StopVideo()
     {
         CurrentTime = 0;
-        await js.Stop(ComponentElement);
+
+        var module = await Module;
+
+        await module.InvokeVoidAsync("stop", ComponentElement);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module != null)
+        {
+            var module = await _module;
+            await module.DisposeAsync();
+        }
     }
 }

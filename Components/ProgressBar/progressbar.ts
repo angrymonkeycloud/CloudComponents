@@ -24,7 +24,7 @@ function updatePosition(component: HTMLElement, clientX: number, maxMoveDistance
 }
 
 export function mouseDown(component: HTMLElement, clientX: number) {
-
+	
 	component["IsUserInput"] = true;
 	component.classList.add('_mousemoving');
 

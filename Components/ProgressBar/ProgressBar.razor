@@ -1,15 +1,5 @@
 ﻿@namespace AngryMonkey.Cloud.Components
-@inject ProgressBarJsInterop js
-@*@{
-    System.IO.Stream stream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("AngryMonkey.Cloud.Components.wwwroot.progressbar.progressbar.js");
-
-    stream.Position = 0;
-    System.IO.StreamReader reader = new(stream, System.Text.Encoding.UTF8);
-
-    string script = reader.ReadToEnd();
-}
-@((MarkupString)$"<script>{script}</script>")
-*@
+@inject IJSRuntime jsRuntime
 
 <div class="amc-progressbar" @ref="ComponentElement" @onmousedown="MouseDown">
 
@@ -31,6 +21,9 @@
 @code {
     private ElementReference ComponentElement { get; set; }
 
+    private Task<IJSObjectReference> _module;
+    private Task<IJSObjectReference> Module => _module ??= GeneralMethods.GetIJSObjectReference(jsRuntime, "progressbar/progressbar.js");
+
     [Parameter]
     public double BufferValue { get; set; }
 
@@ -47,7 +40,25 @@
 
     private async Task OnValueChanged()
     {
-        await js.Repaint(ComponentElement, Value, Total);
+        var module = await Module;
+
+        await module.InvokeVoidAsync("repaint", ComponentElement, Value, Total);
+    }
+
+    private async Task MouseDown(MouseEventArgs e)
+    {
+        var module = await Module;
+
+        await module.InvokeVoidAsync("mouseDown", ComponentElement, e.ClientX);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module != null)
+        {
+            var module = await _module;
+            await module.DisposeAsync();
+        }
     }
 
     protected override async void OnParametersSet()
@@ -77,10 +88,5 @@
         Value = newValue;
 
         await OnChange.InvokeAsync(new ChangeEventArgs() { Value = Value });
-    }
-
-    private async Task MouseDown(MouseEventArgs e)
-    {
-        await js.MouseDown(ComponentElement, e.ClientX);
     }
 }
