@@ -1,7 +1,7 @@
 ﻿@namespace AngryMonkey.Cloud.Components
 @inject IJSRuntime jsRuntime
 
-<div class="amc-videoplayer" @ref="ComponentElement">
+<div class="amc-videoplayer" @ref="ComponentElement" @onmousemove="MainMouseMove">
 
     <div class="amc-videoplayer-video">
         <video src="@VideoUrl" @onload="VideoLoaded" @onchange="OnVideoChange"></video>
@@ -40,7 +40,7 @@
     </div>
 
     <div class="amc-videoplayer-progress">
-        <ProgressBar Value="CurrentTime" Total="Duration" OnChange="DurationChange" />
+        <ProgressBar Value="CurrentTime" Total="Duration" Style="ProgressBarStyle" OnChange="DurationChange" />
     </div>
 
 </div>
@@ -59,6 +59,8 @@
 
     public double Duration { get; set; } = 0;
     public double CurrentTime { get; set; } = 0;
+
+    private ProgressBarStyle ProgressBarStyle = ProgressBarStyle.Circle;
 
     [Parameter]
     public Action<VideoState> TimeUpdate { get; set; }
@@ -87,7 +89,33 @@
         await module.InvokeVoidAsync("changeCurrentTime", ComponentElement, Convert.ToDouble(args.Value));
     }
 
+    private int time = 0;
+    private Guid latestId = Guid.Empty;
 
+    public async Task MainMouseMove(MouseEventArgs args)
+    {
+        ProgressBarStyle = ProgressBarStyle.Circle;
+
+        time = 500;
+        latestId = Guid.NewGuid();
+
+        await ProgressiveDelay(latestId);
+    }
+
+    private async Task ProgressiveDelay(Guid id)
+    {
+        while (time > 0)
+        {
+            time--;
+
+            await Task.Delay(1);
+
+            if (id != latestId)
+                return;
+        }
+
+        ProgressBarStyle = ProgressBarStyle.Flat;
+    }
 
     public async Task OnVideoChange(ChangeEventArgs args)
     {
