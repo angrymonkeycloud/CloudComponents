@@ -13,9 +13,9 @@
 
   <ItemGroup>
     <Content Include="General\js\DotNet.d.ts" />
-    <Content Include="ProgressBar\progressbar.less" />
+    <Content Include="ProgressBar\ProgressBar.razor.less" />
     <Content Include="ProgressBar\progressbar.ts" />
-    <Content Include="VideoPlayer\videoplayer.less" />
+    <Content Include="VideoPlayer\VideoPlayer.razor.less" />
     <Content Include="VideoPlayer\videoplayer.ts" />
   </ItemGroup>
 
@@ -38,8 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\progressbar\" />
-    <Folder Include="wwwroot\videoplayer\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>

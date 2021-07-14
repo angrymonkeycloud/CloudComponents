@@ -11,19 +11,19 @@
 	],
 	"files": [
 		{
-			"output": [ "wwwroot/videoplayer/videoplayer.css", "./../Test/wwwroot/lib/amc/components/videoplayer/videoplayer.css" ],
-			"input": "VideoPlayer/videoplayer.less"
+			"output": "VideoPlayer/VideoPlayer.razor.css",
+			"input": "VideoPlayer/VideoPlayer.razor.less"
 		},
 		{
-			"output": [ "wwwroot/videoplayer/videoplayer.js", "./../Test/wwwroot/lib/amc/components/videoplayer/videoplayer.js" ],
+			"output": "wwwroot/videoplayer/videoplayer.js",
 			"input": "VideoPlayer/videoplayer.ts"
 		},
 		{
-			"output": [ "wwwroot/progressbar/progressbar.css", "./../Test/wwwroot/lib/amc/components/progressbar/progressbar.css" ],
-			"input": "ProgressBar/progressbar.less"
+			"output": "ProgressBar/ProgressBar.razor.css",
+			"input": "ProgressBar/ProgressBar.razor.less"
 		},
 		{
-			"output": [ "wwwroot/progressbar/progressbar.js", "./../Test/wwwroot/lib/amc/components/progressbar/progressbar.js" ],
+			"output": "wwwroot/progressbar/progressbar.js",
 			"input": "ProgressBar/progressbar.ts"
 		}
 	]

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace AngryMonkey.Cloud.Components
@@ -12,8 +13,14 @@ namespace AngryMonkey.Cloud.Components
 
 		public VideoPlayerJsInterop(IJSRuntime jsRuntime)
 		{
+			string min = ".min";
+
+#if DEBUG
+			min = string.Empty;
+#endif
+
 			moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-			   "import", $"./lib/amc/components/videoplayer/videoplayer.js?v={Guid.NewGuid()}").AsTask());
+			   "import", $"./_content/{Assembly.GetExecutingAssembly().GetName().Name}/videoplayer/videoplayer{min}.js?v={Guid.NewGuid()}").AsTask());
 		}
 
 		public async ValueTask Init(ElementReference component)
