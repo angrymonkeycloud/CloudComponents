@@ -1,7 +1,7 @@
 ﻿@namespace AngryMonkey.Cloud.Components
 @inject IJSRuntime jsRuntime
 
-<div class="amc-progressbar" @ref="ComponentElement" @onmousedown="MouseDown">
+<div class="amc-progressbar _@Style.ToString().ToLower()" @ref="ComponentElement" @onmousedown="MouseDown" draggable>
 
 
     <div class="amc-progressbar-left"></div>
@@ -9,7 +9,6 @@
         @if (Total > 0)
         {
             <button>
-                <div></div>
             </button>
         }
     </div>
@@ -26,6 +25,9 @@
 
     [Parameter]
     public double BufferValue { get; set; }
+
+    [Parameter]
+    public ProgressBarStyle Style { get; set; } = ProgressBarStyle.Flat;
 
     [Parameter]
     public double Value { get; set; } = 0;

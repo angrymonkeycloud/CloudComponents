@@ -22,37 +22,61 @@
 }
 .amc-progressbar-right {
   grid-area: right;
+  opacity: 0.7;
 }
 .amc-progressbar-middle {
   grid-area: middle;
+  display: flex;
 }
-.amc-progressbar-middle button {
-  width: 30px;
-  height: 30px;
+.amc-progressbar-middle button,
+.amc-progressbar-middle button:active,
+.amc-progressbar-middle button:focus,
+.amc-progressbar-middle button:visited {
+  outline: none;
+  border: none;
+  border-radius: 0;
+  font-size: 0;
   padding: 0;
   margin: 0;
   z-index: 1;
-  overflow: hidden;
-  opacity: 1;
+  cursor: pointer;
+  transition: background-color 50ms ease-in-out, filter 100ms ease-in-out;
 }
-.amc-progressbar-middle button > div {
-  border: 2px solid #fff;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  transition: background-color 50ms ease-in-out;
+.amc-progressbar-middle button:focus,
+.amc-progressbar-middle button:active:focus,
+.amc-progressbar-middle button:focus:focus,
+.amc-progressbar-middle button:visited:focus,
+.amc-progressbar-middle button:hover,
+.amc-progressbar-middle button:active:hover,
+.amc-progressbar-middle button:focus:hover,
+.amc-progressbar-middle button:visited:hover {
+  filter: drop-shadow(0 0 4px #fff);
 }
-.amc-progressbar button,
-.amc-progressbar button:active,
-.amc-progressbar button:focus,
-.amc-progressbar button:visited {
-  outline: none;
-  background: none;
-  border: none;
-  color: #fff;
-  /*opacity: .6;*/
-  transition: opacity 0.2s ease-in-out;
-}
-.amc-progressbar._mousemoving .amc-progressbar-middle button > div {
+.amc-progressbar._flat .amc-progressbar-middle button {
   background-color: #fff;
+  height: 1px;
+  width: 5px;
+}
+.amc-progressbar._circle .amc-progressbar-middle button {
+  width: 20px;
+  height: 20px;
+  display: block;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background-color: transparent;
+}
+.amc-progressbar._circle._mousemoving .amc-progressbar-middle button {
+  background-color: #fff;
+}
+.amc-progressbar._disk .amc-progressbar-middle button {
+  width: 20px;
+  height: 20px;
+  display: block;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 2px solid transparent;
+}
+.amc-progressbar._disk._mousemoving .amc-progressbar-middle button {
+  background-color: transparent;
+  border-color: #fff;
 }

@@ -12,7 +12,7 @@
 	"files": [
 		{
 			"output": "VideoPlayer/VideoPlayer.razor.css",
-			"input": "VideoPlayer/VideoPlayer.razor.less"
+			"input": "VideoPlayer/videoplayer.less"
 		},
 		{
 			"output": "wwwroot/videoplayer/videoplayer.js",
@@ -20,7 +20,7 @@
 		},
 		{
 			"output": "ProgressBar/ProgressBar.razor.css",
-			"input": "ProgressBar/ProgressBar.razor.less"
+			"input": "ProgressBar/progressbar.less"
 		},
 		{
 			"output": "wwwroot/progressbar/progressbar.js",

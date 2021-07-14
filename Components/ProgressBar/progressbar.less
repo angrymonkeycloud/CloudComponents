@@ -1,0 +1,124 @@
+﻿@import '../General/css/common.less';
+
+.amc-progressbar {
+	display: grid;
+	grid-template-areas: 'left middle right';
+	grid-template-columns: 0 max-content 1fr;
+	align-items: center;
+	cursor: pointer;
+
+	input[type="range"] {
+		/*grid-column: span 3;*/
+		display: none !important;
+	}
+
+	&-left,
+	&-right {
+		width: 100%;
+		height: 1px;
+		background-color: rgba(255, 255, 255, .5);
+		background-color: #fff;
+		position: relative;
+	}
+
+	&-left {
+		grid-area: left;
+	}
+
+	&-right {
+		grid-area: right;
+		opacity: .7;
+	}
+
+	&-middle {
+		grid-area: middle;
+		display: flex;
+
+		button {
+			&, &:active, &:focus, &:visited {
+				outline: none;
+				border: none;
+				border-radius: 0;
+				font-size: 0;
+				padding: 0;
+				margin: 0;
+				z-index: 1;
+				cursor: pointer;
+				transition: background-color 50ms ease-in-out, filter 100ms ease-in-out;
+
+				&:focus, &:hover {
+					filter: drop-shadow(0 0 4px #fff);
+				}
+			}
+		}
+	}
+
+	&._flat {
+		.amc-progressbar {
+			&-middle {
+
+				button {
+					background-color: #fff;
+					height: 1px;
+					width: 5px;
+				}
+			}
+		}
+	}
+
+	&._circle {
+		.amc-progressbar {
+			&-middle {
+
+				button {
+					width: 20px;
+					height: 20px;
+					display: block;
+					border: 2px solid #fff;
+					border-radius: 50%;
+					background-color: transparent;
+				}
+			}
+		}
+
+
+		&._mousemoving {
+			.amc-progressbar {
+				&-middle {
+					button {
+						background-color: #fff;
+					}
+				}
+			}
+		}
+	}
+
+
+	&._disk {
+		.amc-progressbar {
+			&-middle {
+
+				button {
+					width: 20px;
+					height: 20px;
+					display: block;
+					border-radius: 50%;
+					background-color: #fff;
+					border: 2px solid transparent;
+				}
+			}
+		}
+
+
+		&._mousemoving {
+			.amc-progressbar {
+				&-middle {
+					button {
+						background-color: transparent;
+						border-color: #fff;
+					}
+				}
+			}
+		}
+	}
+}

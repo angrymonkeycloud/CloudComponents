@@ -3,10 +3,11 @@
 	height: 450px;
 }
 
-/*.amc-progressbar {
+main > .amc-progressbar {
 	width: 600px;
 	margin-left: 50px;
-}*/
+	margin-top: 50px;
+}
 
 body{
 	height: 100vh;
