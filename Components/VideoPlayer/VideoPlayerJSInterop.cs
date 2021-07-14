@@ -13,7 +13,7 @@ namespace AngryMonkey.Cloud.Components
 		public VideoPlayerJsInterop(IJSRuntime jsRuntime)
 		{
 			moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-			   "import", $"./_content/AngryMonkey.Cloud.Components/videoplayer/videoplayer.js?v={Guid.NewGuid()}").AsTask());
+			   "import", $"./lib/amc/components/videoplayer/videoplayer.js?v={Guid.NewGuid()}").AsTask());
 		}
 
 		public async ValueTask Init(ElementReference component)

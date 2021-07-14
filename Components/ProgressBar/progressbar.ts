@@ -26,6 +26,7 @@ function updatePosition(component: HTMLElement, clientX: number, maxMoveDistance
 export function mouseDown(component: HTMLElement, clientX: number) {
 
 	component["IsUserInput"] = true;
+	component.classList.add('_mousemoving');
 
 	const range: HTMLInputElement = component.querySelector(hiddenInputRange);
 
@@ -33,17 +34,23 @@ export function mouseDown(component: HTMLElement, clientX: number) {
 
 	const maxMoveDistance = component.clientWidth - component.querySelector('.amc-progressbar-middle').clientWidth;
 
-	const listener = function (moveArgs: MouseEvent) { updatePosition(component, moveArgs.clientX, maxMoveDistance); };
-
 	updatePosition(component, clientX, maxMoveDistance);
 
-	document.addEventListener('mousemove', listener);
+	// Mouse Move
 
-	document.onmouseup = function () {
+	const mouseMoveListener = function (moveArgs: MouseEvent) { updatePosition(component, moveArgs.clientX, maxMoveDistance); };
 
+	document.addEventListener('mousemove', mouseMoveListener);
+
+	// Mouse Up
+
+	const mouseUpListener = function () {
 		component["IsUserInput"] = false;
 
-		document.removeEventListener('mousemove', listener);
+		component.classList.remove('_mousemoving');
+
+		document.removeEventListener('mousemove', mouseMoveListener);
+		document.removeEventListener('mouseup', mouseUpListener);
 
 		if (range.value === oldValue)
 			return;
@@ -53,6 +60,12 @@ export function mouseDown(component: HTMLElement, clientX: number) {
 
 		range.dispatchEvent(evt);
 	}
+
+	document.addEventListener('mouseup', mouseUpListener);
+
+	//document.onmouseup = function () {
+
+	//}
 }
 
 export function repaint(component: HTMLElement, value?: number, total?: number) {

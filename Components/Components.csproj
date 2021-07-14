@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="ProgressBar\progressbar.min.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="General\js\DotNet.d.ts" />
     <Content Include="ProgressBar\progressbar.less" />
     <Content Include="ProgressBar\progressbar.ts" />
@@ -34,7 +38,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <Folder Include="wwwroot\progressbar\" />
+    <Folder Include="wwwroot\videoplayer\" />
   </ItemGroup>
 
 </Project>

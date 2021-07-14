@@ -12,6 +12,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\lib\amc\components\progressbar\progressbar.js" />
+    <None Include="wwwroot\lib\amc\components\progressbar\progressbar.min.js" />
+    <None Include="wwwroot\lib\amc\components\videoplayer\videoplayer.js" />
+    <None Include="wwwroot\lib\amc\components\videoplayer\videoplayer.min.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Components\Components.csproj" />
   </ItemGroup>
 

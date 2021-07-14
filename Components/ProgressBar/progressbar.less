@@ -33,34 +33,44 @@
 		grid-area: middle;
 
 		button {
+			width: 30px;
+			height: 30px;
 			padding: 0;
+			margin: 0;
 			z-index: 1;
+			overflow: hidden;
+			opacity: 1;
 
-			.amc-progressbar-circle {
-				fill: transparent;
-				stroke: #fff;
-				stroke-width: 3px;
+			> div {
+				border: 2px solid #fff;
+				width: 26px;
+				height: 26px;
+				border-radius: 50%;
+				transition: background-color 50ms ease-in-out;
 			}
 		}
 	}
 
 	button {
-		background: none;
-		border: none;
-		color: #fff;
-		/*opacity: .6;*/
-		transition: opacity .2s ease-in-out;
+		&, &:active, &:focus, &:visited {
+			outline: none;
+			background: none;
+			border: none;
+			color: #fff;
+			/*opacity: .6;*/
+			transition: opacity .2s ease-in-out;
+		}
+	}
 
+	&._mousemoving {
 		.amc-progressbar {
-			&-svg {
-				&-fill {
-					fill: #fff;
+			&-middle {
+				button {
+					> div {
+						background-color: #fff;
+					}
 				}
 			}
-		}
-
-		&:hover {
-			opacity: 1;
 		}
 	}
 }

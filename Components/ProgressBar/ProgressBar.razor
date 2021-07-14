@@ -1,15 +1,25 @@
 ﻿@namespace AngryMonkey.Cloud.Components
 @inject ProgressBarJsInterop js
+@*@{
+    System.IO.Stream stream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("AngryMonkey.Cloud.Components.wwwroot.progressbar.progressbar.js");
+
+    stream.Position = 0;
+    System.IO.StreamReader reader = new(stream, System.Text.Encoding.UTF8);
+
+    string script = reader.ReadToEnd();
+}
+@((MarkupString)$"<script>{script}</script>")
+*@
 
 <div class="amc-progressbar" @ref="ComponentElement" @onmousedown="MouseDown">
+
+
     <div class="amc-progressbar-left"></div>
     <div class="amc-progressbar-middle">
         @if (Total > 0)
         {
             <button>
-                <svg viewBox="0 0 40 40" width="@CircleSize" height="@CircleSize">
-                    <circle class="amc-progressbar-circle" cx="20" cy="20" r="18" />
-                </svg>
+                <div></div>
             </button>
         }
     </div>
@@ -31,9 +41,6 @@
     [Parameter]
     public double Total { get; set; }
     private double _total = 0;
-
-    [Parameter]
-    public int CircleSize { get; set; } = 30;
 
     [Parameter]
     public EventCallback<ChangeEventArgs> OnChange { get; set; }

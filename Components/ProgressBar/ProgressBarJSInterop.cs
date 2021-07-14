@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace AngryMonkey.Cloud.Components
@@ -12,7 +13,16 @@ namespace AngryMonkey.Cloud.Components
 		public ProgressBarJsInterop(IJSRuntime jsRuntime)
 		{
 			moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-			   "import", $"./_content/AngryMonkey.Cloud.Components/progressbar/progressbar.js?v={Guid.NewGuid()}").AsTask());
+			   "import", $"./lib/amc/components/progressbar/progressbar.js?v={Guid.NewGuid()}").AsTask());
+
+			//string[] path = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceNames();
+
+			//Stream stream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("AngryMonkey.Cloud.Components.wwwroot.progressbar.progressbar.js");
+
+			//stream.Position = 0;
+			//StreamReader reader = new(stream, System.Text.Encoding.UTF8);
+
+			//string test = reader.ReadToEnd();
 		}
 		public async ValueTask MouseDown(ElementReference component, double clientX)
 		{
