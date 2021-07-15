@@ -1,10 +1,15 @@
 ﻿@import '../General/css/common.less';
 
 .amc-videoplayer {
+	.UnSelectable();
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	justify-content: flex-end;
+
+	&-empty {
+		flex: 1;
+		cursor: pointer;
+	}
 
 	&-video {
 		height: 100%;
@@ -57,6 +62,15 @@
 		color: #fff;
 	}
 
+	&-progress {
+		padding: 0 10px;
+
+		::deep .amc-progressbar {
+			padding-top: 10px;
+			padding-bottom: 10px;
+		}
+	}
+
 	&-info {
 	}
 
@@ -93,6 +107,27 @@
 
 			&-exitfullscreen {
 				display: inline-block;
+			}
+		}
+	}
+
+	&._hidecontrols {
+
+		* {
+			cursor: none;
+		}
+
+		.amc-videoplayer {
+			&-info,
+			&-controls {
+				display: none;
+			}
+
+			&-progress {
+				::deep .amc-progressbar {
+					padding-top: 1px;
+					padding-bottom: 1px;
+				}
 			}
 		}
 	}

@@ -21,7 +21,9 @@ export function getVideoInfo(component: HTMLElement): VideoInfo {
 	const video = component.querySelector('video');
 
 	const videoInfo = new VideoInfo();
+
 	videoInfo.Duration = video.duration.toString();
+
 	return videoInfo;
 }
 
@@ -34,8 +36,6 @@ export function changeCurrentTime(component: HTMLElement, newCurrentTime: number
 
 export function play(component: HTMLElement) {
 
-	component.classList.add('_playing');
-
 	const video = component.querySelector('video');
 
 	video.play();
@@ -43,8 +43,6 @@ export function play(component: HTMLElement) {
 }
 
 export function pause(component: HTMLElement) {
-
-	component.classList.remove('_playing');
 
 	const video = component.querySelector('video');
 
@@ -61,14 +59,11 @@ export function stop(component: HTMLElement) {
 
 export function enterFullScreen(component: HTMLElement) {
 
-	component.classList.add('_fullscreen');
-
 	component.requestFullscreen();
 }
 
 export function exitFullScreen(component: HTMLElement) {
 
-	component.classList.remove('_fullscreen');
 	document.exitFullscreen();
 }
 

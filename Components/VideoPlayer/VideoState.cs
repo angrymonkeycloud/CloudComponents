@@ -57,6 +57,7 @@ namespace AngryMonkey.Cloud.Components
 		/// <summary>
 		/// Returns whether the audio/video is paused or not
 		/// </summary>
+		[JsonPropertyName("paused")]
 		public bool Paused { get; set; }
 		/// <summary>
 		/// Returns the speed of the audio/video playback

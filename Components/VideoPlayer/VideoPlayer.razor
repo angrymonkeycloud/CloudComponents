@@ -1,10 +1,14 @@
 ﻿@namespace AngryMonkey.Cloud.Components
 @inject IJSRuntime jsRuntime
 
-<div class="amc-videoplayer" @ref="ComponentElement" @onmousemove="MainMouseMove">
+<div class="amc-videoplayer @ClassAttributes" @ref="ComponentElement" @onmousemove="MainMouseMove" @onfullscreenchange="OnFullScreenChange">
 
     <div class="amc-videoplayer-video">
         <video src="@VideoUrl" @onload="VideoLoaded" @onchange="OnVideoChange"></video>
+    </div>
+
+    <div class="amc-videoplayer-empty" @onclick="OnEmptyClick">
+        
     </div>
 
     <div class="amc-videoplayer-info">
@@ -39,8 +43,8 @@
         </div>
     </div>
 
-    <div class="amc-videoplayer-progress">
-        <ProgressBar Value="CurrentTime" Total="Duration" Style="ProgressBarStyle" OnChange="DurationChange" />
+    <div class="amc-videoplayer-progress" @onmousedown="OnProgressMouseDown">
+        <ProgressBar Value="CurrentTime" Total="Duration" Style="ProgressBarStyle" OnChange="OnProgressChange" />
     </div>
 
 </div>
@@ -48,8 +52,40 @@
 @code {
     private ElementReference ComponentElement { get; set; }
 
+    [Parameter]
+    public int HideControlsDelay { get; set; } = 3000;
+
     private Task<IJSObjectReference> _module;
     private Task<IJSObjectReference> Module => _module ??= GeneralMethods.GetIJSObjectReference(jsRuntime, "videoplayer/videoplayer.js");
+
+    private string ClassAttributes { get; set; } = string.Empty;
+
+    private bool IsUserMovingMouse = false;
+    private bool IsUserChangingProgress = false;
+    private bool IsVideoPlaying = false;
+    private bool IsFullScreen = false;
+
+    private bool IsUserInteracting => IsUserMovingMouse || IsUserChangingProgress;
+
+    private bool HideControls => !IsUserInteracting && CurrentTime > 0;
+
+    private void Repaint()
+    {
+        ProgressBarStyle = HideControls ? ProgressBarStyle.Flat : ProgressBarStyle.Circle;
+
+        List<string> attributes = new();
+
+        if (HideControls)
+            attributes.Add("_hidecontrols");
+
+        if (IsVideoPlaying)
+            attributes.Add("_playing");
+
+        if (IsFullScreen)
+            attributes.Add("_fullscreen");
+
+        ClassAttributes = string.Join(' ', attributes);
+    }
 
     [Parameter]
     public string Title { get; set; }
@@ -73,7 +109,6 @@
     bool EventFiredRequired => EventFired is object;
     [Parameter] public Action<VideoEventData> EventFired { get; set; }
     [Parameter] public EventCallback<VideoEventData> EventFiredEvent { get; set; }
-    bool RegisterTimeUpdate => TimeUpdateEventRequired || TimeUpdateRequired;
 
     [Parameter]
     public Dictionary<VideoEvents, VideoStateOptions> VideoEventOptions { get; set; }
@@ -82,21 +117,14 @@
     [Parameter]
     public Components.VideoPlayerSettings Settings { get; set; }
 
-    public async Task DurationChange(ChangeEventArgs args)
-    {
-        var module = await Module;
-
-        await module.InvokeVoidAsync("changeCurrentTime", ComponentElement, Convert.ToDouble(args.Value));
-    }
-
-    private int time = 0;
     private Guid latestId = Guid.Empty;
 
     public async Task MainMouseMove(MouseEventArgs args)
     {
-        ProgressBarStyle = ProgressBarStyle.Circle;
+        IsUserMovingMouse = true;
 
-        time = 500;
+        Repaint();
+
         latestId = Guid.NewGuid();
 
         await ProgressiveDelay(latestId);
@@ -104,31 +132,66 @@
 
     private async Task ProgressiveDelay(Guid id)
     {
-        while (time > 0)
+        await Task.Delay(HideControlsDelay);
+
+        if (id != latestId)
+            return;
+
+        IsUserMovingMouse = false;
+        Repaint();
+    }
+
+    public async Task OnProgressMouseDown(MouseEventArgs args)
+    {
+        IsUserChangingProgress = true;
+    }
+
+    public async Task OnProgressChange(ChangeEventArgs args)
+    {
+        var module = await Module;
+
+        await module.InvokeVoidAsync("changeCurrentTime", ComponentElement, Convert.ToDouble(args.Value));
+
+        IsUserChangingProgress = false;
+
+        if (CurrentTime == Duration)
+            await StopVideo();
+        else
         {
-            time--;
-
-            await Task.Delay(1);
-
-            if (id != latestId)
-                return;
+            await Task.Delay(HideControlsDelay);
+            Repaint();
         }
-
-        ProgressBarStyle = ProgressBarStyle.Flat;
     }
 
     public async Task OnVideoChange(ChangeEventArgs args)
     {
         VideoEventData eventData = JsonSerializer.Deserialize<VideoEventData>((string)args.Value);
 
+        IsVideoPlaying = !eventData.State.Paused;
+        Repaint();
+
         switch (eventData.EventName)
         {
             case VideoEvents.TimeUpdate:
-                CurrentTime = eventData.State.CurrentTime;
+
+                if (!IsUserChangingProgress)
+                {
+                    CurrentTime = eventData.State.CurrentTime;
+
+                    if (CurrentTime == Duration)
+                        await StopVideo();
+                }
                 break;
 
             default: break;
         }
+    }
+
+    public async Task OnEmptyClick(MouseEventArgs args)
+    {
+        if (IsVideoPlaying)
+            await PauseVideo();
+        else await PlayVideo();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -138,8 +201,10 @@
             var module = await Module;
 
             await module.InvokeVoidAsync("init", ComponentElement);
-
+            
             await Implement(VideoEvents.TimeUpdate);
+            await Implement(VideoEvents.Play);
+            await Implement(VideoEvents.Pause);
         }
     }
 
@@ -191,6 +256,13 @@
         await module.InvokeVoidAsync("exitFullScreen", ComponentElement);
     }
 
+    public async Task OnFullScreenChange(EventArgs args)
+    {
+        IsFullScreen = !IsFullScreen;
+
+        Repaint();
+    }
+
     public async Task StopVideo()
     {
         CurrentTime = 0;
@@ -198,6 +270,8 @@
         var module = await Module;
 
         await module.InvokeVoidAsync("stop", ComponentElement);
+
+        Repaint();
     }
 
     public async ValueTask DisposeAsync()
@@ -207,5 +281,10 @@
             var module = await _module;
             await module.DisposeAsync();
         }
+    }
+
+    protected override async void OnParametersSet()
+    {
+        base.OnParametersSet();
     }
 }
