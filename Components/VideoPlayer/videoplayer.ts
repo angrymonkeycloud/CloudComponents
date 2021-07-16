@@ -27,6 +27,22 @@ export function getVideoInfo(component: HTMLElement): VideoInfo {
 	return videoInfo;
 }
 
+export function muteUnmuteVolume(component: HTMLElement) {
+	const video = component.querySelector('video');
+
+	if (video.muted) {
+		video.muted = false;
+	} else {
+		video.muted = true;
+	}
+}
+
+export function onVolumeChange(component: HTMLElement, newVideoVolume: number) {
+	const video = component.querySelector('video');
+
+	video.volume = newVideoVolume / 100;
+}
+
 export function changeCurrentTime(component: HTMLElement, newCurrentTime: number) {
 
 	const video = component.querySelector('video');
