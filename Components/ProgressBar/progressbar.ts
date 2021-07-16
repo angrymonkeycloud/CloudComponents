@@ -1,6 +1,7 @@
 ﻿import { dotNetHelper } from '../General/js/DotNet';
 
-const hiddenInputRange = 'input[type="range"]';
+const _amc_progressbar_valueRange = '.amc-progressbar-value';
+const _amc_progressbar_changingRange = '.amc-progressbar-changingvalue';
 
 function updatePosition(component: HTMLElement, clientX: number, maxMoveDistance: number) {
 
@@ -14,13 +15,20 @@ function updatePosition(component: HTMLElement, clientX: number, maxMoveDistance
 
 	component.style.setProperty('grid-template-columns', moveDistance + 'px max-content 1fr')
 
-	const range: HTMLInputElement = component.querySelector(hiddenInputRange);
+	const range: HTMLInputElement = component.querySelector(_amc_progressbar_valueRange);
+	const changingRange: HTMLInputElement = component.querySelector(_amc_progressbar_changingRange);
 
 	const total = Number(range.max);
 
 	const value = moveDistance * total / maxMoveDistance;
 
+	changingRange.value = value.toString();
 	range.value = value.toString();
+
+	const evt = document.createEvent("HTMLEvents");
+
+	evt.initEvent("change", false, true);
+	changingRange.dispatchEvent(evt);
 }
 
 export function mouseDown(component: HTMLElement, clientX: number) {
@@ -28,7 +36,7 @@ export function mouseDown(component: HTMLElement, clientX: number) {
 	component["IsUserInput"] = true;
 	component.classList.add('_mousemoving');
 
-	const range: HTMLInputElement = component.querySelector(hiddenInputRange);
+	const range: HTMLInputElement = component.querySelector(_amc_progressbar_valueRange);
 
 	const oldValue = range.value;
 
@@ -76,7 +84,7 @@ export function repaint(component: HTMLElement, value?: number, total?: number) 
 	if (!component.querySelector)
 		return;
 
-	const range: HTMLInputElement = component.querySelector(hiddenInputRange);
+	const range: HTMLInputElement = component.querySelector(_amc_progressbar_valueRange);
 
 	if (total === null || total === undefined)
 		total = Number(range.max);

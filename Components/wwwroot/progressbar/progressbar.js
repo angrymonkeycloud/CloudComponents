@@ -1,4 +1,5 @@
-var hiddenInputRange = 'input[type="range"]';
+var _amc_progressbar_valueRange = '.amc-progressbar-value';
+var _amc_progressbar_changingRange = '.amc-progressbar-changingvalue';
 function updatePosition(component, clientX, maxMoveDistance) {
     var moveDistance = clientX - component.getBoundingClientRect().left - (component.querySelector('.amc-progressbar-middle').clientWidth / 2);
     if (moveDistance < 0)
@@ -6,15 +7,20 @@ function updatePosition(component, clientX, maxMoveDistance) {
     if (moveDistance > maxMoveDistance)
         moveDistance = maxMoveDistance;
     component.style.setProperty('grid-template-columns', moveDistance + 'px max-content 1fr');
-    var range = component.querySelector(hiddenInputRange);
+    var range = component.querySelector(_amc_progressbar_valueRange);
+    var changingRange = component.querySelector(_amc_progressbar_changingRange);
     var total = Number(range.max);
     var value = moveDistance * total / maxMoveDistance;
+    changingRange.value = value.toString();
     range.value = value.toString();
+    var evt = document.createEvent("HTMLEvents");
+    evt.initEvent("change", false, true);
+    changingRange.dispatchEvent(evt);
 }
 export function mouseDown(component, clientX) {
     component["IsUserInput"] = true;
     component.classList.add('_mousemoving');
-    var range = component.querySelector(hiddenInputRange);
+    var range = component.querySelector(_amc_progressbar_valueRange);
     var oldValue = range.value;
     var maxMoveDistance = component.clientWidth - component.querySelector('.amc-progressbar-middle').clientWidth;
     updatePosition(component, clientX, maxMoveDistance);
@@ -42,7 +48,7 @@ export function repaint(component, value, total) {
         return;
     if (!component.querySelector)
         return;
-    var range = component.querySelector(hiddenInputRange);
+    var range = component.querySelector(_amc_progressbar_valueRange);
     if (total === null || total === undefined)
         total = Number(range.max);
     if (value === null || value === undefined)
