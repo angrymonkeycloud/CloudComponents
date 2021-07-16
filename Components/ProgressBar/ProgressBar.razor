@@ -1,93 +1,18 @@
 ﻿@namespace AngryMonkey.Cloud.Components
 @inject IJSRuntime jsRuntime
 
-<div class="amc-progressbar _@Style.ToString().ToLower()" @ref="ComponentElement" @onmousedown="MouseDown" draggable>
+<div draggable class="amc-progressbar _@Style.ToString().ToLower()" @ref="ComponentElement" @onmousedown="OnComponentMouseDown">
 
-    <div class="amc-progressbar-left"></div>
-    <div class="amc-progressbar-middle">
+    <div draggable class="amc-progressbar-left"></div>
+    <div draggable class="amc-progressbar-middle">
         @if (Total > 0)
         {
             <button>
             </button>
         }
     </div>
-    <div class="amc-progressbar-right"></div>
-
-    <input type="range" max="@Total" min="0" value="@Value" @onchange="RangeValuChanged" />
+    <div draggable class="amc-progressbar-right"></div>
+    
+    <input class="amc-progressbar-value" type="range" max="@Total" min="0" value="@Value" @onchange="OnRangeChange" />
+    <input class="amc-progressbar-changingvalue" type="range" max="@Total" min="0" value="@Value" @onchange="OnChangingRangeChange" />
 </div>
-
-@code {
-    private ElementReference ComponentElement { get; set; }
-
-    private Task<IJSObjectReference> _module;
-    private Task<IJSObjectReference> Module => _module ??= GeneralMethods.GetIJSObjectReference(jsRuntime, "progressbar/progressbar.js");
-
-    [Parameter]
-    public double BufferValue { get; set; }
-
-    [Parameter]
-    public ProgressBarStyle Style { get; set; } = ProgressBarStyle.Flat;
-
-    [Parameter]
-    public double Value { get; set; } = 0;
-    private double _value = 0;
-
-    [Parameter]
-    public double Total { get; set; }
-    private double _total = 0;
-
-    [Parameter]
-    public EventCallback<ChangeEventArgs> OnChange { get; set; }
-
-    private async Task OnValueChanged()
-    {
-        var module = await Module;
-
-        await module.InvokeVoidAsync("repaint", ComponentElement, Value, Total);
-    }
-
-    private async Task MouseDown(MouseEventArgs e)
-    {
-        var module = await Module;
-
-        await module.InvokeVoidAsync("mouseDown", ComponentElement, e.ClientX);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (_module != null)
-        {
-            var module = await _module;
-            await module.DisposeAsync();
-        }
-    }
-
-    protected override async void OnParametersSet()
-    {
-        base.OnParametersSet();
-
-        if (Value != _value)
-        {
-            _value = Value;
-            await OnValueChanged();
-        }
-
-        if (Total != _total)
-        {
-            _total = Total;
-            await OnValueChanged();
-        }
-    }
-
-    private async Task RangeValuChanged(ChangeEventArgs args)
-    {
-        double newValue = Convert.ToDouble(args.Value);
-
-        if (Value == newValue)
-            return;
-
-        Value = newValue;
-
-        await OnChange.InvokeAsync(new ChangeEventArgs() { Value = Value });
-    }
-}
