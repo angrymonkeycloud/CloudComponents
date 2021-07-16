@@ -73,6 +73,7 @@
 .amc-videoplayer-controls > div {
   display: flex;
   flex-direction: row;
+  align-items: center;
 }
 .amc-videoplayer-controls-right {
   justify-content: flex-end;
@@ -84,6 +85,9 @@
 .amc-videoplayer-controls button svg {
   width: 18px;
   height: 20px;
+}
+.amc-videoplayer-volumeBar {
+  width: 100px;
 }
 .amc-videoplayer-pause {
   display: none;
