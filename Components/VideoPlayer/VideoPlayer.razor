@@ -7,8 +7,43 @@
         <video src="@VideoUrl" @onload="VideoLoaded" @onchange="OnVideoChange"></video>
     </div>
 
+    <div class="amc-videoplayer-MoreButtonInfo @ShowMoreInfo">
+        <div>
+            @if (ButtonClicked)
+            {
+                <div class="buttons">
+                    <button class="showinfo" @onclick="ShowVideoInfo">More Info</button>
+                    <button class="about" @onclick="ShowVideoAbout">About</button>
+                </div>
+            }
+            @if (ShowInfo)
+            {
+                <div class="showinfo">
+                    <ul>
+                        <li><button @onclick="Back">Back</button> </li>
+                        <li>@Title</li>
+                        <li>Duration: @Duration</li>
+                        <li><a href="@VideoUrl">Video Source</a></li>
+                    </ul>
+                </div>
+            }
+
+            @if (ShowAbout)
+            {
+                <div class="aboutinfo">
+                    <ul>
+                        <li><button @onclick="Back">Back</button></li>
+
+                    </ul>
+                </div>
+            }
+
+        </div>
+    </div>
+
     <div class="amc-videoplayer-empty" @onclick="OnEmptyClick">
     </div>
+    @if(IsMoreButtonClicked == false){
 
     <div class="amc-videoplayer-info">
         <div class="amc-videoplayer-title">@Title</div>
@@ -48,7 +83,7 @@
         </div>
 
         <div class="amc-videoplayer-controls-right">
-            <button class="amc-videoplayer-more">
+            <button class="amc-videoplayer-more" @onclick="MoreButtonInfo">
                 <svg viewBox="0 0 36 40">
                     <circle class="amc-videoplayer-svg-fill" cx="18.09" cy="20.45" r="4.26" />
                     <circle class="amc-videoplayer-svg-fill" cx="4.79" cy="20.45" r="4.26" />
@@ -89,11 +124,12 @@
             </button>
         </div>
     </div>
+    
 
     <div class="amc-videoplayer-progress" @onmousedown="OnProgressMouseDown">
         <ProgressBar Value="CurrentTime" Total="Duration" Style="ProgressBarStyle" OnChanged="OnProgressChange" />
     </div>
-
+}
 </div>
 
 @code {
@@ -111,7 +147,10 @@
     private bool IsUserChangingProgress = false;
     private bool IsVideoPlaying = false;
     private bool IsFullScreen = false;
-
+    private bool IsMoreButtonClicked = false;
+    private bool ShowInfo = false;
+    private bool ShowAbout = false;
+    private bool ButtonClicked = true;
     private bool IsUserInteracting => IsUserMovingMouse || IsUserChangingProgress;
 
     private bool HideControls => IsVideoPlaying && !IsUserInteracting;
@@ -142,6 +181,8 @@
 
     public double Duration { get; set; } = 0;
     public double CurrentTime { get; set; } = 0;
+
+    public string ShowMoreInfo { get; set; } = "";
 
     private ProgressBarStyle ProgressBarStyle = ProgressBarStyle.Circle;
 
@@ -252,9 +293,17 @@
 
     public async Task OnEmptyClick(MouseEventArgs args)
     {
-        if (IsVideoPlaying)
-            await PauseVideo();
-        else await PlayVideo();
+        if (IsMoreButtonClicked == false)
+        {
+            if (IsVideoPlaying)
+                await PauseVideo();
+            else await PlayVideo();
+        }
+        if (IsMoreButtonClicked == true)
+        {
+            ShowMoreInfo = "";
+            IsMoreButtonClicked = false;
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -303,6 +352,44 @@
         var module = await Module;
 
         await module.InvokeVoidAsync("pause", ComponentElement);
+    }
+
+    public async Task MoreButtonInfo()
+    {
+        var module = await Module;
+
+        if (IsMoreButtonClicked == false)
+        {
+            ShowMoreInfo = "_show";
+
+            IsMoreButtonClicked = true;
+        }
+        else
+        {
+            ShowMoreInfo = "";
+            IsMoreButtonClicked = false;
+        }
+    }
+
+    public void ShowVideoInfo()
+    {
+        ShowInfo = true;
+        ButtonClicked = false;
+    }
+    public void ShowVideoAbout()
+    {
+        ShowAbout = true;
+        ButtonClicked = false;
+    }
+    public void Back()
+    {
+        if (ShowInfo)
+            ShowInfo = !ShowInfo;
+
+
+        if (ShowAbout)
+            ShowAbout = !ShowAbout;
+        ButtonClicked = true;
     }
 
     public async Task EnterFullScreen()

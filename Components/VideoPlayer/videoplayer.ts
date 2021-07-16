@@ -71,8 +71,8 @@ export function stop(component: HTMLElement) {
 
 	const video = component.querySelector('video');
 	video.currentTime = 0;
-}
 
+}
 export function enterFullScreen(component: HTMLElement) {
 
 	component.requestFullscreen();
