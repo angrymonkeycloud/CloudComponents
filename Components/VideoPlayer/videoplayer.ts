@@ -57,22 +57,6 @@ export function stop(component: HTMLElement) {
 	video.currentTime = 0;
 
 }
-
-//export function ShowMoreInfo(component: HTMLElement) {
-
-//	const MoreInfo: HTMLDivElement = component.querySelector('.amc-videoplayer-MoreButtonInfo');
-
-//	MoreInfo.classList.add = '150px';
-
-//}
-//export function HideMoreInfo(component: HTMLElement) {
-
-//	const MoreInfo: HTMLDivElement = component.querySelector('.amc-videoplayer-MoreButtonInfo');
-
-//	MoreInfo.style.width = '0%';
-
-//}
-
 export function enterFullScreen(component: HTMLElement) {
 
 	component.requestFullscreen();
