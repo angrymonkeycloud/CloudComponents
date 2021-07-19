@@ -74,20 +74,46 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  gap: 15px;
+}
+.amc-videoplayer-controls > div > div {
+  padding-left: 5px;
+  padding-right: 5px;
 }
 .amc-videoplayer-controls-right {
   justify-content: flex-end;
 }
 .amc-videoplayer-controls button {
   padding: 5px;
-  margin-right: 15px;
+  display: flex;
 }
 .amc-videoplayer-controls button svg {
   width: 18px;
   height: 20px;
 }
-.amc-videoplayer-volumeBar {
+.amc-videoplayer-volume {
+  display: flex;
+  align-items: center;
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
+}
+.amc-videoplayer-volume._extended {
+  border-left-color: rgba(255, 255, 255, 0.4);
+  border-right-color: rgba(255, 255, 255, 0.4);
+}
+.amc-videoplayer-volume-muted {
+  margin-left: 0;
+}
+.amc-videoplayer-volume-bar {
   width: 100px;
+  padding: 5px;
+}
+.amc-videoplayer-volume-bar ::deep .amc-progressbar {
+  height: 20px;
+}
+.amc-videoplayer-volume-bar ::deep .amc-progressbar .amc-progressbar-middle button {
+  width: 15px !important;
+  height: 15px !important;
 }
 .amc-videoplayer-pause {
   display: none;

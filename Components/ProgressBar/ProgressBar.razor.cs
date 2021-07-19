@@ -20,7 +20,7 @@ namespace AngryMonkey.Cloud.Components
 		private double _value = 0;
 		[Parameter] public double Value { get; set; } = 0;
 
-		[Parameter] public double ChangingValue { get; set; } = 0;
+		[Parameter] public double ChangingValue { get; set; } = -1;
 
 		private double _total = 0;
 		[Parameter] public double Total { get; set; }
@@ -87,12 +87,14 @@ namespace AngryMonkey.Cloud.Components
 		{
 			double newValue = Convert.ToDouble(args.Value);
 
-			if (Value == newValue)
+			if (Value == newValue && Value != ChangingValue)
 				return;
 
 			Value = newValue;
 
 			await OnChanged.InvokeAsync(new ChangeEventArgs() { Value = Value });
+
+			ChangingValue = -1;
 		}
 
 		protected async Task OnChangingRangeChange(ChangeEventArgs args)
