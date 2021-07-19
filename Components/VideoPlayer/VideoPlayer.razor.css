@@ -22,6 +22,59 @@
   display: flex;
   flex-direction: column;
 }
+.amc-videoplayer-MoreButtonInfo {
+  width: 0%;
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  color: red;
+  padding: 0px;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: width 1s ease-in-out;
+  z-index: 1;
+}
+.amc-videoplayer-MoreButtonInfo > div {
+  margin: 15px;
+  color: #F5F5DC;
+  font-weight: 300;
+}
+.amc-videoplayer-MoreButtonInfo > div .buttons {
+  display: flex;
+  flex-direction: column;
+}
+.amc-videoplayer-MoreButtonInfo > div .buttons button {
+  border: none;
+  background-color: transparent;
+  color: aqua;
+  font-size: 1.1em;
+  cursor: alias;
+}
+.amc-videoplayer-MoreButtonInfo > div .showinfo ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: flex-start;
+  padding: 0;
+}
+.amc-videoplayer-MoreButtonInfo > div .showinfo ul li {
+  margin-bottom: 10px;
+  font-size: 0.8rem;
+}
+.amc-videoplayer-MoreButtonInfo > div .showinfo ul li a,
+.amc-videoplayer-MoreButtonInfo > div .showinfo ul li ahover,
+.amc-videoplayer-MoreButtonInfo > div .showinfo ul li a:focus,
+.amc-videoplayer-MoreButtonInfo > div .showinfo ul li a:active,
+.amc-videoplayer-MoreButtonInfo > div .showinfo ul li a:visited {
+  text-decoration: none;
+  color: inherit;
+}
+.amc-videoplayer-MoreButtonInfo._show {
+  width: 150px;
+}
 .amc-videoplayer-empty {
   flex: 1;
   cursor: pointer;
@@ -32,7 +85,7 @@
   position: absolute;
   inset: 0;
   background-color: #000;
-  z-index: -1;
+  z-index: -2;
 }
 .amc-videoplayer-video video {
   height: 100%;
@@ -58,6 +111,7 @@
   background-color: rgba(0, 0, 0, 0.4);
   padding: 10px;
   color: #fff;
+  z-index: 2;
 }
 .amc-videoplayer-progress {
   padding: 0 10px;
