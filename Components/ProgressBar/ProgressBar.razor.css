@@ -23,6 +23,7 @@
   grid-template-columns: 0 max-content 1fr;
   align-items: center;
   cursor: pointer;
+  touch-action: none;
 }
 .amc-progressbar input[type="range"] {
   /*grid-column: span 3;*/
@@ -84,7 +85,7 @@
   border-radius: 50%;
   background-color: transparent;
 }
-.amc-progressbar._circle._mousemoving .amc-progressbar-middle button {
+.amc-progressbar._circle._moving .amc-progressbar-middle button {
   background-color: #fff;
 }
 .amc-progressbar._disk .amc-progressbar-middle button {
@@ -95,7 +96,7 @@
   background-color: #fff;
   border: 2px solid transparent;
 }
-.amc-progressbar._disk._mousemoving .amc-progressbar-middle button {
+.amc-progressbar._disk._moving .amc-progressbar-middle button {
   background-color: transparent;
   border-color: #fff;
 }

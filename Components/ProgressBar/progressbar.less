@@ -7,6 +7,7 @@
 	grid-template-columns: 0 max-content 1fr;
 	align-items: center;
 	cursor: pointer;
+	touch-action: none;
 
 	input[type="range"] {
 		/*grid-column: span 3;*/
@@ -83,7 +84,7 @@
 		}
 
 
-		&._mousemoving {
+		&._moving {
 			.amc-progressbar {
 				&-middle {
 					button {
@@ -111,7 +112,7 @@
 		}
 
 
-		&._mousemoving {
+		&._moving {
 			.amc-progressbar {
 				&-middle {
 					button {

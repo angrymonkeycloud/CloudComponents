@@ -17,6 +17,8 @@ namespace AngryMonkey.Cloud.Components
 
 		[Parameter] public ProgressBarStyle Style { get; set; } = ProgressBarStyle.Flat;
 
+		[Parameter] public double Step { get; set; } = 1;
+
 		private double _value = 0;
 		[Parameter] public double Value { get; set; } = 0;
 
@@ -107,6 +109,13 @@ namespace AngryMonkey.Cloud.Components
 			ChangingValue = newValue;
 
 			await OnChanging.InvokeAsync(new ChangeEventArgs() { Value = ChangingValue });
+		}
+
+		protected async Task OnComponentTouchStart(TouchEventArgs args)
+		{
+			var module = await Module;
+
+			await module.InvokeVoidAsync("touchDown", ComponentElement, args.Touches[0].ClientX);
 		}
 	}
 }
