@@ -32,7 +32,7 @@ namespace AngryMonkey.Cloud.Components
 		private bool ButtonClicked = true;
 		private bool IsMuted = false;
 		private bool DoShowVolumeControls = false;
-		private double VolumeSeekPosition;
+		private double VolumeSeekButtonLeft;
 
 		private bool IsUserInteracting => IsUserMovingMouse || IsUserChangingProgress;
 
@@ -65,20 +65,16 @@ namespace AngryMonkey.Cloud.Components
 		[Parameter]
 		public string VideoUrl { get; set; }
 
-		private double ProgressBarVolume
+		[Parameter]
+		public double Volume { get; set; } = 1;
+
+		private string DisplayVolume
 		{
 			get
 			{
-				return Volume * 100;
-			}
-			set
-			{
-				Volume = value / 100;
+				return $"{Volume * 100}";
 			}
 		}
-
-		[Parameter]
-		public double Volume { get; set; } = 1;
 
 		public double Duration { get; set; } = 0;
 		public double CurrentTime { get; set; } = 0;
@@ -136,7 +132,7 @@ namespace AngryMonkey.Cloud.Components
 
 		protected async Task OnVolumeChanging(ProgressBarChangeEventArgs args)
 		{
-			ProgressBarVolume = args.NewValue;
+			Volume = args.NewValue;
 
 			var module = await Module;
 
@@ -205,10 +201,16 @@ namespace AngryMonkey.Cloud.Components
 		{
 			if (DoShowVolumeControls)
 			{
+				double newValue;
+
 				if (args.DeltaY < 0)
-					await OnVolumeChanging(new ProgressBarChangeEventArgs() { NewValue = ProgressBarVolume <= 90 ? ProgressBarVolume + 10 : 100 });
+					newValue = Volume <= .9 ? Volume + .1 : 1;
 				else
-					await OnVolumeChanging(new ProgressBarChangeEventArgs() { NewValue = ProgressBarVolume >= 10 ? ProgressBarVolume - 10 : 0 });
+					newValue = Volume >= .1 ? Volume - .1 : 0;
+
+				newValue = Math.Round(newValue, 1);
+
+				await OnVolumeChanging(new ProgressBarChangeEventArgs() { NewValue = newValue });
 			}
 		}
 

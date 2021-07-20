@@ -184,6 +184,9 @@
   width: 15px !important;
   height: 15px !important;
 }
+.amc-videoplayer-volume-value {
+  width: 3ch;
+}
 .amc-videoplayer-pause {
   display: none;
 }

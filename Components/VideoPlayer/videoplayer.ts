@@ -1,5 +1,4 @@
-﻿
-class VideoInfo {
+﻿class VideoInfo {
 	Duration: string;
 }
 
@@ -71,6 +70,7 @@ export function stop(component: HTMLElement) {
 	video.currentTime = 0;
 
 }
+
 export function enterFullScreen(component: HTMLElement) {
 
 	component.requestFullscreen();

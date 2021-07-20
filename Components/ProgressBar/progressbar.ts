@@ -139,11 +139,9 @@ export function getInfo(component: HTMLElement) {
 	const element = component.querySelector('.amc-progressbar-middle');
 
 	return {
-		SeekButton: {
-			Left: element.clientLeft,
-			Top: element.clientTop,
-			Width: element.clientWidth,
-			Height: element.clientHeight
-		}
+		Left: element.getBoundingClientRect().left,
+		Top: element.getBoundingClientRect().right,
+		Width: element.clientWidth,
+		Height: element.clientHeight
 	};
 }
