@@ -45,65 +45,54 @@
 		}
 	}*/
 }
-.amc-videoplayer-MoreButtonInfo {
-  width: 0%;
-  height: 100%;
-  position: absolute;
-  right: 0;
-  top: 0;
+.amc-videoplayer-sidebar {
   background-color: rgba(0, 0, 0, 0.4);
-  color: red;
-  padding: 0px;
   white-space: nowrap;
   overflow: hidden;
-  transition: width 1s ease-in-out;
-  z-index: 1;
+  padding: 20px;
+  min-width: 20%;
+  max-width: 60%;
+  color: #fff;
 }
-.amc-videoplayer-MoreButtonInfo > div {
-  margin: 15px;
-  color: #F5F5DC;
-  font-weight: 300;
-}
-.amc-videoplayer-MoreButtonInfo > div .buttons {
+.amc-videoplayer-sidebar-menu {
   display: flex;
   flex-direction: column;
 }
-.amc-videoplayer-MoreButtonInfo > div .buttons button {
-  border: none;
-  background-color: transparent;
-  color: aqua;
+.amc-videoplayer-sidebar button {
   font-size: 1.1em;
-  cursor: alias;
+  padding: 5px 0;
+  width: 100%;
+  text-align: left;
 }
-.amc-videoplayer-MoreButtonInfo > div .showinfo ul,
-.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-content: flex-start;
-  padding: 0;
+.amc-videoplayer-sidebar label {
+  display: block;
+  margin-top: 10px;
+  opacity: 0.8;
+  font-size: 1.1rem;
 }
-.amc-videoplayer-MoreButtonInfo > div .showinfo ul li,
-.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul li {
-  margin-bottom: 10px;
-  font-size: 0.8rem;
+.amc-videoplayer-sidebar-value {
+  word-wrap: break-word;
+  width: 100%;
+  overflow: hidden;
 }
-.amc-videoplayer-MoreButtonInfo > div .showinfo ul li a,
-.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul li a,
-.amc-videoplayer-MoreButtonInfo > div .showinfo ul li ahover,
-.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul li ahover,
-.amc-videoplayer-MoreButtonInfo > div .showinfo ul li a:focus,
-.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul li a:focus,
-.amc-videoplayer-MoreButtonInfo > div .showinfo ul li a:active,
-.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul li a:active,
-.amc-videoplayer-MoreButtonInfo > div .showinfo ul li a:visited,
-.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul li a:visited {
+.amc-videoplayer-sidebar a,
+.amc-videoplayer-sidebar a:visited,
+.amc-videoplayer-sidebar a:active,
+.amc-videoplayer-sidebar a:focus {
+  color: #fff;
   text-decoration: none;
-  color: inherit;
+  opacity: 0.9;
+  font-weight: bold;
 }
-.amc-videoplayer-MoreButtonInfo._show {
-  width: 150px;
+.amc-videoplayer-sidebar a:hover,
+.amc-videoplayer-sidebar a:visited:hover,
+.amc-videoplayer-sidebar a:active:hover,
+.amc-videoplayer-sidebar a:focus:hover {
+  opacity: 1;
+}
+.amc-videoplayer-content {
+  flex: 1;
+  display: flex;
 }
 .amc-videoplayer-empty {
   flex: 1;
@@ -220,8 +209,8 @@
   display: none;
 }
 .amc-videoplayer._hidecontrols .amc-videoplayer-progress {
-  padding-left: 0px;
-  padding-right: 0px;
+  padding-left: 1px;
+  padding-right: 1px;
 }
 .amc-videoplayer._hidecontrols .amc-videoplayer-progress ::deep .amc-progressbar {
   padding-top: 1px;

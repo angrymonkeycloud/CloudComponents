@@ -7,44 +7,55 @@
         <video src="@VideoUrl" @onload="VideoLoaded" @onchange="OnVideoChange"></video>
     </div>
 
-    <div class="amc-videoplayer-MoreButtonInfo @ShowMoreInfo">
-        <div>
-            @if (ButtonClicked)
-            {
-                <div class="buttons">
-                    <button class="showinfo" @onclick="ShowVideoInfo">More Info</button>
-                    <button class="about" @onclick="ShowVideoAbout">About</button>
-                </div>
-            }
-            @if (ShowInfo)
-            {
-                <div class="showinfo">
-                    <ul>
-                        <li><button @onclick="Back">Back</button> </li>
-                        <li>@Title</li>
-                        <li>Duration: @Duration</li>
-                        <li><a href="@VideoUrl">Video Source</a></li>
-                    </ul>
-                </div>
-            }
+    <div class="amc-videoplayer-content">
 
-            @if (ShowAbout)
-            {
-                <div class="aboutinfo">
-                    <ul>
-                        <li><button @onclick="Back">Back</button></li>
-                    </ul>
-                </div>
-            }
-
+        <div class="amc-videoplayer-empty" @onclick="OnEmptyClick">
         </div>
+
+        @if (ShowSideBar)
+        {
+            <div class="amc-videoplayer-sidebar">
+                @if (ShowSideBarMenu)
+                {
+                    <div class="amc-videoplayer-sidebar-menu">
+                        <button class="amc-videoplayer-menu-info" @onclick="ShowVideoInfo">More Info</button>
+                        <button class="amc-videoplayer-menu-about" @onclick="ShowVideoAbout">About</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="Back">Back</button>
+                }
+
+                @if (ShowSideBarInfo)
+                {
+                    <label>Title</label>
+                    <div class="amc-videoplayer-value">@Title</div>
+
+                    <label>Duration</label>
+                    <div class="amc-videoplayer-value">@Duration</div>
+
+                    <label>Video Source</label>
+                    <div class="amc-videoplayer-value">@VideoUrl</div>
+                }
+
+                @if (ShowSideBarAbout)
+                {
+                    <div>
+                        <br />
+                        <b>Cloud Video Player</b>
+                        <br /><br />
+                        is an open source Blazor component manager by
+                        <br />
+                        <a target="_blank" href="https://angrymonkeycloud.com">Angry Monkey Cloud</a>
+                    </div>
+                }
+            </div>
+        }
     </div>
 
-    <div class="amc-videoplayer-empty" @onclick="OnEmptyClick">
-    </div>
-    @if (IsMoreButtonClicked == false)
+    @if (ShowSideBar == false)
     {
-
         <div class="amc-videoplayer-info">
             <div class="amc-videoplayer-title">@Title</div>
         </div>
@@ -204,10 +215,9 @@
                 }
             </div>
         </div>
-
-
-        <div class="amc-videoplayer-progress" @onmousedown="OnProgressMouseDown">
-            <ProgressBar Value="CurrentTime" Total="Duration" Style="ProgressBarStyle" OnChanged="OnProgressChange" />
-        </div>
     }
+
+    <div class="amc-videoplayer-progress" @onmousedown="OnProgressMouseDown">
+        <ProgressBar Value="CurrentTime" Total="Duration" Style="ProgressBarStyle" OnChanged="OnProgressChange" />
+    </div>
 </div>

@@ -26,13 +26,12 @@ namespace AngryMonkey.Cloud.Components
 		private bool IsUserChangingProgress = false;
 		private bool IsVideoPlaying = false;
 		private bool IsFullScreen = false;
-		private bool IsMoreButtonClicked = false;
-		private bool ShowInfo = false;
-		private bool ShowAbout = false;
-		private bool ButtonClicked = true;
+		private bool ShowSideBar = false;
+		private bool ShowSideBarInfo = false;
+		private bool ShowSideBarAbout = false;
+		private bool ShowSideBarMenu => !ShowSideBarInfo && !ShowSideBarAbout;
 		private bool IsMuted = false;
 		private bool DoShowVolumeControls = false;
-		private double VolumeSeekButtonLeft;
 
 		private bool IsUserInteracting => IsUserMovingMouse || IsUserChangingProgress;
 
@@ -78,8 +77,6 @@ namespace AngryMonkey.Cloud.Components
 
 		public double Duration { get; set; } = 0;
 		public double CurrentTime { get; set; } = 0;
-
-		public string ShowMoreInfo { get; set; } = "";
 
 		private ProgressBarStyle ProgressBarStyle = ProgressBarStyle.Circle;
 
@@ -148,6 +145,29 @@ namespace AngryMonkey.Cloud.Components
 				IsMuted = true;
 				Volume = 1;
 			}
+		}
+
+		#endregion
+
+		#region More Button Methods
+
+		public async Task MoreButtonInfo()
+		{
+			ShowSideBar = !ShowSideBar;
+		}
+
+		public void ShowVideoInfo()
+		{
+			ShowSideBarInfo = true;
+		}
+		public void ShowVideoAbout()
+		{
+			ShowSideBarAbout = true;
+		}
+		public void Back()
+		{
+			ShowSideBarInfo = false;
+			ShowSideBarAbout = false;
 		}
 
 		#endregion
@@ -240,17 +260,15 @@ namespace AngryMonkey.Cloud.Components
 
 		public async Task OnEmptyClick(MouseEventArgs args)
 		{
-			if (IsMoreButtonClicked == false)
+			if (ShowSideBar == false)
 			{
 				if (IsVideoPlaying)
 					await PauseVideo();
 				else await PlayVideo();
 			}
-			if (IsMoreButtonClicked == true)
-			{
-				ShowMoreInfo = "";
-				IsMoreButtonClicked = false;
-			}
+
+			if (ShowSideBar == true)
+				ShowSideBar = false;
 		}
 
 		protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -299,44 +317,6 @@ namespace AngryMonkey.Cloud.Components
 			var module = await Module;
 
 			await module.InvokeVoidAsync("pause", ComponentElement);
-		}
-
-		public async Task MoreButtonInfo()
-		{
-			var module = await Module;
-
-			if (IsMoreButtonClicked == false)
-			{
-				ShowMoreInfo = "_show";
-
-				IsMoreButtonClicked = true;
-			}
-			else
-			{
-				ShowMoreInfo = "";
-				IsMoreButtonClicked = false;
-			}
-		}
-
-		public void ShowVideoInfo()
-		{
-			ShowInfo = true;
-			ButtonClicked = false;
-		}
-		public void ShowVideoAbout()
-		{
-			ShowAbout = true;
-			ButtonClicked = false;
-		}
-		public void Back()
-		{
-			if (ShowInfo)
-				ShowInfo = !ShowInfo;
-
-
-			if (ShowAbout)
-				ShowAbout = !ShowAbout;
-			ButtonClicked = true;
 		}
 
 		public async Task EnterFullScreen()
