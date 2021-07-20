@@ -32,6 +32,7 @@ namespace AngryMonkey.Cloud.Components
 		private bool ButtonClicked = true;
 		private bool IsMuted = false;
 		private bool DoShowVolumeControls = false;
+		private double VolumeSeekPosition;
 
 		private bool IsUserInteracting => IsUserMovingMouse || IsUserChangingProgress;
 
@@ -103,9 +104,57 @@ namespace AngryMonkey.Cloud.Components
 		bool RegisterEventFired => EventFiredEventRequired || EventFiredRequired;
 
 		[Parameter]
-		public Components.VideoPlayerSettings Settings { get; set; }
+		public VideoPlayerSettings Settings { get; set; }
 
 		private Guid latestId = Guid.Empty;
+
+		#region Volume Methods
+
+		public async Task MuteVolume()
+		{
+			IsMuted = true;
+
+			DoShowVolumeControls = false;
+
+			var module = await Module;
+
+			await module.InvokeVoidAsync("muteVolume", ComponentElement, IsMuted);
+		}
+
+		private async Task OnVolumeButtonClick(MouseEventArgs args)
+		{
+			if (IsMuted)
+			{
+				IsMuted = false;
+
+				var module = await Module;
+
+				await module.InvokeVoidAsync("muteVolume", ComponentElement, IsMuted);
+			}
+			else DoShowVolumeControls = !DoShowVolumeControls;
+		}
+
+		protected async Task OnVolumeChanging(ProgressBarChangeEventArgs args)
+		{
+			ProgressBarVolume = args.NewValue;
+
+			var module = await Module;
+
+			await module.InvokeVoidAsync("changeVolume", ComponentElement, Volume);
+		}
+
+		protected async Task OnVolumeChanged(ProgressBarChangeEventArgs args)
+		{
+			DoShowVolumeControls = false;
+
+			if (Convert.ToDouble(args.NewValue) == 0)
+			{
+				IsMuted = true;
+				Volume = 1;
+			}
+		}
+
+		#endregion
 
 		public async Task MainMouseMove(MouseEventArgs args)
 		{
@@ -135,11 +184,11 @@ namespace AngryMonkey.Cloud.Components
 			IsUserChangingProgress = true;
 		}
 
-		public async Task OnProgressChange(ChangeEventArgs args)
+		public async Task OnProgressChange(ProgressBarChangeEventArgs args)
 		{
 			var module = await Module;
 
-			await module.InvokeVoidAsync("changeCurrentTime", ComponentElement, Convert.ToDouble(args.Value));
+			await module.InvokeVoidAsync("changeCurrentTime", ComponentElement, args.NewValue);
 
 			IsUserChangingProgress = false;
 
@@ -152,59 +201,14 @@ namespace AngryMonkey.Cloud.Components
 			}
 		}
 
-		public async Task MuteVolume()
-		{
-			IsMuted = true;
-
-			DoShowVolumeControls = false;
-
-			var module = await Module;
-
-			await module.InvokeVoidAsync("muteVolume", ComponentElement, IsMuted);
-		}
-
-		private async Task ShowVolumeControls(MouseEventArgs args)
-		{
-			if (IsMuted)
-			{
-				IsMuted = false;
-				DoShowVolumeControls = true;
-
-				var module = await Module;
-
-				await module.InvokeVoidAsync("muteVolume", ComponentElement, IsMuted);
-			}
-			else DoShowVolumeControls = !DoShowVolumeControls;
-		}
-
-		protected async Task OnVolumeChanging(ChangeEventArgs args)
-		{
-			ProgressBarVolume = Convert.ToDouble(args.Value);
-
-			var module = await Module;
-
-			await module.InvokeVoidAsync("changeVolume", ComponentElement, Volume);
-		}
-
-		protected async Task OnVolumeChanged(ChangeEventArgs args)
-		{
-			DoShowVolumeControls = false;
-
-			if (Convert.ToDouble(args.Value) == 0)
-			{
-				IsMuted = true;
-				Volume = 1;
-			}
-		}
-
 		protected async Task OnMouseWheel(WheelEventArgs args)
 		{
 			if (DoShowVolumeControls)
 			{
 				if (args.DeltaY < 0)
-					await OnVolumeChanging(new ChangeEventArgs() { Value = ProgressBarVolume <= 90 ? ProgressBarVolume + 10 : 100 });
+					await OnVolumeChanging(new ProgressBarChangeEventArgs() { NewValue = ProgressBarVolume <= 90 ? ProgressBarVolume + 10 : 100 });
 				else
-					await OnVolumeChanging(new ChangeEventArgs() { Value = ProgressBarVolume >= 10 ? ProgressBarVolume - 10 : 0 });
+					await OnVolumeChanging(new ProgressBarChangeEventArgs() { NewValue = ProgressBarVolume >= 10 ? ProgressBarVolume - 10 : 0 });
 			}
 		}
 

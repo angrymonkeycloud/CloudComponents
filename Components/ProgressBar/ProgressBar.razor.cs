@@ -31,8 +31,8 @@ namespace AngryMonkey.Cloud.Components
 
 		#region Events Parameters
 
-		[Parameter] public EventCallback<ChangeEventArgs> OnChanging { get; set; }
-		[Parameter] public EventCallback<ChangeEventArgs> OnChanged { get; set; }
+		[Parameter] public EventCallback<ProgressBarChangeEventArgs> OnChanging { get; set; }
+		[Parameter] public EventCallback<ProgressBarChangeEventArgs> OnChanged { get; set; }
 
 		#endregion
 
@@ -54,20 +54,6 @@ namespace AngryMonkey.Cloud.Components
 
 		#endregion
 
-		private async Task Repaint()
-		{
-			var module = await Module;
-
-			await module.InvokeVoidAsync("repaint", ComponentElement, Value, Total);
-		}
-
-		private async Task OnComponentMouseDown(MouseEventArgs e)
-		{
-			var module = await Module;
-
-			await module.InvokeVoidAsync("mouseDown", ComponentElement, e.ClientX);
-		}
-
 		protected override async void OnParametersSet()
 		{
 			base.OnParametersSet();
@@ -85,16 +71,44 @@ namespace AngryMonkey.Cloud.Components
 			}
 		}
 
+		private async Task Repaint()
+		{
+			var module = await Module;
+
+			await module.InvokeVoidAsync("repaint", ComponentElement, Value, Total);
+		}
+
+		private async Task OnComponentMouseDown(MouseEventArgs e)
+		{
+			var module = await Module;
+
+			await module.InvokeVoidAsync("mouseDown", ComponentElement, e.ClientX);
+		}
+
+		protected async Task OnComponentTouchStart(TouchEventArgs args)
+		{
+			var module = await Module;
+
+			await module.InvokeVoidAsync("touchDown", ComponentElement, args.Touches[0].ClientX);
+		}
+
 		private async Task OnRangeChange(ChangeEventArgs args)
 		{
 			double newValue = Convert.ToDouble(args.Value);
+
+			ProgressBarChangeEventArgs changeArgs = new()
+			{
+				PreviousValue = Value,
+				NewValue = newValue
+			};
 
 			if (Value == newValue && Value != ChangingValue)
 				return;
 
 			Value = newValue;
+			changeArgs.SeekButtonInfo = await GetInfo();
 
-			await OnChanged.InvokeAsync(new ChangeEventArgs() { Value = Value });
+			await OnChanged.InvokeAsync(changeArgs);
 
 			ChangingValue = -1;
 		}
@@ -103,19 +117,26 @@ namespace AngryMonkey.Cloud.Components
 		{
 			double newValue = Convert.ToDouble(args.Value);
 
+			ProgressBarChangeEventArgs changeArgs = new()
+			{
+				PreviousValue = ChangingValue,
+				NewValue = newValue
+			};
+
 			if (ChangingValue == newValue)
 				return;
 
 			ChangingValue = newValue;
+			changeArgs.SeekButtonInfo = await GetInfo();
 
-			await OnChanging.InvokeAsync(new ChangeEventArgs() { Value = ChangingValue });
+			await OnChanging.InvokeAsync(changeArgs);
 		}
 
-		protected async Task OnComponentTouchStart(TouchEventArgs args)
+		private async Task<ProgressBarSeekButtonInfo> GetInfo()
 		{
 			var module = await Module;
 
-			await module.InvokeVoidAsync("touchDown", ComponentElement, args.Touches[0].ClientX);
+			return await module.InvokeAsync<ProgressBarSeekButtonInfo>("getInfo", ComponentElement);
 		}
 	}
 }

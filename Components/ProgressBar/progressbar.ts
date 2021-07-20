@@ -30,7 +30,7 @@ function updatePosition(component: HTMLElement, clientX: number, maxMoveDistance
 }
 
 export function mouseDown(component: HTMLElement, clientX: number) {
-	
+
 	component["IsUserInput"] = true;
 	component.classList.add('_moving');
 
@@ -88,7 +88,7 @@ export function touchDown(component: HTMLElement, clientX: number) {
 	const touchMoveListener = function (moveArgs: TouchEvent) { updatePosition(component, moveArgs.touches[0].clientX, maxMoveDistance); };
 
 	document.addEventListener('touchmove', touchMoveListener);
-	
+
 	// Touch Up
 
 	const touchEndListener = function () {
@@ -132,4 +132,18 @@ export function repaint(component: HTMLElement, value?: number, total?: number) 
 	const moveDistance = value * maxMoveDistance / total;
 
 	component.style.setProperty('grid-template-columns', moveDistance + 'px max-content 1fr')
+}
+
+export function getInfo(component: HTMLElement) {
+
+	const element = component.querySelector('.amc-progressbar-middle');
+
+	return {
+		SeekButton: {
+			Left: element.clientLeft,
+			Top: element.clientTop,
+			Width: element.clientWidth,
+			Height: element.clientHeight
+		}
+	};
 }

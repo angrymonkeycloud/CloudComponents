@@ -79,3 +79,14 @@ export function repaint(component, value, total) {
     var moveDistance = value * maxMoveDistance / total;
     component.style.setProperty('grid-template-columns', moveDistance + 'px max-content 1fr');
 }
+export function getInfo(component) {
+    var element = component.querySelector('.amc-progressbar-middle');
+    return {
+        SeekButton: {
+            Left: element.clientLeft,
+            Top: element.clientTop,
+            Width: element.clientWidth,
+            Height: element.clientHeight
+        }
+    };
+}

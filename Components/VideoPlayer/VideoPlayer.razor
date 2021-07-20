@@ -33,7 +33,6 @@
                 <div class="aboutinfo">
                     <ul>
                         <li><button @onclick="Back">Back</button></li>
-
                     </ul>
                 </div>
             }
@@ -81,7 +80,7 @@
 
             @* Volume *@
             <div class="amc-videoplayer-volume @(DoShowVolumeControls? "_extended": string.Empty)">
-                <button class="amc-videoplayer-volume-button" @onclick="ShowVolumeControls">
+                <button class="amc-videoplayer-volume-button" @onclick="OnVolumeButtonClick">
                     <svg viewBox="0 0 36 40">
                         <path class="amc-videoplayer-svg-fill" d="M33.56,38.69V1.31a1.18,1.18,0,0,0-1.82-1L16.54,10.55,3,13.18c-.72.46-.72,13.18,0,13.64l13.56,2.63,15.2,10.23A1.18,1.18,0,0,0,33.56,38.69Z" />
                     </svg>
