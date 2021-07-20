@@ -29,6 +29,21 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  /*	&-exitfullscreen {
+		display: none;
+	}
+
+	&._fullscreen {
+		.amc-videoplayer {
+			&-enterfullscreen {
+				display: none;
+			}
+
+			&-exitfullscreen {
+				display: inline-block;
+			}
+		}
+	}*/
 }
 .amc-videoplayer-MoreButtonInfo {
   width: 0%;
@@ -186,6 +201,7 @@
 }
 .amc-videoplayer-volume-value {
   width: 3ch;
+  opacity: 0.9;
 }
 .amc-videoplayer-pause {
   display: none;
@@ -196,21 +212,16 @@
 .amc-videoplayer._playing .amc-videoplayer-pause {
   display: inline-block;
 }
-.amc-videoplayer-exitfullscreen {
-  display: none;
-}
-.amc-videoplayer._fullscreen .amc-videoplayer-enterfullscreen {
-  display: none;
-}
-.amc-videoplayer._fullscreen .amc-videoplayer-exitfullscreen {
-  display: inline-block;
-}
 .amc-videoplayer._hidecontrols * {
   cursor: none;
 }
 .amc-videoplayer._hidecontrols .amc-videoplayer-info,
 .amc-videoplayer._hidecontrols .amc-videoplayer-controls {
   display: none;
+}
+.amc-videoplayer._hidecontrols .amc-videoplayer-progress {
+  padding-left: 0px;
+  padding-right: 0px;
 }
 .amc-videoplayer._hidecontrols .amc-videoplayer-progress ::deep .amc-progressbar {
   padding-top: 1px;
