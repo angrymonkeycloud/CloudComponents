@@ -21,6 +21,7 @@
   background-color: rgba(255, 255, 255, 0.2);
 }
 .amc-videoplayer {
+  --amc-videoplayer-accentColor: #fff;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -44,6 +45,9 @@
 			}
 		}
 	}*/
+}
+.amc-videoplayer ::deep .amc-progressbar {
+  --amc-progressbar-accentColor: var(--amc-videoplayer-accentColor);
 }
 .amc-videoplayer-sidebar {
   background-color: rgba(0, 0, 0, 0.4);
@@ -183,10 +187,7 @@
 }
 .amc-videoplayer-volume-bar ::deep .amc-progressbar {
   height: 20px;
-}
-.amc-videoplayer-volume-bar ::deep .amc-progressbar .amc-progressbar-middle button {
-  width: 15px !important;
-  height: 15px !important;
+  --amc-progressbar-seekbuttonSize: 15px;
 }
 .amc-videoplayer-volume-value {
   width: 3ch;

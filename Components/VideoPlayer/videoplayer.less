@@ -11,10 +11,15 @@
 }
 
 .amc-videoplayer {
+	--amc-videoplayer-accentColor: #fff;
 	.UnSelectable();
 	position: relative;
 	display: flex;
 	flex-direction: column;
+
+	::deep .amc-progressbar {
+		--amc-progressbar-accentColor: var(--amc-videoplayer-accentColor);
+	}
 
 	&-sidebar {
 		background-color: rgba(0, 0, 0, .4);
@@ -176,11 +181,7 @@
 
 			::deep .amc-progressbar {
 				height: 20px;
-
-				.amc-progressbar-middle button {
-					width: 15px !important;
-					height: 15px !important;
-				}
+				--amc-progressbar-seekbuttonSize: 15px;
 			}
 		}
 

@@ -9,7 +9,7 @@ main > .amc-progressbar {
 	margin-top: 50px;
 }
 
-body{
+body {
 	height: 100vh;
 	background-image: url(/bg.jpg);
 	background-size: cover;

@@ -1,6 +1,8 @@
 ﻿@import '../General/css/common.less';
 
 .amc-progressbar {
+	--amc-progressbar-accentColor: #fff;
+	--amc-progressbar-seekbuttonSize: 20px;
 	.UnSelectable();
 	display: grid;
 	grid-template-areas: 'left middle right';
@@ -18,16 +20,16 @@
 	&-right {
 		width: 100%;
 		height: 1px;
-		background-color: rgba(255, 255, 255, .5);
-		background-color: #fff;
 		position: relative;
 	}
 
 	&-left {
+		background-color: var(--amc-progressbar-accentColor);
 		grid-area: left;
 	}
 
 	&-right {
+		background-color: #fff;
 		grid-area: right;
 		opacity: .7;
 	}
@@ -49,7 +51,7 @@
 				transition: background-color 50ms ease-in-out, filter 100ms ease-in-out;
 
 				&:focus, &:hover {
-					filter: drop-shadow(0 0 4px #fff);
+					filter: drop-shadow(0 0 4px var(--amc-progressbar-accentColor));
 				}
 			}
 		}
@@ -60,7 +62,7 @@
 			&-middle {
 
 				button {
-					background-color: #fff;
+					background-color: var(--amc-progressbar-accentColor);
 					height: 1px;
 					width: 5px;
 				}
@@ -73,10 +75,10 @@
 			&-middle {
 
 				button {
-					width: 20px;
-					height: 20px;
+					width: var(--amc-progressbar-seekbuttonSize);
+					height: var(--amc-progressbar-seekbuttonSize);
 					display: block;
-					border: 2px solid #fff;
+					border: 2px solid var(--amc-progressbar-accentColor);
 					border-radius: 50%;
 					background-color: transparent;
 				}
@@ -88,7 +90,7 @@
 			.amc-progressbar {
 				&-middle {
 					button {
-						background-color: #fff;
+						background-color: var(--amc-progressbar-accentColor);
 					}
 				}
 			}
@@ -101,11 +103,11 @@
 			&-middle {
 
 				button {
-					width: 20px;
-					height: 20px;
+					width: var(--amc-progressbar-seekbuttonSize);
+					height: var(--amc-progressbar-seekbuttonSize);
 					display: block;
 					border-radius: 50%;
-					background-color: #fff;
+					background-color: var(--amc-progressbar-accentColor);
 					border: 2px solid transparent;
 				}
 			}
@@ -117,7 +119,7 @@
 				&-middle {
 					button {
 						background-color: transparent;
-						border-color: #fff;
+						border-color: var(--amc-progressbar-accentColor);
 					}
 				}
 			}
