@@ -10,6 +10,14 @@
     <div class="amc-videoplayer-content">
 
         <div class="amc-videoplayer-empty" @onclick="OnEmptyClick">
+            @if (ShowSideBar)
+            {
+                <div class="amc-videoplayer-close">
+                    <span>
+                        @((MarkupString)(ShowSideBarMenu ? "x" : "<"))
+                    </span>
+                </div>
+            }
         </div>
 
         @if (ShowSideBar)
@@ -24,31 +32,30 @@
                 }
                 else
                 {
-                    <button @onclick="Back">Back</button>
-                }
+                    @if (ShowSideBarInfo)
+                    {
+                        <label>Title</label>
+                        <div class="amc-videoplayer-value">@Title</div>
 
-                @if (ShowSideBarInfo)
-                {
-                    <label>Title</label>
-                    <div class="amc-videoplayer-value">@Title</div>
+                        <label>Duration</label>
+                        <div class="amc-videoplayer-value">@Duration</div>
 
-                    <label>Duration</label>
-                    <div class="amc-videoplayer-value">@Duration</div>
+                        <label>Video Source</label>
+                        <div class="amc-videoplayer-value">@VideoUrl</div>
+                    }
 
-                    <label>Video Source</label>
-                    <div class="amc-videoplayer-value">@VideoUrl</div>
-                }
+                    @if (ShowSideBarAbout)
+                    {
+                        <div>
+                            <br />
+                            <b>Cloud Video Player</b>
+                            <br /><br />
+                            is an open source Blazor component manager by
+                            <br />
+                            <a target="_blank" href="https://angrymonkeycloud.com">Angry Monkey Cloud</a>
+                        </div>
+                    }
 
-                @if (ShowSideBarAbout)
-                {
-                    <div>
-                        <br />
-                        <b>Cloud Video Player</b>
-                        <br /><br />
-                        is an open source Blazor component manager by
-                        <br />
-                        <a target="_blank" href="https://angrymonkeycloud.com">Angry Monkey Cloud</a>
-                    </div>
                 }
             </div>
         }

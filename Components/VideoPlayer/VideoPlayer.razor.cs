@@ -215,11 +215,6 @@ namespace AngryMonkey.Cloud.Components
 		{
 			ShowSideBarAbout = true;
 		}
-		public void Back()
-		{
-			ShowSideBarInfo = false;
-			ShowSideBarAbout = false;
-		}
 
 		#endregion
 
@@ -317,9 +312,16 @@ namespace AngryMonkey.Cloud.Components
 					await PauseVideo();
 				else await PlayVideo();
 			}
-
-			if (ShowSideBar == true)
-				ShowSideBar = false;
+			else
+			{
+				if (ShowSideBarMenu)
+					ShowSideBar = false;
+				else
+				{
+					ShowSideBarInfo = false;
+					ShowSideBarAbout = false;
+				}
+			}
 		}
 
 		protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -112,6 +112,22 @@
 .amc-videoplayer-empty {
   flex: 1;
   cursor: pointer;
+  position: relative;
+}
+.amc-videoplayer-close {
+  position: absolute;
+  top: 5px;
+  right: 20px;
+  color: #fff;
+  font-size: 50px;
+  border-radius: 50%;
+  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.amc-videoplayer-close span {
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.8));
 }
 .amc-videoplayer-video {
   height: 100%;
