@@ -22,7 +22,6 @@ namespace AngryMonkey.Cloud.Components
 
 		private string ClassAttributes { get; set; } = string.Empty;
 
-		private bool IsUserMovingMouse = false;
 		private bool IsUserChangingProgress = false;
 		private bool IsVideoPlaying = false;
 		private bool IsFullScreen = false;
@@ -33,7 +32,7 @@ namespace AngryMonkey.Cloud.Components
 		private bool IsMuted = false;
 		private bool DoShowVolumeControls = false;
 
-		private bool IsUserInteracting => IsUserMovingMouse || IsUserChangingProgress;
+		private bool IsUserInteracting = false;
 
 		private bool HideControls => IsVideoPlaying && !IsUserInteracting;
 
@@ -134,6 +133,8 @@ namespace AngryMonkey.Cloud.Components
 			var module = await Module;
 
 			await module.InvokeVoidAsync("changeVolume", ComponentElement, Volume);
+
+			await ProgressiveDelay();
 		}
 
 		protected async Task OnVolumeChanged(ProgressBarChangeEventArgs args)
@@ -218,32 +219,10 @@ namespace AngryMonkey.Cloud.Components
 
 		#endregion
 
-		public async Task MainMouseMove(MouseEventArgs args)
-		{
-			IsUserMovingMouse = true;
-
-			Repaint();
-
-			await ProgressiveDelay();
-		}
-
-		private async Task ProgressiveDelay()
-		{
-			Guid id = Guid.NewGuid();
-			latestId = id;
-
-			await Task.Delay(HideControlsDelay);
-
-			if (id != latestId)
-				return;
-
-			IsUserMovingMouse = false;
-			Repaint();
-		}
-
 		public async Task OnProgressMouseDown(MouseEventArgs args)
 		{
 			IsUserChangingProgress = true;
+			await ProgressiveDelay();
 		}
 
 		public async Task OnProgressChange(ProgressBarChangeEventArgs args)
@@ -256,28 +235,8 @@ namespace AngryMonkey.Cloud.Components
 
 			if (CurrentTime == Duration)
 				await StopVideo();
-			else
-			{
-				await Task.Delay(HideControlsDelay);
-				Repaint();
-			}
-		}
 
-		protected async Task OnMouseWheel(WheelEventArgs args)
-		{
-			if (DoShowVolumeControls)
-			{
-				double newValue;
-
-				if (args.DeltaY < 0)
-					newValue = Volume <= .9 ? Volume + .1 : 1;
-				else
-					newValue = Volume >= .1 ? Volume - .1 : 0;
-
-				newValue = Math.Round(newValue, 1);
-
-				await OnVolumeChanging(new ProgressBarChangeEventArgs() { NewValue = newValue });
-			}
+			await ProgressiveDelay();
 		}
 
 		public async Task OnVideoChange(ChangeEventArgs args)
@@ -416,6 +375,54 @@ namespace AngryMonkey.Cloud.Components
 		protected override async void OnParametersSet()
 		{
 			base.OnParametersSet();
+		}
+
+		private async Task OnComponentClick(MouseEventArgs args)
+		{
+			await ProgressiveDelay();
+		}
+
+		protected async Task OnMouseWheel(WheelEventArgs args)
+		{
+
+			if (DoShowVolumeControls)
+			{
+				double newValue;
+
+				if (args.DeltaY < 0)
+					newValue = Volume <= .9 ? Volume + .1 : 1;
+				else
+					newValue = Volume >= .1 ? Volume - .1 : 0;
+
+				newValue = Math.Round(newValue, 1);
+
+				await OnVolumeChanging(new ProgressBarChangeEventArgs() { NewValue = newValue });
+			}
+
+			await ProgressiveDelay();
+		}
+
+		public async Task MainMouseMove(MouseEventArgs args)
+		{
+			await ProgressiveDelay();
+		}
+
+		private async Task ProgressiveDelay()
+		{
+			IsUserInteracting = true;
+
+			Repaint();
+
+			Guid id = Guid.NewGuid();
+			latestId = id;
+
+			await Task.Delay(HideControlsDelay);
+
+			if (id != latestId)
+				return;
+
+			IsUserInteracting = false;
+			Repaint();
 		}
 	}
 }

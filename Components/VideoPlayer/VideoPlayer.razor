@@ -1,7 +1,7 @@
 ﻿@namespace AngryMonkey.Cloud.Components
 @inject IJSRuntime jsRuntime
 
-<div class="amc-videoplayer @ClassAttributes" @ref="ComponentElement" @onmousemove="MainMouseMove" @onfullscreenchange="OnFullScreenChange" @onmousewheel="OnMouseWheel">
+<div class="amc-videoplayer @ClassAttributes" @ref="ComponentElement" @onmousemove="MainMouseMove" @onfullscreenchange="OnFullScreenChange" @onmousewheel="OnMouseWheel" @onclick="OnComponentClick">
 
     <div class="amc-videoplayer-video">
         <video src="@VideoUrl" @onload="VideoLoaded" @onchange="OnVideoChange"></video>
