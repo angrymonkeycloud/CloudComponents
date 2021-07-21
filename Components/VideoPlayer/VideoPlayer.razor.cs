@@ -149,6 +149,57 @@ namespace AngryMonkey.Cloud.Components
 
 		#endregion
 
+		#region Time / Duration
+
+		private string DisplayTimeDuration
+		{
+			get
+			{
+				return $"{GetTime(CurrentTime)} / {GetTime(Duration)}";
+			}
+		}
+
+		private string GetTime(double seconds)
+		{
+			TimeSpan time = TimeSpan.FromSeconds(seconds);
+			int timeLevel = GetTimeLevel();
+
+			string result = $"{time:ss}";
+
+			if (timeLevel > 0)
+			{
+				result = $"{time:mm}:{result}";
+
+				if (timeLevel > 1)
+				{
+					result = $"{time:hh}:{result}";
+
+					if (timeLevel > 2)
+						result = $"{time:dd}:{result}";
+				}
+			}
+
+			return result[0] == '0' ? result.Remove(0, 1) : result;
+		}
+
+		private int GetTimeLevel()
+		{
+			TimeSpan time = TimeSpan.FromSeconds(Duration);
+
+			if (time.TotalMinutes < 1)
+				return 0;
+
+			if (time.TotalHours < 1)
+				return 1;
+
+			if (time.TotalDays < 1)
+				return 2;
+
+			return 3;
+		}
+
+		#endregion
+
 		#region More Button Methods
 
 		public async Task MoreButtonInfo()

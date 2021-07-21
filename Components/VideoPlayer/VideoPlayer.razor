@@ -143,10 +143,6 @@
                             @DisplayVolume
                         </div>
 
-                        <div class="amc-videoplayer-volume-bar">
-                            <ProgressBar Step="0.1" Value="@Volume" Total="1" Style=ProgressBarStyle.Disk OnChanging="OnVolumeChanging" OnChanged="OnVolumeChanged" />
-                        </div>
-
                         <button class="amc-videoplayer-volume-mute" @onclick="MuteVolume">
                             <svg viewBox="0 0 36 40">
                                 <path class="amc-videoplayer-svg-fill" d="M24.82,14.93l.05,0Z" />
@@ -156,7 +152,16 @@
                                 <path class="amc-videoplayer-svg-fill" d="M26.87,26.17h0a.63.63,0,0,0,0-.9l-3.15-3.16L21.61,20l-1.8-1.81h0L18,16.4l-5.26-5.27a.63.63,0,0,0-.9,0h0L9.14,13.84h0a.63.63,0,0,0,0,.9L14.39,20l1.81,1.8h0L18,23.62l2.56,2.55h0l2.7,2.7a.6.6,0,0,0,.6.15L24,29l.12-.07.09-.07h0Z" />
                             </svg>
                         </button>
+
+                        <div class="amc-videoplayer-volume-bar">
+                            <ProgressBar Step="0.1" Value="@Volume" Total="1" Style=ProgressBarStyle.Disk OnChanging="OnVolumeChanging" OnChanged="OnVolumeChanged" />
+                        </div>
                     }
+                </div>
+
+                @* Current Time / Duration *@
+                <div class="amc-videoplayer-timeduration">
+                    @DisplayTimeDuration
                 </div>
             </div>
 
