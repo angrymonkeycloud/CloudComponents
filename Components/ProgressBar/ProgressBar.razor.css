@@ -12,9 +12,20 @@
   -ms-user-select: none;
   user-select: none;
 }
+.ComponentsDefault {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.9rem;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 .amc-progressbar {
   --amc-progressbar-accentColor: #fff;
   --amc-progressbar-seekbuttonSize: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.9rem;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -moz-user-select: none;
