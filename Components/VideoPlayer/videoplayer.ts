@@ -73,7 +73,9 @@ export function stop(component: HTMLElement) {
 
 export function enterFullScreen(component: HTMLElement) {
 
-	component.requestFullscreen();
+	component.requestFullscreen({
+		navigationUI: "hide"
+	});
 }
 
 export function exitFullScreen(component: HTMLElement) {

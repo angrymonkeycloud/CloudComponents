@@ -1,0 +1,29 @@
+﻿@namespace AngryMonkey.Cloud.Components
+@inject IJSRuntime jsRuntime
+
+<div class="amc-datetimepicker">
+    <div class="amc-datetimepicker-calendar">
+        <div class="amc-datetimepicker-month">
+            <button class="amc-datetimepicker-previous" @onclick="OnPrevClick">Prev</button>
+            <div class="amc-datetimepicker-info">
+                <span class="amc-datetimepicker-monthname">@SelectedMonthName</span>
+                <span class="amc-datetimepicker-fulldate">@FullDate</span>
+            </div>
+            <button class="amc-datetimepicker-next" @onclick="OnNextClick">Next</button>
+        </div>
+
+        <div class="amc-datetimepicker-weekdays">
+            @foreach(string weekday in WeekDaysNames)
+            {
+                <div>@weekday</div>
+            }
+        </div>
+
+        <div class="amc-datetimepicker-days">
+            @foreach (DateTimePickerDate date in Days)
+            {
+                <div class="amc-datetimepicker-day @date.Classes" @onclick="() => OnDateSelected(date)">@date.Day</div>
+            }
+        </div>
+    </div>
+</div>

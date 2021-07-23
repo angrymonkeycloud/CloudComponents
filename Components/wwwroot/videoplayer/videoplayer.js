@@ -43,7 +43,9 @@ export function stop(component) {
     video.currentTime = 0;
 }
 export function enterFullScreen(component) {
-    component.requestFullscreen();
+    component.requestFullscreen({
+        navigationUI: "hide"
+    });
 }
 export function exitFullScreen(component) {
     document.exitFullscreen();
