@@ -1,0 +1,10 @@
+{
+	
+	"files": [
+		{
+			"output": "wwwroot/css/site.css",
+			"input": "src/css/site.less"
+		}
+		
+	]
+}

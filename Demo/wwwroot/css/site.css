@@ -1,0 +1,58 @@
+:root {
+  --LinkColor: #00a7ce;
+}
+body {
+  height: 90vh;
+  width: 90vw;
+  background-image: url(/bg2.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+body main {
+  width: 100%;
+  margin-top: 50px;
+}
+body main .components {
+  background-color: transparent;
+  margin-top: 20px;
+  margin-left: 10px;
+  width: 100%;
+  text-align: center;
+}
+body main .components a,
+body main .components a:hover,
+body main .components a:active,
+body main .components a:focus,
+body main .components a:visited {
+  color: var(--LinkColor);
+  text-decoration: none;
+  padding: 10px;
+  font-size: 1.4em;
+  font-family: 'Brush Script MT', cursive;
+  letter-spacing: 5px;
+  line-height: 2px;
+  margin-left: 20px;
+}
+body main .components a:hover {
+  background-color: rgba(192, 245, 238, 0.2);
+  border: 1px groove groove;
+  border-radius: 12px;
+}
+body main .components a:hover:active {
+  background-color: rgba(50, 115, 220, 0.3);
+}
+body main > .amc-progressbar {
+  --amc-progressbar-accentColor: var(--LinkColor) !important;
+  width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 50px;
+}
+body main > .amc-videoplayer {
+  --amc-videoplayer-accentColor: var(--LinkColor) !important;
+  width: 800px;
+  height: 450px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 50px;
+}
