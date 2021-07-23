@@ -1,440 +1,235 @@
 ﻿@namespace AngryMonkey.Cloud.Components
 @inject IJSRuntime jsRuntime
 
-<div class="amc-videoplayer @ClassAttributes" @ref="ComponentElement" @onmousemove="MainMouseMove" @onfullscreenchange="OnFullScreenChange">
+<div class="amc-videoplayer @ClassAttributes" @ref="ComponentElement" @onmousemove="MainMouseMove" @onfullscreenchange="OnFullScreenChange" @onmousewheel="OnMouseWheel" @onclick="OnComponentClick">
 
     <div class="amc-videoplayer-video">
         <video src="@VideoUrl" @onload="VideoLoaded" @onchange="OnVideoChange"></video>
     </div>
 
-    <div class="amc-videoplayer-MoreButtonInfo @ShowMoreInfo">
-        <div>
-            @if (ButtonClicked)
+    <div class="amc-videoplayer-content">
+
+        <div class="amc-videoplayer-empty" @onclick="OnEmptyClick" @ontouchstart="OnEmptyTouch">
+            @if (ShowSideBar)
             {
-                <div class="buttons">
-                    <button class="showinfo" @onclick="ShowVideoInfo">More Info</button>
-                    <button class="about" @onclick="ShowVideoAbout">About</button>
+                <div class="amc-videoplayer-close">
+                    <span>
+                        @((MarkupString)(ShowSideBarMenu ? "x" : "<"))
+                    </span>
                 </div>
             }
-            @if (ShowInfo)
-            {
-                <div class="showinfo">
-                    <ul>
-                        <li><button @onclick="Back">Back</button> </li>
-                        <li>@Title</li>
-                        <li>Duration: @Duration</li>
-                        <li><a href="@VideoUrl">Video Source</a></li>
-                    </ul>
-                </div>
-            }
-
-            @if (ShowAbout)
-            {
-                <div class="aboutinfo">
-                    <ul>
-                        <li><button @onclick="Back">Back</button></li>
-
-                    </ul>
-                </div>
-            }
-
         </div>
+
+        @if (ShowSideBar)
+        {
+            <div class="amc-videoplayer-sidebar">
+                @if (ShowSideBarMenu)
+                {
+                    <div class="amc-videoplayer-sidebar-menu">
+                        <button class="amc-videoplayer-menu-info" @onclick="ShowVideoInfo">More Info</button>
+                        <button class="amc-videoplayer-menu-about" @onclick="ShowVideoAbout">About</button>
+                    </div>
+                }
+                else
+                {
+                    @if (ShowSideBarInfo)
+                    {
+                        <label>Title</label>
+                        <div class="amc-videoplayer-value">@Title</div>
+
+                        <label>Duration</label>
+                        <div class="amc-videoplayer-value">@Duration</div>
+
+                        <label>Video Source</label>
+                        <div class="amc-videoplayer-value">@VideoUrl</div>
+                    }
+
+                    @if (ShowSideBarAbout)
+                    {
+                        <div>
+                            <br />
+                            <b>Cloud Video Player</b>
+                            <br /><br />
+                            is an open source Blazor component manager by
+                            <br />
+                            <a target="_blank" href="https://angrymonkeycloud.com">Angry Monkey Cloud</a>
+                        </div>
+                    }
+
+                }
+            </div>
+        }
     </div>
 
-    <div class="amc-videoplayer-empty" @onclick="OnEmptyClick">
-    </div>
-    @if(IsMoreButtonClicked == false){
+    @if (ShowSideBar == false)
+    {
+        <div class="amc-videoplayer-info">
+            <div class="amc-videoplayer-title">@Title</div>
+        </div>
 
-    <div class="amc-videoplayer-info">
-        <div class="amc-videoplayer-title">@Title</div>
-    </div>
+        <div class="amc-videoplayer-controls">
+            <div class="amc-videoplayer-controls-left">
+                @* Play *@
+                <div class="amc-videoplayer-play">
+                    <button @onclick="PlayVideo">
+                        <svg viewBox="0 0 36 40">
+                            <path class="amc-videoplayer-svg-fill" d="M2.85,1.21V38.79a1.19,1.19,0,0,0,1.84,1L33.61,21a1.2,1.2,0,0,0,0-2L4.69.22A1.19,1.19,0,0,0,2.85,1.21Z" />
+                        </svg>
+                    </button>
+                </div>
 
-    <div class="amc-videoplayer-controls">
-        <div class="amc-videoplayer-controls-left">
-            <button class="amc-videoplayer-play" @onclick="PlayVideo">
-                <svg viewBox="0 0 36 40">
-                    <path class="amc-videoplayer-svg-fill" d="M2.85,1.21V38.79a1.19,1.19,0,0,0,1.84,1L33.61,21a1.2,1.2,0,0,0,0-2L4.69.22A1.19,1.19,0,0,0,2.85,1.21Z" />
-                </svg>
-            </button>
-            <button class="amc-videoplayer-pause" @onclick="PauseVideo">
-                <svg viewBox="0 0 36 40">
-                    <path class="amc-videoplayer-svg-fill" d="M13.62.31H6.54A1.18,1.18,0,0,0,5.35,1.49V20h0V38.52a1.18,1.18,0,0,0,1.19,1.17h7.08a1.18,1.18,0,0,0,1.19-1.17V20h0V1.48A1.18,1.18,0,0,0,13.62.31Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M29.46.31H22.38a1.18,1.18,0,0,0-1.19,1.17V20h0V38.52a1.18,1.18,0,0,0,1.19,1.17h7.08a1.18,1.18,0,0,0,1.19-1.17V20h0V1.48A1.18,1.18,0,0,0,29.46.31Z" />
-                </svg>
-            </button>
-            <button class="amc-videoplayer-stop" @onclick="StopVideo">
-                <svg viewBox="0 0 36 40">
-                    <path class="amc-videoplayer-svg-fill" d="M1.69,39.69h0A1.18,1.18,0,0,1,.47,38.52V20h0V1.49A1.18,1.18,0,0,1,1.66.32H34.57a1.18,1.18,0,0,1,1.19,1.17V20h0V38.51a1.18,1.18,0,0,1-1.19,1.17H1.69Z" />
-                </svg>
-            </button>
-            <button class="amc-videoplayer-volume" @onclick="MuteUnmuteVolume">
-                <svg viewBox="0 0 36 40">
-                    <path class="amc-videoplayer-svg-fill" d="M33.56,38.69V1.31a1.18,1.18,0,0,0-1.82-1L16.54,10.55,3,13.18c-.72.46-.72,13.18,0,13.64l13.56,2.63,15.2,10.23A1.18,1.18,0,0,0,33.56,38.69Z" />
-                </svg>
-            </button>
+                @* Pause *@
+                <div class="amc-videoplayer-pause">
+                    <button @onclick="PauseVideo">
+                        <svg viewBox="0 0 36 40">
+                            <path class="amc-videoplayer-svg-fill" d="M13.62.31H6.54A1.18,1.18,0,0,0,5.35,1.49V20h0V38.52a1.18,1.18,0,0,0,1.19,1.17h7.08a1.18,1.18,0,0,0,1.19-1.17V20h0V1.48A1.18,1.18,0,0,0,13.62.31Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M29.46.31H22.38a1.18,1.18,0,0,0-1.19,1.17V20h0V38.52a1.18,1.18,0,0,0,1.19,1.17h7.08a1.18,1.18,0,0,0,1.19-1.17V20h0V1.48A1.18,1.18,0,0,0,29.46.31Z" />
+                        </svg>
+                    </button>
+                </div>
 
-            <div class="amc-videoplayer-volumeBar">
-                <ProgressBar Value="100" Total="100" Style=ProgressBarStyle.Disk OnChanging="OnVolumeChange" />
+                @* Stop *@
+                <div class="amc-videoplayer-stop">
+                    <button @onclick="StopVideo">
+                        <svg viewBox="0 0 36 40">
+                            <path class="amc-videoplayer-svg-fill" d="M1.69,39.69h0A1.18,1.18,0,0,1,.47,38.52V20h0V1.49A1.18,1.18,0,0,1,1.66.32H34.57a1.18,1.18,0,0,1,1.19,1.17V20h0V38.51a1.18,1.18,0,0,1-1.19,1.17H1.69Z" />
+                        </svg>
+                    </button>
+                </div>
+
+                @* Volume *@
+                <div class="amc-videoplayer-volume @(DoShowVolumeControls? "_extended": string.Empty)">
+                    <button class="amc-videoplayer-volume-button" @onclick="OnVolumeButtonClick">
+                        <svg viewBox="0 0 36 40">
+                            <path class="amc-videoplayer-svg-fill" d="M33.56,38.69V1.31a1.18,1.18,0,0,0-1.82-1L16.54,10.55,3,13.18c-.72.46-.72,13.18,0,13.64l13.56,2.63,15.2,10.23A1.18,1.18,0,0,0,33.56,38.69Z" />
+                        </svg>
+
+                        @if (Volume == 0 || IsMuted)
+                        {
+                            <svg class="amc-videoplayer-volume-status" viewBox="0 0 36 40">
+                                <path class="amc-videoplayer-svg-fill" d="M24.82,14.93l.05,0Z" />
+                                <path class="amc-videoplayer-svg-fill" d="M24.72,14.91h0Z" />
+                                <path class="amc-videoplayer-svg-fill" d="M9.33,21.81,7.53,20,2.26,25.27a.63.63,0,0,0,0,.9h0L5,28.87H5a.63.63,0,0,0,.9,0l5.27-5.26-1.81-1.8Z" />
+                                <path class="amc-videoplayer-svg-fill" d="M12.94,18.2,14.75,20l2.55-2.55h0l2.7-2.7a.6.6,0,0,0,.15-.6s0-.06,0-.09a.5.5,0,0,0-.08-.12s0-.07-.06-.09h0L17.3,11.14h0a.64.64,0,0,0-.9,0l-3.16,3.16-2.1,2.11,1.8,1.8Z" />
+                                <path class="amc-videoplayer-svg-fill" d="M20,26.17h0a.64.64,0,0,0,0-.9l-3.16-3.16L14.75,20l-1.81-1.8h0l-1.8-1.8L5.87,11.13a.63.63,0,0,0-.9,0H5L2.27,13.84h0a.63.63,0,0,0,0,.9L7.53,20l1.8,1.81h0l1.81,1.8,2.55,2.56h0l2.7,2.7A.62.62,0,0,0,17,29l.09,0a.5.5,0,0,0,.12-.08s.07,0,.09-.06h0Z" />
+                            </svg>
+                        }
+                        else if (Volume < .33)
+                        {
+                            <svg class="amc-videoplayer-volume-status" viewBox="0 0 36 40">
+                                <path class="amc-videoplayer-svg-fill" d="M24.82,13.87l.05,0Z" />
+                                <path class="amc-videoplayer-svg-fill" d="M24.72,13.85h0Z" />
+                                <path class="amc-videoplayer-svg-fill" d="M24.82,13.81l.05,0Z" />
+                                <path class="amc-videoplayer-svg-fill" d="M24.72,13.79h0Z" />
+                                <path class="amc-videoplayer-svg-fill" d="M24.82,14.93l.05,0Z" />
+                                <path class="amc-videoplayer-svg-fill" d="M24.72,14.91h0Z" />
+                                <path class="amc-videoplayer-svg-fill" d="M7.35,26.11h0c.35,0,.68-.15.68-.36V20H8V14.25c0-.21-.33-.36-.68-.36H3.29c-.35,0-.68.15-.68.37V20h0v3.55h0v2.19c0,.14.14.25.34.31l.08,0H7.35Z" />
+                            </svg>
+                        }
+                        else if (Volume < .66)
+                        {
+                            <svg class="amc-videoplayer-volume-status" viewBox="0 0 36 40">
+                                <path class="amc-videoplayer-svg-fill" d="M24.82,13.81l.05,0Z" />
+                                <path class="amc-videoplayer-svg-fill" d="M24.72,13.79h0Z" />
+                                <path class="amc-videoplayer-svg-fill" d="M24.82,14.93l.05,0Z" />
+                                <path class="amc-videoplayer-svg-fill" d="M24.72,14.91h0Z" />
+                                <path class="amc-videoplayer-svg-fill" d="M7.35,29.88h0A.64.64,0,0,0,8,29.29V20H8V10.71a.64.64,0,0,0-.68-.59H3.29a.65.65,0,0,0-.68.59V20h0v5.74h0V29.3a.55.55,0,0,0,.34.49l.08.05.15,0H7.35Z" />
+                            </svg>
+                        }
+                        else
+                        {
+                            <svg class="amc-videoplayer-volume-status" viewBox="0 0 36 40">
+                                <path class="amc-videoplayer-svg-fill" d="M7.22,33.37h0a.72.72,0,0,0,.64-.79V20h0V7.42a.73.73,0,0,0-.64-.8H3.42a.72.72,0,0,0-.64.79V20h0v7.77h0v4.8a.83.83,0,0,0,.31.67l.08.06a.58.58,0,0,0,.14,0,.35.35,0,0,0,.11,0h3.8Z" />
+                            </svg>
+                        }
+                    </button>
+
+                    @if (DoShowVolumeControls)
+                    {
+                        <div class="amc-videoplayer-volume-value">
+                            @DisplayVolume
+                        </div>
+
+                        <button class="amc-videoplayer-volume-mute" @onclick="MuteVolume">
+                            <svg viewBox="0 0 36 40">
+                                <path class="amc-videoplayer-svg-fill" d="M24.82,14.93l.05,0Z" />
+                                <path class="amc-videoplayer-svg-fill" d="M24.72,14.91h0Z" />
+                                <path class="amc-videoplayer-svg-fill" d="M16.2,21.81,14.39,20,9.13,25.27a.63.63,0,0,0,0,.9h0l2.69,2.69h0a.64.64,0,0,0,.9,0L18,23.62l-1.8-1.81Z" />
+                                <path class="amc-videoplayer-svg-fill" d="M19.81,18.2,21.61,20l2.56-2.56h0l2.7-2.7a.62.62,0,0,0,.15-.6s0-.06,0-.09l-.08-.12a.47.47,0,0,0-.06-.09h0l-2.7-2.69h0a.63.63,0,0,0-.9,0l-3.15,3.15L18,16.4l1.81,1.8Z" />
+                                <path class="amc-videoplayer-svg-fill" d="M26.87,26.17h0a.63.63,0,0,0,0-.9l-3.15-3.16L21.61,20l-1.8-1.81h0L18,16.4l-5.26-5.27a.63.63,0,0,0-.9,0h0L9.14,13.84h0a.63.63,0,0,0,0,.9L14.39,20l1.81,1.8h0L18,23.62l2.56,2.55h0l2.7,2.7a.6.6,0,0,0,.6.15L24,29l.12-.07.09-.07h0Z" />
+                            </svg>
+                        </button>
+
+                        <div class="amc-videoplayer-volume-bar">
+                            <ProgressBar Step="0.1" Value="@Volume" Total="1" Style=ProgressBarStyle.Disk OnChanging="OnVolumeChanging" OnChanged="OnVolumeChanged" />
+                        </div>
+                    }
+                </div>
+
+                @* Current Time / Duration *@
+                <div class="amc-videoplayer-timeduration">
+                    @DisplayTimeDuration
+                </div>
+            </div>
+
+            <div class="amc-videoplayer-controls-middle">
+                <div class="amc-videoplayer-duration">
+                    <span></span>
+                </div>
+            </div>
+
+            <div class="amc-videoplayer-controls-right">
+                <button class="amc-videoplayer-more" @onclick="MoreButtonInfo">
+                    <svg viewBox="0 0 36 40">
+                        <circle class="amc-videoplayer-svg-fill" cx="18.09" cy="20.45" r="4.26" />
+                        <circle class="amc-videoplayer-svg-fill" cx="4.79" cy="20.45" r="4.26" />
+                        <circle class="amc-videoplayer-svg-fill" cx="31.38" cy="20.45" r="4.26" />
+                    </svg>
+                </button>
+
+                @if (!IsFullScreen)
+                {
+                    <button class="amc-videoplayer-enterfullscreen" @onclick="EnterFullScreen">
+                        <svg viewBox="0 0 36 40">
+                            <path class="amc-videoplayer-svg-fill" d="M35.43.3l.06,0Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M32.64.27H21.51a.44.44,0,0,0-.43.45h0V3.33h0a.44.44,0,0,0,.43.45H32.19V.7A.44.44,0,0,1,32.64.27Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M35.34.28l-.07,0h.07Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M35.49.33l-.06,0-.09,0h-2.7a.44.44,0,0,0-.45.43V7.58h0v6.88a.45.45,0,0,0,.45.44h2.62a.44.44,0,0,0,.45-.43V7.58h0V3.33h0V.7A.44.44,0,0,0,35.49.33Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M.47,39.79l0,0Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M3.27,39.82H14.4a.44.44,0,0,0,.43-.44h0V36.75h0a.44.44,0,0,0-.44-.44H3.71v3.07A.44.44,0,0,1,3.27,39.82Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M.57,39.81h0Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M.42,39.75l0,0,.1,0h2.7a.44.44,0,0,0,.44-.44V32.51h0V25.63a.44.44,0,0,0-.44-.44H.64a.44.44,0,0,0-.44.43v6.88h0v4.24h0v2.63A.41.41,0,0,0,.42,39.75Z" />
+                        </svg>
+                    </button>
+                }
+                else
+                {
+                    <button class="amc-videoplayer-exitfullscreen" @onclick="ExitFullScreen">
+                        <svg viewBox="0 0 36 40">
+                            <path class="amc-videoplayer-svg-fill" d="M20.36,16.37a.05.05,0,0,1,0,0A.05.05,0,0,0,20.36,16.37Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M22.34,16.39h7.88a.31.31,0,0,0,.31-.32h0V14.22h0a.31.31,0,0,0-.31-.31H22.65v2.17A.31.31,0,0,1,22.34,16.39Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M20.42,16.39h0Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M20.32,16.35a.05.05,0,0,0,0,0l.06,0h1.92a.31.31,0,0,0,.31-.31V11.21h0V6.34A.31.31,0,0,0,22.34,6H20.48a.32.32,0,0,0-.32.31v4.87h0v3h0v1.86A.3.3,0,0,0,20.32,16.35Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M15.77,16.2a.05.05,0,0,1,0,0A.05.05,0,0,0,15.77,16.2Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M15.79,14.22h0v-3h0V6.34A.31.31,0,0,0,15.48,6H13.62a.31.31,0,0,0-.31.31v4.87h0v2.7h2.18A.3.3,0,0,1,15.79,14.22Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M15.79,16.14s0,0,0-.06h0S15.79,16.12,15.79,16.14Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M15.75,16.24a.05.05,0,0,0,0,0s0,0,0-.06,0,0,0-.06h0V14.22h0a.3.3,0,0,0-.3-.31H5.74a.31.31,0,0,0-.31.31h0v1.85h0a.31.31,0,0,0,.31.32h9.75A.3.3,0,0,0,15.75,16.24Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M15.55,23.72l0,0Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M13.56,23.69H5.68a.31.31,0,0,0-.31.31h0v1.86h0a.3.3,0,0,0,.3.31h7.57V24A.31.31,0,0,1,13.56,23.69Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M15.48,23.7h0Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M15.58,23.74l0,0-.07,0H13.56a.31.31,0,0,0-.31.31v4.87h0v4.88a.31.31,0,0,0,.31.31h1.87a.31.31,0,0,0,.31-.31V28.87h0v-3h0V24A.3.3,0,0,0,15.58,23.74Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M20.19,23.88l0,0Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M20.17,25.87h0v3h0v4.87a.32.32,0,0,0,.32.31h1.86a.31.31,0,0,0,.31-.31V28.88h0V26.18H20.48A.31.31,0,0,1,20.17,25.87Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M20.18,24s0,0,0,.05h0A.11.11,0,0,1,20.18,24Z" />
+                            <path class="amc-videoplayer-svg-fill" d="M20.21,23.85l0,0a.2.2,0,0,0,0,.07.11.11,0,0,0,0,.05h0v1.86h0a.31.31,0,0,0,.31.31h9.74a.31.31,0,0,0,.31-.31h0V24h0a.31.31,0,0,0-.31-.31H20.47A.31.31,0,0,0,20.21,23.85Z" />
+                        </svg>
+                    </button>
+                }
             </div>
         </div>
-
-        <div class="amc-videoplayer-controls-middle">
-            <span class="amc-videoplayer-duration"></span>
-        </div>
-
-        <div class="amc-videoplayer-controls-right">
-            <button class="amc-videoplayer-more" @onclick="MoreButtonInfo">
-                <svg viewBox="0 0 36 40">
-                    <circle class="amc-videoplayer-svg-fill" cx="18.09" cy="20.45" r="4.26" />
-                    <circle class="amc-videoplayer-svg-fill" cx="4.79" cy="20.45" r="4.26" />
-                    <circle class="amc-videoplayer-svg-fill" cx="31.38" cy="20.45" r="4.26" />
-                </svg>
-            </button>
-            <button class="amc-videoplayer-enterfullscreen" @onclick="EnterFullScreen">
-                <svg viewBox="0 0 36 40">
-                    <path class="amc-videoplayer-svg-fill" d="M35.43.3l.06,0Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M32.64.27H21.51a.44.44,0,0,0-.43.45h0V3.33h0a.44.44,0,0,0,.43.45H32.19V.7A.44.44,0,0,1,32.64.27Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M35.34.28l-.07,0h.07Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M35.49.33l-.06,0-.09,0h-2.7a.44.44,0,0,0-.45.43V7.58h0v6.88a.45.45,0,0,0,.45.44h2.62a.44.44,0,0,0,.45-.43V7.58h0V3.33h0V.7A.44.44,0,0,0,35.49.33Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M.47,39.79l0,0Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M3.27,39.82H14.4a.44.44,0,0,0,.43-.44h0V36.75h0a.44.44,0,0,0-.44-.44H3.71v3.07A.44.44,0,0,1,3.27,39.82Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M.57,39.81h0Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M.42,39.75l0,0,.1,0h2.7a.44.44,0,0,0,.44-.44V32.51h0V25.63a.44.44,0,0,0-.44-.44H.64a.44.44,0,0,0-.44.43v6.88h0v4.24h0v2.63A.41.41,0,0,0,.42,39.75Z" />
-                </svg>
-            </button>
-            <button class="amc-videoplayer-exitfullscreen" @onclick="ExitFullScreen">
-                <svg viewBox="0 0 36 40">
-                    <path class="amc-videoplayer-svg-fill" d="M20.36,16.37a.05.05,0,0,1,0,0A.05.05,0,0,0,20.36,16.37Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M22.34,16.39h7.88a.31.31,0,0,0,.31-.32h0V14.22h0a.31.31,0,0,0-.31-.31H22.65v2.17A.31.31,0,0,1,22.34,16.39Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M20.42,16.39h0Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M20.32,16.35a.05.05,0,0,0,0,0l.06,0h1.92a.31.31,0,0,0,.31-.31V11.21h0V6.34A.31.31,0,0,0,22.34,6H20.48a.32.32,0,0,0-.32.31v4.87h0v3h0v1.86A.3.3,0,0,0,20.32,16.35Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M15.77,16.2a.05.05,0,0,1,0,0A.05.05,0,0,0,15.77,16.2Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M15.79,14.22h0v-3h0V6.34A.31.31,0,0,0,15.48,6H13.62a.31.31,0,0,0-.31.31v4.87h0v2.7h2.18A.3.3,0,0,1,15.79,14.22Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M15.79,16.14s0,0,0-.06h0S15.79,16.12,15.79,16.14Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M15.75,16.24a.05.05,0,0,0,0,0s0,0,0-.06,0,0,0-.06h0V14.22h0a.3.3,0,0,0-.3-.31H5.74a.31.31,0,0,0-.31.31h0v1.85h0a.31.31,0,0,0,.31.32h9.75A.3.3,0,0,0,15.75,16.24Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M15.55,23.72l0,0Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M13.56,23.69H5.68a.31.31,0,0,0-.31.31h0v1.86h0a.3.3,0,0,0,.3.31h7.57V24A.31.31,0,0,1,13.56,23.69Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M15.48,23.7h0Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M15.58,23.74l0,0-.07,0H13.56a.31.31,0,0,0-.31.31v4.87h0v4.88a.31.31,0,0,0,.31.31h1.87a.31.31,0,0,0,.31-.31V28.87h0v-3h0V24A.3.3,0,0,0,15.58,23.74Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M20.19,23.88l0,0Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M20.17,25.87h0v3h0v4.87a.32.32,0,0,0,.32.31h1.86a.31.31,0,0,0,.31-.31V28.88h0V26.18H20.48A.31.31,0,0,1,20.17,25.87Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M20.18,24s0,0,0,.05h0A.11.11,0,0,1,20.18,24Z" />
-                    <path class="amc-videoplayer-svg-fill" d="M20.21,23.85l0,0a.2.2,0,0,0,0,.07.11.11,0,0,0,0,.05h0v1.86h0a.31.31,0,0,0,.31.31h9.74a.31.31,0,0,0,.31-.31h0V24h0a.31.31,0,0,0-.31-.31H20.47A.31.31,0,0,0,20.21,23.85Z" />
-                </svg>
-            </button>
-        </div>
-    </div>
-    
+    }
 
     <div class="amc-videoplayer-progress" @onmousedown="OnProgressMouseDown">
-        <ProgressBar Value="CurrentTime" Total="Duration" Style="ProgressBarStyle" OnChanged="OnProgressChange" />
+        <ProgressBar Value="CurrentTime" Total="Duration" Style="ProgressBarStyle" OnChanged="OnProgressChanged" />
     </div>
-}
 </div>
-
-@code {
-    private ElementReference ComponentElement { get; set; }
-
-    [Parameter]
-    public int HideControlsDelay { get; set; } = 3000;
-
-    private Task<IJSObjectReference> _module;
-    private Task<IJSObjectReference> Module => _module ??= GeneralMethods.GetIJSObjectReference(jsRuntime, "videoplayer/videoplayer.js");
-
-    private string ClassAttributes { get; set; } = string.Empty;
-
-    private bool IsUserMovingMouse = false;
-    private bool IsUserChangingProgress = false;
-    private bool IsVideoPlaying = false;
-    private bool IsFullScreen = false;
-    private bool IsMoreButtonClicked = false;
-    private bool ShowInfo = false;
-    private bool ShowAbout = false;
-    private bool ButtonClicked = true;
-    private bool IsUserInteracting => IsUserMovingMouse || IsUserChangingProgress;
-
-    private bool HideControls => IsVideoPlaying && !IsUserInteracting;
-
-    private void Repaint()
-    {
-        ProgressBarStyle = HideControls ? ProgressBarStyle.Flat : ProgressBarStyle.Circle;
-
-        List<string> attributes = new();
-
-        if (HideControls)
-            attributes.Add("_hidecontrols");
-
-        if (IsVideoPlaying)
-            attributes.Add("_playing");
-
-        if (IsFullScreen)
-            attributes.Add("_fullscreen");
-
-        ClassAttributes = string.Join(' ', attributes);
-    }
-
-    [Parameter]
-    public string Title { get; set; }
-
-    [Parameter]
-    public string VideoUrl { get; set; }
-
-    public double Duration { get; set; } = 0;
-    public double CurrentTime { get; set; } = 0;
-
-    public string ShowMoreInfo { get; set; } = "";
-
-    private ProgressBarStyle ProgressBarStyle = ProgressBarStyle.Circle;
-
-    [Parameter]
-    public Action<VideoState> TimeUpdate { get; set; }
-
-    [Parameter]
-    public EventCallback<VideoState> TimeUpdateEvent { get; set; }
-    bool TimeUpdateRequired => TimeUpdate is object;
-    bool TimeUpdateEventRequired => TimeUpdateEvent.HasDelegate;
-    bool EventFiredEventRequired => EventFiredEvent.HasDelegate;
-    bool EventFiredRequired => EventFired is object;
-    [Parameter] public Action<VideoEventData> EventFired { get; set; }
-    [Parameter] public EventCallback<VideoEventData> EventFiredEvent { get; set; }
-
-    [Parameter]
-    public Dictionary<VideoEvents, VideoStateOptions> VideoEventOptions { get; set; }
-    bool RegisterEventFired => EventFiredEventRequired || EventFiredRequired;
-
-    [Parameter]
-    public Components.VideoPlayerSettings Settings { get; set; }
-
-    private Guid latestId = Guid.Empty;
-
-    public async Task MainMouseMove(MouseEventArgs args)
-    {
-        IsUserMovingMouse = true;
-
-        Repaint();
-
-
-        await ProgressiveDelay();
-    }
-
-    private async Task ProgressiveDelay()
-    {
-        Guid id = Guid.NewGuid();
-        latestId = id;
-
-        await Task.Delay(HideControlsDelay);
-
-        if (id != latestId)
-            return;
-
-        IsUserMovingMouse = false;
-        Repaint();
-    }
-
-    public async Task OnProgressMouseDown(MouseEventArgs args)
-    {
-        IsUserChangingProgress = true;
-    }
-
-    public async Task OnProgressChange(ChangeEventArgs args)
-    {
-        var module = await Module;
-
-        await module.InvokeVoidAsync("changeCurrentTime", ComponentElement, Convert.ToDouble(args.Value));
-
-        IsUserChangingProgress = false;
-
-        if (CurrentTime == Duration)
-            await StopVideo();
-        else
-        {
-            await Task.Delay(HideControlsDelay);
-            Repaint();
-        }
-    }
-
-    public async Task MuteUnmuteVolume()
-    {
-        var module = await Module;
-
-        await module.InvokeVoidAsync("muteUnmuteVolume", ComponentElement);
-    }
-
-    public async Task OnVolumeChange(ChangeEventArgs args)
-    {
-        var module = await Module;
-
-        await module.InvokeVoidAsync("onVolumeChange", ComponentElement, Convert.ToDouble(args.Value));
-    }
-
-    public async Task OnVideoChange(ChangeEventArgs args)
-    {
-        VideoEventData eventData = JsonSerializer.Deserialize<VideoEventData>((string)args.Value);
-
-        IsVideoPlaying = !eventData.State.Paused;
-        Repaint();
-
-        switch (eventData.EventName)
-        {
-            case VideoEvents.TimeUpdate:
-
-                if (!IsUserChangingProgress)
-                {
-                    CurrentTime = eventData.State.CurrentTime;
-
-                    if (CurrentTime == Duration)
-                        await StopVideo();
-                }
-                break;
-
-            default: break;
-        }
-    }
-
-    public async Task OnEmptyClick(MouseEventArgs args)
-    {
-        if (IsMoreButtonClicked == false)
-        {
-            if (IsVideoPlaying)
-                await PauseVideo();
-            else await PlayVideo();
-        }
-        if (IsMoreButtonClicked == true)
-        {
-            ShowMoreInfo = "";
-            IsMoreButtonClicked = false;
-        }
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            var module = await Module;
-
-            await module.InvokeVoidAsync("init", ComponentElement);
-
-            await Implement(VideoEvents.TimeUpdate);
-            await Implement(VideoEvents.Play);
-            await Implement(VideoEvents.Pause);
-        }
-    }
-
-    async Task Implement(VideoEvents eventName)
-    {
-
-        VideoStateOptions options = new VideoStateOptions() { All = true };
-        VideoEventOptions?.TryGetValue(eventName, out options);
-
-        var module = await Module;
-
-        await module.InvokeVoidAsync("registerCustomEventHandler", ComponentElement, eventName.ToString().ToLower(), options.GetPayload());
-    }
-
-    public async Task VideoLoaded()
-    {
-        var module = await Module;
-
-        VideoInfo videoInfo = await module.InvokeAsync<VideoInfo>("getVideoInfo", ComponentElement);
-
-        Duration = Convert.ToDouble(videoInfo.Duration);
-    }
-
-    public async Task PlayVideo()
-    {
-        var module = await Module;
-
-        await module.InvokeVoidAsync("play", ComponentElement);
-    }
-
-    public async Task PauseVideo()
-    {
-        var module = await Module;
-
-        await module.InvokeVoidAsync("pause", ComponentElement);
-    }
-
-    public async Task MoreButtonInfo()
-    {
-        var module = await Module;
-
-        if (IsMoreButtonClicked == false)
-        {
-            ShowMoreInfo = "_show";
-
-            IsMoreButtonClicked = true;
-        }
-        else
-        {
-            ShowMoreInfo = "";
-            IsMoreButtonClicked = false;
-        }
-    }
-
-    public void ShowVideoInfo()
-    {
-        ShowInfo = true;
-        ButtonClicked = false;
-    }
-    public void ShowVideoAbout()
-    {
-        ShowAbout = true;
-        ButtonClicked = false;
-    }
-    public void Back()
-    {
-        if (ShowInfo)
-            ShowInfo = !ShowInfo;
-
-
-        if (ShowAbout)
-            ShowAbout = !ShowAbout;
-        ButtonClicked = true;
-    }
-
-    public async Task EnterFullScreen()
-    {
-        var module = await Module;
-
-        await module.InvokeVoidAsync("enterFullScreen", ComponentElement);
-    }
-
-    public async Task ExitFullScreen()
-    {
-        var module = await Module;
-
-        await module.InvokeVoidAsync("exitFullScreen", ComponentElement);
-    }
-
-    public async Task OnFullScreenChange(EventArgs args)
-    {
-        IsFullScreen = !IsFullScreen;
-
-        Repaint();
-    }
-
-    public async Task StopVideo()
-    {
-        CurrentTime = 0;
-
-        var module = await Module;
-
-        await module.InvokeVoidAsync("stop", ComponentElement);
-
-        Repaint();
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (_module != null)
-        {
-            var module = await _module;
-            await module.DisposeAsync();
-        }
-    }
-
-    protected override async void OnParametersSet()
-    {
-        base.OnParametersSet();
-    }
-}

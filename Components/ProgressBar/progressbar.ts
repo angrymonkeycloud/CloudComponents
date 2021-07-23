@@ -1,6 +1,4 @@
-﻿import { dotNetHelper } from '../General/js/DotNet';
-
-const _amc_progressbar_valueRange = '.amc-progressbar-value';
+﻿const _amc_progressbar_valueRange = '.amc-progressbar-value';
 const _amc_progressbar_changingRange = '.amc-progressbar-changingvalue';
 
 function updatePosition(component: HTMLElement, clientX: number, maxMoveDistance: number) {
@@ -32,9 +30,9 @@ function updatePosition(component: HTMLElement, clientX: number, maxMoveDistance
 }
 
 export function mouseDown(component: HTMLElement, clientX: number) {
-	
+
 	component["IsUserInput"] = true;
-	component.classList.add('_mousemoving');
+	component.classList.add('_moving');
 
 	const range: HTMLInputElement = component.querySelector(_amc_progressbar_valueRange);
 
@@ -55,7 +53,7 @@ export function mouseDown(component: HTMLElement, clientX: number) {
 	const mouseUpListener = function () {
 		component["IsUserInput"] = false;
 
-		component.classList.remove('_mousemoving');
+		component.classList.remove('_moving');
 
 		document.removeEventListener('mousemove', mouseMoveListener);
 		document.removeEventListener('mouseup', mouseUpListener);
@@ -70,10 +68,47 @@ export function mouseDown(component: HTMLElement, clientX: number) {
 	}
 
 	document.addEventListener('mouseup', mouseUpListener);
+}
 
-	//document.onmouseup = function () {
+export function touchDown(component: HTMLElement, clientX: number) {
 
-	//}
+	component["IsUserInput"] = true;
+	component.classList.add('_moving');
+
+	const range: HTMLInputElement = component.querySelector(_amc_progressbar_valueRange);
+
+	const oldValue = range.value;
+
+	const maxMoveDistance = component.clientWidth - component.querySelector('.amc-progressbar-middle').clientWidth;
+
+	updatePosition(component, clientX, maxMoveDistance);
+
+	// Touch Move
+
+	const touchMoveListener = function (moveArgs: TouchEvent) { updatePosition(component, moveArgs.touches[0].clientX, maxMoveDistance); };
+
+	document.addEventListener('touchmove', touchMoveListener);
+
+	// Touch Up
+
+	const touchEndListener = function () {
+		component["IsUserInput"] = false;
+
+		component.classList.remove('_moving');
+
+		document.removeEventListener('touchmove', touchMoveListener);
+		document.removeEventListener('touchup', touchEndListener);
+
+		if (range.value === oldValue)
+			return;
+
+		const evt = document.createEvent("HTMLEvents");
+		evt.initEvent("change", false, true);
+
+		range.dispatchEvent(evt);
+	}
+
+	document.addEventListener('touchend', touchEndListener);
 }
 
 export function repaint(component: HTMLElement, value?: number, total?: number) {
@@ -97,4 +132,16 @@ export function repaint(component: HTMLElement, value?: number, total?: number) 
 	const moveDistance = value * maxMoveDistance / total;
 
 	component.style.setProperty('grid-template-columns', moveDistance + 'px max-content 1fr')
+}
+
+export function getInfo(component: HTMLElement) {
+
+	const element = component.querySelector('.amc-progressbar-middle');
+
+	return {
+		Left: element.getBoundingClientRect().left,
+		Top: element.getBoundingClientRect().right,
+		Width: element.clientWidth,
+		Height: element.clientHeight
+	};
 }

@@ -19,7 +19,7 @@ function updatePosition(component, clientX, maxMoveDistance) {
 }
 export function mouseDown(component, clientX) {
     component["IsUserInput"] = true;
-    component.classList.add('_mousemoving');
+    component.classList.add('_moving');
     var range = component.querySelector(_amc_progressbar_valueRange);
     var oldValue = range.value;
     var maxMoveDistance = component.clientWidth - component.querySelector('.amc-progressbar-middle').clientWidth;
@@ -30,7 +30,7 @@ export function mouseDown(component, clientX) {
     // Mouse Up
     var mouseUpListener = function () {
         component["IsUserInput"] = false;
-        component.classList.remove('_mousemoving');
+        component.classList.remove('_moving');
         document.removeEventListener('mousemove', mouseMoveListener);
         document.removeEventListener('mouseup', mouseUpListener);
         if (range.value === oldValue)
@@ -40,8 +40,30 @@ export function mouseDown(component, clientX) {
         range.dispatchEvent(evt);
     };
     document.addEventListener('mouseup', mouseUpListener);
-    //document.onmouseup = function () {
-    //}
+}
+export function touchDown(component, clientX) {
+    component["IsUserInput"] = true;
+    component.classList.add('_moving');
+    var range = component.querySelector(_amc_progressbar_valueRange);
+    var oldValue = range.value;
+    var maxMoveDistance = component.clientWidth - component.querySelector('.amc-progressbar-middle').clientWidth;
+    updatePosition(component, clientX, maxMoveDistance);
+    // Touch Move
+    var touchMoveListener = function (moveArgs) { updatePosition(component, moveArgs.touches[0].clientX, maxMoveDistance); };
+    document.addEventListener('touchmove', touchMoveListener);
+    // Touch Up
+    var touchEndListener = function () {
+        component["IsUserInput"] = false;
+        component.classList.remove('_moving');
+        document.removeEventListener('touchmove', touchMoveListener);
+        document.removeEventListener('touchup', touchEndListener);
+        if (range.value === oldValue)
+            return;
+        var evt = document.createEvent("HTMLEvents");
+        evt.initEvent("change", false, true);
+        range.dispatchEvent(evt);
+    };
+    document.addEventListener('touchend', touchEndListener);
 }
 export function repaint(component, value, total) {
     if (component["IsUserInput"] && component["IsUserInput"] === true)
@@ -56,4 +78,13 @@ export function repaint(component, value, total) {
     var maxMoveDistance = component.clientWidth - component.querySelector('.amc-progressbar-middle').clientWidth;
     var moveDistance = value * maxMoveDistance / total;
     component.style.setProperty('grid-template-columns', moveDistance + 'px max-content 1fr');
+}
+export function getInfo(component) {
+    var element = component.querySelector('.amc-progressbar-middle');
+    return {
+        Left: element.getBoundingClientRect().left,
+        Top: element.getBoundingClientRect().right,
+        Width: element.clientWidth,
+        Height: element.clientHeight
+    };
 }

@@ -12,7 +12,35 @@
   -ms-user-select: none;
   user-select: none;
 }
+.ComponentsDefault {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.9rem;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.ComponentsDefault button,
+.ComponentsDefault button:active,
+.ComponentsDefault button:focus,
+.ComponentsDefault button:visited {
+  outline: none !important;
+  border: none;
+  border-radius: 0;
+}
+.Extendible {
+  border: 1px solid transparent;
+}
+.Extendible._extended {
+  border-color: rgba(255, 255, 255, 0.4);
+  border-radius: 3px;
+  background-color: rgba(255, 255, 255, 0.2);
+}
 .amc-videoplayer {
+  --amc-videoplayer-accentColor: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.9rem;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -21,70 +49,101 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  /*	&-exitfullscreen {
+		display: none;
+	}
+
+	&._fullscreen {
+		.amc-videoplayer {
+			&-enterfullscreen {
+				display: none;
+			}
+
+			&-exitfullscreen {
+				display: inline-block;
+			}
+		}
+	}*/
 }
-.amc-videoplayer-MoreButtonInfo {
-  width: 0%;
-  height: 100%;
-  position: absolute;
-  right: 0;
-  top: 0;
+.amc-videoplayer button,
+.amc-videoplayer button:active,
+.amc-videoplayer button:focus,
+.amc-videoplayer button:visited {
+  outline: none !important;
+  border: none;
+  border-radius: 0;
+}
+.amc-videoplayer ::deep .amc-progressbar {
+  --amc-progressbar-accentColor: var(--amc-videoplayer-accentColor);
+}
+.amc-videoplayer-sidebar {
   background-color: rgba(0, 0, 0, 0.4);
-  color: red;
-  padding: 0px;
   white-space: nowrap;
   overflow: hidden;
-  transition: width 1s ease-in-out;
-  z-index: 1;
+  padding: 20px;
+  min-width: 20%;
+  max-width: 60%;
+  color: #fff;
 }
-.amc-videoplayer-MoreButtonInfo > div {
-  margin: 15px;
-  color: #F5F5DC;
-  font-weight: 300;
-}
-.amc-videoplayer-MoreButtonInfo > div .buttons {
+.amc-videoplayer-sidebar-menu {
   display: flex;
   flex-direction: column;
 }
-.amc-videoplayer-MoreButtonInfo > div .buttons button {
-  border: none;
-  background-color: transparent;
-  color: aqua;
+.amc-videoplayer-sidebar button {
   font-size: 1.1em;
-  cursor: alias;
+  padding: 5px 0;
+  width: 100%;
+  text-align: left;
 }
-.amc-videoplayer-MoreButtonInfo > div .showinfo ul,
-.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-content: flex-start;
-  padding: 0;
+.amc-videoplayer-sidebar label {
+  display: block;
+  margin-top: 10px;
+  opacity: 0.8;
+  font-size: 1.1rem;
 }
-.amc-videoplayer-MoreButtonInfo > div .showinfo ul li,
-.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul li {
-  margin-bottom: 10px;
-  font-size: 0.8rem;
+.amc-videoplayer-sidebar-value {
+  word-wrap: break-word;
+  width: 100%;
+  overflow: hidden;
 }
-.amc-videoplayer-MoreButtonInfo > div .showinfo ul li a,
-.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul li a,
-.amc-videoplayer-MoreButtonInfo > div .showinfo ul li ahover,
-.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul li ahover,
-.amc-videoplayer-MoreButtonInfo > div .showinfo ul li a:focus,
-.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul li a:focus,
-.amc-videoplayer-MoreButtonInfo > div .showinfo ul li a:active,
-.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul li a:active,
-.amc-videoplayer-MoreButtonInfo > div .showinfo ul li a:visited,
-.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul li a:visited {
+.amc-videoplayer-sidebar a,
+.amc-videoplayer-sidebar a:visited,
+.amc-videoplayer-sidebar a:active,
+.amc-videoplayer-sidebar a:focus {
+  color: #fff;
   text-decoration: none;
-  color: inherit;
+  opacity: 0.9;
+  font-weight: bold;
 }
-.amc-videoplayer-MoreButtonInfo._show {
-  width: 150px;
+.amc-videoplayer-sidebar a:hover,
+.amc-videoplayer-sidebar a:visited:hover,
+.amc-videoplayer-sidebar a:active:hover,
+.amc-videoplayer-sidebar a:focus:hover {
+  opacity: 1;
+}
+.amc-videoplayer-content {
+  flex: 1;
+  display: flex;
 }
 .amc-videoplayer-empty {
   flex: 1;
   cursor: pointer;
+  position: relative;
+}
+.amc-videoplayer-close {
+  position: absolute;
+  top: 5px;
+  right: 20px;
+  color: #fff;
+  font-size: 50px;
+  border-radius: 50%;
+  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.amc-videoplayer-close span {
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.8));
 }
 .amc-videoplayer-video {
   height: 100%;
@@ -134,17 +193,48 @@
 .amc-videoplayer-controls > div {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  gap: 15px;
+}
+.amc-videoplayer-controls > div > div {
+  padding-left: 5px;
+  padding-right: 5px;
 }
 .amc-videoplayer-controls-right {
   justify-content: flex-end;
 }
 .amc-videoplayer-controls button {
   padding: 5px;
-  margin-right: 15px;
+  display: flex;
 }
 .amc-videoplayer-controls button svg {
   width: 18px;
   height: 20px;
+}
+.amc-videoplayer-volume {
+  display: flex;
+  align-items: center;
+  border: 1px solid transparent;
+}
+.amc-videoplayer-volume._extended {
+  border-color: rgba(255, 255, 255, 0.4);
+  border-radius: 3px;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+.amc-videoplayer-volume-bar {
+  width: 100px;
+  padding: 5px;
+}
+.amc-videoplayer-volume-bar ::deep .amc-progressbar {
+  height: 20px;
+  --amc-progressbar-seekbuttonSize: 15px;
+}
+.amc-videoplayer-volume-value {
+  width: 3ch;
+  opacity: 0.9;
+}
+.amc-videoplayer-timeduration {
+  white-space: nowrap;
 }
 .amc-videoplayer-pause {
   display: none;
@@ -155,21 +245,16 @@
 .amc-videoplayer._playing .amc-videoplayer-pause {
   display: inline-block;
 }
-.amc-videoplayer-exitfullscreen {
-  display: none;
-}
-.amc-videoplayer._fullscreen .amc-videoplayer-enterfullscreen {
-  display: none;
-}
-.amc-videoplayer._fullscreen .amc-videoplayer-exitfullscreen {
-  display: inline-block;
-}
 .amc-videoplayer._hidecontrols * {
   cursor: none;
 }
 .amc-videoplayer._hidecontrols .amc-videoplayer-info,
 .amc-videoplayer._hidecontrols .amc-videoplayer-controls {
   display: none;
+}
+.amc-videoplayer._hidecontrols .amc-videoplayer-progress {
+  padding-left: 1px;
+  padding-right: 1px;
 }
 .amc-videoplayer._hidecontrols .amc-videoplayer-progress ::deep .amc-progressbar {
   padding-top: 1px;

@@ -17,18 +17,13 @@ export function getVideoInfo(component) {
     videoInfo.Duration = video.duration.toString();
     return videoInfo;
 }
-export function muteUnmuteVolume(component) {
+export function muteVolume(component, mute) {
     var video = component.querySelector('video');
-    if (video.muted) {
-        video.muted = false;
-    }
-    else {
-        video.muted = true;
-    }
+    video.muted = mute;
 }
-export function onVolumeChange(component, newVideoVolume) {
+export function changeVolume(component, newVolume) {
     var video = component.querySelector('video');
-    video.volume = newVideoVolume / 100;
+    video.volume = newVolume;
 }
 export function changeCurrentTime(component, newCurrentTime) {
     var video = component.querySelector('video');
@@ -48,7 +43,9 @@ export function stop(component) {
     video.currentTime = 0;
 }
 export function enterFullScreen(component) {
-    component.requestFullscreen();
+    component.requestFullscreen({
+        navigationUI: "hide"
+    });
 }
 export function exitFullScreen(component) {
     document.exitFullscreen();

@@ -12,7 +12,28 @@
   -ms-user-select: none;
   user-select: none;
 }
+.ComponentsDefault {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.9rem;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.ComponentsDefault button,
+.ComponentsDefault button:active,
+.ComponentsDefault button:focus,
+.ComponentsDefault button:visited {
+  outline: none !important;
+  border: none;
+  border-radius: 0;
+}
 .amc-progressbar {
+  --amc-progressbar-accentColor: #fff;
+  --amc-progressbar-seekbuttonSize: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.9rem;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -23,6 +44,15 @@
   grid-template-columns: 0 max-content 1fr;
   align-items: center;
   cursor: pointer;
+  touch-action: none;
+}
+.amc-progressbar button,
+.amc-progressbar button:active,
+.amc-progressbar button:focus,
+.amc-progressbar button:visited {
+  outline: none !important;
+  border: none;
+  border-radius: 0;
 }
 .amc-progressbar input[type="range"] {
   /*grid-column: span 3;*/
@@ -32,14 +62,14 @@
 .amc-progressbar-right {
   width: 100%;
   height: 1px;
-  background-color: rgba(255, 255, 255, 0.5);
-  background-color: #fff;
   position: relative;
 }
 .amc-progressbar-left {
+  background-color: var(--amc-progressbar-accentColor);
   grid-area: left;
 }
 .amc-progressbar-right {
+  background-color: #fff;
   grid-area: right;
   opacity: 0.7;
 }
@@ -69,33 +99,33 @@
 .amc-progressbar-middle button:active:hover,
 .amc-progressbar-middle button:focus:hover,
 .amc-progressbar-middle button:visited:hover {
-  filter: drop-shadow(0 0 4px #fff);
+  filter: drop-shadow(0 0 4px var(--amc-progressbar-accentColor));
 }
 .amc-progressbar._flat .amc-progressbar-middle button {
-  background-color: #fff;
+  background-color: var(--amc-progressbar-accentColor);
   height: 1px;
   width: 5px;
 }
 .amc-progressbar._circle .amc-progressbar-middle button {
-  width: 20px;
-  height: 20px;
+  width: var(--amc-progressbar-seekbuttonSize);
+  height: var(--amc-progressbar-seekbuttonSize);
   display: block;
-  border: 2px solid #fff;
+  border: 2px solid var(--amc-progressbar-accentColor);
   border-radius: 50%;
   background-color: transparent;
 }
-.amc-progressbar._circle._mousemoving .amc-progressbar-middle button {
-  background-color: #fff;
+.amc-progressbar._circle._moving .amc-progressbar-middle button {
+  background-color: var(--amc-progressbar-accentColor);
 }
 .amc-progressbar._disk .amc-progressbar-middle button {
-  width: 20px;
-  height: 20px;
+  width: var(--amc-progressbar-seekbuttonSize);
+  height: var(--amc-progressbar-seekbuttonSize);
   display: block;
   border-radius: 50%;
-  background-color: #fff;
+  background-color: var(--amc-progressbar-accentColor);
   border: 2px solid transparent;
 }
-.amc-progressbar._disk._mousemoving .amc-progressbar-middle button {
+.amc-progressbar._disk._moving .amc-progressbar-middle button {
   background-color: transparent;
-  border-color: #fff;
+  border-color: var(--amc-progressbar-accentColor);
 }

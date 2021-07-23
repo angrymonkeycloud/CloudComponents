@@ -9,7 +9,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AngryMonkey.Cloud.VideoPlayer.Website
+namespace AngryMonkey.Cloud.Components.Demo
 {
 	public class Program
 	{

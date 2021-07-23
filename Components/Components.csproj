@@ -1,22 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>AngryMonkey.Cloud.Components</AssemblyName>
     <RootNamespace>AngryMonkey.Cloud.Components</RootNamespace>
 		<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+		<Product>Cloud Components</Product>
+		<Authors>Angry Monkey</Authors>
+		<Company>Angry Monkey</Company>
+		<Description />
+		<PackageLicenseExpression></PackageLicenseExpression>
+		<PackageProjectUrl>https://www.angrymonkeycloud.com/</PackageProjectUrl>
+		<Version>1.0.5</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="ProgressBar\progressbar.min.js" />
+    <Content Remove=".mateconfig.json" />
+    <Content Remove="tsconfig.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="General\js\DotNet.d.ts" />
-    <Content Include="ProgressBar\progressbar.less" />
-    <Content Include="ProgressBar\progressbar.ts" />
-    <Content Include="VideoPlayer\videoplayer.less" />
-    <Content Include="VideoPlayer\videoplayer.ts" />
+    <None Remove="ProgressBar\progressbar.min.js" />
   </ItemGroup>
 
 
@@ -25,16 +29,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.0-preview.5.21301.17" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.8" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update=".mateconfig.json">
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".mateconfig.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="tsconfig.json">
+    </None>
+    <None Include="tsconfig.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
 
 </Project>

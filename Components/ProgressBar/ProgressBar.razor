@@ -1,9 +1,10 @@
 ﻿@namespace AngryMonkey.Cloud.Components
 @inject IJSRuntime jsRuntime
 
-<div draggable class="amc-progressbar _@Style.ToString().ToLower()" @ref="ComponentElement" @onmousedown="OnComponentMouseDown">
+<div draggable class="amc-progressbar _@Style.ToString().ToLower()" @ref="ComponentElement" @onmousedown="OnComponentMouseDown" @ontouchstart="OnComponentTouchStart">
 
     <div draggable class="amc-progressbar-left"></div>
+
     <div draggable class="amc-progressbar-middle">
         @if (Total > 0)
         {
@@ -11,8 +12,9 @@
             </button>
         }
     </div>
+
     <div draggable class="amc-progressbar-right"></div>
     
-    <input class="amc-progressbar-value" type="range" max="@Total" min="0" value="@Value" @onchange="OnRangeChange" />
-    <input class="amc-progressbar-changingvalue" type="range" max="@Total" min="0" value="@Value" @onchange="OnChangingRangeChange" />
+    <input class="amc-progressbar-value" step="@Step" type="range" max="@Total" min="0" value="@Value" @onchange="OnRangeChange" />
+    <input class="amc-progressbar-changingvalue" step="@Step" type="range" max="@Total" min="0" value="@Value" @onchange="OnChangingRangeChange" />
 </div>
