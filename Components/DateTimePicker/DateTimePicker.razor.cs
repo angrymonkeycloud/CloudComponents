@@ -8,201 +8,176 @@ using System.Threading.Tasks;
 
 namespace AngryMonkey.Cloud.Components
 {
-    public partial class DateTimePicker
-    {
-        #region common
+	public partial class DateTimePicker
+	{
+		#region common
 
-        private string[] monthNames = new string[12] {
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "june",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December"
-        };
+		private readonly string[] MonthNames = new string[] {
+			"January",
+			"February",
+			"March",
+			"April",
+			"May",
+			"june",
+			"July",
+			"August",
+			"September",
+			"October",
+			"November",
+			"December"
+		};
 
-        private int SelectedDay{ get; set; } = 1;
-        private int SelectedMonth { get; set; } = 1;
-        private int SelectedYear { get; set; } = 1;
-        private string SelectedMonthName => monthNames[SelectedMonth - 1];
+		private readonly string[] WeekDaysNames = new string[]
+		{
+			"Sun",
+			"Mon",
+			"Tue",
+			"Wed",
+			"Thu",
+			"Fri",
+			"Sat",
+		};
 
-        private string FullDate => new DateTime(SelectedYear, SelectedMonth, SelectedDay).ToString("dddd, MMMM dd, yyyy");
+		private DateTimePickerDate SelectedDate { get; set; }
 
-        private bool _prevMonthSelected { get; set; } = false;
-        private string prevSelectedMonthName { get; set; } = string.Empty;
-        private string prevMonthFullDate { get; set; } = string.Empty;
+		private int SelectedMonth { get; set; } = 1;
+		private int SelectedYear { get; set; } = 1;
+		private string SelectedMonthName => MonthNames[SelectedMonth - 1];
 
-        private DateTimePickerDay[] Days { get; set; } = new DateTimePickerDay[0];
+		private string FullDate => new DateTime(SelectedDate.Year, SelectedDate.Month, SelectedDate.Day).ToString("dddd, MMMM dd, yyyy");
 
-        public class DateTimePickerDay
-        {
-            public int Value { get; set; }
-            public bool IsToday { get; set; } = false;
-            public bool CurrentMonth { get; set; } = true;
-        }
+		private DateTimePickerDate[] Days { get; set; } = new DateTimePickerDate[0];
 
-        #endregion
+		protected class DateTimePickerDate
+		{
+			public int Day { get; set; }
+			public int Month { get; set; }
+			public int Year { get; set; }
+			public bool IsToday => DateTime.Now.Date.Equals(new DateTime(Year, Month, Day));
+			public bool IsSelected { get; set; } = false;
+			public bool CurrentMonth { get; set; } = true;
+			public string Classes
+			{
+				get
+				{
+					List<string> classes = new();
 
-        protected override async Task OnInitializedAsync()
-        {
-            SelectedDay= DateTime.Now.Day;
-            SelectedMonth = DateTime.Now.Month;
-            SelectedYear= DateTime.Now.Year;
+					if (IsSelected)
+						classes.Add("_selected");
 
-            FillDaysArray();
-        }
+					if (IsToday)
+						classes.Add("_today");
 
-        protected async Task ChangeDayOfPreviousMonth(int dayVal)
-        {
-            SelectedDay = dayVal;
-            _prevMonthSelected = true;
+					if (CurrentMonth)
+						classes.Add("_currentmonth");
 
-            if (SelectedMonth == 1)
-            {
-                prevMonthFullDate = new DateTime(SelectedYear - 1, 12, SelectedDay).ToString("dddd, MMMM dd, yyyy");
-                prevSelectedMonthName = monthNames[11];
-            }
-            else
-            {
-                prevMonthFullDate = new DateTime(SelectedYear, SelectedMonth - 1, SelectedDay).ToString("dddd, MMMM dd, yyyy");
-                prevSelectedMonthName = monthNames[SelectedMonth - 2];
-            }
+					return string.Join(' ', classes);
+				}
+			}
 
-            foreach (DateTimePickerDay day in Days)
-            {
-                if (day.IsToday)
-                    day.IsToday = false;
-                if (day.Value == dayVal && !day.CurrentMonth)
-                    day.IsToday = true;
-            }
-        }
+			public DateTimePickerDate(int year, int month, int day)
+			{
+				Year = year;
+				Month = month;
+				Day = day;
+			}
 
-        protected async Task ChangeDayOfCurrentMonth(int dayVal)
-        {
-            SelectedDay = dayVal;
-            if(_prevMonthSelected) _prevMonthSelected = false;
+			public DateTimePickerDate(DateTime date)
+			{
+				Year = date.Year;
+				Month = date.Month;
+				Day = date.Day;
+			}
+		}
 
-            foreach (DateTimePickerDay day in Days) {
-                if (day.IsToday)
-                    day.IsToday = false;
-                if (day.Value == dayVal && day.CurrentMonth)
-                    day.IsToday = true;
-            }
-        }
+		#endregion
 
-        protected async Task OnNextClick()
-        {
-            SelectedDay = 1;
-            if(_prevMonthSelected) _prevMonthSelected = false;
+		protected override async Task OnInitializedAsync()
+		{
+			SelectedDate = new DateTimePickerDate(DateTime.Now);
+			SelectedMonth = SelectedDate.Month;
+			SelectedYear = SelectedDate.Year;
 
-            if (SelectedMonth < 12)
-                SelectedMonth++;
-            else
-            {
-                SelectedMonth = 1;
-                SelectedYear++;
-            }
+			FillDaysArray();
+		}
 
-            FillDaysArray(SelectedDay);
-        }
+		protected async Task OnDateSelected(DateTimePickerDate day)
+		{
+			SelectedDate = day;
 
-        protected async Task OnPrevClick()
-        {
-            SelectedDay = 1;
-            if (_prevMonthSelected) _prevMonthSelected = false;
+			DateTimePickerDate oldDay = Days.FirstOrDefault(key => key.IsSelected);
 
-            if (SelectedMonth > 1)
-                SelectedMonth--;
-            else
-            {
-                SelectedMonth = 12;
-                SelectedYear--;
-            }
+			if (oldDay != null)
+				oldDay.IsSelected = false;
 
-            FillDaysArray(SelectedDay);
-        }
+			DateTimePickerDate newDay = Days.FirstOrDefault(key => key.Day == SelectedDate.Day && key.Month == SelectedDate.Month && key.Year == SelectedDate.Year);
 
-        private void FillDaysArray()
-        {
-            int daysInPreviousMonth;
-            if (SelectedMonth == 1)
-                daysInPreviousMonth = DateTime.DaysInMonth(SelectedYear - 1, 12);
-            else if (SelectedMonth == 12)
-                daysInPreviousMonth = DateTime.DaysInMonth(SelectedYear + 1, 1);
-            else
-                daysInPreviousMonth = DateTime.DaysInMonth(SelectedYear , SelectedMonth - 1);
-            
+			if (newDay != null)
+				newDay.IsSelected = true;
+		}
 
-            int daysInCurrentMonth = DateTime.DaysInMonth(SelectedYear, SelectedMonth);
-            
-            List<DateTimePickerDay> days = new();
+		protected async Task OnNextClick()
+		{
+			if (SelectedMonth < 12)
+				SelectedMonth++;
+			else
+			{
+				SelectedMonth = 1;
+				SelectedYear++;
+			}
 
-            for (int i = (int)new DateTime(SelectedYear, SelectedMonth, 1).DayOfWeek; i > 0; i--)
-                days.Add(new DateTimePickerDay()
-                {
-                    CurrentMonth = false,
-                    Value = daysInPreviousMonth - i + 1
-                });
+			FillDaysArray();
+		}
 
-            for (int i = 1; i <= daysInCurrentMonth; ++i)
-                days.Add(new DateTimePickerDay()
-                {
-                    CurrentMonth = true,
-                    Value = i,
-                    IsToday = DateTime.Now.Day == i
-                });
+		protected async Task OnPrevClick()
+		{
+			if (SelectedMonth > 1)
+				SelectedMonth--;
+			else
+			{
+				SelectedMonth = 12;
+				SelectedYear--;
+			}
 
-            Days = days.ToArray();
-        }
+			FillDaysArray();
+		}
 
-        private void FillDaysArray(int dayValue)
-        {
-            int daysInPreviousMonth;
-            if (SelectedMonth == 1)
-                daysInPreviousMonth = DateTime.DaysInMonth(SelectedYear - 1, 12);
-            else if (SelectedMonth == 12)
-                daysInPreviousMonth = DateTime.DaysInMonth(SelectedYear + 1, 1);
-            else
-                daysInPreviousMonth = DateTime.DaysInMonth(SelectedYear, SelectedMonth - 1);
+		private void FillDaysArray()
+		{
+			int daysInPreviousMonth;
+			if (SelectedMonth == 1)
+				daysInPreviousMonth = DateTime.DaysInMonth(SelectedYear - 1, 12);
+			else if (SelectedMonth == 12)
+				daysInPreviousMonth = DateTime.DaysInMonth(SelectedYear + 1, 1);
+			else
+				daysInPreviousMonth = DateTime.DaysInMonth(SelectedYear, SelectedMonth - 1);
 
 
-            int daysInCurrentMonth = DateTime.DaysInMonth(SelectedYear, SelectedMonth);
+			int daysInCurrentMonth = DateTime.DaysInMonth(SelectedYear, SelectedMonth);
 
-            List<DateTimePickerDay> days = new();
+			List<DateTimePickerDate> days = new();
 
-            for (int i = (int)new DateTime(SelectedYear, SelectedMonth, 1).DayOfWeek; i > 0; i--)
-                days.Add(new DateTimePickerDay()
-                {
-                    CurrentMonth = false,
-                    Value = daysInPreviousMonth - i + 1
-                });
+			for (int i = (int)new DateTime(SelectedYear, SelectedMonth, 1).DayOfWeek; i > 0; i--)
+				days.Add(GetDate(SelectedYear, SelectedMonth - 1, daysInPreviousMonth - i + 1));
 
-            for (int i = 1; i <= daysInCurrentMonth; ++i)
-            {
-                if (i==dayValue)
-                {
-                    days.Add(new DateTimePickerDay()
-                    {
-                        CurrentMonth = true,
-                        Value = i,
-                        IsToday = true
-                    });
-                }
-                else
-                days.Add(new DateTimePickerDay()
-                {
-                    CurrentMonth = true,
-                    Value = i
-                });
-            }
+			for (int i = 1; i <= daysInCurrentMonth; ++i)
+				days.Add(GetDate(SelectedYear, SelectedMonth, i));
 
-            Days = days.ToArray();
-        }
-    }
+			int index = 1;
+
+			while (days.Count < 42)
+				days.Add(GetDate(SelectedYear, SelectedMonth + 1, index++));
+
+			Days = days.ToArray();
+		}
+
+		private DateTimePickerDate GetDate(int year, int month, int day)
+		{
+			return new DateTimePickerDate(year, month, day)
+			{
+				CurrentMonth = SelectedYear == year && SelectedMonth == month,
+				IsSelected = SelectedDate.Year == year && SelectedDate.Month == month && SelectedDate.Day == day
+			};
+		}
+	}
 }
