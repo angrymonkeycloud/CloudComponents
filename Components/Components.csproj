@@ -20,7 +20,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="DateTimePicker\DateTimePicker.razor.css" />
+    <None Remove="DateTimePicker\DateTimePicker.razor.min.css" />
     <None Remove="ProgressBar\progressbar.min.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="DateTimePicker\DateTimePicker.razor.css" />
+    <Content Include="DateTimePicker\DateTimePicker.razor.min.css" />
   </ItemGroup>
 
 
