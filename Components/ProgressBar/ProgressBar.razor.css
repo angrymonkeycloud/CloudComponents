@@ -21,6 +21,14 @@
   -ms-user-select: none;
   user-select: none;
 }
+.ComponentsDefault button,
+.ComponentsDefault button:active,
+.ComponentsDefault button:focus,
+.ComponentsDefault button:visited {
+  outline: none !important;
+  border: none;
+  border-radius: 0;
+}
 .amc-progressbar {
   --amc-progressbar-accentColor: #fff;
   --amc-progressbar-seekbuttonSize: 20px;
@@ -37,6 +45,14 @@
   align-items: center;
   cursor: pointer;
   touch-action: none;
+}
+.amc-progressbar button,
+.amc-progressbar button:active,
+.amc-progressbar button:focus,
+.amc-progressbar button:visited {
+  outline: none !important;
+  border: none;
+  border-radius: 0;
 }
 .amc-progressbar input[type="range"] {
   /*grid-column: span 3;*/

@@ -25,6 +25,10 @@
 		{
 			"output": "wwwroot/progressbar/progressbar.js",
 			"input": "ProgressBar/progressbar.ts"
+		},
+		{
+			"output": "wwwroot/pagebase/pagebase.js",
+			"input": "pagebase/pagebase.ts"
 		}
 	]
 }

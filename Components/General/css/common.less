@@ -14,8 +14,16 @@
 	user-select: none;
 }
 
-.ComponentsDefault{
+.ComponentsDefault {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: .9rem;
 	.UnSelectable();
+
+	button {
+		&, &:active, &:focus, &:visited {
+			outline: none !important;
+			border: none;
+			border-radius: 0;
+		}
+	}
 }

@@ -19,6 +19,11 @@ namespace AngryMonkey.Cloud.VideoPlayer.Website
 			builder.RootComponents.Add<App>("#app");
 
 			builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+			builder.Services.AddSingleton(sn => new PageBaseSettings()
+			{
+				DefaultTitle = "Angry Monkey Cloud Components Demo"
+			});
 			
 			await builder.Build().RunAsync();
 		}

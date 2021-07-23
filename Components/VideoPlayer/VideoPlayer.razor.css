@@ -21,6 +21,14 @@
   -ms-user-select: none;
   user-select: none;
 }
+.ComponentsDefault button,
+.ComponentsDefault button:active,
+.ComponentsDefault button:focus,
+.ComponentsDefault button:visited {
+  outline: none !important;
+  border: none;
+  border-radius: 0;
+}
 .Extendible {
   border: 1px solid transparent;
 }
@@ -56,6 +64,14 @@
 			}
 		}
 	}*/
+}
+.amc-videoplayer button,
+.amc-videoplayer button:active,
+.amc-videoplayer button:focus,
+.amc-videoplayer button:visited {
+  outline: none !important;
+  border: none;
+  border-radius: 0;
 }
 .amc-videoplayer ::deep .amc-progressbar {
   --amc-progressbar-accentColor: var(--amc-videoplayer-accentColor);

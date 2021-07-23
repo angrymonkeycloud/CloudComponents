@@ -1,10 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>AngryMonkey.Cloud.Components</AssemblyName>
     <RootNamespace>AngryMonkey.Cloud.Components</RootNamespace>
 		<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+		<Product>Cloud Components</Product>
+		<Authors>Angry Monkey</Authors>
+		<Company>Angry Monkey</Company>
+		<Description />
+		<PackageLicenseExpression></PackageLicenseExpression>
+		<PackageProjectUrl>https://www.angrymonkeycloud.com/</PackageProjectUrl>
+		<Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.0-preview.5.21301.17" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.8" />
   </ItemGroup>
 
   <ItemGroup>
