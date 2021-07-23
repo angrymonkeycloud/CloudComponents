@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/calendar"
 
 @*<VideoPlayer Title="Welcome Lebanon :)" VideoUrl="https://angrymonkey.blob.core.windows.net/general/Good%20Morning%20Lebanon.mp4" Settings="@(
     new VideoPlayerSettings() {
@@ -8,12 +8,7 @@
     </VideoPlayer>*@
 
 
-<VideoPlayer Title="Default Video" VideoUrl="https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4" Settings="@(
-new VideoPlayerSettings() {
-    ShowVolumeButton = true
-}
-)">
-</VideoPlayer>
+<DateTimePicker></DateTimePicker>
 
 
 @*<ProgressBar Value="20" Total="500" OnChange="Test" Style="ProgressBarStyle.Flat" />
@@ -29,9 +24,5 @@ new VideoPlayerSettings() {
 <ProgressBar Value="20" Total="500" OnChange="Test" Style="ProgressBarStyle.Disk" />*@
 
 @code {
-    public double Seconds { get; set; }
-    public void Test(ChangeEventArgs args)
-    {
-        Console.WriteLine(args.Value);
-    }
+    
 }

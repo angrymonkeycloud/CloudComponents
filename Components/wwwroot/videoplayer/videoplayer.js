@@ -30,13 +30,6 @@ export function onVolumeChange(component, newVideoVolume) {
     var video = component.querySelector('video');
     video.volume = newVideoVolume / 100;
 }
-export function onVideoTimeUpdate(component) {
-    debugger;
-    var video = component.querySelector('video');
-    var timeSpan = component.querySelector('.amc-videoplayer-duration');
-    var time = convertElapsedTime(video.currentTime) + "/" + convertElapsedTime(video.duration);
-    timeSpan.innerHTML = time;
-}
 export function changeCurrentTime(component, newCurrentTime) {
     var video = component.querySelector('video');
     video.currentTime = newCurrentTime;
@@ -54,14 +47,6 @@ export function stop(component) {
     var video = component.querySelector('video');
     video.currentTime = 0;
 }
-//export function ShowMoreInfo(component: HTMLElement) {
-//	const MoreInfo: HTMLDivElement = component.querySelector('.amc-videoplayer-MoreButtonInfo');
-//	MoreInfo.classList.add = '150px';
-//}
-//export function HideMoreInfo(component: HTMLElement) {
-//	const MoreInfo: HTMLDivElement = component.querySelector('.amc-videoplayer-MoreButtonInfo');
-//	MoreInfo.style.width = '0%';
-//}
 export function enterFullScreen(component) {
     component.requestFullscreen();
 }
@@ -104,16 +89,4 @@ export function registerCustomEventHandler(component, eventName, payload) {
             return JSON.stringify({ name: eventName });
         }
     }
-}
-function convertElapsedTime(time) {
-    var seconds = Math.floor(time % 60);
-    var minutes = Math.floor(time / 60);
-    var secondsStr = "";
-    if (seconds < 10) {
-        secondsStr = "0" + seconds.toString();
-    }
-    else {
-        secondsStr = seconds.toString();
-    }
-    return minutes.toString() + ":" + secondsStr;
 }

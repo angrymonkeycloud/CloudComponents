@@ -25,6 +25,10 @@
 		{
 			"output": "wwwroot/progressbar/progressbar.js",
 			"input": "ProgressBar/progressbar.ts"
+		},
+		{
+			"output": "DateTimePicker/DateTimePicker.razor.css",
+			"input": "DateTimePicker/DateTimePicker.less"
 		}
 	]
 }

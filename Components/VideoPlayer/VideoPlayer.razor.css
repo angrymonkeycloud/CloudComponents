@@ -52,7 +52,8 @@
   font-size: 1.1em;
   cursor: alias;
 }
-.amc-videoplayer-MoreButtonInfo > div .showinfo ul {
+.amc-videoplayer-MoreButtonInfo > div .showinfo ul,
+.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul {
   list-style: none;
   display: flex;
   flex-direction: column;
@@ -60,15 +61,21 @@
   align-content: flex-start;
   padding: 0;
 }
-.amc-videoplayer-MoreButtonInfo > div .showinfo ul li {
+.amc-videoplayer-MoreButtonInfo > div .showinfo ul li,
+.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul li {
   margin-bottom: 10px;
   font-size: 0.8rem;
 }
 .amc-videoplayer-MoreButtonInfo > div .showinfo ul li a,
+.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul li a,
 .amc-videoplayer-MoreButtonInfo > div .showinfo ul li ahover,
+.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul li ahover,
 .amc-videoplayer-MoreButtonInfo > div .showinfo ul li a:focus,
+.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul li a:focus,
 .amc-videoplayer-MoreButtonInfo > div .showinfo ul li a:active,
-.amc-videoplayer-MoreButtonInfo > div .showinfo ul li a:visited {
+.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul li a:active,
+.amc-videoplayer-MoreButtonInfo > div .showinfo ul li a:visited,
+.amc-videoplayer-MoreButtonInfo > div .aboutinfo ul li a:visited {
   text-decoration: none;
   color: inherit;
 }
@@ -127,7 +134,6 @@
 .amc-videoplayer-controls > div {
   display: flex;
   flex-direction: row;
-  align-items: center;
 }
 .amc-videoplayer-controls-right {
   justify-content: flex-end;
@@ -139,9 +145,6 @@
 .amc-videoplayer-controls button svg {
   width: 18px;
   height: 20px;
-}
-.amc-videoplayer-volumeBar {
-  width: 100px;
 }
 .amc-videoplayer-pause {
   display: none;

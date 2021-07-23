@@ -1,0 +1,60 @@
+﻿@namespace AngryMonkey.Cloud.Components
+@inject IJSRuntime jsRuntime
+
+<div class="amc-datetimepicker">
+    <div class="amc-datetimepicker-calendar">
+        <div class="month">
+            <button class="prev" @onclick="OnPrevClick">Prev</button>
+            <div class="date">
+                @if (_prevMonthSelected)
+                {
+                    <span class="month-name">@prevSelectedMonthName</span>
+                    <span class="full-date">@prevMonthFullDate</span>
+                }
+                else
+                {
+                    <span class="month-name">@SelectedMonthName</span>
+                    <span class="full-date">@FullDate</span>
+                }
+            </div>
+            <button class="next" @onclick="OnNextClick">Next</button>
+        </div>
+        <div class="weekdays">
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+        </div>
+        <div class="days">
+            @foreach (DateTimePickerDay day in Days)
+            {
+                if (!day.CurrentMonth)
+                {
+                    if (day.IsToday)
+                    {
+                        <div class="not-current-month today" @onclick="() => ChangeDayOfCurrentMonth(day.Value)">@day.Value</div>
+                    }
+                    else
+                    {
+                        <div class="not-current-month" @onclick="() => ChangeDayOfPreviousMonth(day.Value)">@day.Value</div>
+                    }
+                }
+                else
+                {
+                    if (day.IsToday)
+                    {
+                        <div class="today" @onclick="() => ChangeDayOfCurrentMonth(day.Value)">@day.Value</div>
+                    }
+                    else
+                    {
+                        <div @onclick="() => ChangeDayOfCurrentMonth(day.Value)">@day.Value</div>
+                    }
+                }
+
+            }
+        </div>
+    </div>
+</div>
