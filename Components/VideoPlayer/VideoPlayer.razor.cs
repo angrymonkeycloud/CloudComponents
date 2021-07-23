@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace AngryMonkey.Cloud.Components
@@ -219,13 +220,13 @@ namespace AngryMonkey.Cloud.Components
 
 		#endregion
 
-		public async Task OnProgressMouseDown(MouseEventArgs args)
+		protected async Task OnProgressMouseDown(MouseEventArgs args)
 		{
 			IsUserChangingProgress = true;
 			await ProgressiveDelay();
 		}
 
-		public async Task OnProgressChange(ProgressBarChangeEventArgs args)
+		public async Task OnProgressChanged(ProgressBarChangeEventArgs args)
 		{
 			var module = await Module;
 
@@ -263,15 +264,16 @@ namespace AngryMonkey.Cloud.Components
 			}
 		}
 
-		public async Task OnEmptyClick(MouseEventArgs args)
+		private bool _isEmptyTouched = false;
+
+		protected async Task OnEmptyTouch(TouchEventArgs args)
 		{
-			if (ShowSideBar == false)
-			{
-				if (IsVideoPlaying)
-					await PauseVideo();
-				else await PlayVideo();
-			}
-			else
+			_isEmptyTouched = true;
+		}
+
+		protected async Task OnEmptyClick(MouseEventArgs args)
+		{
+			if (ShowSideBar == true)
 			{
 				if (ShowSideBarMenu)
 					ShowSideBar = false;
@@ -280,7 +282,19 @@ namespace AngryMonkey.Cloud.Components
 					ShowSideBarInfo = false;
 					ShowSideBarAbout = false;
 				}
+
+				return;
 			}
+
+			if (_isEmptyTouched)
+			{
+				_isEmptyTouched = false;
+				return;
+			}
+
+			if (IsVideoPlaying)
+				await PauseVideo();
+			else await PlayVideo();
 		}
 
 		protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -11,19 +11,16 @@
 		<Description />
 		<PackageLicenseExpression></PackageLicenseExpression>
 		<PackageProjectUrl>https://www.angrymonkeycloud.com/</PackageProjectUrl>
-		<Version>1.0.1</Version>
+		<Version>1.0.5</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="ProgressBar\progressbar.min.js" />
+    <Content Remove=".mateconfig.json" />
+    <Content Remove="tsconfig.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="General\js\DotNet.d.ts" />
-    <Content Include="ProgressBar\progressbar.less" />
-    <Content Include="ProgressBar\progressbar.ts" />
-    <Content Include="VideoPlayer\videoplayer.less" />
-    <Content Include="VideoPlayer\videoplayer.ts" />
+    <None Remove="ProgressBar\progressbar.min.js" />
   </ItemGroup>
 
 
@@ -36,16 +33,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update=".mateconfig.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="tsconfig.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <None Include=".mateconfig.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Include="tsconfig.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -9,7 +9,7 @@
 
     <div class="amc-videoplayer-content">
 
-        <div class="amc-videoplayer-empty" @onclick="OnEmptyClick">
+        <div class="amc-videoplayer-empty" @onclick="OnEmptyClick" @ontouchstart="OnEmptyTouch">
             @if (ShowSideBar)
             {
                 <div class="amc-videoplayer-close">
@@ -230,6 +230,6 @@
     }
 
     <div class="amc-videoplayer-progress" @onmousedown="OnProgressMouseDown">
-        <ProgressBar Value="CurrentTime" Total="Duration" Style="ProgressBarStyle" OnChanged="OnProgressChange" />
+        <ProgressBar Value="CurrentTime" Total="Duration" Style="ProgressBarStyle" OnChanged="OnProgressChanged" />
     </div>
 </div>
