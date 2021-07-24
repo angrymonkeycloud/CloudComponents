@@ -229,7 +229,7 @@
         </div>
     }
 
-    <div class="amc-videoplayer-progress" @onmousedown="OnProgressMouseDown">
+    <div class="amc-videoplayer-progress" @onmousedown="OnProgressMouseDown" @ontouchstart="OnProgressTouchStart">
         <ProgressBar Value="CurrentTime" Total="Duration" Style="ProgressBarStyle" OnChanged="OnProgressChanged" />
     </div>
 </div>
