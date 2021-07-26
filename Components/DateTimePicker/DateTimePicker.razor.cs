@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Web;
-using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AngryMonkey.Cloud.Components
@@ -18,7 +16,7 @@ namespace AngryMonkey.Cloud.Components
             "March",
             "April",
             "May",
-            "june",
+            "June",
             "July",
             "August",
             "September",
@@ -90,6 +88,43 @@ namespace AngryMonkey.Cloud.Components
             }
         }
 
+        private bool selectingNewDate { get; set; } = false;
+        private bool selectingNewYears { get; set; } = false;
+        private int SelectingYear { get; set; } = 1;
+        
+        protected class DecadeYears
+        {
+            public int Year { get; set; }
+            public int StartDecadeYear { get; set; }
+            public int EndDecadeYear{ get; set; }
+            public bool CurrentDeacde { get; set; }
+
+            public bool CurrentYear { get; set; }
+            public string Classes
+            {
+                get
+                {
+                    List<string> classes = new();
+                    if (CurrentDeacde)
+                        classes.Add("_currentdecade");
+                    if (CurrentYear)
+                        classes.Add("_currentyear");
+
+                    return string.Join(' ', classes);
+                }
+            }
+            
+            public DecadeYears(int year,int startDecadeYear,int endDecadeYear)
+            {
+                Year = year;
+                StartDecadeYear = startDecadeYear;
+                EndDecadeYear = endDecadeYear;
+            }
+        }
+
+        private DecadeYears[] Decade { get; set; } = new DecadeYears[0];
+        private int StartCurrentDecadeYear { get; set; } = 0;
+        private int EndCurrentDecadeYear { get; set; } = 0;
         #endregion
 
         protected override async Task OnInitializedAsync()
@@ -142,6 +177,93 @@ namespace AngryMonkey.Cloud.Components
             FillDaysArray();
         }
 
+        protected async Task SelectNewDate()
+        {
+            SelectingYear = SelectedYear;
+            selectingNewDate = !selectingNewDate;
+        }
+
+        protected async Task OnPrevYearClick()
+        {
+            SelectingYear--;
+        }
+
+        protected async Task OnNextYearClick()
+        {
+            SelectingYear++;
+        }
+
+        protected async Task SelectedNewDate(string month)
+        {
+            switch (month)
+            {
+                case "January":
+                    SelectedMonth = 1;
+                    break;
+                case "February":
+                    SelectedMonth = 2;
+                    break;
+                case "March":
+                    SelectedMonth = 3;
+                    break;
+                case "April":
+                    SelectedMonth = 4;
+                    break;
+                case "May":
+                    SelectedMonth = 5;
+                    break;
+                case "June":
+                    SelectedMonth = 6;
+                    break;
+                case "July":
+                    SelectedMonth = 7;
+                    break;
+                case "August":
+                    SelectedMonth = 8;
+                    break;
+                case "September":
+                    SelectedMonth = 9;
+                    break;
+                case "October":
+                    SelectedMonth = 10;
+                    break;
+                case "November":
+                    SelectedMonth = 11;
+                    break;
+                case "December":
+                    SelectedMonth = 12;
+                    break;
+            }
+
+            SelectedYear = SelectingYear;
+            await SelectNewDate();
+            FillDaysArray();
+        }
+
+        protected async Task SelectNewYears()
+        {
+            FillDecadeArray(SelectingYear);
+            selectingNewYears = !selectingNewYears;
+        }
+
+        protected async Task OnPrevDecadeClick()
+        {
+            SelectingYear -= 10;
+            FillDecadeArray(SelectingYear);
+        }
+
+        protected async Task OnNextDecadeClick()
+        {
+            SelectingYear += 10;
+            FillDecadeArray(SelectingYear);
+        }
+
+        protected async Task SetSelectingYear(int year)
+        {
+            SelectingYear = year;
+            selectingNewYears = !selectingNewYears;
+        }
+
         private void FillDaysArray()
         {
             int daysInPreviousMonth;
@@ -158,7 +280,7 @@ namespace AngryMonkey.Cloud.Components
             if (SelectedMonth == 1)
             {
                 for (int i = (int)new DateTime(SelectedYear, SelectedMonth, 1).DayOfWeek; i > 0; i--)
-                    days.Add(GetDate(SelectedYear - 1, 1, daysInPreviousMonth - i + 1));
+                    days.Add(GetDate(SelectedYear - 1, 12, daysInPreviousMonth - i + 1));
             }
             else
             {
@@ -196,6 +318,38 @@ namespace AngryMonkey.Cloud.Components
             {
                 CurrentMonth = SelectedYear == year && SelectedMonth == month,
                 IsSelected = SelectedDate.Year == year && SelectedDate.Month == month && SelectedDate.Day == day
+            };
+        }
+
+        private void FillDecadeArray(int selectingYear)
+        {
+            StartCurrentDecadeYear = selectingYear / 10 * 10;
+            EndCurrentDecadeYear = StartCurrentDecadeYear + 9;
+            List<DecadeYears> DecadeList = new();
+
+
+            for (int i = 3; i > 0; --i)
+            {
+                DecadeList.Add(GetDecade(StartCurrentDecadeYear - i, StartCurrentDecadeYear, EndCurrentDecadeYear));
+            }
+            for (int i = 0; i < 10; ++i)
+            {
+                DecadeList.Add(GetDecade(StartCurrentDecadeYear + i, StartCurrentDecadeYear, EndCurrentDecadeYear));
+            }
+            for (int i = 1; i < 4; ++i)
+            {
+                DecadeList.Add(GetDecade(StartCurrentDecadeYear + 9 + i, StartCurrentDecadeYear, EndCurrentDecadeYear));
+            }
+
+            Decade = DecadeList.ToArray();
+        }
+
+        private DecadeYears GetDecade(int year,int startDecadeYear,int endDecadeYear)
+        {
+            return new DecadeYears(year, startDecadeYear, endDecadeYear)
+            {
+                CurrentDeacde = year >= startDecadeYear && year <= endDecadeYear,
+                CurrentYear = year == DateTime.Now.Year
             };
         }
     }

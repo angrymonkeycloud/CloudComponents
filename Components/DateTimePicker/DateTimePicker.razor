@@ -1,29 +1,77 @@
 ﻿@namespace AngryMonkey.Cloud.Components
-@inject IJSRuntime jsRuntime
+
 
 <div class="amc-datetimepicker">
     <div class="amc-datetimepicker-calendar">
-        <div class="amc-datetimepicker-month">
-            <button class="amc-datetimepicker-previous" @onclick="OnPrevClick">Prev</button>
-            <div class="amc-datetimepicker-info">
-                <span class="amc-datetimepicker-monthname">@SelectedMonthName @SelectedYear</span>
-                <span class="amc-datetimepicker-fulldate">@FullDate</span>
+        @if (!selectingNewDate)
+        {
+            <div class="amc-datetimepicker-month">
+                <button class="amc-datetimepicker-previous" @onclick="OnPrevClick">Prev</button>
+                <div class="amc-datetimepicker-info">
+                    <span class="amc-datetimepicker-monthname" @onclick="SelectNewDate">@SelectedMonthName @SelectedYear</span>
+                    <span class="amc-datetimepicker-fulldate">@FullDate</span>
+                </div>
+                <button class="amc-datetimepicker-next" @onclick="OnNextClick">Next</button>
             </div>
-            <button class="amc-datetimepicker-next" @onclick="OnNextClick">Next</button>
-        </div>
 
-        <div class="amc-datetimepicker-weekdays">
-            @foreach(string weekday in WeekDaysNames)
-            {
-                <div>@weekday</div>
-            }
-        </div>
+            <div class="amc-datetimepicker-weekdays">
+                @foreach (string weekday in WeekDaysNames)
+                {
+                    <div>@weekday</div>
+                }
+            </div>
 
-        <div class="amc-datetimepicker-days">
-            @foreach (DateTimePickerDate date in Days)
+            <div class="amc-datetimepicker-days">
+                @foreach (DateTimePickerDate date in Days)
+                {
+                    <div class="amc-datetimepicker-day @date.Classes" @onclick="() => OnDateSelected(date)">@date.Day</div>
+                }
+            </div>
+        }
+        else
+        {
+            if (!selectingNewYears)
             {
-                <div class="amc-datetimepicker-day @date.Classes" @onclick="() => OnDateSelected(date)">@date.Day</div>
+                <div class="amc-datetimepicker-pickingyear">
+                    <button class="amc-datetimepicker-previousyear" @onclick="OnPrevYearClick">Prev</button>
+                    <div class="amc-datetimepicker-year">
+                        <button class="amc-datetimepicker-highlightedyear" @onclick="SelectNewYears">@SelectingYear</button>
+                    </div>
+                    <button class="amc-datetimepicker-nextyear" @onclick="OnNextYearClick">Next</button>
+                </div>
+
+                <div class="amc-datetimepicker-pickingmonths">
+                    @foreach (string month in MonthNames)
+                    {
+                        if (month.Equals(MonthNames[SelectedMonth - 1]) && SelectedYear == SelectingYear)
+                        {
+                            <div class="amc-datetimepicker-pickingmonth _monthselected" @onclick="() => SelectedNewDate(month)">@month</div>
+                        }
+                        else
+                        {
+                            <div class="amc-datetimepicker-pickingmonth" @onclick="() => SelectedNewDate(month)">@month</div>
+                        }
+                    }
+                </div>
             }
-        </div>
+            else
+            {
+                <div class="amc-datetimepicker-pickingdecade">
+                    <button class="amc-datetimepicker-previousdeacde" @onclick="OnPrevDecadeClick">Prev</button>
+                    <div class="amc-datetimepicker-decade">
+                        <span class="amc-datetimepicker-highlighteddecade">@StartCurrentDecadeYear - @EndCurrentDecadeYear</span>
+                    </div>
+                    <button class="amc-datetimepicker-nextdecade" @onclick="OnNextDecadeClick">Next</button>
+                </div>
+
+                <div class="amc-datetimepicker-pickingdecadeyears">
+                    @foreach (DecadeYears decade in Decade)
+                    {
+                        <div class="amc-datetimepicker-decadeyears @decade.Classes" @onclick="() => SetSelectingYear(decade.Year)">@decade.Year</div>
+                    }
+                </div>
+            }
+        }
+
     </div>
 </div>
