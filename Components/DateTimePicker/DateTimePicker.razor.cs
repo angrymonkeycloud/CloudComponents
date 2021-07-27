@@ -37,94 +37,21 @@ namespace AngryMonkey.Cloud.Components
         };
 
         private DateTimePickerDate SelectedDate { get; set; }
-
+        private DateTimePickerSelectionState SelectionState { get; set; } = DateTimePickerSelectionState.Day;
         private int SelectedMonth { get; set; } = 1;
         private int SelectedYear { get; set; } = 1;
         private string SelectedMonthName => MonthNames[SelectedMonth - 1];
 
-        private string FullDate => new DateTime(SelectedDate.Year, SelectedDate.Month, SelectedDate.Day).ToString("dddd, MMMM dd, yyyy");
+        private string SelectedDateDisplay => SelectedDate.ToDateTime().ToString("dddd, MMMM dd, yyyy");
 
         private DateTimePickerDate[] Days { get; set; } = new DateTimePickerDate[0];
 
-        protected class DateTimePickerDate
-        {
-            public int Day { get; set; }
-            public int Month { get; set; }
-            public int Year { get; set; }
-            public bool IsToday => DateTime.Now.Date.Equals(new DateTime(Year, Month, Day));
-            public bool IsSelected { get; set; } = false;
-            public bool CurrentMonth { get; set; } = true;
-            public string Classes
-            {
-                get
-                {
-                    List<string> classes = new();
-
-                    if (IsSelected)
-                        classes.Add("_selected");
-
-                    if (IsToday)
-                        classes.Add("_today");
-
-                    if (CurrentMonth)
-                        classes.Add("_currentmonth");
-
-                    return string.Join(' ', classes);
-                }
-            }
-
-            public DateTimePickerDate(int year, int month, int day)
-            {
-                Year = year;
-                Month = month;
-                Day = day;
-            }
-
-            public DateTimePickerDate(DateTime date)
-            {
-                Year = date.Year;
-                Month = date.Month;
-                Day = date.Day;
-            }
-        }
-
-        private bool selectingNewDate { get; set; } = false;
-        private bool selectingNewYears { get; set; } = false;
         private int SelectingYear { get; set; } = 1;
-        
-        protected class DecadeYears
-        {
-            public int Year { get; set; }
-            public int StartDecadeYear { get; set; }
-            public int EndDecadeYear{ get; set; }
-            public bool CurrentDeacde { get; set; }
-
-            public bool CurrentYear { get; set; }
-            public string Classes
-            {
-                get
-                {
-                    List<string> classes = new();
-                    if (CurrentDeacde)
-                        classes.Add("_currentdecade");
-                    if (CurrentYear)
-                        classes.Add("_currentyear");
-
-                    return string.Join(' ', classes);
-                }
-            }
-            
-            public DecadeYears(int year,int startDecadeYear,int endDecadeYear)
-            {
-                Year = year;
-                StartDecadeYear = startDecadeYear;
-                EndDecadeYear = endDecadeYear;
-            }
-        }
 
         private DecadeYears[] Decade { get; set; } = new DecadeYears[0];
         private int StartCurrentDecadeYear { get; set; } = 0;
         private int EndCurrentDecadeYear { get; set; } = 0;
+
         #endregion
 
         protected override async Task OnInitializedAsync()
@@ -153,45 +80,74 @@ namespace AngryMonkey.Cloud.Components
 
         protected async Task OnNextClick()
         {
-            if (SelectedMonth < 12)
-                SelectedMonth++;
+            if (SelectionState == DateTimePickerSelectionState.Day)
+            {
+                if (SelectedMonth < 12)
+                    SelectedMonth++;
+                else
+                {
+                    SelectedMonth = 1;
+                    SelectedYear++;
+                }
+
+                FillDaysArray();
+            }
+            else if (SelectionState == DateTimePickerSelectionState.Month)
+            {
+                SelectingYear++;
+            }
             else
             {
-                SelectedMonth = 1;
-                SelectedYear++;
+                SelectingYear += 10;
+                FillDecadeArray(SelectingYear);
             }
-
-            FillDaysArray();
         }
 
         protected async Task OnPrevClick()
         {
-            if (SelectedMonth > 1)
-                SelectedMonth--;
+            if (SelectionState == DateTimePickerSelectionState.Day)
+            {
+                if (SelectedMonth > 1)
+                    SelectedMonth--;
+                else
+                {
+                    SelectedMonth = 12;
+                    SelectedYear--;
+                }
+
+                FillDaysArray();
+            }else if (SelectionState == DateTimePickerSelectionState.Month)
+            {
+                SelectingYear--;
+            }
             else
             {
-                SelectedMonth = 12;
-                SelectedYear--;
+                SelectingYear -= 10;
+                FillDecadeArray(SelectingYear);
             }
-
-            FillDaysArray();
         }
 
-        protected async Task SelectNewDate()
+        protected async Task ChangeSelectionState()
         {
-            SelectingYear = SelectedYear;
-            selectingNewDate = !selectingNewDate;
+            if (SelectionState == DateTimePickerSelectionState.Day) { 
+                SelectingYear = SelectedYear;
+                SelectionState = DateTimePickerSelectionState.Month;
+            }else if (SelectionState == DateTimePickerSelectionState.Month)
+            {
+                FillDecadeArray(SelectingYear);
+                SelectionState = DateTimePickerSelectionState.Year;
+            }
         }
 
-        protected async Task OnPrevYearClick()
-        {
-            SelectingYear--;
-        }
+        //protected async Task OnPrevYearClick()
+        //{
+        //    SelectingYear--;
+        //}
 
-        protected async Task OnNextYearClick()
-        {
-            SelectingYear++;
-        }
+        //protected async Task OnNextYearClick()
+        //{
+        //    SelectingYear++;
+        //}
 
         protected async Task SelectedNewDate(string month)
         {
@@ -236,32 +192,32 @@ namespace AngryMonkey.Cloud.Components
             }
 
             SelectedYear = SelectingYear;
-            await SelectNewDate();
+            SelectionState = DateTimePickerSelectionState.Day;
             FillDaysArray();
         }
 
-        protected async Task SelectNewYears()
-        {
-            FillDecadeArray(SelectingYear);
-            selectingNewYears = !selectingNewYears;
-        }
+        //protected async Task SelectNewYears()
+        //{
+        //    FillDecadeArray(SelectingYear);
+        //    selectingNewYears = !selectingNewYears;
+        //}
 
-        protected async Task OnPrevDecadeClick()
-        {
-            SelectingYear -= 10;
-            FillDecadeArray(SelectingYear);
-        }
+        //protected async Task OnPrevDecadeClick()
+        //{
+        //    SelectingYear -= 10;
+        //    FillDecadeArray(SelectingYear);
+        //}
 
-        protected async Task OnNextDecadeClick()
-        {
-            SelectingYear += 10;
-            FillDecadeArray(SelectingYear);
-        }
+        //protected async Task OnNextDecadeClick()
+        //{
+        //    SelectingYear += 10;
+        //    FillDecadeArray(SelectingYear);
+        //}
 
         protected async Task SetSelectingYear(int year)
         {
             SelectingYear = year;
-            selectingNewYears = !selectingNewYears;
+            SelectionState = DateTimePickerSelectionState.Month;
         }
 
         private void FillDaysArray()
@@ -297,11 +253,6 @@ namespace AngryMonkey.Cloud.Components
             {
                 while (days.Count < 42)
                     days.Add(GetDate(SelectedYear + 1, 1, index++));
-            }
-            else if (SelectedMonth == 1)
-            {
-                while (days.Count < 42)
-                    days.Add(GetDate(SelectedYear - 1, 12, index++));
             }
             else
             {
@@ -344,7 +295,7 @@ namespace AngryMonkey.Cloud.Components
             Decade = DecadeList.ToArray();
         }
 
-        private DecadeYears GetDecade(int year,int startDecadeYear,int endDecadeYear)
+        private DecadeYears GetDecade(int year, int startDecadeYear, int endDecadeYear)
         {
             return new DecadeYears(year, startDecadeYear, endDecadeYear)
             {

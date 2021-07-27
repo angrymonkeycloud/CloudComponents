@@ -30,6 +30,7 @@
   border-radius: 0;
 }
 .amc-datetimepicker {
+  --amc-datetimepicker-accentColor: #fff;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 0.9rem;
   -webkit-touch-callout: none;
@@ -133,7 +134,7 @@
 .amc-datetimepicker-pickingyear {
   width: 608px;
   height: 120px;
-  background-color: green;
+  background-color: var(--amc-datetimepicker-accentColor);
   display: flex;
   justify-content: space-between;
   align-items: center;

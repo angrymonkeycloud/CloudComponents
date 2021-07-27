@@ -1,6 +1,7 @@
 ﻿@import "../General/css/common.less";
 
 .amc-datetimepicker {
+    --amc-datetimepicker-accentColor: #fff;
     .ComponentsDefault();
     background-color: #12121f;
     color: #eee;
@@ -105,7 +106,7 @@
     &-pickingyear {
         width: 608px;
         height: 120px;
-        background-color: green;
+        background-color: var(--amc-datetimepicker-accentColor);
         display: flex;
         justify-content: space-between;
         align-items: center;
