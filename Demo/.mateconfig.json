@@ -1,10 +1,23 @@
 {
-	
+	"builds": [
+		{
+			"name": "dev",
+			"js": {
+				"minify": true,
+				"sourceMap": false,
+				"declaration": false
+			}
+		}
+	],
 	"files": [
 		{
 			"output": "wwwroot/css/site.css",
 			"input": "src/css/site.less"
+		},
+		{
+			"output": "wwwroot/js/site.js",
+			"input": "src/js/site.ts"
 		}
-		
+
 	]
 }

@@ -1,47 +1,114 @@
 ﻿@import "variables.less";
 
+* {
+    margin: 0;
+    padding: 0;
+}
+
 body {
     height: 90vh;
     width: 90vw;
-    background-image: url(/bg2.jpg);
+    background-image: url(/bg4.jpg);
     background-size: cover;
     background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    // background-color: #0c9da2;
 
-    main {
+    .components {
         width: 100%;
-        margin-top: 50px;
 
-        .components {
-            background-color: transparent;
-            margin-top: 20px;
-            margin-left: 10px;
-            width: 100%;
-            text-align: center;
+
+        &-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 10px;
 
             a {
                 &, &:hover, &:active, &:focus, &:visited {
-                    color: var(--LinkColor);
+                    color: #fff;
                     text-decoration: none;
                     padding: 10px;
-                    font-size: 1.4em;
-                    font-family: 'Brush Script MT', cursive;
-                    letter-spacing: 5px;
-                    line-height: 2px;
+                    font-size: 1em;
+                    font-family: sans-serif;
+                    letter-spacing: 2px;
                     margin-left: 20px;
                 }
 
                 &:hover {
-                    background-color: rgba(192, 245, 238, 0.2);
-                    border: 1px groove groove;
-                    border-radius: 12px;
+                    border-bottom: 1px groove #fff;
 
 
                     &:active {
-                        background-color: rgba(50, 115, 220, 0.3);
+                        border-bottom-color: var(--LinkColor);
                     }
                 }
             }
         }
+
+        &-icon {
+            display: none;
+        }
+    }
+
+    @media screen and (max-width: 1000px) {
+        .components {
+
+            &-links {
+                visibility: hidden;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: flex-start;
+                position: absolute;
+                right: 45px;
+                top: 53px;
+                padding: 5px;
+                z-index: 2;
+                background-color: rgba(100, 100, 100, 0.3);
+                border-radius: 15px;
+
+
+                a {
+                    &, &:hover, &:active, &:focus, &:visited {
+                        padding: 5px;
+                        margin-left: 0;
+                    }
+
+                    &:hover {
+                        border-bottom: 1px groove #fff;
+                        color: white;
+
+                        &:active {
+                            border-bottom-color: var(--LinkColor);
+                        }
+                    }
+                }
+            }
+
+            ._clicked {
+                visibility: visible;
+            }
+
+            &-icon {
+                display: block;
+                position: absolute;
+                right: 10px;
+                top: 10px;
+
+                svg {
+                    fill: rgba(255,255,255,.9);
+                    background-color: transparent;
+                    width: 40px;
+                    height: 40px;
+                }
+            }
+        }
+    }
+
+    main {
+        width: 100%;
+        margin-top: 50px;
 
         > .amc-progressbar {
             --amc-progressbar-accentColor: var(--LinkColor) !important;
@@ -55,6 +122,14 @@ body {
             --amc-videoplayer-accentColor: var(--LinkColor) !important;
             width: 800px;
             height: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 50px;
+        }
+
+        > .amc-datetimepicker {
+            width: 750px;
+            height: 600px;
             margin-left: auto;
             margin-right: auto;
             margin-top: 50px;
