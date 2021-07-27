@@ -51,7 +51,40 @@
 }
 .amc-datetimepicker-calendar {
   background-color: #222227;
-  box-shadow: 0 0.5rem 3rem rgba(0, 0, 0, 0.4);
+}
+.amc-datetimepicker-header {
+  width: 100%;
+  height: 120px;
+  background-color: var(--amc-datetimepicker-accentColor);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.amc-datetimepicker-selection {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.amc-datetimepicker-selection button {
+  border: none;
+  background-color: transparent !important;
+  padding: 10px;
+  font-weight: bold;
+}
+.amc-datetimepicker-selecteddate {
+  font-size: 1.6rem;
+}
+.amc-datetimepicker-highlighteddate,
+.amc-datetimepicker-highlightedyear,
+.amc-datetimepicker-highlighteddecade {
+  font-size: 1.5rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 10px;
+  margin-bottom: 5px;
+  cursor: pointer;
 }
 .amc-datetimepicker-weekdays {
   height: 50px;
