@@ -11,12 +11,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="src\js\site.ts" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.8" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Components\Components.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\css\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="src\js\site.ts" />
   </ItemGroup>
 
 </Project>
