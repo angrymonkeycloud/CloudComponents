@@ -10,7 +10,8 @@ main > .amc-progressbar {
 }
 
 main > .amc-datetimepicker {
-	--amc-datetimepicker-accentColor: green !important;
+	--amc-datetimepicker-backgroundColor: #fff !important;
+	--amc-datetimepicker-accentColor: blue !important;
 	margin-left: 20px;
 	margin-top: 50px;
 }

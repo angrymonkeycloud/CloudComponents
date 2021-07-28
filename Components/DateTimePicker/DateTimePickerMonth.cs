@@ -16,11 +16,13 @@ namespace AngryMonkey.Cloud.Components
             public int Year { get; set; }
             public bool IsSelected { get; set; } = false;
             public string Name => Names[Month - 1];
-            public string Classes
+            public string CssClasses
             {
                 get
                 {
                     List<string> classes = new();
+
+                    classes.Add("_current");
 
                     if (IsSelected)
                         classes.Add("_selected");

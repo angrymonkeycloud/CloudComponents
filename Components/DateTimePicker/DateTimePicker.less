@@ -1,23 +1,62 @@
 ﻿@import "../General/css/common.less";
 
-.amc-datetimepicker {
-    --amc-datetimepicker-accentColor: #fff;
-    .ComponentsDefault();
-    background-color: #12121f;
-    color: #eee;
+.amc-SelectableField {
+    border: 1px solid transparent;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-    &-calendar {
-        background-color: #222227;
+    &._today {
+        &::after {
+            font-size: 1.3em;
+            position: absolute;
+            content: '_';
+            font-weight: bold;
+            color: var(--amc-datetimepicker-accentColor);
+            bottom: 7px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: var(--lowOpacity);
+        }
     }
 
-    &-header {
-        width: 100%;
-        height: 120px;
+    &._selected {
         background-color: var(--amc-datetimepicker-accentColor);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+
+        &, &::after {
+            color: var(--amc-datetimepicker-backgroundColor);
+        }
+    }
+
+    &:hover:not(._selected) {
+        border-color: var(--amc-datetimepicker-accentColor);
+        cursor: pointer;
+    }
+
+    &:not(._current):not(._selected) {
+        opacity: var(--lowOpacity);
+    }
+}
+
+.amc-datetimepicker {
+    --amc-datetimepicker-backgroundColor: #000;
+    --amc-datetimepicker-accentColor: #fff;
+    .ComponentsDefault();
+    background-color: var(--amc-datetimepicker-backgroundColor);
+    color: var(--amc-datetimepicker-accentColor);
+    --lowOpacity: .7;
+
+    &-header {
+        margin-bottom: 5px;
+    }
+
+    &-selecteddate {
+        font-size: .8rem;
+        text-align: center;
+        padding: 10px;
+        opacity: var(--lowOpacity);
+        font-weight: bold;
     }
 
     &-selection {
@@ -28,227 +67,81 @@
         button {
             border: none;
             background-color: transparent !important;
-            padding: 10px;
-            font-weight: bold;
+            cursor: pointer;
+            padding: 15px;
+
+            svg {
+                height: 20px;
+                width: 20px;
+
+                * {
+                    fill: none;
+                    stroke: var(--amc-datetimepicker-accentColor);
+                    stroke-width: 4px;
+                    stroke-miterlimit: 10;
+                }
+            }
         }
-    }
 
-    &-selecteddate {
-        font-size: 1.6rem;
-    }
-
-    &-highlighteddate,
-    &-highlightedyear,
-    &-highlighteddecade{
-        font-size: 1.5rem;
-        font-weight: 400;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        padding:10px;
-        margin-bottom: 5px;
-        cursor:pointer;
-    }
-
-    &-weekdays {
-        height: 50px;
-        padding: 0 4px;
-        display: flex;
-        align-items: center;
-
-        div {
+        &-info {
+            flex: 1;
             font-size: 1.5rem;
             font-weight: 400;
             letter-spacing: 1px;
-            width: calc(600px / 7);
+            cursor: pointer;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+
+    &-calendar,
+    &-months,
+    &-years,
+    &-weeks,
+    &-days {
+        padding: 2px;
+    }
+
+    &-calendar {
+
+        &-weeks,
+        &-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        &-weeks {
+            margin-bottom: 5px;
+        }
+
+        &-week {
+            font-weight: 400;
+            letter-spacing: 1px;
             display: flex;
             justify-content: center;
             align-items: center;
-            text-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
+            opacity: var(--lowOpacity);
+        }
+
+        &-day {
+            .amc-SelectableField();
+            width: 3em;
+            height: 3em;
         }
     }
 
-    &-info {
-        display: flex;
-        flex-direction: column;
-    }
-
-    &-monthname {
-        font-size: 2rem;
-        font-weight: 400;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-bottom: 10px;
-        cursor: pointer;
-
-        &:hover {
-            opacity: 1.8;
-        }
-    }
-
-    &-fulldate {
-        font-size: 1.6rem;
-    }
-
-    &-month {
-        width: 100%;
-        height: 120px;
-        background-color: green;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        text-align: center;
-        text-shadow: 0 3px 5px rgba(0,0,0,0.5);
-
-        button {
-            cursor: pointer;
-        }
-    }
-
-    &-days {
-        padding: 2px;
+    &-months,
+    &-years {
         display: grid;
-        grid-template-columns: repeat(7, 1fr);
+        grid-template-columns: repeat(3, 1fr);
     }
 
-    &-day {
-        font-size: 1.4rem;
-        margin: 3px;
-        width: calc(440px / 7);
-        height: 50px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-shadow: 0 3px 5px rgba(0,0,0,0.5);
-        transition: background-color 0.2s;
-        opacity: 0.5;
-        border: 1px solid transparent;
-
-        &:hover:not(._selected) {
-            background-color: #262626;
-            cursor: pointer;
-        }
-
-        &._currentmonth {
-            opacity: 1;
-        }
-
-        &._selected {
-            background-color: green;
-        }
-
-        &._today {
-            border-color: green;
-        }
-    }
-
-    &-pickingyear {
-        width: 608px;
-        height: 120px;
-        background-color: var(--amc-datetimepicker-accentColor);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        text-align: center;
-        text-shadow: 0 3px 5px rgba(0,0,0,0.5);
-
-        button {
-            cursor: pointer;
-        }
-    }
-
-    &-highlightedyear {
-        color: white;
-        font-weight: bold;
-        background-color: green;
-        border: none;
-        font-size: 2rem;
-        font-weight: 400;
-        letter-spacing: 2px;
-        margin-bottom: 10px;
-    }
-
-    &-pickingmonths {
-        padding: 2px;
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-    }
-
-    &-pickingmonth {
-        font-size: 1.4rem;
-        margin: 3px;
-        width: calc(440px / 4);
-        height: 80px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-shadow: 0 3px 5px rgba(0,0,0,0.5);
-        transition: background-color 0.2s;
-        border: 1px solid transparent;
-        cursor: pointer;
-
-        &:hover {
-            border-color: green;
-        }
-
-        &._monthselected {
-            background-color: green;
-        }
-    }
-
-    &-pickingdecade {
-        width: 608px;
-        height: 120px;
-        background-color: green;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        text-align: center;
-        text-shadow: 0 3px 5px rgba(0,0,0,0.5);
-
-        button {
-            cursor: pointer;
-        }
-    }
-
-    &-highlighteddecade {
-        color: white;
-        font-weight: bold;
-        font-size: 2rem;
-        font-weight: 400;
-        letter-spacing: 2px;
-        margin-bottom: 10px;
-    }
-
-    &-pickingdecadeyears {
-        padding: 2px;
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-    }
-
-    &-decadeyears {
-        font-size: 1.4rem;
-        margin: 3px;
-        width: calc(440px / 4);
-        height: 80px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-shadow: 0 3px 5px rgba(0,0,0,0.5);
-        transition: background-color 0.2s;
-        border: 1px solid transparent;
-        cursor: pointer;
-        opacity: 0.5;
-
-        &:hover {
-            border-color: green;
-        }
-
-        &._currentyear {
-            background-color: green;
-        }
-
-        &._currentdecade {
-            opacity: 1;
-        }
+    &-months-month,
+    &-years-year {
+        .amc-SelectableField();
+        height: 3em;
+        width: 7em;
     }
 }

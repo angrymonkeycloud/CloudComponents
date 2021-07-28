@@ -13,7 +13,7 @@ namespace AngryMonkey.Cloud.Components
             public bool IsToday => DateTime.Now.Date.Equals(new DateTime(Year, Month, Day));
             public bool IsSelected { get; set; } = false;
             public bool CurrentMonth { get; set; } = true;
-            public string Classes
+            public string CssClasses
             {
                 get
                 {
@@ -26,7 +26,7 @@ namespace AngryMonkey.Cloud.Components
                         classes.Add("_today");
 
                     if (CurrentMonth)
-                        classes.Add("_currentmonth");
+                        classes.Add("_current");
 
                     return string.Join(' ', classes);
                 }

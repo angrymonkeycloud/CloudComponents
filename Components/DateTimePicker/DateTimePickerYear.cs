@@ -12,12 +12,16 @@ namespace AngryMonkey.Cloud.Components
             }
 
             public int Year { get; set; }
+            public bool IsCurrentDecade { get; set; } = false;
             public bool IsSelected { get; set; } = false;
-            public string Classes
+            public string CssClasses
             {
                 get
                 {
                     List<string> classes = new();
+
+                    if (IsCurrentDecade)
+                        classes.Add("_current");
 
                     if (IsSelected)
                         classes.Add("_selected");

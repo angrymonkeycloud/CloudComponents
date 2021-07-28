@@ -11,13 +11,13 @@ namespace AngryMonkey.Cloud.Components
 
         private readonly string[] WeekDaysNames = new string[]
         {
-            "Sun",
-            "Mon",
-            "Tue",
-            "Wed",
-            "Thu",
-            "Fri",
-            "Sat",
+            "Su",
+            "Mo",
+            "Tu",
+            "We",
+            "Th",
+            "Fr",
+            "Sa",
         };
 
         private DateTimePickerDate SelectedDate { get; set; }
@@ -31,7 +31,7 @@ namespace AngryMonkey.Cloud.Components
         {
             DateTimePickerSelectionState.Year => $"{StartCurrentDecadeYear} - {EndCurrentDecadeYear}",
             DateTimePickerSelectionState.Month => NavigatedYear.ToString(),
-            _ => DateTimePickerMonth.Names[NavigatedMonth - 1],
+            _ => $"{DateTimePickerMonth.Names[NavigatedMonth - 1]} {NavigatedYear.ToString()}",
         };
 
         private string SelectedDateDisplay => SelectedDate.ToDateTime().ToString("dddd, MMMM dd, yyyy");
@@ -205,7 +205,7 @@ namespace AngryMonkey.Cloud.Components
             List<DateTimePickerMonth> months = new();
 
             for (int i = 1; i <= 12; i++)
-                months.Add(new DateTimePickerMonth(NavigatedYear, i) { IsSelected = i == NavigatedMonth && SelectedDate.Year == NavigatedYear });
+                months.Add(new DateTimePickerMonth(NavigatedYear, i) { IsSelected = i == SelectedDate.Month && SelectedDate.Year == NavigatedYear });
 
             Months = months.ToArray();
         }
@@ -217,7 +217,11 @@ namespace AngryMonkey.Cloud.Components
             years.Add(new DateTimePickerYear(StartCurrentDecadeYear - 1));
 
             for (int i = StartCurrentDecadeYear; i <= EndCurrentDecadeYear; i++)
-                years.Add(new DateTimePickerYear(i) { IsSelected = SelectedDate.Year == i });
+                years.Add(new DateTimePickerYear(i)
+                {
+                    IsSelected = SelectedDate.Year == i,
+                    IsCurrentDecade = true
+                });
 
             years.Add(new DateTimePickerYear(EndCurrentDecadeYear + 1));
 
