@@ -1,147 +1,152 @@
 ﻿@import "../General/css/common.less";
 
 .amc-SelectableField {
-    border: 1px solid transparent;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+	border: 1px solid transparent;
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
 
-    &._today {
-        &::after {
-            font-size: 1.3em;
-            position: absolute;
-            content: '_';
-            font-weight: bold;
-            color: var(--amc-datetimepicker-accentColor);
-            bottom: 7px;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: var(--lowOpacity);
-        }
-    }
+	&._today {
+		&:after {
+			position: absolute;
+			content: '';
+			width: 1em;
+			height: .13em;
+			background-color: var(--amc-datetimepicker-accentColor);
+			bottom: 8px;
+			left: 50%;
+			transform: translateX(-50%);
+			opacity: var(--lowOpacity);
+		}
+	}
 
-    &._selected {
-        background-color: var(--amc-datetimepicker-accentColor);
+	&._selected {
+		background-color: var(--amc-datetimepicker-accentColor);
+		color: var(--amc-datetimepicker-backgroundColor);
 
-        &, &::after {
-            color: var(--amc-datetimepicker-backgroundColor);
-        }
-    }
+		&::after {
+			background-color: var(--amc-datetimepicker-backgroundColor);
+		}
+	}
 
-    &:hover:not(._selected) {
-        border-color: var(--amc-datetimepicker-accentColor);
-        cursor: pointer;
-    }
+	&:hover:not(._selected) {
+		border-color: var(--amc-datetimepicker-accentColor);
+	}
 
-    &:not(._current):not(._selected) {
-        opacity: var(--lowOpacity);
-    }
+	&:not(._current):not(._selected) {
+		opacity: var(--lowOpacity);
+	}
 }
 
 .amc-datetimepicker {
-    --amc-datetimepicker-backgroundColor: #000;
-    --amc-datetimepicker-accentColor: #fff;
-    .ComponentsDefault();
-    background-color: var(--amc-datetimepicker-backgroundColor);
-    color: var(--amc-datetimepicker-accentColor);
-    --lowOpacity: .7;
+	--amc-datetimepicker-backgroundColor: #fff;
+	--amc-datetimepicker-accentColor: #000;
+	.ComponentsDefault();
+	background-color: var(--amc-datetimepicker-backgroundColor);
+	color: var(--amc-datetimepicker-accentColor);
+	--lowOpacity: .7;
 
-    &-header {
-        margin-bottom: 5px;
-    }
+	&-header {
+		margin-bottom: 5px;
+	}
 
-    &-selecteddate {
-        font-size: .8rem;
-        text-align: center;
-        padding: 10px;
-        opacity: var(--lowOpacity);
-        font-weight: bold;
-    }
+	&-selecteddate {
+		font-size: .8rem;
+		text-align: center;
+		padding: 10px;
+		opacity: var(--lowOpacity);
+		font-weight: bold;
+	}
 
-    &-selection {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
+	&-selection {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
 
-        button {
-            border: none;
-            background-color: transparent !important;
-            cursor: pointer;
-            padding: 15px;
+		button {
+			border: none;
+			background-color: transparent !important;
+			cursor: pointer;
+			padding: 15px;
 
-            svg {
-                height: 20px;
-                width: 20px;
+			svg {
+				height: 20px;
+				width: 20px;
 
-                * {
-                    fill: none;
-                    stroke: var(--amc-datetimepicker-accentColor);
-                    stroke-width: 4px;
-                    stroke-miterlimit: 10;
-                }
-            }
-        }
+				* {
+					fill: none;
+					stroke: var(--amc-datetimepicker-accentColor);
+					stroke-width: 4px;
+					stroke-miterlimit: 10;
+				}
+			}
+		}
 
-        &-info {
-            flex: 1;
-            font-size: 1.5rem;
-            font-weight: 400;
-            letter-spacing: 1px;
-            cursor: pointer;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-    }
+		&-info {
+			flex: 1;
+			font-size: 1.5rem;
+			font-weight: 400;
+			letter-spacing: 1px;
+			cursor: pointer;
+			text-align: center;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+	}
 
-    &-calendar,
-    &-months,
-    &-years,
-    &-weeks,
-    &-days {
-        padding: 2px;
-    }
+	&-calendar,
+	&-months,
+	&-years,
+	&-weeks,
+	&-days {
+		padding: 2px;
+	}
 
-    &-calendar {
+	&-calendar {
 
-        &-weeks,
-        &-days {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-        }
+		&-weeks,
+		&-days {
+			display: grid;
+			grid-template-columns: repeat(7, 1fr);
+		}
 
-        &-weeks {
-            margin-bottom: 5px;
-        }
+		&-weeks {
+			margin-bottom: 5px;
+		}
 
-        &-week {
-            font-weight: 400;
-            letter-spacing: 1px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: var(--lowOpacity);
-        }
+		&-week,
+		&-day {
+			min-width: 3em;
+		}
 
-        &-day {
-            .amc-SelectableField();
-            width: 3em;
-            height: 3em;
-        }
-    }
+		&-week {
+			font-weight: 400;
+			letter-spacing: 1px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			opacity: .4;
+		}
 
-    &-months,
-    &-years {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-    }
+		&-day {
+			.amc-SelectableField();
+			min-height: 3em;
+		}
+	}
 
-    &-months-month,
-    &-years-year {
-        .amc-SelectableField();
-        height: 3em;
-        width: 7em;
-    }
+	&-months,
+	&-years {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+	}
+
+	&-months-month,
+	&-years-year {
+		.amc-SelectableField();
+		min-width: 7em;
+		min-height: 3em;
+	}
 }

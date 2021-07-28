@@ -160,12 +160,6 @@ namespace AngryMonkey.Cloud.Components
             FillMonthsArray();
         }
 
-       
-
-        
-
-
-
         #region Helpers
 
         private void FillDaysArray()
@@ -218,8 +212,8 @@ namespace AngryMonkey.Cloud.Components
             for (int i = 1; i <= 12; i++)
                 months.Add(new DateTimePickerMonth(NavigatedYear, i)
                 {
-                    IsSelected = i == NavigatedMonth,
-                    IsToday = i == SelectedDate.Month && SelectedDate.Year == NavigatedYear
+                    IsSelected = i == SelectedDate.Month && SelectedDate.Year == NavigatedYear,
+                    IsToday = i == DateTime.Now.Month && DateTime.Now.Year == NavigatedYear
                 });
 
             Months = months.ToArray();
@@ -243,8 +237,8 @@ namespace AngryMonkey.Cloud.Components
             for (int i = StartCurrentDecadeYear; i <= EndCurrentDecadeYear; i++)
                 years.Add(new DateTimePickerYear(i)
                 {
-                    IsToday = SelectedDate.Year == i,
-                    IsSelected = NavigatedYear == i,
+                    IsToday = DateTime.Now.Year == i,
+                    IsSelected = SelectedDate.Year == i,
                     IsCurrentDecade = true
                 });
 

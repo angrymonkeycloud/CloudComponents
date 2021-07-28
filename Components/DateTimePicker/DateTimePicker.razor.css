@@ -35,35 +35,35 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
-.amc-SelectableField._today::after {
-  font-size: 1.3em;
+.amc-SelectableField._today:after {
   position: absolute;
-  content: '_';
-  font-weight: bold;
-  color: var(--amc-datetimepicker-accentColor);
-  bottom: 7px;
+  content: '';
+  width: 1em;
+  height: 0.13em;
+  background-color: var(--amc-datetimepicker-accentColor);
+  bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
   opacity: var(--lowOpacity);
 }
 .amc-SelectableField._selected {
   background-color: var(--amc-datetimepicker-accentColor);
-}
-.amc-SelectableField._selected,
-.amc-SelectableField._selected::after {
   color: var(--amc-datetimepicker-backgroundColor);
+}
+.amc-SelectableField._selected::after {
+  background-color: var(--amc-datetimepicker-backgroundColor);
 }
 .amc-SelectableField:hover:not(._selected) {
   border-color: var(--amc-datetimepicker-accentColor);
-  cursor: pointer;
 }
 .amc-SelectableField:not(._current):not(._selected) {
   opacity: var(--lowOpacity);
 }
 .amc-datetimepicker {
-  --amc-datetimepicker-backgroundColor: #000;
-  --amc-datetimepicker-accentColor: #fff;
+  --amc-datetimepicker-backgroundColor: #fff;
+  --amc-datetimepicker-accentColor: #000;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 0.9rem;
   -webkit-touch-callout: none;
@@ -140,13 +140,17 @@
 .amc-datetimepicker-calendar-weeks {
   margin-bottom: 5px;
 }
+.amc-datetimepicker-calendar-week,
+.amc-datetimepicker-calendar-day {
+  min-width: 3em;
+}
 .amc-datetimepicker-calendar-week {
   font-weight: 400;
   letter-spacing: 1px;
   display: flex;
   justify-content: center;
   align-items: center;
-  opacity: var(--lowOpacity);
+  opacity: 0.4;
 }
 .amc-datetimepicker-calendar-day {
   border: 1px solid transparent;
@@ -154,30 +158,29 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 3em;
-  height: 3em;
+  cursor: pointer;
+  min-height: 3em;
 }
-.amc-datetimepicker-calendar-day._today::after {
-  font-size: 1.3em;
+.amc-datetimepicker-calendar-day._today:after {
   position: absolute;
-  content: '_';
-  font-weight: bold;
-  color: var(--amc-datetimepicker-accentColor);
-  bottom: 7px;
+  content: '';
+  width: 1em;
+  height: 0.13em;
+  background-color: var(--amc-datetimepicker-accentColor);
+  bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
   opacity: var(--lowOpacity);
 }
 .amc-datetimepicker-calendar-day._selected {
   background-color: var(--amc-datetimepicker-accentColor);
-}
-.amc-datetimepicker-calendar-day._selected,
-.amc-datetimepicker-calendar-day._selected::after {
   color: var(--amc-datetimepicker-backgroundColor);
+}
+.amc-datetimepicker-calendar-day._selected::after {
+  background-color: var(--amc-datetimepicker-backgroundColor);
 }
 .amc-datetimepicker-calendar-day:hover:not(._selected) {
   border-color: var(--amc-datetimepicker-accentColor);
-  cursor: pointer;
 }
 .amc-datetimepicker-calendar-day:not(._current):not(._selected) {
   opacity: var(--lowOpacity);
@@ -194,17 +197,18 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 3em;
-  width: 7em;
+  cursor: pointer;
+  min-width: 7em;
+  min-height: 3em;
 }
-.amc-datetimepicker-months-month._today::after,
-.amc-datetimepicker-years-year._today::after {
-  font-size: 1.3em;
+.amc-datetimepicker-months-month._today:after,
+.amc-datetimepicker-years-year._today:after {
   position: absolute;
-  content: '_';
-  font-weight: bold;
-  color: var(--amc-datetimepicker-accentColor);
-  bottom: 7px;
+  content: '';
+  width: 1em;
+  height: 0.13em;
+  background-color: var(--amc-datetimepicker-accentColor);
+  bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
   opacity: var(--lowOpacity);
@@ -212,17 +216,15 @@
 .amc-datetimepicker-months-month._selected,
 .amc-datetimepicker-years-year._selected {
   background-color: var(--amc-datetimepicker-accentColor);
+  color: var(--amc-datetimepicker-backgroundColor);
 }
-.amc-datetimepicker-months-month._selected,
-.amc-datetimepicker-years-year._selected,
 .amc-datetimepicker-months-month._selected::after,
 .amc-datetimepicker-years-year._selected::after {
-  color: var(--amc-datetimepicker-backgroundColor);
+  background-color: var(--amc-datetimepicker-backgroundColor);
 }
 .amc-datetimepicker-months-month:hover:not(._selected),
 .amc-datetimepicker-years-year:hover:not(._selected) {
   border-color: var(--amc-datetimepicker-accentColor);
-  cursor: pointer;
 }
 .amc-datetimepicker-months-month:not(._current):not(._selected),
 .amc-datetimepicker-years-year:not(._current):not(._selected) {
