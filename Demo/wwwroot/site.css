@@ -9,6 +9,13 @@ main > .amc-progressbar {
 	margin-top: 50px;
 }
 
+main > .amc-datetimepicker {
+	--amc-datetimepicker-backgroundColor: #fff !important;
+	--amc-datetimepicker-accentColor: blue !important;
+	margin-left: 20px;
+	margin-top: 50px;
+}
+
 body {
 	height: 100vh;
 	background-image: url(/bg.jpg);
