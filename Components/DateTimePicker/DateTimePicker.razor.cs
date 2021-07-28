@@ -55,6 +55,9 @@ namespace AngryMonkey.Cloud.Components
         {
             switch (SelectionState)
             {
+                case DateTimePickerSelectionState.Year:
+                    break;
+
                 case DateTimePickerSelectionState.Month:
                     FillYearsArray();
                     SelectionState = DateTimePickerSelectionState.Year;
@@ -157,6 +160,14 @@ namespace AngryMonkey.Cloud.Components
             FillMonthsArray();
         }
 
+       
+
+        
+
+
+
+        #region Helpers
+
         private void FillDaysArray()
         {
             int daysInPreviousMonth;
@@ -205,9 +216,22 @@ namespace AngryMonkey.Cloud.Components
             List<DateTimePickerMonth> months = new();
 
             for (int i = 1; i <= 12; i++)
-                months.Add(new DateTimePickerMonth(NavigatedYear, i) { IsSelected = i == SelectedDate.Month && SelectedDate.Year == NavigatedYear });
+                months.Add(new DateTimePickerMonth(NavigatedYear, i)
+                {
+                    IsSelected = i == NavigatedMonth,
+                    IsToday = i == SelectedDate.Month && SelectedDate.Year == NavigatedYear
+                });
 
             Months = months.ToArray();
+        }
+
+        private DateTimePickerDate NewDate(int year, int month, int day)
+        {
+            return new DateTimePickerDate(year, month, day)
+            {
+                CurrentMonth = NavigatedYear == year && NavigatedMonth == month,
+                IsSelected = SelectedDate.Year == year && SelectedDate.Month == month && SelectedDate.Day == day
+            };
         }
 
         private void FillYearsArray()
@@ -219,24 +243,14 @@ namespace AngryMonkey.Cloud.Components
             for (int i = StartCurrentDecadeYear; i <= EndCurrentDecadeYear; i++)
                 years.Add(new DateTimePickerYear(i)
                 {
-                    IsSelected = SelectedDate.Year == i,
+                    IsToday = SelectedDate.Year == i,
+                    IsSelected = NavigatedYear == i,
                     IsCurrentDecade = true
                 });
 
             years.Add(new DateTimePickerYear(EndCurrentDecadeYear + 1));
 
             Years = years.ToArray();
-        }
-
-        #region Helpers
-
-        private DateTimePickerDate NewDate(int year, int month, int day)
-        {
-            return new DateTimePickerDate(year, month, day)
-            {
-                CurrentMonth = NavigatedYear == year && NavigatedMonth == month,
-                IsSelected = SelectedDate.Year == year && SelectedDate.Month == month && SelectedDate.Day == day
-            };
         }
 
         #endregion

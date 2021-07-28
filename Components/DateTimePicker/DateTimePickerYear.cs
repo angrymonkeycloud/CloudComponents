@@ -14,6 +14,8 @@ namespace AngryMonkey.Cloud.Components
             public int Year { get; set; }
             public bool IsCurrentDecade { get; set; } = false;
             public bool IsSelected { get; set; } = false;
+
+            public bool IsToday { get; set; } = false;
             public string CssClasses
             {
                 get
@@ -25,6 +27,9 @@ namespace AngryMonkey.Cloud.Components
 
                     if (IsSelected)
                         classes.Add("_selected");
+
+                    if (IsToday)
+                        classes.Add("_today");
 
                     return string.Join(' ', classes);
                 }
