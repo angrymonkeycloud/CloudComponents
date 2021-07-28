@@ -1,29 +1,62 @@
 ﻿@namespace AngryMonkey.Cloud.Components
-@inject IJSRuntime jsRuntime
+
 
 <div class="amc-datetimepicker">
-    <div class="amc-datetimepicker-calendar">
-        <div class="amc-datetimepicker-month">
-            <button class="amc-datetimepicker-previous" @onclick="OnPrevClick">Prev</button>
-            <div class="amc-datetimepicker-info">
-                <span class="amc-datetimepicker-monthname">@SelectedMonthName</span>
-                <span class="amc-datetimepicker-fulldate">@FullDate</span>
+    <div class="amc-datetimepicker-header">
+        <div class="amc-datetimepicker-selecteddate">@SelectedDateDisplay</div>
+
+        <div class="amc-datetimepicker-selection">
+            <button class="amc-datetimepicker-selection-previous" @onclick="OnPrevClick">
+                <svg viewBox="0 0 50 50">
+                    <polyline points="36.8,1.5 13.3,24.8 36.8,48 "></polyline>
+                </svg>
+            </button>
+            <div @onclick="ChangeSelectionState" class="amc-datetimepicker-selection-info">
+                <span>@DisplaySelectionInfo</span>
             </div>
-            <button class="amc-datetimepicker-next" @onclick="OnNextClick">Next</button>
+            <button class="amc-datetimepicker-selection-next" @onclick="OnNextClick">
+                <svg viewBox="0 0 50 50">
+                    <polyline points="13.3,48.1 36.8,24.8 13.3,1.5 "></polyline>
+                </svg>
+            </button>
         </div>
+    </div>
+    <div class="amc-datetimepicker-body">
+        @if (SelectionState == DateTimePickerSelectionState.Day)
+        {
+            <div class="amc-datetimepicker-calendar">
+                <div class="amc-datetimepicker-calendar-weeks">
+                    @foreach (string weekday in WeekDaysNames)
+                    {
+                        <div class="amc-datetimepicker-calendar-week">@weekday</div>
+                    }
+                </div>
 
-        <div class="amc-datetimepicker-weekdays">
-            @foreach(string weekday in WeekDaysNames)
-            {
-                <div>@weekday</div>
-            }
-        </div>
-
-        <div class="amc-datetimepicker-days">
-            @foreach (DateTimePickerDate date in Days)
-            {
-                <div class="amc-datetimepicker-day @date.Classes" @onclick="() => OnDateSelected(date)">@date.Day</div>
-            }
-        </div>
+                <div class="amc-datetimepicker-calendar-days">
+                    @foreach (DateTimePickerDate date in Days)
+                    {
+                        <div class="amc-datetimepicker-calendar-day @date.CssClasses" @onclick="() => OnDateSelected(date)">@date.Day</div>
+                    }
+                </div>
+            </div>
+        }
+        else if (SelectionState == DateTimePickerSelectionState.Month)
+        {
+            <div class="amc-datetimepicker-months">
+                @foreach (DateTimePickerMonth month in Months)
+                {
+                    <div class="amc-datetimepicker-months-month @month.CssClasses" @onclick="() => OnMonthSelected(month.Month)">@month.Name</div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="amc-datetimepicker-years">
+                @foreach (DateTimePickerYear year in Years)
+                {
+                    <div class="amc-datetimepicker-years-year @year.CssClasses" @onclick="() => OnYearSelected(year.Year)">@year.Year</div>
+                }
+            </div>
+        }
     </div>
 </div>

@@ -15,9 +15,6 @@ namespace AngryMonkey.Cloud.Components
 	{
 		private ElementReference ComponentElement { get; set; }
 
-		[Parameter]
-		public int HideControlsDelay { get; set; } = 3000;
-
 		private Task<IJSObjectReference> _module;
 		private Task<IJSObjectReference> Module => _module ??= GeneralMethods.GetIJSObjectReference(jsRuntime, "videoplayer/videoplayer.js");
 
@@ -35,7 +32,7 @@ namespace AngryMonkey.Cloud.Components
 
 		private bool IsUserInteracting = false;
 
-		private bool HideControls => IsVideoPlaying && !IsUserInteracting;
+		private bool HideControls => IsVideoPlaying && !IsUserInteracting && !IsUserChangingProgress;
 
 		private void Repaint()
 		{
@@ -226,8 +223,19 @@ namespace AngryMonkey.Cloud.Components
 			await ProgressiveDelay();
 		}
 
+		protected async Task OnProgressTouchStart(TouchEventArgs args)
+		{
+			IsUserChangingProgress = true;
+			await ProgressiveDelay();
+		}
+
 		public async Task OnProgressChanged(ProgressBarChangeEventArgs args)
 		{
+			double durationDifference = args.NewValue - args.PreviousValue;
+
+			if (durationDifference > -1 && durationDifference < 1)
+				return;
+
 			var module = await Module;
 
 			await module.InvokeVoidAsync("changeCurrentTime", ComponentElement, args.NewValue);
@@ -264,11 +272,11 @@ namespace AngryMonkey.Cloud.Components
 			}
 		}
 
-		private bool _isEmptyTouched = false;
+		private bool _isTouched = false;
 
 		protected async Task OnEmptyTouch(TouchEventArgs args)
 		{
-			_isEmptyTouched = true;
+			_isTouched = true;
 		}
 
 		protected async Task OnEmptyClick(MouseEventArgs args)
@@ -286,9 +294,16 @@ namespace AngryMonkey.Cloud.Components
 				return;
 			}
 
-			if (_isEmptyTouched)
+			if (_isTouched)
 			{
-				_isEmptyTouched = false;
+				_isTouched = false;
+
+				if (IsUserInteracting)
+				{
+					IsUserInteracting = false;
+					Repaint();
+				}
+
 				return;
 			}
 
@@ -333,6 +348,9 @@ namespace AngryMonkey.Cloud.Components
 
 		public async Task PlayVideo()
 		{
+			if (Duration == 0)
+				await VideoLoaded();
+
 			var module = await Module;
 
 			await module.InvokeVoidAsync("play", ComponentElement);
@@ -391,14 +409,8 @@ namespace AngryMonkey.Cloud.Components
 			base.OnParametersSet();
 		}
 
-		private async Task OnComponentClick(MouseEventArgs args)
-		{
-			await ProgressiveDelay();
-		}
-
 		protected async Task OnMouseWheel(WheelEventArgs args)
 		{
-
 			if (DoShowVolumeControls)
 			{
 				double newValue;
@@ -416,6 +428,11 @@ namespace AngryMonkey.Cloud.Components
 			await ProgressiveDelay();
 		}
 
+		private async Task OnComponentClick(MouseEventArgs args)
+		{
+			await ProgressiveDelay();
+		}
+
 		public async Task MainMouseMove(MouseEventArgs args)
 		{
 			await ProgressiveDelay();
@@ -430,7 +447,7 @@ namespace AngryMonkey.Cloud.Components
 			Guid id = Guid.NewGuid();
 			latestId = id;
 
-			await Task.Delay(HideControlsDelay);
+			await Task.Delay(3000);
 
 			if (id != latestId)
 				return;

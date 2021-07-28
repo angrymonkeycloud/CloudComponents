@@ -11,6 +11,7 @@
     "CloudVideoPlayer.Website": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "datetimepicker",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
