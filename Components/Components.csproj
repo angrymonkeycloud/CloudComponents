@@ -22,14 +22,12 @@
 	<ItemGroup>
 		<None Remove="ProgressBar\progressbar.min.js" />
 	</ItemGroup>
-
-
 	<ItemGroup>
-		<SupportedPlatform Include="browser" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.7" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.8" />
+		<SupportedPlatform Include="browser" />
 	</ItemGroup>
 
 	<ItemGroup>

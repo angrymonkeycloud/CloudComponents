@@ -8,7 +8,7 @@
 body {
   height: 90vh;
   width: 90vw;
-  background-image: url(/bg4.jpg);
+  background-image: url(/bg2.jpg);
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -47,7 +47,6 @@ body .components-icon {
 }
 @media screen and (max-width: 1000px) {
   body .components-links {
-    visibility: hidden;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
@@ -73,9 +72,6 @@ body .components-icon {
   }
   body .components-links a:hover:active {
     border-bottom-color: var(--LinkColor);
-  }
-  body .components ._clicked {
-    visibility: visible;
   }
   body .components-icon {
     display: block;
