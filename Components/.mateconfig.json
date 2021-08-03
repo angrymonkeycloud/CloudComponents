@@ -33,6 +33,14 @@
 		{
 			"output": "DateTimePicker/DateTimePicker.razor.css",
 			"input": "DateTimePicker/DateTimePicker.less"
+		},
+		{
+			"output": "GridView/GridView.razor.css",
+			"input": "GridView/GridView.less"
+		},
+		{
+			"output": "wwwroot/gridview/gridview.js",
+			"input": "GridView/GridView.ts"
 		}
 	]
 }

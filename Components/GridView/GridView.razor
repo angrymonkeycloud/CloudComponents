@@ -1,0 +1,80 @@
+﻿@namespace AngryMonkey.Cloud.Components
+@inject IJSRuntime jsRuntime
+
+<div class="amc-datagrid">
+    @if (Columns != null)
+    {
+        <div class="amc-datagrid-table">
+
+            <div class="amc-datagrid-columns">
+                <div class="amc-datagrid-column">&nbsp;</div>
+                @foreach (GridViewColumn col in Columns.Columns)
+                {
+                    <div class="amc-datagrid-column">@col.Name</div>
+                }
+            </div>
+
+            @if (Rows != null)
+            {
+                <div class="amc-datagrid-rows">
+                    @foreach (GridViewRow row in Rows.Rows)
+                    {
+
+                        <div class="amc-datagrid-row @row.CssClasses">
+                            <div class="amc-datagrid-select" @onclick=@(()=>SelectRow(row))>⨠</div>
+
+                            @foreach (GridViewCell cell in row.Cells)
+                            {
+                                <div class="amc-datagrid-cell">@cell.FormattedValue</div>
+                            }
+                        </div>
+                    }
+
+
+
+                </div>
+            }
+            else
+            {
+                <div class="amc-datagrid-norows">
+                    Loading... Rows
+                </div>
+            }
+        </div>
+
+        <div class="amc-datagrid-footer">
+            @if (Rows != null)
+            {
+                <div class="amc-datagrid-footer-pages">
+                    <span class="pagination-pages">@StartCount - @EndCount out of @RowsCount</span>
+                </div>
+                <div class="amc-datagrid-footer-pagination">
+                    @if (IsNavigateBackward)
+                    {
+                        <button class="amc-datagrid-footer-pagination-navigatebutton" @onclick=@(async () => await NavigateToPage("previous"))>
+                            <svg viewBox="0 0 50 50">
+                                <polyline points="36.8,1.5 13.3,24.8 36.8,48 "></polyline>
+                            </svg>
+                        </button>
+                    }
+
+                    <span class="amc-datagrid-footer-pagination-page">Page @CurrentPage </span>
+                    @if (IsNavigateForward)
+                    {
+                        <button class="amc-datagrid-footer-pagination-navigatebutton" @onclick=@(async () => await NavigateToPage("next"))>
+                            <svg viewBox="0 0 50 50">
+                                <polyline points="13.3,48.1 36.8,24.8 13.3,1.5 "></polyline>
+                            </svg>
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="amc-datagrid-nodata">
+            Loading... Columns
+        </div>
+    }
+</div>

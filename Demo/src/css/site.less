@@ -8,7 +8,7 @@
 body {
     height: 90vh;
     width: 90vw;
-    background-image: url(/bg2.jpg);
+    background-image: url(/bg.jpg);
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -34,15 +34,11 @@ body {
                     font-family: sans-serif;
                     letter-spacing: 2px;
                     margin-left: 20px;
+                    border-bottom: 1px solid transparent;
                 }
 
                 &:hover {
-                    border-bottom: 1px groove #fff;
-
-
-                    &:active {
-                        border-bottom-color: var(--LinkColor);
-                    }
+                    border-bottom: 1px solid #fff;
                 }
             }
         }
@@ -56,23 +52,14 @@ body {
         .components {
 
             &-links {
-              
                 flex-direction: column;
                 justify-content: flex-start;
-                align-items: flex-start;
-                position: absolute;
-                right: 45px;
-                top: 53px;
-                padding: 5px;
-                z-index: 2;
-                background-color: rgba(100, 100, 100, 0.3);
-                border-radius: 15px;
-
+                align-items: center;
 
                 a {
                     &, &:hover, &:active, &:focus, &:visited {
                         padding: 5px;
-                        margin-left: 0;
+                        margin-top: 10px;
                     }
 
                     &:hover {
@@ -83,20 +70,6 @@ body {
                             border-bottom-color: var(--LinkColor);
                         }
                     }
-                }
-            }
-
-            &-icon {
-                display: block;
-                position: absolute;
-                right: 10px;
-                top: 10px;
-
-                svg {
-                    fill: rgba(255,255,255,.9);
-                    background-color: transparent;
-                    width: 40px;
-                    height: 40px;
                 }
             }
         }
@@ -111,7 +84,6 @@ body {
             width: 600px;
             margin-left: auto;
             margin-right: auto;
-            margin-top: 50px;
         }
 
         > .amc-videoplayer {
@@ -120,7 +92,6 @@ body {
             height: 450px;
             margin-left: auto;
             margin-right: auto;
-            margin-top: 50px;
         }
 
         > .amc-datetimepicker {
@@ -128,7 +99,10 @@ body {
             height: 600px;
             margin-left: auto;
             margin-right: auto;
-            margin-top: 50px;
+        }
+
+        > .amc-datagrid {
+           
         }
     }
 }
