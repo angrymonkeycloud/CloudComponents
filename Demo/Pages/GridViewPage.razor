@@ -1,0 +1,48 @@
+﻿@page "/GridView"
+@inject HttpClient Http
+
+<PageBase Title="Blazor Grid View Component" />
+
+<GridView Columns="Columns" Rows="Rows" PageSize="@pageSize" RowsCount="@rowsCount" OnRequestData="OnGridRequestData" />
+
+@code {
+
+    public int rowsCount;
+    public int pageSize = 3;
+    public GridViewColumns Columns = null;
+    public GridViewRows Rows = null;
+    private List<WeatherForecast> data;
+
+    public async Task OnGridRequestData(GridViewRequestDataEventArgs args)
+    {
+        DataTable dataTable = new DataTable();
+
+        dataTable.Columns.Add("Summary", typeof(string));
+        dataTable.Columns.Add("TemperatureC", typeof(int));
+        dataTable.Columns.Add("TemperatureF", typeof(int));
+
+        Columns = GridViewColumns.Parse(dataTable.Columns);
+
+        int count = args.PageSize;
+        data = await Http.GetFromJsonAsync<List<WeatherForecast>>("weather.json");
+
+
+        foreach (var item in data.Skip((args.PageNumber - 1) * args.PageSize).Take(args.PageSize))
+            dataTable.Rows.Add(item.Summary, item.TemperatureC, item.TemperatureF);
+
+        rowsCount = data.Count();
+
+        Rows = GridViewRows.Parse(dataTable.Rows);
+    }
+
+    public class WeatherForecast
+    {
+        public DateTime Date { get; set; }
+
+        public int TemperatureC { get; set; }
+
+        public string Summary { get; set; }
+
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    }
+}

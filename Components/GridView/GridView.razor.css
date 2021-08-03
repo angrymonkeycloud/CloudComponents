@@ -1,0 +1,133 @@
+.amc-datagrid {
+  --amc-gridview-columnColor: #fff;
+  --amc-gridview-rowColor: #fff;
+  --amc-gridview-backgroundColor: transparent;
+  --amc-gridview-footerColor: #63553B;
+  --amc-gridview-footerBgColor: #f3ede2;
+  text-align: center;
+}
+.amc-datagrid-columns {
+  margin-bottom: 20px;
+  display: flex;
+}
+.amc-datagrid-column {
+  padding: 5px 50px;
+  color: var(--amc-gridview-columnColor);
+  border: 1px solid #EFE6D7;
+  width: auto;
+}
+.amc-datagrid-column:first-child {
+  border-left: none;
+  border-right: none;
+  padding: 0;
+}
+.amc-datagrid-column:nth-child(2) {
+  border-left: none;
+}
+.amc-datagrid-column:last-child {
+  border-right: none;
+}
+.amc-datagrid-rows {
+  display: flex;
+  flex-direction: row;
+  overflow: auto;
+  flex: 1;
+  background-color: var(--amc-gridview-backgroundColor);
+}
+.amc-datagrid-row {
+  display: table-cell;
+}
+.amc-datagrid-row._selected {
+  background-color: rgba(229, 242, 211, 0.5);
+}
+.amc-datagrid-cell {
+  color: var(--amc-gridview-rowColor);
+  font-size: 0.9em;
+  padding: 5px 50px;
+}
+.amc-datagrid-select {
+  cursor: pointer;
+  color: #fff;
+}
+.amc-datagrid-footer {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center !important;
+  font-size: 0.7em;
+  font-family: 'Segoe UI';
+  letter-spacing: 3px;
+  opacity: 0.7;
+  background-color: var(--amc-gridview-footerBgColor);
+  color: var(--amc-gridview-footerColor);
+  padding: 5px 10px;
+}
+.amc-datagrid-footer-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.amc-datagrid-footer-pagination svg {
+  height: 13px;
+  width: 13px;
+}
+.amc-datagrid-footer-pagination svg * {
+  fill: none;
+  stroke: #960048;
+  stroke-width: 4px;
+  stroke-miterlimit: 10;
+}
+.amc-datagrid-footer-pagination-navigatebutton {
+  color: brown;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 3px 12px;
+}
+/*.pagination {
+    margin: 20px 0;
+    text-align: center;
+
+    button {
+        cursor: pointer;
+    }
+
+    &-navigatebutton {
+        color: brown;
+        background-color: transparent;
+        padding: 5px;
+        border: none;
+
+        &:hover {
+            color: aqua;
+            text-decoration: underline;
+        }
+    }
+
+    &-pagebutton {
+        margin: 0 10px;
+        background-color: transparent;
+        border: none;
+    }
+
+    .currentpage {
+        width: 20px;
+        background-color: transparent;
+        color: blue;
+        border: 1px solid #468EEF;
+
+        &:active {
+            background-color: aqua;
+            border: 1px dotted aqua;
+        }
+    }
+
+    &-pages {
+        font-size: 0.8em;
+        font-weight: 500;
+        letter-spacing: 3px;
+        margin-left: 10px;
+        color: #EDB13F;
+    }
+}
+*/
