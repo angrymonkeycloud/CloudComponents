@@ -35,12 +35,10 @@ body .components-links a:visited {
   font-family: sans-serif;
   letter-spacing: 2px;
   margin-left: 20px;
+  border-bottom: 1px groove transparent;
 }
 body .components-links a:hover {
-  border-bottom: 1px groove #fff;
-}
-body .components-links a:hover:active {
-  border-bottom-color: var(--LinkColor);
+  border-color: #fff;
 }
 body .components-icon {
   display: none;
@@ -91,28 +89,20 @@ body .components-icon {
   }
 }
 body main {
-  width: 100%;
   margin-top: 50px;
+  margin-left: auto;
+  margin-right: auto;
 }
 body main > .amc-progressbar {
   --amc-progressbar-accentColor: var(--LinkColor) !important;
   width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 50px;
 }
 body main > .amc-videoplayer {
   --amc-videoplayer-accentColor: var(--LinkColor) !important;
   width: 800px;
   height: 450px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 50px;
 }
 body main > .amc-datetimepicker {
-  width: 750px;
-  height: 600px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 50px;
+  --amc-datetimepicker-backgroundColor: #e0e0e0 !important;
+  --amc-datetimepicker-accentColor: var(--LinkColor) !important;
 }
