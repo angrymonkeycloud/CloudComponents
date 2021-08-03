@@ -1,252 +1,281 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Components.Web;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace AngryMonkey.Cloud.Components
 {
-    public partial class DateTimePicker
-    {
-        #region common
+	public partial class DateTimePicker
+	{
+		#region common
 
-        private readonly string[] WeekDaysNames = new string[]
-        {
-            "Su",
-            "Mo",
-            "Tu",
-            "We",
-            "Th",
-            "Fr",
-            "Sa",
-        };
+		private readonly string[] WeekDaysNames = new string[]
+		{
+			"Su",
+			"Mo",
+			"Tu",
+			"We",
+			"Th",
+			"Fr",
+			"Sa",
+		};
 
-        private DateTimePickerDate SelectedDate { get; set; }
-        private DateTimePickerSelectionState SelectionState { get; set; } = DateTimePickerSelectionState.Day;
-        private int NavigatedMonth { get; set; } = 1;
-        private int NavigatedYear { get; set; } = 1;
-        private int StartCurrentDecadeYear => NavigatedYear / 10 * 10;
-        private int EndCurrentDecadeYear => (NavigatedYear / 10 * 10) + 9;
+		private DateTimePickerDate SelectedDate { get; set; }
+		private DateTimePickerSelectionState SelectionState { get; set; } = DateTimePickerSelectionState.Day;
+		private int NavigatedMonth { get; set; } = 1;
+		private int NavigatedYear { get; set; } = 1;
+		private int StartCurrentDecadeYear => NavigatedYear / 10 * 10;
+		private int EndCurrentDecadeYear => (NavigatedYear / 10 * 10) + 9;
 
-        protected string DisplaySelectionInfo => SelectionState switch
-        {
-            DateTimePickerSelectionState.Year => $"{StartCurrentDecadeYear} - {EndCurrentDecadeYear}",
-            DateTimePickerSelectionState.Month => NavigatedYear.ToString(),
-            _ => $"{DateTimePickerMonth.Names[NavigatedMonth - 1]} {NavigatedYear.ToString()}",
-        };
+		protected string DisplaySelectionInfo => SelectionState switch
+		{
+			DateTimePickerSelectionState.Year => $"{StartCurrentDecadeYear} - {EndCurrentDecadeYear}",
+			DateTimePickerSelectionState.Month => NavigatedYear.ToString(),
+			_ => $"{DateTimePickerMonth.Names[NavigatedMonth - 1]} {NavigatedYear.ToString()}",
+		};
 
-        private string SelectedDateDisplay => SelectedDate.ToDateTime().ToString("dddd, MMMM dd, yyyy");
+		private string SelectedDateDisplay => SelectedDate.ToDateTime().ToString("dddd, MMMM dd, yyyy");
 
-        private DateTimePickerDate[] Days { get; set; } = Array.Empty<DateTimePickerDate>();
-        private DateTimePickerMonth[] Months { get; set; } = Array.Empty<DateTimePickerMonth>();
-        private DateTimePickerYear[] Years { get; set; } = Array.Empty<DateTimePickerYear>();
+		private DateTimePickerDate[] Days { get; set; } = Array.Empty<DateTimePickerDate>();
+		private DateTimePickerMonth[] Months { get; set; } = Array.Empty<DateTimePickerMonth>();
+		private DateTimePickerYear[] Years { get; set; } = Array.Empty<DateTimePickerYear>();
 
-        #endregion
+		#endregion
 
-        protected override async Task OnInitializedAsync()
-        {
-            SelectedDate = new DateTimePickerDate(DateTime.Now);
-            NavigatedMonth = SelectedDate.Month;
-            NavigatedYear = SelectedDate.Year;
+		protected override async Task OnInitializedAsync()
+		{
+			SelectedDate = new DateTimePickerDate(DateTime.Now);
+			NavigatedMonth = SelectedDate.Month;
+			NavigatedYear = SelectedDate.Year;
 
-            FillDaysArray();
-        }
+			FillDaysArray();
+		}
 
-        protected async Task ChangeSelectionState()
-        {
-            switch (SelectionState)
-            {
-                case DateTimePickerSelectionState.Year:
-                    break;
+		protected async Task ChangeSelectionState()
+		{
+			switch (SelectionState)
+			{
+				case DateTimePickerSelectionState.Year:
+					break;
 
-                case DateTimePickerSelectionState.Month:
-                    FillYearsArray();
-                    SelectionState = DateTimePickerSelectionState.Year;
-                    break;
+				case DateTimePickerSelectionState.Month:
+					FillYearsArray();
+					SelectionState = DateTimePickerSelectionState.Year;
+					break;
 
-                default:
-                    SelectionState = DateTimePickerSelectionState.Month;
-                    FillMonthsArray();
-                    break;
-            }
-        }
+				default:
+					SelectionState = DateTimePickerSelectionState.Month;
+					FillMonthsArray();
+					break;
+			}
+		}
 
-        protected async Task OnNextClick()
-        {
-            switch (SelectionState)
-            {
-                case DateTimePickerSelectionState.Year:
-                    NavigatedYear += 10;
-                    NavigatedYear = StartCurrentDecadeYear;
-                    FillYearsArray();
-                    break;
+		protected async Task OnNextClick()
+		{
+			switch (SelectionState)
+			{
+				case DateTimePickerSelectionState.Year:
+					NavigatedYear += 10;
+					NavigatedYear = StartCurrentDecadeYear;
+					FillYearsArray();
+					break;
 
-                case DateTimePickerSelectionState.Month:
+				case DateTimePickerSelectionState.Month:
 
-                    NavigatedYear++;
-                    FillMonthsArray();
-                    break;
+					NavigatedYear++;
+					FillMonthsArray();
+					break;
 
-                default:
-                    if (NavigatedMonth < 12)
-                        NavigatedMonth++;
-                    else
-                    {
-                        NavigatedMonth = 1;
-                        NavigatedYear++;
-                    }
+				default:
+					if (NavigatedMonth < 12)
+						NavigatedMonth++;
+					else
+					{
+						NavigatedMonth = 1;
+						NavigatedYear++;
+					}
 
-                    FillDaysArray();
-                    break;
-            }
-        }
+					FillDaysArray();
+					break;
+			}
+		}
 
-        protected async Task OnPrevClick()
-        {
-            switch (SelectionState)
-            {
-                case DateTimePickerSelectionState.Year:
-                    NavigatedYear -= 10;
-                    NavigatedYear = StartCurrentDecadeYear;
-                    FillYearsArray();
-                    break;
+		protected async Task OnPrevClick()
+		{
+			switch (SelectionState)
+			{
+				case DateTimePickerSelectionState.Year:
+					NavigatedYear -= 10;
+					NavigatedYear = StartCurrentDecadeYear;
+					FillYearsArray();
+					break;
 
-                case DateTimePickerSelectionState.Month:
+				case DateTimePickerSelectionState.Month:
 
-                    NavigatedYear--;
-                    FillMonthsArray();
-                    break;
+					NavigatedYear--;
+					FillMonthsArray();
+					break;
 
-                default:
-                    if (NavigatedMonth > 1)
-                        NavigatedMonth--;
-                    else
-                    {
-                        NavigatedMonth = 12;
-                        NavigatedYear--;
-                    }
+				default:
+					if (NavigatedMonth > 1)
+						NavigatedMonth--;
+					else
+					{
+						NavigatedMonth = 12;
+						NavigatedYear--;
+					}
 
-                    FillDaysArray();
-                    break;
-            }
-        }
+					FillDaysArray();
+					break;
+			}
+		}
 
-        protected async Task OnDateSelected(DateTimePickerDate day)
-        {
-            SelectedDate = day;
+		protected async Task OnDateSelected(DateTimePickerDate day)
+		{
+			SelectedDate = day;
 
-            DateTimePickerDate oldDay = Days.FirstOrDefault(key => key.IsSelected);
+			DateTimePickerDate oldDay = Days.FirstOrDefault(key => key.IsSelected);
 
-            if (oldDay != null)
-                oldDay.IsSelected = false;
+			if (oldDay != null)
+				oldDay.IsSelected = false;
 
-            DateTimePickerDate newDay = Days.FirstOrDefault(key => key.Day == SelectedDate.Day && key.Month == SelectedDate.Month && key.Year == SelectedDate.Year);
+			DateTimePickerDate newDay = Days.FirstOrDefault(key => key.Day == SelectedDate.Day && key.Month == SelectedDate.Month && key.Year == SelectedDate.Year);
 
-            if (newDay != null)
-                newDay.IsSelected = true;
-        }
+			if (newDay != null)
+				newDay.IsSelected = true;
+		}
 
-        protected async Task OnMonthSelected(int month)
-        {
-            NavigatedMonth = month;
+		protected async Task OnMonthSelected(int month)
+		{
+			NavigatedMonth = month;
 
-            SelectionState = DateTimePickerSelectionState.Day;
-            FillDaysArray();
-        }
+			SelectionState = DateTimePickerSelectionState.Day;
+			FillDaysArray();
+		}
 
-        protected async Task OnYearSelected(int year)
-        {
-            NavigatedYear = year;
-            SelectionState = DateTimePickerSelectionState.Month;
-            FillMonthsArray();
-        }
+		protected async Task OnYearSelected(int year)
+		{
+			NavigatedYear = year;
+			SelectionState = DateTimePickerSelectionState.Month;
+			FillMonthsArray();
+		}
 
-        #region Helpers
+		#region Body Swapping
 
-        private void FillDaysArray()
-        {
-            int daysInPreviousMonth;
-            if (NavigatedMonth == 1)
-                daysInPreviousMonth = DateTime.DaysInMonth(NavigatedYear - 1, 12);
-            else
-                daysInPreviousMonth = DateTime.DaysInMonth(NavigatedYear, NavigatedMonth - 1);
+		double bodySwapClientX;
+		DateTime bodySwapTime;
+
+		protected async Task OnBodyTouchStart(TouchEventArgs args)
+		{
+			bodySwapClientX = args.ChangedTouches[0].ClientX;
+			bodySwapTime = DateTime.Now;
+		}
+
+		protected async Task OnBodyTouchEnd(TouchEventArgs args)
+		{
+			if (DateTime.Now.Subtract(bodySwapTime).TotalSeconds > 1)
+				return;
+
+			bodySwapClientX = args.ChangedTouches[0].ClientX - bodySwapClientX;
+
+			if (bodySwapClientX > -10 && bodySwapClientX < 10)
+				return;
+
+			if (bodySwapClientX < 0)
+				await OnPrevClick();
+			else await OnNextClick();
+		}
+
+		#endregion
+
+		#region Helpers
+
+		private void FillDaysArray()
+		{
+			int daysInPreviousMonth;
+			if (NavigatedMonth == 1)
+				daysInPreviousMonth = DateTime.DaysInMonth(NavigatedYear - 1, 12);
+			else
+				daysInPreviousMonth = DateTime.DaysInMonth(NavigatedYear, NavigatedMonth - 1);
 
 
-            int daysInCurrentMonth = DateTime.DaysInMonth(NavigatedYear, NavigatedMonth);
+			int daysInCurrentMonth = DateTime.DaysInMonth(NavigatedYear, NavigatedMonth);
 
-            List<DateTimePickerDate> days = new();
+			List<DateTimePickerDate> days = new();
 
-            if (NavigatedMonth == 1)
-            {
-                for (int i = (int)new DateTime(NavigatedYear, NavigatedMonth, 1).DayOfWeek; i > 0; i--)
-                    days.Add(NewDate(NavigatedYear - 1, 12, daysInPreviousMonth - i + 1));
-            }
-            else
-            {
-                for (int i = (int)new DateTime(NavigatedYear, NavigatedMonth, 1).DayOfWeek; i > 0; i--)
-                    days.Add(NewDate(NavigatedYear, NavigatedMonth - 1, daysInPreviousMonth - i + 1));
-            }
+			if (NavigatedMonth == 1)
+			{
+				for (int i = (int)new DateTime(NavigatedYear, NavigatedMonth, 1).DayOfWeek; i > 0; i--)
+					days.Add(NewDate(NavigatedYear - 1, 12, daysInPreviousMonth - i + 1));
+			}
+			else
+			{
+				for (int i = (int)new DateTime(NavigatedYear, NavigatedMonth, 1).DayOfWeek; i > 0; i--)
+					days.Add(NewDate(NavigatedYear, NavigatedMonth - 1, daysInPreviousMonth - i + 1));
+			}
 
-            for (int i = 1; i <= daysInCurrentMonth; ++i)
-                days.Add(NewDate(NavigatedYear, NavigatedMonth, i));
+			for (int i = 1; i <= daysInCurrentMonth; ++i)
+				days.Add(NewDate(NavigatedYear, NavigatedMonth, i));
 
-            int index = 1;
+			int index = 1;
 
-            if (NavigatedMonth == 12)
-            {
-                while (days.Count < 42)
-                    days.Add(NewDate(NavigatedYear + 1, 1, index++));
-            }
-            else
-            {
-                while (days.Count < 42)
-                    days.Add(NewDate(NavigatedYear, NavigatedMonth + 1, index++));
-            }
+			if (NavigatedMonth == 12)
+			{
+				while (days.Count < 42)
+					days.Add(NewDate(NavigatedYear + 1, 1, index++));
+			}
+			else
+			{
+				while (days.Count < 42)
+					days.Add(NewDate(NavigatedYear, NavigatedMonth + 1, index++));
+			}
 
-            Days = days.ToArray();
-        }
+			Days = days.ToArray();
+		}
 
-        private void FillMonthsArray()
-        {
-            List<DateTimePickerMonth> months = new();
+		private void FillMonthsArray()
+		{
+			List<DateTimePickerMonth> months = new();
 
-            for (int i = 1; i <= 12; i++)
-                months.Add(new DateTimePickerMonth(NavigatedYear, i)
-                {
-                    IsSelected = i == SelectedDate.Month && SelectedDate.Year == NavigatedYear,
-                    IsToday = i == DateTime.Now.Month && DateTime.Now.Year == NavigatedYear
-                });
+			for (int i = 1; i <= 12; i++)
+				months.Add(new DateTimePickerMonth(NavigatedYear, i)
+				{
+					IsSelected = i == SelectedDate.Month && SelectedDate.Year == NavigatedYear,
+					IsToday = i == DateTime.Now.Month && DateTime.Now.Year == NavigatedYear
+				});
 
-            Months = months.ToArray();
-        }
+			Months = months.ToArray();
+		}
 
-        private DateTimePickerDate NewDate(int year, int month, int day)
-        {
-            return new DateTimePickerDate(year, month, day)
-            {
-                CurrentMonth = NavigatedYear == year && NavigatedMonth == month,
-                IsSelected = SelectedDate.Year == year && SelectedDate.Month == month && SelectedDate.Day == day
-            };
-        }
+		private DateTimePickerDate NewDate(int year, int month, int day)
+		{
+			return new DateTimePickerDate(year, month, day)
+			{
+				CurrentMonth = NavigatedYear == year && NavigatedMonth == month,
+				IsSelected = SelectedDate.Year == year && SelectedDate.Month == month && SelectedDate.Day == day
+			};
+		}
 
-        private void FillYearsArray()
-        {
-            List<DateTimePickerYear> years = new();
+		private void FillYearsArray()
+		{
+			List<DateTimePickerYear> years = new();
 
-            years.Add(new DateTimePickerYear(StartCurrentDecadeYear - 1));
+			years.Add(new DateTimePickerYear(StartCurrentDecadeYear - 1));
 
-            for (int i = StartCurrentDecadeYear; i <= EndCurrentDecadeYear; i++)
-                years.Add(new DateTimePickerYear(i)
-                {
-                    IsToday = DateTime.Now.Year == i,
-                    IsSelected = SelectedDate.Year == i,
-                    IsCurrentDecade = true
-                });
+			for (int i = StartCurrentDecadeYear; i <= EndCurrentDecadeYear; i++)
+				years.Add(new DateTimePickerYear(i)
+				{
+					IsToday = DateTime.Now.Year == i,
+					IsSelected = SelectedDate.Year == i,
+					IsCurrentDecade = true
+				});
 
-            years.Add(new DateTimePickerYear(EndCurrentDecadeYear + 1));
+			years.Add(new DateTimePickerYear(EndCurrentDecadeYear + 1));
 
-            Years = years.ToArray();
-        }
+			Years = years.ToArray();
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

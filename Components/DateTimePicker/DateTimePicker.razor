@@ -21,7 +21,7 @@
             </button>
         </div>
     </div>
-    <div class="amc-datetimepicker-body">
+    <div class="amc-datetimepicker-body" @ontouchstart="OnBodyTouchStart" @ontouchend="OnBodyTouchEnd">
         @if (SelectionState == DateTimePickerSelectionState.Day)
         {
             <div class="amc-datetimepicker-calendar">
