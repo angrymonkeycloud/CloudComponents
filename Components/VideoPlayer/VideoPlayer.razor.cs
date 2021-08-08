@@ -334,11 +334,19 @@ namespace AngryMonkey.Cloud.Components
 			}
 		}
 
-		private bool _isTouched = false;
+		private bool _isEmptyTouched = false;
+		private bool _forceHideControls = false;
 
 		protected async Task OnEmptyTouch(TouchEventArgs args)
 		{
-			_isTouched = true;
+			_isEmptyTouched = true;
+
+			if (IsVideoPlaying && !HideControls)
+			{
+				_forceHideControls = true;
+				IsUserInteracting = false;
+				Repaint();
+			}
 		}
 
 		protected async Task OnEmptyClick(MouseEventArgs args)
@@ -356,15 +364,15 @@ namespace AngryMonkey.Cloud.Components
 				return;
 			}
 
-			if (_isTouched)
+			if (_isEmptyTouched)
 			{
-				_isTouched = false;
+				_isEmptyTouched = false;
 
-				if (IsUserInteracting)
-				{
-					IsUserInteracting = false;
-					Repaint();
-				}
+				//if (IsUserInteracting && !_forceHideControls)
+				//{
+				//	IsUserInteracting = false;
+				//	Repaint();
+				//}
 
 				return;
 			}
@@ -492,11 +500,21 @@ namespace AngryMonkey.Cloud.Components
 
 		private async Task OnComponentClick(MouseEventArgs args)
 		{
+			if (_forceHideControls)
+			{
+				_forceHideControls = false;
+				return;
+			}
+
+
 			await ProgressiveDelay();
 		}
 
 		public async Task MainMouseMove(MouseEventArgs args)
 		{
+			if (_forceHideControls)
+				return;
+
 			await ProgressiveDelay();
 		}
 
