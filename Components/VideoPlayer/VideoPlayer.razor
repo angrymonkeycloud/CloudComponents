@@ -4,7 +4,7 @@
 <div class="amc-videoplayer @ClassAttributes" @ref="ComponentElement" @onmousemove="MainMouseMove" @onfullscreenchange="OnFullScreenChange" @onmousewheel="OnMouseWheel" @onclick="OnComponentClick">
 
     <div class="amc-videoplayer-video">
-        <video src="@VideoUrl" @onload="VideoLoaded" @onchange="OnVideoChange"></video>
+        <video src="@VideoUrl" @onchange="OnVideoChange"></video>
     </div>
 
     <div class="amc-videoplayer-content">
@@ -76,12 +76,12 @@
         }
     </div>
 
-    @if (ShowSideBar == false)
+@*    @if (ShowSideBar == false)
     {
         <div class="amc-videoplayer-info">
             <div class="amc-videoplayer-title">@Title</div>
         </div>
-    }
+    }*@
 
     <div class="amc-videoplayer-controls">
         <div class="amc-videoplayer-controls-left">

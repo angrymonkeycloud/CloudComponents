@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AngryMonkey.Cloud.Components
@@ -68,9 +69,6 @@ namespace AngryMonkey.Cloud.Components
 		{
 			get
 			{
-				if (Volume == 0)
-					return "00";
-
 				return $"{Volume * 100}";
 			}
 		}
@@ -234,10 +232,13 @@ namespace AngryMonkey.Cloud.Components
 
 		public async Task OnProgressChanged(ProgressBarChangeEventArgs args)
 		{
-			double durationDifference = args.NewValue - args.PreviousValue;
+			if (args.PreviousValue.HasValue)
+			{
+				double durationDifference = args.NewValue - args.PreviousValue.Value;
 
-			if (durationDifference > -1 && durationDifference < 1)
-				return;
+				if (durationDifference > -1 && durationDifference < 1)
+					return;
+			}
 
 			var module = await Module;
 
@@ -260,6 +261,17 @@ namespace AngryMonkey.Cloud.Components
 
 			switch (eventData.EventName)
 			{
+				case VideoEvents.LoadedMetadata:
+					do
+					{
+						await VideoLoaded();
+
+						if (Duration == 0)
+							await Task.Delay(200);
+							
+					} while (Duration == 0);
+					break;
+
 				case VideoEvents.TimeUpdate:
 
 					if (!IsUserChangingProgress)
@@ -326,13 +338,13 @@ namespace AngryMonkey.Cloud.Components
 				await Implement(VideoEvents.TimeUpdate);
 				await Implement(VideoEvents.Play);
 				await Implement(VideoEvents.Pause);
+				await Implement(VideoEvents.LoadedMetadata);
 			}
 		}
 
 		async Task Implement(VideoEvents eventName)
 		{
-
-			VideoStateOptions options = new VideoStateOptions() { All = true };
+			VideoStateOptions options = new() { All = true };
 			VideoEventOptions?.TryGetValue(eventName, out options);
 
 			var module = await Module;

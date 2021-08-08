@@ -8,7 +8,7 @@ namespace AngryMonkey.Cloud.Components
 {
 	public class ProgressBarChangeEventArgs : EventArgs
 	{
-		public double PreviousValue { get; set; }
+		public double? PreviousValue { get; set; }
 		public double NewValue { get; set; }
 		public ProgressBarSeekButtonInfo SeekButtonInfo { get; set; }
 	}

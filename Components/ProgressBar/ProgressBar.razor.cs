@@ -19,8 +19,8 @@ namespace AngryMonkey.Cloud.Components
 
 		[Parameter] public double Step { get; set; } = 1;
 
-		private double _value = 0;
-		[Parameter] public double Value { get; set; } = 0;
+		private double? _value;
+		[Parameter] public double? Value { get; set; }
 
 		[Parameter] public double ChangingValue { get; set; } = -1;
 
