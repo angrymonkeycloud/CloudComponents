@@ -29,6 +29,10 @@
   border: none;
   border-radius: 0;
 }
+.ComponentsDefault,
+.ComponentsDefault * {
+  -webkit-tap-highlight-color: transparent;
+}
 .Extendible {
   border: 1px solid transparent;
 }
@@ -57,6 +61,10 @@
   outline: none !important;
   border: none;
   border-radius: 0;
+}
+.amc-videoplayer,
+.amc-videoplayer * {
+  -webkit-tap-highlight-color: transparent;
 }
 .amc-videoplayer ::deep .amc-progressbar {
   --amc-progressbar-accentColor: var(--amc-videoplayer-accentColor);

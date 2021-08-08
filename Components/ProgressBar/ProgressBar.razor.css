@@ -29,6 +29,10 @@
   border: none;
   border-radius: 0;
 }
+.ComponentsDefault,
+.ComponentsDefault * {
+  -webkit-tap-highlight-color: transparent;
+}
 .amc-progressbar {
   --amc-progressbar-accentColor: #fff;
   --amc-progressbar-seekbuttonSize: 20px;
@@ -53,6 +57,10 @@
   outline: none !important;
   border: none;
   border-radius: 0;
+}
+.amc-progressbar,
+.amc-progressbar * {
+  -webkit-tap-highlight-color: transparent;
 }
 .amc-progressbar input[type="range"] {
   /*grid-column: span 3;*/

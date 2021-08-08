@@ -29,6 +29,10 @@
   border: none;
   border-radius: 0;
 }
+.ComponentsDefault,
+.ComponentsDefault * {
+  -webkit-tap-highlight-color: transparent;
+}
 .amc-SelectableField {
   border: 1px solid transparent;
   position: relative;
@@ -82,6 +86,10 @@
   outline: none !important;
   border: none;
   border-radius: 0;
+}
+.amc-datetimepicker,
+.amc-datetimepicker * {
+  -webkit-tap-highlight-color: transparent;
 }
 .amc-datetimepicker-header {
   margin-bottom: 5px;
