@@ -47,6 +47,56 @@ export function enterFullScreen(component) {
         navigationUI: "hide"
     });
 }
+export function seeking(component, value, total) {
+    // Seek Info Position
+    var seekInfo = component.querySelector('.amc-videoplayer-seekinfo');
+    var container = component.querySelector('.amc-videoplayer-seekinfo-container');
+    var seekInfoWidth = seekInfo.clientWidth;
+    var seekInfoInnetWidth = Number(window.getComputedStyle(seekInfo, null).width.replace('px', ''));
+    var containerWidth = container.clientWidth;
+    if (!total) {
+        var video = component.querySelector('video');
+        total = video.duration;
+        var progressBar = component.querySelector('.amc-videoplayer-progress');
+        value = value - component.getBoundingClientRect().left;
+        value = total * value / progressBar.clientWidth;
+    }
+    var position = (value * seekInfoWidth / total) - (containerWidth / 2);
+    if (position < 0)
+        position = 0;
+    else if (position + containerWidth > seekInfoInnetWidth)
+        position = seekInfoInnetWidth - containerWidth;
+    container.style.setProperty('margin-left', position + 'px');
+    return value;
+    // Seek Info Frame Preview
+    //const tempVideo = document.createElement('video');
+    //tempVideo.width = video.width;
+    //tempVideo.height = video.height;
+    //tempVideo.src = video.src;
+    //tempVideo.load();
+    //const canvas = container.querySelector("canvas");
+    //canvas.width = video.videoWidth;
+    //canvas.height = video.videoHeight;
+    //const maxSize = 150;
+    //if (canvas.width > maxSize) {
+    //	canvas.height = maxSize * canvas.height / canvas.width;
+    //	canvas.width = maxSize;
+    //}
+    //if (canvas.height > maxSize) {
+    //	canvas.width = maxSize * canvas.width / canvas.height;
+    //	canvas.height = maxSize;
+    //}
+    //try {
+    //	const canvasContext = canvas.getContext("2d");
+    //	document.appendChild(tempVideo);
+    //	tempVideo.currentTime = value;
+    //	tempVideo.play();
+    //	canvasContext.drawImage(tempVideo, 0, 0);
+    //	tempVideo.pause();
+    //} catch { }
+    //document.removeChild(tempVideo);
+    //tempVideo.remove();
+}
 export function exitFullScreen(component) {
     document.exitFullscreen();
 }

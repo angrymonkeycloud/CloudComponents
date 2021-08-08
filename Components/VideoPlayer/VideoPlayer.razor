@@ -76,12 +76,25 @@
         }
     </div>
 
-@*    @if (ShowSideBar == false)
-    {
+    @*    @if (ShowSideBar == false)
+        {
         <div class="amc-videoplayer-info">
-            <div class="amc-videoplayer-title">@Title</div>
+        <div class="amc-videoplayer-title">@Title</div>
         </div>
-    }*@
+        }*@
+
+    <div class="amc-videoplayer-seekinfo">
+        <div class="amc-videoplayer-seekinfo-container">
+            @*
+                <div class="amc-videoplayer-seekinfo-canvas">
+                <canvas />
+                </div>*@
+
+            <div class="amc-videoplayer-seekinfo-duration">
+                @DisplaySeekInfoTime
+            </div>
+        </div>
+    </div>
 
     <div class="amc-videoplayer-controls">
         <div class="amc-videoplayer-controls-left">
@@ -201,7 +214,11 @@
         </div>
     </div>
 
-    <div class="amc-videoplayer-progress" @onmousedown="OnProgressMouseDown" @ontouchstart="OnProgressTouchStart">
-        <ProgressBar Value="CurrentTime" Total="Duration" Style="ProgressBarStyle" OnChanged="OnProgressChanged" />
+    <div class="amc-videoplayer-progress"
+         @onmousedown="OnProgressMouseDown"
+         @ontouchstart="OnProgressTouchStart"
+         @onmousemove="OnProgressMouseMove"
+         @onmouseout="OnProgressMouseOut">
+        <ProgressBar Value="CurrentTime" Total="Duration" Style="ProgressBarStyle" OnChanged="OnProgressChanged" OnChanging="OnProgressChanging" />
     </div>
 </div>

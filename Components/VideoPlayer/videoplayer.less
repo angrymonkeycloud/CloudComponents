@@ -272,21 +272,6 @@
 			}
 		}
 	}
-	/*	&-exitfullscreen {
-		display: none;
-	}
-
-	&._fullscreen {
-		.amc-videoplayer {
-			&-enterfullscreen {
-				display: none;
-			}
-
-			&-exitfullscreen {
-				display: inline-block;
-			}
-		}
-	}*/
 
 	&._hidecontrols {
 
@@ -308,6 +293,29 @@
 					padding-top: 1px;
 					padding-bottom: 1px;
 				}
+			}
+		}
+	}
+
+	&-seekinfo {
+		display: flex;
+		padding: 7px;
+
+		&-container {
+			background-color: rgba(0, 0, 0, .4);
+			color: #fff;
+			border-radius: 5px;
+			/*border: 1px solid #000;*/
+			text-align: center;
+			padding: 10px;
+			white-space: nowrap;
+		}
+	}
+
+	&:not(._showseekinginfo) {
+		.amc-videoplayer {
+			&-seekinfo {
+				display: none;
 			}
 		}
 	}

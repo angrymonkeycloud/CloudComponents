@@ -49,21 +49,6 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  /*	&-exitfullscreen {
-		display: none;
-	}
-
-	&._fullscreen {
-		.amc-videoplayer {
-			&-enterfullscreen {
-				display: none;
-			}
-
-			&-exitfullscreen {
-				display: inline-block;
-			}
-		}
-	}*/
 }
 .amc-videoplayer button,
 .amc-videoplayer button:active,
@@ -291,4 +276,20 @@
 .amc-videoplayer._hidecontrols .amc-videoplayer-progress ::deep .amc-progressbar {
   padding-top: 1px;
   padding-bottom: 1px;
+}
+.amc-videoplayer-seekinfo {
+  display: flex;
+  padding: 7px;
+}
+.amc-videoplayer-seekinfo-container {
+  background-color: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  border-radius: 5px;
+  /*border: 1px solid #000;*/
+  text-align: center;
+  padding: 10px;
+  white-space: nowrap;
+}
+.amc-videoplayer:not(._showseekinginfo) .amc-videoplayer-seekinfo {
+  display: none;
 }

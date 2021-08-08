@@ -30,6 +30,8 @@ namespace AngryMonkey.Cloud.Components
 		private bool ShowSideBarMenu => !ShowSideBarInfo && !ShowSideBarAbout;
 		private bool IsMuted = false;
 		private bool DoShowVolumeControls = false;
+		private bool IsSeeking = false;
+		private bool ShowSeekingInfo = false;
 
 		private bool IsUserInteracting = false;
 
@@ -52,6 +54,9 @@ namespace AngryMonkey.Cloud.Components
 
 			if (IsFullScreen)
 				attributes.Add("_fullscreen");
+
+			if (ShowSeekingInfo)
+				attributes.Add("_showseekinginfo");
 
 			ClassAttributes = string.Join(' ', attributes);
 		}
@@ -151,13 +156,10 @@ namespace AngryMonkey.Cloud.Components
 
 		#region Time / Duration
 
-		private string DisplayTimeDuration
-		{
-			get
-			{
-				return $"{GetTime(CurrentTime)} / {GetTime(Duration)}";
-			}
-		}
+		private string DisplayTimeDuration => $"{GetTime(CurrentTime)} / {GetTime(Duration)}";
+
+		public double SeekInfoTime { get; set; }
+		private string DisplaySeekInfoTime => GetTime(SeekInfoTime);
 
 		private string GetTime(double seconds)
 		{
@@ -230,8 +232,13 @@ namespace AngryMonkey.Cloud.Components
 			await ProgressiveDelay();
 		}
 
-		public async Task OnProgressChanged(ProgressBarChangeEventArgs args)
+		protected async Task OnProgressChanged(ProgressBarChangeEventArgs args)
 		{
+			IsSeeking = false;
+			ShowSeekingInfo = false;
+
+			Repaint();
+
 			if (args.PreviousValue.HasValue)
 			{
 				double durationDifference = args.NewValue - args.PreviousValue.Value;
@@ -252,6 +259,46 @@ namespace AngryMonkey.Cloud.Components
 			await ProgressiveDelay();
 		}
 
+		protected async Task OnProgressChanging(ProgressBarChangeEventArgs args)
+		{
+			IsSeeking = true;
+			ShowSeekingInfo = true;
+			Repaint();
+			SeekInfoTime = args.NewValue;
+
+			var module = await Module;
+			await module.InvokeVoidAsync("seeking", ComponentElement, SeekInfoTime, Duration);
+		}
+
+		protected async Task OnProgressMouseMove(MouseEventArgs args)
+		{
+			if (IsSeeking)
+				return;
+
+			ShowSeekingInfo = true;
+			Repaint();
+
+			var module = await Module;
+
+			double newValue = await module.InvokeAsync<double>("seeking", ComponentElement, args.ClientX);
+
+			//Console.WriteLine(newValue);
+
+			if (newValue < 0)
+				return;
+
+			SeekInfoTime = newValue;
+		}
+
+		protected async Task OnProgressMouseOut(MouseEventArgs args)
+		{
+			if (IsSeeking)
+				return;
+
+			ShowSeekingInfo = false;
+			Repaint();
+		}
+
 		public async Task OnVideoChange(ChangeEventArgs args)
 		{
 			VideoEventData eventData = JsonSerializer.Deserialize<VideoEventData>((string)args.Value);
@@ -268,7 +315,7 @@ namespace AngryMonkey.Cloud.Components
 
 						if (Duration == 0)
 							await Task.Delay(200);
-							
+
 					} while (Duration == 0);
 					break;
 
