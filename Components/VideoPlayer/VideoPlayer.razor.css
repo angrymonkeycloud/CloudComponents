@@ -84,16 +84,19 @@
   min-width: 20%;
   max-width: 60%;
   color: #fff;
+  border-radius: 5px;
+  margin: 7px;
 }
 .amc-videoplayer-sidebar-menu {
   display: flex;
   flex-direction: column;
+  gap: 10px;
 }
 .amc-videoplayer-sidebar button {
   font-size: 1.1em;
-  padding: 5px 0;
   width: 100%;
   text-align: left;
+  padding: 5px;
 }
 .amc-videoplayer-sidebar label {
   display: block;
@@ -125,15 +128,10 @@
   flex: 1;
   display: flex;
 }
-.amc-videoplayer-empty {
-  flex: 1;
-  cursor: pointer;
-  position: relative;
-}
 .amc-videoplayer-close {
   position: absolute;
   top: 5px;
-  right: 20px;
+  right: 5px;
   color: #fff;
   font-size: 50px;
   border-radius: 50%;
@@ -141,9 +139,35 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  opacity: 0.8;
 }
 .amc-videoplayer-close span {
-  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.8));
+  padding: 4px;
+}
+.amc-videoplayer-close svg {
+  width: 32px;
+  height: 32px;
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.3));
+}
+.amc-videoplayer-close svg .amc-videoplayer-svg-fill {
+  fill: #fff;
+}
+.amc-videoplayer-close svg .amc-videoplayer-svg-stroke {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 0.5;
+  stroke-miterlimit: 10;
+}
+.amc-videoplayer-close svg .amc-videoplayer-svg-stroke._corner-rounded {
+  stroke-linecap: round;
+}
+.amc-videoplayer-empty {
+  flex: 1;
+  cursor: pointer;
+  position: relative;
+}
+.amc-videoplayer-empty:hover .amc-videoplayer-close {
+  opacity: 1;
 }
 .amc-videoplayer-video {
   height: 100%;
@@ -167,6 +191,15 @@
 }
 .amc-videoplayer button .amc-videoplayer-svg-fill {
   fill: #fff;
+}
+.amc-videoplayer button .amc-videoplayer-svg-stroke {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 0.5;
+  stroke-miterlimit: 10;
+}
+.amc-videoplayer button .amc-videoplayer-svg-stroke._corner-rounded {
+  stroke-linecap: round;
 }
 .amc-videoplayer button:hover {
   opacity: 1;
@@ -194,7 +227,6 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 15px;
 }
 .amc-videoplayer-controls > div > div {
   padding-left: 5px;
@@ -204,12 +236,12 @@
   justify-content: flex-end;
 }
 .amc-videoplayer-controls button {
-  padding: 5px;
+  padding: 4px;
   display: flex;
 }
 .amc-videoplayer-controls button svg {
-  width: 18px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
 }
 .amc-videoplayer-volume {
   display: flex;

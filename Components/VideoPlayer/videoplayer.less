@@ -29,17 +29,20 @@
 		min-width: 20%;
 		max-width: 60%;
 		color: #fff;
+		border-radius: 5px;
+		margin: 7px;
 
 		&-menu {
 			display: flex;
 			flex-direction: column;
+			gap: 10px;
 		}
 
 		button {
 			font-size: 1.1em;
-			padding: 5px 0;
 			width: 100%;
 			text-align: left;
+			padding: 5px;
 		}
 
 		label {
@@ -74,16 +77,10 @@
 		display: flex;
 	}
 
-	&-empty {
-		flex: 1;
-		cursor: pointer;
-		position: relative
-	}
-
 	&-close {
 		position: absolute;
 		top: 5px;
-		right: 20px;
+		right: 5px;
 		color: #fff;
 		font-size: 50px;
 		border-radius: 50%;
@@ -91,9 +88,50 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		opacity: .8;
 
 		span {
-			filter: drop-shadow(0 0 10px rgba(0, 0, 0, .8));
+			padding: 4px;
+		}
+
+		svg {
+			width: 32px;
+			height: 32px;
+			filter: drop-shadow(0 0 3px rgba(0, 0, 0, .3));
+
+			.amc-videoplayer {
+				&-svg {
+
+					&-fill {
+						fill: #fff;
+					}
+
+					&-stroke {
+						fill: none;
+						stroke: #fff;
+						stroke-width: 0.5;
+						stroke-miterlimit: 10;
+
+						&._corner-rounded {
+							stroke-linecap: round;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	&-empty {
+		flex: 1;
+		cursor: pointer;
+		position: relative;
+
+		&:hover {
+			.amc-videoplayer {
+				&-close {
+					opacity: 1;
+				}
+			}
 		}
 	}
 
@@ -123,6 +161,17 @@
 			&-svg {
 				&-fill {
 					fill: #fff;
+				}
+
+				&-stroke {
+					fill: none;
+					stroke: #fff;
+					stroke-width: 0.5;
+					stroke-miterlimit: 10;
+
+					&._corner-rounded {
+						stroke-linecap: round;
+					}
 				}
 			}
 		}
@@ -161,7 +210,6 @@
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-			gap: 15px;
 
 			> div {
 				padding-left: 5px;
@@ -174,12 +222,12 @@
 		}
 
 		button {
-			padding: 5px;
+			padding: 4px;
 			display: flex;
 
 			svg {
-				width: 18px;
-				height: 20px;
+				width: 24px;
+				height: 24px;
 			}
 		}
 	}

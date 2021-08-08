@@ -32,7 +32,7 @@ namespace AngryMonkey.Cloud.Components
 
 		private bool IsUserInteracting = false;
 
-		private bool HideControls => IsVideoPlaying && !IsUserInteracting && !IsUserChangingProgress;
+		private bool HideControls => IsVideoPlaying && !IsUserInteracting && !IsUserChangingProgress && !ShowSideBar;
 
 		private void Repaint()
 		{
@@ -68,6 +68,9 @@ namespace AngryMonkey.Cloud.Components
 		{
 			get
 			{
+				if (Volume == 0)
+					return "00";
+
 				return $"{Volume * 100}";
 			}
 		}

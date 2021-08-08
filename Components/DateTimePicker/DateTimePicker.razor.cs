@@ -182,7 +182,7 @@ namespace AngryMonkey.Cloud.Components
 			if (bodySwapClientX > -10 && bodySwapClientX < 10)
 				return;
 
-			if (bodySwapClientX < 0)
+			if (bodySwapClientX > 0)
 				await OnPrevClick();
 			else await OnNextClick();
 		}
