@@ -258,6 +258,8 @@ namespace AngryMonkey.Cloud.Components
 		protected void ChangeLoop()
 		{
 			Loop = !Loop;
+
+			ShowSideBarLoop = false;
 		}
 
 		#endregion
