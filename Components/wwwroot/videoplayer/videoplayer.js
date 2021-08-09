@@ -14,8 +14,14 @@ export function init(component) {
 export function getVideoInfo(component) {
     var video = component.querySelector('video');
     var videoInfo = new VideoInfo();
-    videoInfo.Duration = video.duration.toString();
+    videoInfo.Duration = video.duration;
+    videoInfo.Width = video.videoWidth;
+    videoInfo.Height = video.videoHeight;
     return videoInfo;
+}
+export function setVideoPlaybackSpeed(component, value) {
+    var video = component.querySelector('video');
+    video.playbackRate = value;
 }
 export function muteVolume(component, mute) {
     var video = component.querySelector('video');

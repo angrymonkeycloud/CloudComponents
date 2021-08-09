@@ -4,6 +4,7 @@ using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -24,14 +25,12 @@ namespace AngryMonkey.Cloud.Components
 		private bool IsUserChangingProgress = false;
 		private bool IsVideoPlaying = false;
 		private bool IsFullScreen = false;
-		private bool ShowSideBar = false;
-		private bool ShowSideBarInfo = false;
-		private bool ShowSideBarAbout = false;
-		private bool ShowSideBarMenu => !ShowSideBarInfo && !ShowSideBarAbout;
 		private bool IsMuted = false;
 		private bool DoShowVolumeControls = false;
 		private bool IsSeeking = false;
 		private bool ShowSeekingInfo = false;
+
+		private VideoInfo CurrentVideoInfo { get; set; }
 
 		private bool IsUserInteracting = false;
 
@@ -65,6 +64,11 @@ namespace AngryMonkey.Cloud.Components
 		public string Title { get; set; }
 
 		[Parameter]
+		public bool Loop { get; set; } = false;
+
+		private string DisplayLoop => Loop ? "On" : "Off";
+
+		[Parameter]
 		public string VideoUrl { get; set; }
 
 		[Parameter]
@@ -78,7 +82,6 @@ namespace AngryMonkey.Cloud.Components
 			}
 		}
 
-		public double Duration { get; set; } = 0;
 		public double CurrentTime { get; set; } = 0;
 
 		private ProgressBarStyle ProgressBarStyle = ProgressBarStyle.Circle;
@@ -156,7 +159,7 @@ namespace AngryMonkey.Cloud.Components
 
 		#region Time / Duration
 
-		private string DisplayTimeDuration => $"{GetTime(CurrentTime)} / {GetTime(Duration)}";
+		private string DisplayTimeDuration => $"{GetTime(CurrentTime)} / {GetTime(CurrentVideoInfo?.Duration ?? 0)}";
 
 		public double SeekInfoTime { get; set; }
 		private string DisplaySeekInfoTime => GetTime(SeekInfoTime);
@@ -186,7 +189,7 @@ namespace AngryMonkey.Cloud.Components
 
 		private int GetTimeLevel()
 		{
-			TimeSpan time = TimeSpan.FromSeconds(Duration);
+			TimeSpan time = TimeSpan.FromSeconds(CurrentVideoInfo?.Duration ?? 0);
 
 			if (time.TotalMinutes < 1)
 				return 0;
@@ -202,7 +205,35 @@ namespace AngryMonkey.Cloud.Components
 
 		#endregion
 
-		#region More Button Methods
+		#region Settings Menu
+
+		private bool ShowSideBar = false;
+		private bool ShowSideBarInfo = false;
+		private bool ShowSideBarPlaybackSpeed = false;
+		private bool ShowSideBarLoop = false;
+		private bool ShowSideBarMenu => !ShowSideBarInfo && !ShowSideBarPlaybackSpeed && !ShowSideBarLoop;
+
+		private double PlaybackSpeed = 1;
+		private Dictionary<double, string> PlaybackSpeedOptions = new() { { 0.25, "0.25" }, { 0.5, "0.5" }, { 0.75, "0.75" }, { 1, "Normal" }, { 1.25, "1.25" }, { 1.5, "1.5" }, { 1.75, "1.75" }, { 2, "2" } };
+		private string DisplayPlaybackSpeed => PlaybackSpeedOptions[PlaybackSpeed];
+
+		private async Task ChangePlaybackSpeed(double newSpeed)
+		{
+			PlaybackSpeed = newSpeed;
+
+			var module = await Module;
+
+			await module.InvokeVoidAsync("setVideoPlaybackSpeed", ComponentElement, PlaybackSpeed);
+
+			ShowSideBarPlaybackSpeed = false;
+		}
+
+		public void ResetSettingsMenu()
+		{
+			ShowSideBarInfo = false;
+			ShowSideBarPlaybackSpeed = false;
+			ShowSideBarLoop = false;
+		}
 
 		public async Task MoreButtonInfo()
 		{
@@ -213,9 +244,20 @@ namespace AngryMonkey.Cloud.Components
 		{
 			ShowSideBarInfo = true;
 		}
-		public void ShowVideoAbout()
+
+		public void ShowVideoPlaybackSpeedOptions()
 		{
-			ShowSideBarAbout = true;
+			ShowSideBarPlaybackSpeed = true;
+		}
+
+		public void ShowVideoLoop()
+		{
+			ShowSideBarLoop = true;
+		}
+
+		protected void ChangeLoop()
+		{
+			Loop = !Loop;
 		}
 
 		#endregion
@@ -253,7 +295,7 @@ namespace AngryMonkey.Cloud.Components
 
 			IsUserChangingProgress = false;
 
-			if (CurrentTime == Duration)
+			if (CurrentTime == CurrentVideoInfo.Duration)
 				await StopVideo();
 
 			await ProgressiveDelay();
@@ -267,7 +309,7 @@ namespace AngryMonkey.Cloud.Components
 			SeekInfoTime = args.NewValue;
 
 			var module = await Module;
-			await module.InvokeVoidAsync("seeking", ComponentElement, SeekInfoTime, Duration);
+			await module.InvokeVoidAsync("seeking", ComponentElement, SeekInfoTime, CurrentVideoInfo.Duration);
 		}
 
 		protected async Task OnProgressMouseMove(MouseEventArgs args)
@@ -281,8 +323,6 @@ namespace AngryMonkey.Cloud.Components
 			var module = await Module;
 
 			double newValue = await module.InvokeAsync<double>("seeking", ComponentElement, args.ClientX);
-
-			//Console.WriteLine(newValue);
 
 			if (newValue < 0)
 				return;
@@ -313,10 +353,10 @@ namespace AngryMonkey.Cloud.Components
 					{
 						await VideoLoaded();
 
-						if (Duration == 0)
+						if (CurrentVideoInfo == null)
 							await Task.Delay(200);
 
-					} while (Duration == 0);
+					} while (CurrentVideoInfo == null);
 					break;
 
 				case VideoEvents.TimeUpdate:
@@ -325,8 +365,13 @@ namespace AngryMonkey.Cloud.Components
 					{
 						CurrentTime = eventData.State.CurrentTime;
 
-						if (CurrentTime == Duration)
+						if (CurrentTime == CurrentVideoInfo.Duration)
+						{
 							await StopVideo();
+
+							if (Loop)
+								await PlayVideo();
+						}
 					}
 					break;
 
@@ -355,11 +400,7 @@ namespace AngryMonkey.Cloud.Components
 			{
 				if (ShowSideBarMenu)
 					ShowSideBar = false;
-				else
-				{
-					ShowSideBarInfo = false;
-					ShowSideBarAbout = false;
-				}
+				else ResetSettingsMenu();
 
 				return;
 			}
@@ -367,12 +408,6 @@ namespace AngryMonkey.Cloud.Components
 			if (_isEmptyTouched)
 			{
 				_isEmptyTouched = false;
-
-				//if (IsUserInteracting && !_forceHideControls)
-				//{
-				//	IsUserInteracting = false;
-				//	Repaint();
-				//}
 
 				return;
 			}
@@ -411,14 +446,12 @@ namespace AngryMonkey.Cloud.Components
 		{
 			var module = await Module;
 
-			VideoInfo videoInfo = await module.InvokeAsync<VideoInfo>("getVideoInfo", ComponentElement);
-
-			Duration = Convert.ToDouble(videoInfo.Duration);
+			CurrentVideoInfo = await module.InvokeAsync<VideoInfo>("getVideoInfo", ComponentElement);
 		}
 
 		public async Task PlayVideo()
 		{
-			if (Duration == 0)
+			if (CurrentVideoInfo == null)
 				await VideoLoaded();
 
 			var module = await Module;

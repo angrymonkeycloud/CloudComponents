@@ -76,9 +76,11 @@ body main > .amc-progressbar {
   width: 600px;
 }
 body main > .amc-videoplayer {
-  /*--amc-videoplayer-accentColor: #ae00ff !important;*/
-  width: 800px;
+  max-width: 800px;
+  width: 100vw;
   height: 450px;
+  margin-left: auto;
+  margin-right: auto;
 }
 body main > .amc-datetimepicker {
   --amc-datetimepicker-backgroundColor: var(--LinkColor) !important;

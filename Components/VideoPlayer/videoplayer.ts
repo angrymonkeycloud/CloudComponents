@@ -1,5 +1,7 @@
 ﻿class VideoInfo {
-	Duration: string;
+	Duration: number;
+	Width: number;
+	Height: number;
 }
 
 export function init(component: HTMLElement) {
@@ -21,9 +23,18 @@ export function getVideoInfo(component: HTMLElement): VideoInfo {
 
 	const videoInfo = new VideoInfo();
 
-	videoInfo.Duration = video.duration.toString();
+	videoInfo.Duration = video.duration;
+	videoInfo.Width = video.videoWidth;
+	videoInfo.Height = video.videoHeight;
 
 	return videoInfo;
+}
+
+export function setVideoPlaybackSpeed(component: HTMLElement, value: number) {
+
+	const video = component.querySelector('video');
+
+	video.playbackRate = value;
 }
 
 export function muteVolume(component: HTMLElement, mute: boolean) {
