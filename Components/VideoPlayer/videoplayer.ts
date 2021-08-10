@@ -121,44 +121,6 @@ export function seeking(component: HTMLElement, value: number, total?: number): 
 	container.style.setProperty('margin-left', position + 'px');
 
 	return value;
-
-	// Seek Info Frame Preview
-
-
-	//const tempVideo = document.createElement('video');
-	//tempVideo.width = video.width;
-	//tempVideo.height = video.height;
-	//tempVideo.src = video.src;
-	//tempVideo.load();
-
-
-	//const canvas = container.querySelector("canvas");
-	//canvas.width = video.videoWidth;
-	//canvas.height = video.videoHeight;
-
-	//const maxSize = 150;
-
-	//if (canvas.width > maxSize) {
-	//	canvas.height = maxSize * canvas.height / canvas.width;
-	//	canvas.width = maxSize;
-	//}
-
-	//if (canvas.height > maxSize) {
-	//	canvas.width = maxSize * canvas.width / canvas.height;
-	//	canvas.height = maxSize;
-	//}
-
-	//try {
-	//	const canvasContext = canvas.getContext("2d");
-	//	document.appendChild(tempVideo);
-	//	tempVideo.currentTime = value;
-	//	tempVideo.play();
-	//	canvasContext.drawImage(tempVideo, 0, 0);
-	//	tempVideo.pause();
-	//} catch { }
-
-	//document.removeChild(tempVideo);
-	//tempVideo.remove();
 }
 
 export function exitFullScreen(component: HTMLElement) {

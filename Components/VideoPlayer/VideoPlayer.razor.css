@@ -67,6 +67,11 @@
 .amc-videoplayer * {
   -webkit-tap-highlight-color: transparent;
 }
+.amc-videoplayer-status ::deep svg {
+  width: 16px;
+  height: 16px;
+  opacity: 0.8;
+}
 .amc-videoplayer ::deep .amc-progressbar {
   --amc-progressbar-accentColor: var(--amc-videoplayer-accentColor);
 }
@@ -298,6 +303,9 @@
 }
 .amc-videoplayer-timeduration {
   white-space: nowrap;
+  margin-left: 10px;
+  margin-right: 10px;
+  opacity: 0.8;
 }
 .amc-videoplayer-pause {
   display: none;

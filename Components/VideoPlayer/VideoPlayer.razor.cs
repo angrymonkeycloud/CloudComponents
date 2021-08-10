@@ -30,6 +30,27 @@ namespace AngryMonkey.Cloud.Components
 		private bool IsSeeking = false;
 		private bool ShowSeekingInfo = false;
 
+		private Dictionary<string, string> VideoSettingsInfo
+		{
+			get
+			{
+				Dictionary<string, string> info = new();
+
+				if (!string.IsNullOrEmpty(Title))
+					info.Add("Title", Title);
+
+				if (CurrentVideoInfo != null)
+				{
+					info.Add("Duration", GetTime(CurrentVideoInfo.Duration));
+					info.Add("Aspect Ratio", CurrentVideoInfo.DisplayAspectRatio);
+				}
+
+				info.Add("Status", Status.ToString());
+
+				return info;
+			}
+		}
+
 		private VideoInfo CurrentVideoInfo { get; set; }
 
 		private bool IsUserInteracting = false;
@@ -237,6 +258,7 @@ namespace AngryMonkey.Cloud.Components
 
 		public async Task MoreButtonInfo()
 		{
+			ResetSettingsMenu();
 			ShowSideBar = !ShowSideBar;
 		}
 
@@ -358,6 +380,8 @@ namespace AngryMonkey.Cloud.Components
 						if (CurrentVideoInfo == null)
 							await Task.Delay(200);
 
+						Status = VideoStatus.Stoped;
+
 					} while (CurrentVideoInfo == null);
 					break;
 
@@ -377,8 +401,36 @@ namespace AngryMonkey.Cloud.Components
 					}
 					break;
 
+				case VideoEvents.Waiting:
+					Status = VideoStatus.Buffering;
+					break;
+
+				case VideoEvents.Playing:
+					Status = VideoStatus.Playing;
+					break;
+
+				case VideoEvents.Play:
+					Status = VideoStatus.Playing;
+					break;
+
+				case VideoEvents.Pause:
+					Status = CurrentTime == 0 ? VideoStatus.Stoped : VideoStatus.Paused;
+					break;
+
 				default: break;
 			}
+		}
+
+		private VideoStatus Status { get; set; } = VideoStatus.Loading;
+
+		private enum VideoStatus
+		{
+			Loading,
+			Playing,
+			Paused,
+			Stoped,
+			Buffering,
+			Unknown
 		}
 
 		private bool _isEmptyTouched = false;
@@ -429,7 +481,9 @@ namespace AngryMonkey.Cloud.Components
 
 				await Implement(VideoEvents.TimeUpdate);
 				await Implement(VideoEvents.Play);
+				await Implement(VideoEvents.Playing);
 				await Implement(VideoEvents.Pause);
+				await Implement(VideoEvents.Waiting);
 				await Implement(VideoEvents.LoadedMetadata);
 			}
 		}

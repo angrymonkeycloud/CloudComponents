@@ -114,20 +114,10 @@
                     @if (ShowSideBarInfo)
                     {
                         <div class="amc-videoplayer-sidebar-section">
-
-                            @if (!string.IsNullOrEmpty(Title))
+                            @foreach (var info in VideoSettingsInfo)
                             {
-                                <label>Title</label>
-                                <div class="amc-videoplayer-value">@Title</div>
-                            }
-
-                            @if (CurrentVideoInfo != null)
-                            {
-                                <label>Duration</label>
-                                <div class="amc-videoplayer-value">@GetTime(CurrentVideoInfo.Duration)</div>
-
-                                <label>Size Ratio</label>
-                                <div class="amc-videoplayer-value">@CurrentVideoInfo.DisplayAspectRatio</div>
+                                <label>@info.Key</label>
+                                <div class="amc-videoplayer-value">@info.Value</div>
                             }
                         </div>
                     }
@@ -145,7 +135,7 @@
                     @if (ShowSideBarLoop)
                     {
                         <div class="amc-videoplayer-sidebar-section">
-                                <button @onclick="ChangeLoop">@DisplayLoop</button>
+                            <button @onclick="ChangeLoop">@DisplayLoop</button>
                         </div>
                     }
                 }
@@ -244,6 +234,14 @@
             @* Current Time / Duration *@
             <div class="amc-videoplayer-timeduration">
                 @DisplayTimeDuration
+            </div>
+
+            @* Status *@
+            <div class="amc-videoplayer-status">
+                @if (Status == VideoStatus.Buffering)
+                {
+                    <AngryMonkey.Cloud.Components.Icons.Loading />
+                }
             </div>
         </div>
 

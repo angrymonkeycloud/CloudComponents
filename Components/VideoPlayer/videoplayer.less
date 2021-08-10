@@ -18,6 +18,14 @@
 	display: flex;
 	flex-direction: column;
 
+	&-status {
+		::deep svg {
+			width: 16px;
+			height: 16px;
+			opacity: .8;
+		}
+	}
+
 	::deep .amc-progressbar {
 		--amc-progressbar-accentColor: var(--amc-videoplayer-accentColor);
 	}
@@ -303,6 +311,9 @@
 
 	&-timeduration {
 		white-space: nowrap;
+		margin-left: 10px;
+		margin-right: 10px;
+		opacity: .8;
 	}
 
 	&-pause {
