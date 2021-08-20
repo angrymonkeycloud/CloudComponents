@@ -115,3 +115,15 @@ export function registerCustomEventHandler(component, eventName, payload) {
         }
     }
 }
+export function AddReserveAspectRatioListener(component, width, height) {
+    var listener = function () {
+        var newHeight = component.clientWidth * height / width;
+        component.style.setProperty('height', newHeight + 'px');
+    };
+    listener.call(this);
+    window.addEventListener('resize', listener);
+    return listener;
+}
+export function RemoveReserveAspectRatioListener(component, listener) {
+    window.removeEventListener('resize', listener);
+}

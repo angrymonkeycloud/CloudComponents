@@ -180,3 +180,24 @@ export function registerCustomEventHandler(component, eventName: string, payload
 		}
 	}
 }
+
+export function AddReserveAspectRatioListener(component: HTMLElement, width: number, height: number) {
+
+	const listener = function () {
+
+		const newHeight = component.clientWidth * height / width;
+
+		component.style.setProperty('height', newHeight + 'px');
+	};
+
+	listener.call(this);
+
+	window.addEventListener('resize', listener);
+
+	return listener;
+}
+
+export function RemoveReserveAspectRatioListener(component: HTMLElement, listener: any) {
+
+	window.removeEventListener('resize', listener);
+}
