@@ -59,6 +59,7 @@ namespace AngryMonkey.Cloud.Components
 
 		[Parameter] public string Title { get; set; }
 		[Parameter] public bool Loop { get; set; } = false;
+		[Parameter] public bool ShowStopButton { get; set; } = false;
 
 		private bool _reserveAspectRatio = false;
 		[Parameter] public bool ReserveAspectRatio { get; set; } = false;

@@ -41,7 +41,10 @@
                     @if (ShowSideBarMenu)
                     {
                         <div class="amc-videoplayer-sidebar-menu">
-                            <button class="amc-videoplayer-menu-info" @onclick="ShowVideoInfo">Video Info</button>
+                            <button class="amc-videoplayer-menu-info" @onclick="ShowVideoInfo">
+                                Video Info
+                                <div class="amc-videoplayer-settings-subvalue">@Status</div>
+                            </button>
                             <button class="amc-videoplayer-menu-playbackspeed" @onclick="ShowVideoPlaybackSpeedOptions">
                                 Playback speed
                                 <div class="amc-videoplayer-settings-subvalue">@DisplayPlaybackSpeed</div>
@@ -127,13 +130,16 @@
                 </div>
 
                 @* Stop *@
-                <div class="amc-videoplayer-stop">
-                    <button @onclick="StopVideo">
-                        <svg viewBox="0 0 8 8">
-                            <rect class="amc-videoplayer-svg-stroke" x="1.5" y="1.5" width="5" height="5" rx="0.78" />
-                        </svg>
-                    </button>
-                </div>
+                @if (ShowStopButton)
+                {
+                    <div class="amc-videoplayer-stop">
+                        <button @onclick="StopVideo">
+                            <svg viewBox="0 0 8 8">
+                                <rect class="amc-videoplayer-svg-stroke" x="1.5" y="1.5" width="5" height="5" rx="0.78" />
+                            </svg>
+                        </button>
+                    </div>
+                }
 
                 @* Volume *@
                 <div class="amc-videoplayer-volume @(DoShowVolumeControls? "_extended": string.Empty)">

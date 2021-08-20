@@ -2,6 +2,7 @@
 
 .Extendible {
 	border: 1px solid transparent;
+	transition: all var(--transitionDuration);
 
 	&._extended {
 		border-color: rgba(255, 255, 255, .4);
@@ -11,9 +12,11 @@
 }
 
 .amc-videoplayer {
+	.ComponentsDefault();
 	--amc-videoplayer-accentColor: #fff;
 	--amc-videoplayer-roundedCorder: 3px;
-	.ComponentsDefault();
+	--backgroundColor: rgba(0, 0, 0, .4);
+	--transitionDuration: 200ms;
 	position: relative;
 	display: flex;
 	justify-content: stretch;
@@ -64,7 +67,7 @@
 	}
 
 	&-sidebar {
-		background-color: rgba(0, 0, 0, .4);
+		background-color: var(--backgroundColor);
 		white-space: nowrap;
 		overflow: hidden auto;
 		padding: 10px 0;
@@ -342,7 +345,7 @@
 
 	.amc-videoplayer {
 		&-content {
-			transition: background-color 200ms;
+			transition: background-color var(--transitionDuration);
 		}
 	}
 
@@ -350,7 +353,7 @@
 
 		.amc-videoplayer {
 			&-content {
-				background-color: rgba(0, 0, 0, .4);
+				background-color: var(--backgroundColor);
 			}
 		}
 	}
@@ -385,7 +388,7 @@
 		padding-top: 0;
 
 		&-container {
-			background-color: rgba(0, 0, 0, .4);
+			background-color: var(--backgroundColor);
 			color: #fff;
 			border-radius: var(--amc-videoplayer-roundedCorder);
 			text-align: center;
