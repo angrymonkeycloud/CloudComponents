@@ -53,7 +53,8 @@
   user-select: none;
   position: relative;
   display: flex;
-  flex-direction: column;
+  justify-content: stretch;
+  align-items: stretch;
 }
 .amc-videoplayer button,
 .amc-videoplayer button:active,
@@ -66,6 +67,12 @@
 .amc-videoplayer,
 .amc-videoplayer * {
   -webkit-tap-highlight-color: transparent;
+}
+.amc-videoplayer-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
 }
 .amc-videoplayer-status ::deep svg {
   width: 16px;
@@ -85,12 +92,12 @@
   display: flex;
   justify-content: center;
 }
-.amc-videoplayer-settings-angrymonkeycloud svg {
+.amc-videoplayer-settings-angrymonkeycloud ::deep svg {
   align-self: flex-end;
   width: 100%;
   max-width: 150px;
 }
-.amc-videoplayer-settings-angrymonkeycloud .amc-videoplayer-svg-fill {
+.amc-videoplayer-settings-angrymonkeycloud ::deep svg .amc-svg-fill {
   fill: #fff;
 }
 .amc-videoplayer-sidebar {
@@ -159,7 +166,7 @@
 .amc-videoplayer-sidebar a:focus:hover {
   opacity: 1;
 }
-.amc-videoplayer-content {
+.amc-videoplayer-top {
   flex: 1;
   display: flex;
   overflow: hidden;
@@ -243,7 +250,6 @@
 .amc-videoplayer-info,
 .amc-videoplayer-controls,
 .amc-videoplayer-progress {
-  background-color: rgba(0, 0, 0, 0.4);
   padding: 10px;
   color: #fff;
   z-index: 2;
@@ -315,6 +321,12 @@
 }
 .amc-videoplayer._playing .amc-videoplayer-pause {
   display: inline-block;
+}
+.amc-videoplayer .amc-videoplayer-content {
+  transition: background-color 200ms;
+}
+.amc-videoplayer:not(._hidecontrols) .amc-videoplayer-content {
+  background-color: rgba(0, 0, 0, 0.4);
 }
 .amc-videoplayer._hidecontrols * {
   cursor: none;

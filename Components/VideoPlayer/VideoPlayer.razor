@@ -9,290 +9,234 @@
 
     <div class="amc-videoplayer-content">
 
-        <div class="amc-videoplayer-empty" @onclick="OnEmptyClick" @ontouchstart="OnEmptyTouch">
+        <div class="amc-videoplayer-top">
+
+            <div class="amc-videoplayer-empty" @onclick="OnEmptyClick" @ontouchstart="OnEmptyTouch">
+                @if (ShowSideBar)
+                {
+                    <div class="amc-videoplayer-close">
+                        <span>
+                            @if (ShowSideBarMenu)
+                            {
+                                <svg viewBox="0 0 8 8">
+                                    <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="2.25" y1="2.25" x2="5.75" y2="5.75" />
+                                    <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="5.75" y1="2.25" x2="2.25" y2="5.75" />
+                                </svg>
+                            }
+                            else
+                            {
+                                <svg viewBox="0 0 8 8">
+                                    <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="2.59" y1="4" x2="5.41" y2="6.83" />
+                                    <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="5.41" y1="1.17" x2="2.59" y2="4" />
+                                </svg>
+                            }
+                        </span>
+                    </div>
+                }
+            </div>
+
             @if (ShowSideBar)
             {
-                <div class="amc-videoplayer-close">
-                    <span>
-                        @if (ShowSideBarMenu)
+                <div class="amc-videoplayer-sidebar">
+                    @if (ShowSideBarMenu)
+                    {
+                        <div class="amc-videoplayer-sidebar-menu">
+                            <button class="amc-videoplayer-menu-info" @onclick="ShowVideoInfo">Video Info</button>
+                            <button class="amc-videoplayer-menu-playbackspeed" @onclick="ShowVideoPlaybackSpeedOptions">
+                                Playback speed
+                                <div class="amc-videoplayer-settings-subvalue">@DisplayPlaybackSpeed</div>
+                            </button>
+                            <button class="amc-videoplayer-menu-loop" @onclick="ShowVideoLoop">
+                                Loop
+                                <div class="amc-videoplayer-settings-subvalue">@DisplayLoop</div>
+                            </button>
+
+                            <a href="https://angrymonkeycloud.com/" target="_blank" class="amc-videoplayer-settings-angrymonkeycloud">
+
+                                <AngryMonkey.Cloud.Components.Icons.AngryMonkeyCloudLogo />
+
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        @if (ShowSideBarInfo)
                         {
-                            <svg viewBox="0 0 8 8">
-                                <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="2.25" y1="2.25" x2="5.75" y2="5.75" />
-                                <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="5.75" y1="2.25" x2="2.25" y2="5.75" />
-                            </svg>
+                            <div class="amc-videoplayer-sidebar-section">
+                                @foreach (var info in VideoSettingsInfo)
+                                {
+                                    <label>@info.Key</label>
+                                    <div class="amc-videoplayer-value">@info.Value</div>
+                                }
+                            </div>
                         }
-                        else
+
+                        @if (ShowSideBarPlaybackSpeed)
                         {
-                            <svg viewBox="0 0 8 8">
-                                <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="2.59" y1="4" x2="5.41" y2="6.83" />
-                                <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="5.41" y1="1.17" x2="2.59" y2="4" />
-                            </svg>
+                            <div class="amc-videoplayer-sidebar-section amc-videoplayer-sidebar-playbackspeed">
+                                @foreach (var speedOption in PlaybackSpeedOptions)
+                                {
+                                    <button class="@(speedOption.Key == PlaybackSpeed? "_selected": string.Empty)" @onclick="@(async() => await ChangePlaybackSpeed(speedOption.Key))">@speedOption.Value</button>
+                                }
+                            </div>
                         }
-                    </span>
+
+                        @if (ShowSideBarLoop)
+                        {
+                            <div class="amc-videoplayer-sidebar-section">
+                                <button @onclick="ChangeLoop">@DisplayLoop</button>
+                            </div>
+                        }
+                    }
                 </div>
             }
         </div>
 
-        @if (ShowSideBar)
-        {
-            <div class="amc-videoplayer-sidebar">
-                @if (ShowSideBarMenu)
-                {
-                    <div class="amc-videoplayer-sidebar-menu">
-                        <button class="amc-videoplayer-menu-info" @onclick="ShowVideoInfo">Video Info</button>
-                        <button class="amc-videoplayer-menu-playbackspeed" @onclick="ShowVideoPlaybackSpeedOptions">
-                            Playback speed
-                            <div class="amc-videoplayer-settings-subvalue">@DisplayPlaybackSpeed</div>
-                        </button>
-                        <button class="amc-videoplayer-menu-loop" @onclick="ShowVideoLoop">
-                            Loop
-                            <div class="amc-videoplayer-settings-subvalue">@DisplayLoop</div>
-                        </button>
+        <div class="amc-videoplayer-seekinfo">
+            <div class="amc-videoplayer-seekinfo-container">
+                @*
+                    <div class="amc-videoplayer-seekinfo-canvas">
+                    <canvas />
+                    </div>*@
 
-                        <a href="https://angrymonkeycloud.com/" target="_blank" class="amc-videoplayer-settings-angrymonkeycloud">
-                            <svg viewBox="0 0 1046.7 208.9">
-                                <path class="amc-videoplayer-svg-fill" d="M110,74.3c-7.4,0-13.5,2.5-18.4,7.5c-4.9,5-7.3,11.2-7.3,18.8V135H92V99.7c0-4.9,1.8-9.1,5.4-12.6
-	c3.6-3.5,7.8-5.3,12.6-5.3c4.8,0,8.9,1.8,12.5,5.3c3.6,3.5,5.4,7.7,5.4,12.6V135h7.7v-34.5c0-7.5-2.4-13.8-7.3-18.8
-	C123.4,76.7,117.3,74.3,110,74.3z" />
-                                <path class="amc-videoplayer-svg-fill" d="M525.9,74.3c-7.4,0-13.5,2.5-18.4,7.5s-7.3,11.2-7.3,18.8V135h7.7V99.7c0-4.9,1.8-9.1,5.4-12.6
-	c3.6-3.5,7.8-5.3,12.6-5.3c4.8,0,8.9,1.8,12.5,5.3c3.6,3.5,5.4,7.7,5.4,12.6V135h7.7v-34.5c0-7.5-2.4-13.8-7.3-18.8
-	C539.4,76.7,533.3,74.3,525.9,74.3z" />
-                                <path class="amc-videoplayer-svg-fill" d="M215.6,100.5V135h7.7V99.7c0-4.9,1.8-9.1,5.4-12.6c3.6-3.5,7.8-5.3,12.6-5.3v-7.5c-7.4,0-13.5,2.5-18.4,7.5
-	C218.1,86.7,215.6,93,215.6,100.5z" />
-                                <path class="amc-videoplayer-svg-fill" d="M398.4,74.3c-8.4-0.7-15.1,2.9-20.1,10.8c-5-7.9-11.7-11.5-20.1-10.8c-6.3,0.5-11.4,2.9-15.2,7
-	c-4.1,4.4-6.2,10.2-6.2,17.5V135h8V97.9c0-4.5,1.3-8.4,3.8-11.5c2.5-3.2,5.9-4.7,10.1-4.7c4.3,0,7.9,1.4,11,4.2
-	c3.1,2.8,4.6,6.2,4.6,10.4V135h8.1V96.2c0-4.1,1.5-7.6,4.6-10.4c3.1-2.8,6.8-4.2,11-4.2c4.2,0,7.6,1.6,10.2,4.8
-	c2.6,3.2,3.9,7,3.9,11.5V135h8V98.8c0-7.3-2.1-13.1-6.3-17.5C409.8,77.2,404.7,74.9,398.4,74.3z" />
-                                <polygon class="amc-videoplayer-svg-fill" points="605.8,74.3 596.2,74.3 572.7,104.6 572.7,51.9 564.7,51.9 564.7,134.9 573,134.9 573,116.7
-	578.2,110.3 598.6,135 608.6,135 583.1,104.3 " />
-                                <path class="amc-videoplayer-svg-fill" d="M65.5,83.6c-5.6-5.9-12.5-9-20.5-9.3C36.7,74,29.5,76.9,23.5,83c-6,6.1-9,13.3-9,21.8c0,8.1,2.8,15.1,8.4,21
-	c5.6,5.9,12.4,8.9,20.5,9.1c8.3,0.3,15.5-2.6,21.6-8.7c0.5-0.5,0.9-1,1.4-1.4V135H74v-32h0C73.6,95.6,70.8,89.1,65.5,83.6z
-	 M66.2,105.6c-0.2,5.8-2.4,10.8-6.6,15.2c-4.5,4.8-10,7-16.4,6.6c-6-0.2-11-2.6-15.2-7.2c-4.1-4.6-6.1-10-6-16.1
-	c0.1-6.2,2.3-11.5,6.6-15.9c4.3-4.4,9.6-6.6,15.8-6.5c5.9,0,11,2.2,15.1,6.5c4.1,4.3,6.3,9.5,6.6,15.5V105.6z" />
-                                <path class="amc-videoplayer-svg-fill" d="M638.9,74.3c-8.3-0.3-15.5,2.6-21.6,8.7c-6,6.1-9,13.3-9,21.8c0,8.1,2.8,15.1,8.4,21c5.6,5.9,12.4,8.9,20.5,9.1
-	c8.3,0.3,15.5-2.6,21.6-8.7c3.5-3.5,6-7.5,7.5-11.8h-8.3c-1.1,2.2-2.5,4.3-4.4,6.3c-4.5,4.8-10,7-16.4,6.6c-6-0.2-11-2.6-15.2-7.2
-	c-3.4-3.8-5.4-8.2-5.9-13H660h7.2h0.5c0.1-0.8,0.1-1.7,0.1-2.5c0-8.1-2.8-15.2-8.4-21.1C653.8,77.7,646.9,74.6,638.9,74.3z
-	 M616.4,100.1c0.8-4.5,2.9-8.4,6.2-11.8c4.3-4.4,9.6-6.6,15.8-6.5c5.9,0,11,2.2,15.1,6.5c3.2,3.4,5.3,7.3,6.1,11.8H616.4z" />
-                                <polygon class="amc-videoplayer-svg-fill" points="281.2,121.9 279.9,124.8 259.6,74.3 251.2,74.3 275.2,135.1 266.4,157.4 274.7,157.4 309.5,74.3
-	301.5,74.3 " />
-                                <polygon class="amc-videoplayer-svg-fill" points="698.1,121.9 696.8,124.8 676.5,74.3 668.1,74.3 692.1,135.1 683.3,157.4 691.6,157.4 726.5,74.3
-	718.4,74.3 " />
-                                <path class="amc-videoplayer-svg-fill" d="M205.3,102.1H200h-2.5h-18v7.1h17.7c-0.8,4.3-2.9,8.1-6.1,11.6c-4.5,4.8-10,7-16.4,6.6c-6-0.2-11-2.6-15.2-7.2
-	c-4.1-4.6-6.1-10-6-16.1c0.1-6.2,2.3-11.5,6.6-15.9c4.3-4.4,9.6-6.6,15.8-6.5c5.9,0,11,2.2,15.1,6.5c1.9,2,3.4,4.1,4.4,6.5h8.3
-	c-1.4-4.1-3.7-7.8-6.9-11.2c-5.6-5.9-12.5-9-20.5-9.3c-8.3-0.3-15.5,2.6-21.5,8.7c-6,6.1-9,13.3-9,21.8c0,8.1,2.8,15.1,8.4,21
-	c5.6,5.9,12.4,8.9,20.5,9.1c8.3,0.3,15.5-2.6,21.6-8.7c0.5-0.5,0.9-1,1.4-1.5V135h7.7v-32.9L205.3,102.1
-	C205.3,102.1,205.3,102.1,205.3,102.1z" />
-                                <path class="amc-videoplayer-svg-fill" d="M778.2,128.9c-6.3,0.1-11.7-2.1-16.3-6.6c-4.6-4.5-6.9-9.9-6.9-16.1c0-6.3,2.5-11.7,7.4-16.3
-	c4.7-4.5,10.1-6.6,16-6.5c8.9,0.2,15.5,4,19.8,11.5h8.7l-1.1-2.5c-2.2-4.7-5.7-8.6-10.7-11.7c-5.3-3.2-10.9-4.8-17-4.7
-	c-8.5,0.1-15.8,3.2-21.9,9.1c-6.1,6-9.1,13.1-8.9,21.5c0.1,8.3,3.1,15.3,9.2,21.1c6.1,5.8,13.3,8.7,21.6,8.8
-	c12.7,0.1,22-5.4,28.1-16.6l0.8-1.7h-8.7C793.9,125.2,787.2,128.8,778.2,128.9z" />
-                                <rect x="815.1" y="57.2" class="amc-videoplayer-svg-fill" width="7.7" height="77.9" />
-                                <path class="amc-videoplayer-svg-fill" d="M862.9,76.1c-8.3-0.3-15.4,2.6-21.4,8.6c-6,6-9,13.2-9,21.7c0,8.1,2.8,15,8.3,20.9c5.6,5.9,12.3,8.9,20.3,9.1
-	c8.3,0.3,15.4-2.6,21.5-8.6c6-6,9-13.2,9-21.5c0-8.1-2.8-15.1-8.4-21C877.7,79.5,870.9,76.4,862.9,76.1z M877.5,122.3
-	c-4.5,4.7-9.9,6.9-16.2,6.6c-5.9-0.2-11-2.6-15.1-7.2c-4.1-4.6-6.1-9.9-6-16c0.1-6.2,2.3-11.4,6.6-15.8c4.3-4.4,9.5-6.5,15.7-6.4
-	c5.9,0,10.9,2.2,15,6.5c4.1,4.3,6.3,9.5,6.5,15.6C884.1,112,882,117.6,877.5,122.3z" />
-                                <path class="amc-videoplayer-svg-fill" d="M944.7,111.3c0,4.9-1.8,9-5.3,12.5c-3.6,3.5-7.7,5.2-12.4,5.2c-4.7,0-8.9-1.7-12.4-5.2
-	c-3.6-3.5-5.3-7.6-5.3-12.5V76.5h-7.7v33.8c0,7.5,2.4,13.7,7.2,18.7c4.8,5,10.9,7.5,18.2,7.5c7.3,0,13.4-2.5,18.2-7.5
-	c4.8-5,7.2-11.2,7.2-18.7V76.5h-7.7V111.3z" />
-                                <path class="amc-videoplayer-svg-fill" d="M1021.6,106.6v-49h-7.7v29c-5.6-6.5-12.7-9.9-21.2-10.2c-8.3-0.3-15.4,2.6-21.4,8.6c-6,6-9,13.2-9,21.7
-	c0,8.1,2.8,15,8.3,20.9c5.6,5.9,12.3,8.9,20.3,9.1c8.3,0.3,15.5-2.6,21.6-8.6C1018.8,122,1021.8,114.9,1021.6,106.6z M1007.5,122.6
-	c-4.5,4.7-9.9,6.9-16.2,6.6c-5.9-0.2-11-2.6-15.1-7.2c-4.1-4.6-6.1-9.9-6.1-16c0.1-6.2,2.3-11.4,6.6-15.8s9.6-6.5,15.6-6.4
-	c5.9,0,11,2.2,15.1,6.5c4.1,4.3,6.3,9.5,6.4,15.6C1014.1,112.4,1012,117.9,1007.5,122.6z" />
-                                <path class="amc-videoplayer-svg-fill" d="M481.5,83.5c-5.7-6-12.5-9.1-20.6-9.4c-8.4-0.3-15.6,2.6-21.7,8.7c-6.1,6.1-9.1,13.4-9.1,21.9
-	c0,4.1,0.7,7.9,2.1,11.5h0c0,0.1,0,0.1,0.1,0.2c0.4,0.9,0.8,1.8,1.3,2.7c0.1,0.2,0.2,0.4,0.3,0.6c0.1,0.2,0.2,0.3,0.3,0.5
-	c3.6,6.3,9.2,11,16.4,13.7l0,0c0,0,0.6,0.2,0.9,0.3c5.9,1.7,5.6,3.8,5,4.8l0,0c3.6-0.2,25-6.3,31.3-22.6c0,0,0,0,0,0
-	c0,0,0-0.1,0-0.1h0c1.5-3.6,2.2-7.5,2.2-11.6C489.9,96.5,487.1,89.5,481.5,83.5z M475.6,120.9c-4.5,4.8-10,7-16.4,6.7
-	c-6-0.2-11.1-2.6-15.3-7.2c-4.2-4.6-6.2-10-6-16.2c0.1-6.2,2.3-11.6,6.7-16c4.4-4.4,9.7-6.6,15.9-6.5c5.9,0,11,2.2,15.2,6.6
-	c4.2,4.4,6.4,9.7,6.6,15.8C482.3,110.5,480.1,116.1,475.6,120.9z" />
+                <div class="amc-videoplayer-seekinfo-duration">
+                    @DisplaySeekInfoTime
+                </div>
+            </div>
+        </div>
+
+        <div class="amc-videoplayer-controls">
+            <div class="amc-videoplayer-controls-left">
+                @* Play *@
+                <div class="amc-videoplayer-play">
+                    <button @onclick="PlayVideo">
+                        <svg viewBox="0 0 8 8">
+                            <path class="amc-videoplayer-svg-stroke" d="M6.9,3.7L1.4,0.6c-0.1-0.1-0.2-0.1-0.3,0C1,0.6,0.9,0.8,0.9,0.9v6.2c0,0.1,0.1,0.2,0.2,0.3c0.1,0,0.1,0,0.2,0c0.1,0,0.1,0,0.2,0l5.5-3.1C7,4.2,7.1,4.1,7.1,4C7.1,3.9,7,3.8,6.9,3.7z" />
+                        </svg>
+                    </button>
+                </div>
+
+                @* Pause *@
+                <div class="amc-videoplayer-pause">
+                    <button @onclick="PauseVideo">
+                        <svg viewBox="0 0 8 8">
+                            <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="3" y1="1.25" x2="3" y2="6.75" />
+                            <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="5" y1="1.25" x2="5" y2="6.75" />
+                        </svg>
+                    </button>
+                </div>
+
+                @* Stop *@
+                <div class="amc-videoplayer-stop">
+                    <button @onclick="StopVideo">
+                        <svg viewBox="0 0 8 8">
+                            <rect class="amc-videoplayer-svg-stroke" x="1.5" y="1.5" width="5" height="5" rx="0.78" />
+                        </svg>
+                    </button>
+                </div>
+
+                @* Volume *@
+                <div class="amc-videoplayer-volume @(DoShowVolumeControls? "_extended": string.Empty)">
+                    <button class="amc-videoplayer-volume-button" @onclick="OnVolumeButtonClick">
+                        <svg viewBox="0 0 8 8">
+                            <path class="amc-videoplayer-svg-stroke" d="M2.24,5.31,4.57,6.47a.28.28,0,0,0,.25,0,.25.25,0,0,0,.12-.22V1.75a.25.25,0,0,0-.12-.22.28.28,0,0,0-.13,0,.27.27,0,0,0-.12,0L2.24,2.84l-1.5.31a.37.37,0,0,0-.3.36V4.7a.38.38,0,0,0,.32.37Z" />
+
+                            @if (Volume == 0 || IsMuted)
+                            {
+                                <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="6.12" y1="3.42" x2="7.62" y2="4.92" />
+                                <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="7.62" y1="3.42" x2="6.12" y2="4.92" />
+                            }
+                            else
+                            {
+                                <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="6.5" y1="@(4 - (Volume * 2))" x2="6.5" y2="@(4 + (Volume * 2))" />
+                            }
+
+                        </svg>
+                    </button>
+
+                    @if (DoShowVolumeControls)
+                    {
+                        <div class="amc-videoplayer-volume-value">
+                            @DisplayVolume
+                        </div>
+
+                        <button class="amc-videoplayer-volume-mute" @onclick="MuteVolume">
+                            <svg viewBox="0 0 8 8">
+                                <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="2.25" y1="2.25" x2="5.75" y2="5.75" />
+                                <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="5.75" y1="2.25" x2="2.25" y2="5.75" />
                             </svg>
+                        </button>
 
-                        </a>
-                    </div>
-                }
-                else
-                {
-                    @if (ShowSideBarInfo)
-                    {
-                        <div class="amc-videoplayer-sidebar-section">
-                            @foreach (var info in VideoSettingsInfo)
-                            {
-                                <label>@info.Key</label>
-                                <div class="amc-videoplayer-value">@info.Value</div>
-                            }
+                        <div class="amc-videoplayer-volume-bar">
+                            <ProgressBar Step="0.1" Value="@Volume" Total="1" Style=ProgressBarStyle.Disk OnChanging="OnVolumeChanging" OnChanged="OnVolumeChanged" />
                         </div>
                     }
+                </div>
 
-                    @if (ShowSideBarPlaybackSpeed)
+                @* Current Time / Duration *@
+                <div class="amc-videoplayer-timeduration">
+                    @DisplayTimeDuration
+                </div>
+
+                @* Status *@
+                <div class="amc-videoplayer-status">
+                    @if (Status == VideoStatus.Buffering)
                     {
-                        <div class="amc-videoplayer-sidebar-section amc-videoplayer-sidebar-playbackspeed">
-                            @foreach (var speedOption in PlaybackSpeedOptions)
-                            {
-                                <button class="@(speedOption.Key == PlaybackSpeed? "_selected": string.Empty)" @onclick="@(async() => await ChangePlaybackSpeed(speedOption.Key))">@speedOption.Value</button>
-                            }
-                        </div>
+                        <AngryMonkey.Cloud.Components.Icons.Loading />
                     }
+                </div>
+            </div>
 
-                    @if (ShowSideBarLoop)
+            <div class="amc-videoplayer-controls-middle">
+                <div class="amc-videoplayer-duration">
+                    <span></span>
+                </div>
+            </div>
+
+            <div class="amc-videoplayer-controls-right">
+                <div class="amc-videoplayer-more">
+                    <button @onclick="MoreButtonInfo">
+                        <svg viewBox="0 0 8 8">
+                            <path class="amc-videoplayer-svg-stroke" d="M1.57,4.55l.33,0A.16.16,0,0,1,2,4.68a2,2,0,0,0,.15.37.17.17,0,0,1,0,.18L2,5.48A.22.22,0,0,0,2,5.8l.34.35a.25.25,0,0,0,.33,0L2.89,6a.15.15,0,0,1,.17,0,1.37,1.37,0,0,0,.38.15.15.15,0,0,1,.1.13q0,.18,0,.33a.23.23,0,0,0,.24.22h.5a.24.24,0,0,0,.24-.22,3.25,3.25,0,0,0,0-.33.18.18,0,0,1,.11-.13,1.37,1.37,0,0,0,.38-.15.15.15,0,0,1,.17,0l.25.22a.23.23,0,0,0,.32,0l.35-.35a.23.23,0,0,0,0-.32L6,5.23a.17.17,0,0,1,0-.18,1.53,1.53,0,0,0,.16-.37.15.15,0,0,1,.12-.11l.33,0a.25.25,0,0,0,.23-.25V3.81a.24.24,0,0,0-.23-.24l-.33,0a.13.13,0,0,1-.12-.1,1.8,1.8,0,0,0-.16-.38.15.15,0,0,1,0-.17l.22-.25a.25.25,0,0,0,0-.33L5.8,2a.23.23,0,0,0-.32,0,2.32,2.32,0,0,0-.25.22.15.15,0,0,1-.17,0A2.5,2.5,0,0,0,4.68,2a.16.16,0,0,1-.11-.13,3,3,0,0,0,0-.32.25.25,0,0,0-.24-.23h-.5a.24.24,0,0,0-.24.23c0,.09,0,.21,0,.32a.14.14,0,0,1-.1.13,2.5,2.5,0,0,0-.38.15.15.15,0,0,1-.17,0A2.32,2.32,0,0,0,2.64,2a.24.24,0,0,0-.33,0L2,2.31a.25.25,0,0,0,0,.33l.22.25a.15.15,0,0,1,0,.17A2.5,2.5,0,0,0,2,3.44a.13.13,0,0,1-.13.1l-.32,0a.24.24,0,0,0-.23.24V4.3A.24.24,0,0,0,1.57,4.55Z" />
+                            <path class="amc-videoplayer-svg-stroke" d="M4.06,4.83a.77.77,0,1,0-.77-.77A.76.76,0,0,0,4.06,4.83Z" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="amc-videoplayer-fullscreen">
+                    @if (!IsFullScreen)
                     {
-                        <div class="amc-videoplayer-sidebar-section">
-                            <button @onclick="ChangeLoop">@DisplayLoop</button>
-                        </div>
+                        <button class="amc-videoplayer-enterfullscreen" @onclick="EnterFullScreen">
+                            <svg viewBox="0 0 8 8">
+                                <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="6.25" y1="1.71" x2="3.75" y2="1.71" />
+                                <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="6.25" y1="4.29" x2="6.25" y2="1.79" />
+                                <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="1.75" y1="6.29" x2="4.25" y2="6.29" />
+                                <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="1.75" y1="3.71" x2="1.75" y2="6.21" />
+                            </svg>
+                        </button>
                     }
-                }
-            </div>
-        }
-    </div>
-
-    @*    @if (ShowSideBar == false)
-        {
-        <div class="amc-videoplayer-info">
-        <div class="amc-videoplayer-title">@Title</div>
-        </div>
-        }*@
-
-    <div class="amc-videoplayer-seekinfo">
-        <div class="amc-videoplayer-seekinfo-container">
-            @*
-                <div class="amc-videoplayer-seekinfo-canvas">
-                <canvas />
-                </div>*@
-
-            <div class="amc-videoplayer-seekinfo-duration">
-                @DisplaySeekInfoTime
-            </div>
-        </div>
-    </div>
-
-    <div class="amc-videoplayer-controls">
-        <div class="amc-videoplayer-controls-left">
-            @* Play *@
-            <div class="amc-videoplayer-play">
-                <button @onclick="PlayVideo">
-                    <svg viewBox="0 0 8 8">
-                        <path class="amc-videoplayer-svg-stroke" d="M6.9,3.7L1.4,0.6c-0.1-0.1-0.2-0.1-0.3,0C1,0.6,0.9,0.8,0.9,0.9v6.2c0,0.1,0.1,0.2,0.2,0.3c0.1,0,0.1,0,0.2,0c0.1,0,0.1,0,0.2,0l5.5-3.1C7,4.2,7.1,4.1,7.1,4C7.1,3.9,7,3.8,6.9,3.7z" />
-                    </svg>
-                </button>
-            </div>
-
-            @* Pause *@
-            <div class="amc-videoplayer-pause">
-                <button @onclick="PauseVideo">
-                    <svg viewBox="0 0 8 8">
-                        <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="3" y1="1.25" x2="3" y2="6.75" />
-                        <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="5" y1="1.25" x2="5" y2="6.75" />
-                    </svg>
-                </button>
-            </div>
-
-            @* Stop *@
-            <div class="amc-videoplayer-stop">
-                <button @onclick="StopVideo">
-                    <svg viewBox="0 0 8 8">
-                        <rect class="amc-videoplayer-svg-stroke" x="1.5" y="1.5" width="5" height="5" rx="0.78" />
-                    </svg>
-                </button>
-            </div>
-
-            @* Volume *@
-            <div class="amc-videoplayer-volume @(DoShowVolumeControls? "_extended": string.Empty)">
-                <button class="amc-videoplayer-volume-button" @onclick="OnVolumeButtonClick">
-                    <svg viewBox="0 0 8 8">
-                        <path class="amc-videoplayer-svg-stroke" d="M2.24,5.31,4.57,6.47a.28.28,0,0,0,.25,0,.25.25,0,0,0,.12-.22V1.75a.25.25,0,0,0-.12-.22.28.28,0,0,0-.13,0,.27.27,0,0,0-.12,0L2.24,2.84l-1.5.31a.37.37,0,0,0-.3.36V4.7a.38.38,0,0,0,.32.37Z" />
-
-                        @if (Volume == 0 || IsMuted)
-                        {
-                            <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="6.12" y1="3.42" x2="7.62" y2="4.92" />
-                            <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="7.62" y1="3.42" x2="6.12" y2="4.92" />
-                        }
-                        else
-                        {
-                            <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="6.5" y1="@(4 - (Volume * 2))" x2="6.5" y2="@(4 + (Volume * 2))" />
-                        }
-
-                    </svg>
-                </button>
-
-                @if (DoShowVolumeControls)
-                {
-                    <div class="amc-videoplayer-volume-value">
-                        @DisplayVolume
-                    </div>
-
-                    <button class="amc-videoplayer-volume-mute" @onclick="MuteVolume">
-                        <svg viewBox="0 0 8 8">
-                            <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="2.25" y1="2.25" x2="5.75" y2="5.75" />
-                            <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="5.75" y1="2.25" x2="2.25" y2="5.75" />
-                        </svg>
-                    </button>
-
-                    <div class="amc-videoplayer-volume-bar">
-                        <ProgressBar Step="0.1" Value="@Volume" Total="1" Style=ProgressBarStyle.Disk OnChanging="OnVolumeChanging" OnChanged="OnVolumeChanged" />
-                    </div>
-                }
-            </div>
-
-            @* Current Time / Duration *@
-            <div class="amc-videoplayer-timeduration">
-                @DisplayTimeDuration
-            </div>
-
-            @* Status *@
-            <div class="amc-videoplayer-status">
-                @if (Status == VideoStatus.Buffering)
-                {
-                    <AngryMonkey.Cloud.Components.Icons.Loading />
-                }
+                    else
+                    {
+                        <button class="amc-videoplayer-exitfullscreen" @onclick="ExitFullScreen">
+                            <svg viewBox="0 0 8 8">
+                                <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="4.03" y1="3.41" x2="5.8" y2="1.64" />
+                                <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="2.2" y1="1.59" x2="3.97" y2="3.36" />
+                                <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="3.97" y1="4.59" x2="2.2" y2="6.36" />
+                                <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="5.8" y1="6.41" x2="4.03" y2="4.64" />
+                            </svg>
+                        </button>
+                    }
+                </div>
             </div>
         </div>
 
-        <div class="amc-videoplayer-controls-middle">
-            <div class="amc-videoplayer-duration">
-                <span></span>
-            </div>
+        <div class="amc-videoplayer-progress"
+             @onmousedown="OnProgressMouseDown"
+             @ontouchstart="OnProgressTouchStart"
+             @onmousemove="OnProgressMouseMove"
+             @onmouseout="OnProgressMouseOut">
+            <ProgressBar Value="CurrentTime" Total="CurrentVideoInfo?.Duration ?? 0" Style="ProgressBarStyle" OnChanged="OnProgressChanged" OnChanging="OnProgressChanging" />
         </div>
 
-        <div class="amc-videoplayer-controls-right">
-            <div class="amc-videoplayer-more">
-                <button @onclick="MoreButtonInfo">
-                    <svg viewBox="0 0 8 8">
-                        <path class="amc-videoplayer-svg-stroke" d="M1.57,4.55l.33,0A.16.16,0,0,1,2,4.68a2,2,0,0,0,.15.37.17.17,0,0,1,0,.18L2,5.48A.22.22,0,0,0,2,5.8l.34.35a.25.25,0,0,0,.33,0L2.89,6a.15.15,0,0,1,.17,0,1.37,1.37,0,0,0,.38.15.15.15,0,0,1,.1.13q0,.18,0,.33a.23.23,0,0,0,.24.22h.5a.24.24,0,0,0,.24-.22,3.25,3.25,0,0,0,0-.33.18.18,0,0,1,.11-.13,1.37,1.37,0,0,0,.38-.15.15.15,0,0,1,.17,0l.25.22a.23.23,0,0,0,.32,0l.35-.35a.23.23,0,0,0,0-.32L6,5.23a.17.17,0,0,1,0-.18,1.53,1.53,0,0,0,.16-.37.15.15,0,0,1,.12-.11l.33,0a.25.25,0,0,0,.23-.25V3.81a.24.24,0,0,0-.23-.24l-.33,0a.13.13,0,0,1-.12-.1,1.8,1.8,0,0,0-.16-.38.15.15,0,0,1,0-.17l.22-.25a.25.25,0,0,0,0-.33L5.8,2a.23.23,0,0,0-.32,0,2.32,2.32,0,0,0-.25.22.15.15,0,0,1-.17,0A2.5,2.5,0,0,0,4.68,2a.16.16,0,0,1-.11-.13,3,3,0,0,0,0-.32.25.25,0,0,0-.24-.23h-.5a.24.24,0,0,0-.24.23c0,.09,0,.21,0,.32a.14.14,0,0,1-.1.13,2.5,2.5,0,0,0-.38.15.15.15,0,0,1-.17,0A2.32,2.32,0,0,0,2.64,2a.24.24,0,0,0-.33,0L2,2.31a.25.25,0,0,0,0,.33l.22.25a.15.15,0,0,1,0,.17A2.5,2.5,0,0,0,2,3.44a.13.13,0,0,1-.13.1l-.32,0a.24.24,0,0,0-.23.24V4.3A.24.24,0,0,0,1.57,4.55Z" />
-                        <path class="amc-videoplayer-svg-stroke" d="M4.06,4.83a.77.77,0,1,0-.77-.77A.76.76,0,0,0,4.06,4.83Z" />
-                    </svg>
-                </button>
-            </div>
-
-            <div class="amc-videoplayer-fullscreen">
-                @if (!IsFullScreen)
-                {
-                    <button class="amc-videoplayer-enterfullscreen" @onclick="EnterFullScreen">
-                        <svg viewBox="0 0 8 8">
-                            <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="6.25" y1="1.71" x2="3.75" y2="1.71" />
-                            <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="6.25" y1="4.29" x2="6.25" y2="1.79" />
-                            <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="1.75" y1="6.29" x2="4.25" y2="6.29" />
-                            <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="1.75" y1="3.71" x2="1.75" y2="6.21" />
-                        </svg>
-                    </button>
-                }
-                else
-                {
-                    <button class="amc-videoplayer-exitfullscreen" @onclick="ExitFullScreen">
-                        <svg viewBox="0 0 8 8">
-                            <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="4.03" y1="3.41" x2="5.8" y2="1.64" />
-                            <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="2.2" y1="1.59" x2="3.97" y2="3.36" />
-                            <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="3.97" y1="4.59" x2="2.2" y2="6.36" />
-                            <line class="amc-videoplayer-svg-stroke _corner-rounded" x1="5.8" y1="6.41" x2="4.03" y2="4.64" />
-                        </svg>
-                    </button>
-                }
-            </div>
-        </div>
-    </div>
-
-    <div class="amc-videoplayer-progress"
-         @onmousedown="OnProgressMouseDown"
-         @ontouchstart="OnProgressTouchStart"
-         @onmousemove="OnProgressMouseMove"
-         @onmouseout="OnProgressMouseOut">
-        <ProgressBar Value="CurrentTime" Total="CurrentVideoInfo?.Duration ?? 0" Style="ProgressBarStyle" OnChanged="OnProgressChanged" OnChanging="OnProgressChanging" />
     </div>
 </div>
