@@ -1,0 +1,37 @@
+﻿
+.amc-datetimepicker-selection {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+
+	button {
+		border: none;
+		background-color: transparent !important;
+		cursor: pointer;
+		padding: 15px;
+
+		svg {
+			height: 20px;
+			width: 20px;
+
+			* {
+				fill: none;
+				stroke: var(--amc-datetimepicker-accentColor);
+				stroke-width: 4px;
+				stroke-miterlimit: 10;
+			}
+		}
+	}
+
+	&-info {
+		flex: 1;
+		font-size: 1.5rem;
+		font-weight: 400;
+		letter-spacing: 1px;
+		cursor: pointer;
+		text-align: center;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+}

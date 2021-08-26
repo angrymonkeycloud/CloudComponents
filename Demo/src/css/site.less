@@ -1,109 +1,112 @@
 ﻿@import "variables.less";
 
 * {
-    margin: 0;
-    padding: 0;
+	margin: 0;
+	padding: 0;
 }
 
 body {
-    height: 90vh;
-    width: 90vw;
-    /*background-image: url(/bg.jpg);*/
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: center;
-    // background-color: #0c9da2;
-    background-color: #c4e3ed;
+	height: 90vh;
+	width: 90vw;
+	/*background-image: url(/bg.jpg);*/
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-position: center;
+	// background-color: #0c9da2;
+	background-color: #c4e3ed;
 
-    .components {
-        width: 100%;
+	.components {
+		width: 100%;
 
 
-        &-links {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px 10px;
+		&-links {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 20px 10px;
 
-            a {
-                &, &:hover, &:active, &:focus, &:visited {
-                    color: #fff;
-                    text-decoration: none;
-                    padding: 10px;
-                    font-size: 1em;
-                    font-family: sans-serif;
-                    letter-spacing: 2px;
-                    margin-left: 20px;
-                    border-bottom: 1px groove transparent;
-                }
+			a {
+				&, &:hover, &:active, &:focus, &:visited {
+					color: #fff;
+					text-decoration: none;
+					padding: 10px;
+					font-size: 1em;
+					font-family: sans-serif;
+					letter-spacing: 2px;
+					margin-left: 20px;
+					border-bottom: 1px groove transparent;
+				}
 
-                &:hover {
-                    border-color: #fff;
-                }
-            }
-        }
+				&:hover {
+					border-color: #fff;
+				}
+			}
+		}
 
-        &-icon {
-            display: none;
-        }
-    }
+		&-icon {
+			display: none;
+		}
+	}
 
-    @media screen and (max-width: 1000px) {
-        .components {
+	@media screen and (max-width: 1000px) {
+		.components {
 
-            &-links {
-                flex-direction: column;
-                justify-content: flex-start;
-                align-items: center;
+			&-links {
+				flex-direction: column;
+				justify-content: flex-start;
+				align-items: center;
 
-                a {
-                    &, &:hover, &:active, &:focus, &:visited {
-                        padding: 5px;
-                        margin-top: 10px;
-                    }
+				a {
+					&, &:hover, &:active, &:focus, &:visited {
+						padding: 5px;
+						margin-top: 10px;
+					}
 
-                    &:hover {
-                        border-bottom: 1px groove #fff;
-                        color: white;
+					&:hover {
+						border-bottom: 1px groove #fff;
+						color: white;
 
-                        &:active {
-                            border-bottom-color: var(--LinkColor);
-                        }
-                    }
-                }
-            }
-        }
-    }
+						&:active {
+							border-bottom-color: var(--LinkColor);
+						}
+					}
+				}
+			}
+		}
+	}
 
-    main {
-        margin-top: 50px;
-        margin-left: auto;
-        margin-right: auto;
+	main {
+		margin-top: 50px;
+		margin-left: auto;
+		margin-right: auto;
 
-        > .amc-progressbar {
-            --amc-progressbar-accentColor: var(--LinkColor) !important;
-            width: 600px;
-        }
+		> .amc-progressbar {
+			--amc-progressbar-accentColor: var(--LinkColor) !important;
+			width: 600px;
+		}
 
-        > .amc-videoplayer {
-            max-width: 800px;
-            width: 100vw;
-            height: 450px;
-            margin-left: auto;
-            margin-right: auto;
-        }
+		> .amc-videoplayer {
+			max-width: 800px;
+			width: 100vw;
+			height: 450px;
+			margin-left: auto;
+			margin-right: auto;
+		}
 
-        .amc-datetimepicker-section {
-            display: flex;
-            flex-direction: row;
+		.amc-datetimepicker-section {
 
-            .amc-datetimepicker {
-                --amc-datetimepicker-backgroundColor: var(--LinkColor) !important;
-                --amc-datetimepicker-accentColor: #fff !important;
-                margin-bottom: 30px;
-                margin-left: 30px;
-            }
-        }
-    }
+			h2 {
+				text-align: center;
+				opacity: .7;
+				margin-bottom: 20px;
+			}
+
+			.amc-datetimepicker {
+				--amc-datetimepicker-backgroundColor: var(--LinkColor) !important;
+				--amc-datetimepicker-accentColor: #fff !important;
+				margin-bottom: 100px;
+			}
+		}
+	}
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AngryMonkey.Cloud.Components
 {
@@ -8,9 +9,10 @@ namespace AngryMonkey.Cloud.Components
         {
             public int Minute { get; set; }
             public int Hour { get; set; }
-            public string AmOrPm { get; set; }
             public bool IsSelected { get; set; } = false;
-            public string CssClasses
+            public bool IsNow => DateTime.Now.TimeOfDay.Hours == Hour && DateTime.Now.TimeOfDay.Minutes == Minute;
+            public string DisplayMinute => Minute.ToString();
+			public string CssClasses
             {
                 get
                 {
@@ -19,20 +21,39 @@ namespace AngryMonkey.Cloud.Components
                     if (IsSelected)
                         classes.Add("_selected");
 
+                    if (IsNow)
+                        classes.Add("_now");
+
+                    if (Minute % 5 == 0)
+                        classes.Add("_current");
+
+                    if (Minute == 0)
+                        classes.Add("_strong");
+
                     return string.Join(' ', classes);
                 }
             }
+
             public string TimeDisplay()
             {
-                return $"{Hour.ToString("00")}:{Minute.ToString("00")} {AmOrPm}";
+                string amPM = Hour >= 12 ? "PM" : "AM";
+
+                DateTimePickerHour hour = new(Hour);
+
+                return $"{hour.DisplayHour:00}:{Minute:00} {amPM}";
             }
-            public DateTimePickerTime(string amORpm,int hour, int minute)
+
+            public DateTimePickerTime(int hour, int minute)
             {
-                AmOrPm = amORpm;
                 Hour = hour;
                 Minute = minute;
             }
 
+            public DateTimePickerTime(DateTime date)
+            {
+                Hour = date.TimeOfDay.Hours;
+                Minute = date.TimeOfDay.Minutes;
+            }
         }
     }
 }

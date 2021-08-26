@@ -35,6 +35,10 @@
 			"input": "DateTimePicker/DateTimePicker.less"
 		},
 		{
+			"output": "DateTimePicker/Partials/DateTimePickerNavigation.razor.css",
+			"input": "DateTimePicker/Partials/DateTimePickerNavigation.less"
+		},
+		{
 			"output": "GridView/GridView.razor.css",
 			"input": "GridView/GridView.less"
 		},

@@ -1,0 +1,40 @@
+﻿@namespace AngryMonkey.Cloud.Components.Partials
+
+<div class="amc-datetimepicker-selection">
+    <button class="amc-datetimepicker-selection-previous" @onclick="OnPrevClick">
+        <svg viewBox="0 0 50 50">
+            <polyline points="36.8,1.5 13.3,24.8 36.8,48 "></polyline>
+        </svg>
+    </button>
+    <div @onclick="OnTitleClick" class="amc-datetimepicker-selection-info">
+        <span>@Title</span>
+    </div>
+    <button class="amc-datetimepicker-selection-next" @onclick="OnNextClick">
+        <svg viewBox="0 0 50 50">
+            <polyline points="13.3,48.1 36.8,24.8 13.3,1.5 "></polyline>
+        </svg>
+    </button>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; }
+    
+    [Parameter] public EventCallback<EventArgs> OnTitleClicked { get; set; }
+    [Parameter] public EventCallback<EventArgs> OnPreviousClicked { get; set; }
+    [Parameter] public EventCallback<EventArgs> OnNextClicked { get; set; }
+
+    private async Task OnTitleClick()
+    {
+        await OnTitleClicked.InvokeAsync();
+    }
+
+    private async Task OnPrevClick()
+    {
+        await OnPreviousClicked.InvokeAsync();
+    }
+
+    private async Task OnNextClick()
+    {
+        await OnNextClicked.InvokeAsync();
+    }
+}
