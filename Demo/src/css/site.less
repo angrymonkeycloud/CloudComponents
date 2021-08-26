@@ -94,9 +94,16 @@ body {
             margin-right: auto;
         }
 
-        > .amc-datetimepicker {
-            --amc-datetimepicker-backgroundColor: var(--LinkColor) !important;
-            --amc-datetimepicker-accentColor: #fff !important;
+        .amc-datetimepicker-section {
+            display: flex;
+            flex-direction: row;
+
+            .amc-datetimepicker {
+                --amc-datetimepicker-backgroundColor: var(--LinkColor) !important;
+                --amc-datetimepicker-accentColor: #fff !important;
+                margin-bottom: 30px;
+                margin-left: 30px;
+            }
         }
     }
 }

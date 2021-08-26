@@ -1,152 +1,214 @@
 ﻿@import "../General/css/common.less";
 
 .amc-SelectableField {
-	border: 1px solid transparent;
-	position: relative;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	cursor: pointer;
+    border: 1px solid transparent;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 
-	&._today {
-		&:after {
-			position: absolute;
-			content: '';
-			width: 1em;
-			height: .13em;
-			background-color: var(--amc-datetimepicker-accentColor);
-			bottom: 8px;
-			left: 50%;
-			transform: translateX(-50%);
-			opacity: var(--lowOpacity);
-		}
-	}
+    &._today {
+        &:after {
+            position: absolute;
+            content: '';
+            width: 1em;
+            height: .13em;
+            background-color: var(--amc-datetimepicker-accentColor);
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: var(--lowOpacity);
+        }
+    }
 
-	&._selected {
-		background-color: var(--amc-datetimepicker-accentColor);
-		color: var(--amc-datetimepicker-backgroundColor);
+    &._selected {
+        background-color: var(--amc-datetimepicker-accentColor);
+        color: var(--amc-datetimepicker-backgroundColor);
 
-		&::after {
-			background-color: var(--amc-datetimepicker-backgroundColor);
-		}
-	}
+        &::after {
+            background-color: var(--amc-datetimepicker-backgroundColor);
+        }
+    }
 
-	&:hover:not(._selected) {
-		border-color: var(--amc-datetimepicker-accentColor);
-	}
+    &:hover:not(._selected) {
+        border-color: var(--amc-datetimepicker-accentColor);
+    }
 
-	&:not(._current):not(._selected) {
-		opacity: var(--lowOpacity);
-	}
+    &:not(._current):not(._selected) {
+        opacity: var(--lowOpacity);
+    }
 }
 
 .amc-datetimepicker {
-	--amc-datetimepicker-backgroundColor: #fff;
-	--amc-datetimepicker-accentColor: #000;
-	.ComponentsDefault();
-	background-color: var(--amc-datetimepicker-backgroundColor);
-	color: var(--amc-datetimepicker-accentColor);
-	--lowOpacity: .7;
+    --amc-datetimepicker-backgroundColor: #fff;
+    --amc-datetimepicker-accentColor: #000;
+    .ComponentsDefault();
+    background-color: var(--amc-datetimepicker-backgroundColor);
+    color: var(--amc-datetimepicker-accentColor);
+    --lowOpacity: .7;
 
-	&-header {
-		margin-bottom: 5px;
-	}
+    &-header {
+        margin-bottom: 5px;
+    }
 
-	&-selecteddate {
-		font-size: .8rem;
-		text-align: center;
-		padding: 10px;
-		opacity: var(--lowOpacity);
-		font-weight: bold;
-	}
+    &-date,
+    &-time {
+        margin-top: 10px;
+    }
 
-	&-selection {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
+    &-selecteddate {
+        font-size: .8rem;
+        text-align: center;
+        padding: 10px;
+        opacity: var(--lowOpacity);
+        font-weight: bold;
+    }
 
-		button {
-			border: none;
-			background-color: transparent !important;
-			cursor: pointer;
-			padding: 15px;
+    &-am,
+    &-pm {
+        text-align: center;
+        background-color: lightblue;
+        border: 1px solid transparent;
+    }
 
-			svg {
-				height: 20px;
-				width: 20px;
+    &-hours {
+        display: grid;
+        grid-template-columns: repeat(6,1fr);
+        padding: 2px;
 
-				* {
-					fill: none;
-					stroke: var(--amc-datetimepicker-accentColor);
-					stroke-width: 4px;
-					stroke-miterlimit: 10;
-				}
-			}
-		}
+        &-hour {
+            border: 1px solid transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            min-height: 3em;
+            min-width: 3em;
 
-		&-info {
-			flex: 1;
-			font-size: 1.5rem;
-			font-weight: 400;
-			letter-spacing: 1px;
-			cursor: pointer;
-			text-align: center;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		}
-	}
+            &._selected {
+                background-color: var(--amc-datetimepicker-accentColor);
+                color: var(--amc-datetimepicker-backgroundColor);
+            }
 
-	&-calendar,
-	&-months,
-	&-years,
-	&-weeks,
-	&-days {
-		padding: 2px;
-	}
+            &:hover {
+                border-color: var(--amc-datetimepicker-accentColor);
+            }
+        }
+    }
 
-	&-calendar {
+    &-minutes {
+        display: grid;
+        grid-template-columns: repeat(10,1fr);
+        padding: 2px;
 
-		&-weeks,
-		&-days {
-			display: grid;
-			grid-template-columns: repeat(7, 1fr);
-		}
+        &-minute {
+            border: 1px solid transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            min-height: 3em;
+            min-width: 3em;
 
-		&-weeks {
-			margin-bottom: 5px;
-		}
+            &._selected {
+                background-color: var(--amc-datetimepicker-accentColor);
+                color: var(--amc-datetimepicker-backgroundColor);
+            }
 
-		&-week,
-		&-day {
-			min-width: 3em;
-		}
+            &:hover {
+                border-color: var(--amc-datetimepicker-accentColor);
+            }
+        }
+    }
 
-		&-week {
-			font-weight: 400;
-			letter-spacing: 1px;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			opacity: .4;
-		}
+    &-selection {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
 
-		&-day {
-			.amc-SelectableField();
-			min-height: 3em;
-		}
-	}
+        button {
+            border: none;
+            background-color: transparent !important;
+            cursor: pointer;
+            padding: 15px;
 
-	&-months,
-	&-years {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-	}
+            svg {
+                height: 20px;
+                width: 20px;
 
-	&-months-month,
-	&-years-year {
-		.amc-SelectableField();
-		min-width: 7em;
-		min-height: 3em;
-	}
+                * {
+                    fill: none;
+                    stroke: var(--amc-datetimepicker-accentColor);
+                    stroke-width: 4px;
+                    stroke-miterlimit: 10;
+                }
+            }
+        }
+
+        &-info {
+            flex: 1;
+            font-size: 1.5rem;
+            font-weight: 400;
+            letter-spacing: 1px;
+            cursor: pointer;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+
+    &-calendar,
+    &-months,
+    &-years,
+    &-weeks,
+    &-days {
+        padding: 2px;
+    }
+
+    &-calendar {
+
+        &-weeks,
+        &-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        &-weeks {
+            margin-bottom: 5px;
+        }
+
+        &-week,
+        &-day {
+            min-width: 3em;
+        }
+
+        &-week {
+            font-weight: 400;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: .4;
+        }
+
+        &-day {
+            .amc-SelectableField();
+            min-height: 3em;
+        }
+    }
+
+    &-months,
+    &-years {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    &-months-month,
+    &-years-year {
+        .amc-SelectableField();
+        min-width: 7em;
+        min-height: 3em;
+    }
 }
