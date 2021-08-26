@@ -94,12 +94,64 @@
 .amc-datetimepicker-header {
   margin-bottom: 5px;
 }
+.amc-datetimepicker-date,
+.amc-datetimepicker-time {
+  margin-top: 10px;
+}
 .amc-datetimepicker-selecteddate {
   font-size: 0.8rem;
   text-align: center;
   padding: 10px;
   opacity: var(--lowOpacity);
   font-weight: bold;
+}
+.amc-datetimepicker-am,
+.amc-datetimepicker-pm {
+  text-align: center;
+  background-color: lightblue;
+  border: 1px solid transparent;
+}
+.amc-datetimepicker-hours {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  padding: 2px;
+}
+.amc-datetimepicker-hours-hour {
+  border: 1px solid transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  min-height: 3em;
+  min-width: 3em;
+}
+.amc-datetimepicker-hours-hour._selected {
+  background-color: var(--amc-datetimepicker-accentColor);
+  color: var(--amc-datetimepicker-backgroundColor);
+}
+.amc-datetimepicker-hours-hour:hover {
+  border-color: var(--amc-datetimepicker-accentColor);
+}
+.amc-datetimepicker-minutes {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  padding: 2px;
+}
+.amc-datetimepicker-minutes-minute {
+  border: 1px solid transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  min-height: 3em;
+  min-width: 3em;
+}
+.amc-datetimepicker-minutes-minute._selected {
+  background-color: var(--amc-datetimepicker-accentColor);
+  color: var(--amc-datetimepicker-backgroundColor);
+}
+.amc-datetimepicker-minutes-minute:hover {
+  border-color: var(--amc-datetimepicker-accentColor);
 }
 .amc-datetimepicker-selection {
   display: flex;

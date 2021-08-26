@@ -82,7 +82,13 @@ body main > .amc-videoplayer {
   margin-left: auto;
   margin-right: auto;
 }
-body main > .amc-datetimepicker {
+body main .amc-datetimepicker-section {
+  display: flex;
+  flex-direction: row;
+}
+body main .amc-datetimepicker-section .amc-datetimepicker {
   --amc-datetimepicker-backgroundColor: var(--LinkColor) !important;
   --amc-datetimepicker-accentColor: #fff !important;
+  margin-bottom: 30px;
+  margin-left: 30px;
 }
