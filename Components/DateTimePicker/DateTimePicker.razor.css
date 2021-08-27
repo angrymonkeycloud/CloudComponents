@@ -245,14 +245,10 @@
   opacity: var(--lowOpacity);
 }
 .amc-datetimepicker-hours-hour {
-  min-width: 4em;
-  min-height: 5em;
-}
-.amc-datetimepicker-minutes-minute {
   min-width: 3em;
 }
-.amc-datetimepicker-minutes-minute._strong {
-  font-weight: bold;
+.amc-datetimepicker-minutes-minute {
+  min-width: 2.5em;
 }
 .amc-datetimepicker-datetimeseperator {
   margin-bottom: 20px;

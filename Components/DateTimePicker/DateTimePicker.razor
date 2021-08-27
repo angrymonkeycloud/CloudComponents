@@ -3,7 +3,25 @@
 <div class="amc-datetimepicker">
 
     <div class="amc-datetimepicker-header">
-        <div class="amc-datetimepicker-selecteddate">@SelectedDateTimeDisplay</div>
+        <div class="amc-datetimepicker-selecteddate">
+
+            @if (ShowDate)
+            {
+                @SelectedDateDisplay
+            }
+
+            @if (ShowDate && ShowTime)
+            {
+                <span>
+                    &nbsp;•&nbsp;
+                </span>
+            }
+
+            @if (ShowTime)
+            {
+                @SelectedTimeDisplay
+            }
+        </div>
     </div>
 
     @if (ShowDate)
@@ -66,7 +84,16 @@
                                                                     OnNextClicked="OnNextTimeSelectionStateClick" />
 
         <div class="amc-datetimepicker-time">
-            @if (TimeSelectionState == TimePickerSelectionState.Minute)
+            @if (TimeSelectionState == TimePickerSelectionState.Hour)
+            {
+                <div class="amc-datetimepicker-hours">
+                    @foreach (DateTimePickerHour hour in Hours)
+                    {
+                        <div class="amc-datetimepicker-hours-hour @hour.CssClasses" @onclick="() => OnHourClick(hour)">@hour.DisplayHour</div>
+                    }
+                </div>
+            }
+            else
             {
                 <div class="amc-datetimepicker-minutes">
                     @foreach (DateTimePickerTime minute in Minutes)
@@ -74,15 +101,6 @@
                         <div class="amc-datetimepicker-minutes-minute @minute.CssClasses" @onclick="() => OnMinuteClick(minute)">
                             @minute.DisplayMinute
                         </div>
-                    }
-                </div>
-            }
-            else
-            {
-                <div class="amc-datetimepicker-hours">
-                    @foreach (DateTimePickerHour hour in Hours)
-                    {
-                        <div class="amc-datetimepicker-hours-hour @hour.CssClasses" @onclick="() => OnHourClick(hour)">@hour.DisplayHour</div>
                     }
                 </div>
             }
