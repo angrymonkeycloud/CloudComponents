@@ -32,6 +32,7 @@
 
 	<ItemGroup>
 		<Folder Include="GridView\" />
+		<Folder Include="VolumeBar\" />
 	</ItemGroup>
 
 	<ItemGroup>
