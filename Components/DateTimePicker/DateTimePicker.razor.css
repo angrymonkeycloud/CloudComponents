@@ -13,25 +13,49 @@
   user-select: none;
 }
 .ComponentsDefault {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 0.9rem;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.9rem;
 }
 .ComponentsDefault button,
 .ComponentsDefault button:active,
 .ComponentsDefault button:focus,
 .ComponentsDefault button:visited {
+  background: none;
   outline: none !important;
   border: none;
   border-radius: 0;
+  cursor: pointer;
 }
 .ComponentsDefault,
 .ComponentsDefault * {
   -webkit-tap-highlight-color: transparent;
+}
+.ComponentsDefault ::deep .--amc-iconbutton,
+.ComponentsDefault ::deep .--amc-iconbutton:active,
+.ComponentsDefault ::deep .--amc-iconbutton:focus,
+.ComponentsDefault ::deep .--amc-iconbutton:visited {
+  padding: 4px;
+  display: flex;
+}
+.ComponentsDefault ::deep .--amc-iconbutton svg {
+  height: 1.8em;
+}
+.ComponentsDefault ::deep .amc-svg-fill {
+  fill: var(--amc-accentColor);
+}
+.ComponentsDefault ::deep .amc-svg-stroke {
+  fill: none;
+  stroke: var(--amc-accentColor);
+  stroke-width: 0.5;
+  stroke-miterlimit: 10;
+}
+.ComponentsDefault ::deep .amc-svg-stroke._corner-rounded {
+  stroke-linecap: round;
 }
 .amc-SelectableField {
   border: 1px solid transparent;
@@ -69,13 +93,13 @@
 .amc-datetimepicker {
   --amc-datetimepicker-backgroundColor: #fff;
   --amc-datetimepicker-accentColor: #000;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 0.9rem;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.9rem;
   background-color: var(--amc-datetimepicker-backgroundColor);
   color: var(--amc-datetimepicker-accentColor);
   --lowOpacity: 0.7;
@@ -84,13 +108,37 @@
 .amc-datetimepicker button:active,
 .amc-datetimepicker button:focus,
 .amc-datetimepicker button:visited {
+  background: none;
   outline: none !important;
   border: none;
   border-radius: 0;
+  cursor: pointer;
 }
 .amc-datetimepicker,
 .amc-datetimepicker * {
   -webkit-tap-highlight-color: transparent;
+}
+.amc-datetimepicker ::deep .--amc-iconbutton,
+.amc-datetimepicker ::deep .--amc-iconbutton:active,
+.amc-datetimepicker ::deep .--amc-iconbutton:focus,
+.amc-datetimepicker ::deep .--amc-iconbutton:visited {
+  padding: 4px;
+  display: flex;
+}
+.amc-datetimepicker ::deep .--amc-iconbutton svg {
+  height: 1.8em;
+}
+.amc-datetimepicker ::deep .amc-svg-fill {
+  fill: var(--amc-accentColor);
+}
+.amc-datetimepicker ::deep .amc-svg-stroke {
+  fill: none;
+  stroke: var(--amc-accentColor);
+  stroke-width: 0.5;
+  stroke-miterlimit: 10;
+}
+.amc-datetimepicker ::deep .amc-svg-stroke._corner-rounded {
+  stroke-linecap: round;
 }
 .amc-datetimepicker-header {
   margin-bottom: 5px;

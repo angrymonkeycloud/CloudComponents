@@ -1,0 +1,26 @@
+﻿@import '../General/css/common.less';
+
+.amc-volumebar {
+	.ComponentsDefault();
+	color: var(--amc-accentColor);
+	display: flex;
+	align-items: center;
+
+	&-bar {
+		width: 100px;
+		padding: 5px;
+
+		::deep .amc-progressbar {
+			height: 20px;
+
+			button {
+				font-size: .75em !important;
+			}
+		}
+	}
+
+	&-value {
+		width: 3ch;
+		opacity: .9;
+	}
+}

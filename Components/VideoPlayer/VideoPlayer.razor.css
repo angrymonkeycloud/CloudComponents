@@ -13,25 +13,49 @@
   user-select: none;
 }
 .ComponentsDefault {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 0.9rem;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.9rem;
 }
 .ComponentsDefault button,
 .ComponentsDefault button:active,
 .ComponentsDefault button:focus,
 .ComponentsDefault button:visited {
+  background: none;
   outline: none !important;
   border: none;
   border-radius: 0;
+  cursor: pointer;
 }
 .ComponentsDefault,
 .ComponentsDefault * {
   -webkit-tap-highlight-color: transparent;
+}
+.ComponentsDefault ::deep .--amc-iconbutton,
+.ComponentsDefault ::deep .--amc-iconbutton:active,
+.ComponentsDefault ::deep .--amc-iconbutton:focus,
+.ComponentsDefault ::deep .--amc-iconbutton:visited {
+  padding: 4px;
+  display: flex;
+}
+.ComponentsDefault ::deep .--amc-iconbutton svg {
+  height: 1.8em;
+}
+.ComponentsDefault ::deep .amc-svg-fill {
+  fill: var(--amc-accentColor);
+}
+.ComponentsDefault ::deep .amc-svg-stroke {
+  fill: none;
+  stroke: var(--amc-accentColor);
+  stroke-width: 0.5;
+  stroke-miterlimit: 10;
+}
+.ComponentsDefault ::deep .amc-svg-stroke._corner-rounded {
+  stroke-linecap: round;
 }
 .Extendible {
   border: 1px solid transparent;
@@ -43,14 +67,13 @@
   background-color: rgba(255, 255, 255, 0.2);
 }
 .amc-videoplayer {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 0.9rem;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  --amc-videoplayer-accentColor: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.9rem;
   --amc-videoplayer-roundedCorder: 3px;
   --backgroundColor: rgba(0, 0, 0, 0.4);
   --transitionDuration: 200ms;
@@ -58,18 +81,46 @@
   display: flex;
   justify-content: stretch;
   align-items: stretch;
+  /*
+	::deep .amc-progressbar {
+		--amc-progressbar-accentColor: var(--amc-videoplayer-accentColor);
+	}*/
 }
 .amc-videoplayer button,
 .amc-videoplayer button:active,
 .amc-videoplayer button:focus,
 .amc-videoplayer button:visited {
+  background: none;
   outline: none !important;
   border: none;
   border-radius: 0;
+  cursor: pointer;
 }
 .amc-videoplayer,
 .amc-videoplayer * {
   -webkit-tap-highlight-color: transparent;
+}
+.amc-videoplayer ::deep .--amc-iconbutton,
+.amc-videoplayer ::deep .--amc-iconbutton:active,
+.amc-videoplayer ::deep .--amc-iconbutton:focus,
+.amc-videoplayer ::deep .--amc-iconbutton:visited {
+  padding: 4px;
+  display: flex;
+}
+.amc-videoplayer ::deep .--amc-iconbutton svg {
+  height: 1.8em;
+}
+.amc-videoplayer ::deep .amc-svg-fill {
+  fill: var(--amc-accentColor);
+}
+.amc-videoplayer ::deep .amc-svg-stroke {
+  fill: none;
+  stroke: var(--amc-accentColor);
+  stroke-width: 0.5;
+  stroke-miterlimit: 10;
+}
+.amc-videoplayer ::deep .amc-svg-stroke._corner-rounded {
+  stroke-linecap: round;
 }
 .amc-videoplayer-content {
   display: flex;
@@ -81,9 +132,6 @@
   width: 16px;
   height: 16px;
   opacity: 0.8;
-}
-.amc-videoplayer ::deep .amc-progressbar {
-  --amc-progressbar-accentColor: var(--amc-videoplayer-accentColor);
 }
 .amc-videoplayer-settings-subvalue {
   opacity: 0.7;

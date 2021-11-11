@@ -1,0 +1,22 @@
+﻿@namespace AngryMonkey.Cloud.Components
+
+<div class="amc-volumebar @ClassAttributes">
+    <button class="--amc-iconbutton amc-volumebar-button" @onclick="OnVolumeButtonClick">
+        <AngryMonkey.Cloud.Components.Icons.Volume IsMuted="@IsMuted" Value="@Value" />
+    </button>
+
+    @if (Extended)
+    {
+        <div class="amc-volumebar-value">
+            @DisplayVolume
+        </div>
+
+        <button class="--amc-iconbutton amc-volumebar-mute" @onclick="MuteVolume">
+            <AngryMonkey.Cloud.Components.Icons.VolumeMute />
+        </button>
+
+        <div class="amc-volumebar-bar">
+            <ProgressBar Step="0.1" Value="@Value" Total="1" Style="ProgressBarStyle.Disk" OnChanging="OnProgressBarChanging" OnChanged="OnProgressBarChanged" />
+        </div>
+    }
+</div>

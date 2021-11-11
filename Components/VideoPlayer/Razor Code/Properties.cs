@@ -25,7 +25,10 @@ namespace AngryMonkey.Cloud.Components
 		private bool IsUserChangingProgress = false;
 		private bool IsVideoPlaying = false;
 		private bool IsFullScreen = false;
+
+		private bool _isMuted = false;
 		private bool IsMuted = false;
+
 		private bool DoShowVolumeControls = false;
 		private bool IsSeeking = false;
 		private bool ShowSeekingInfo = false;

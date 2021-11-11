@@ -39,56 +39,6 @@ namespace AngryMonkey.Cloud.Components
 			ClassAttributes = string.Join(' ', attributes);
 		}
 
-		#region Volume Methods
-
-		public async Task MuteVolume()
-		{
-			IsMuted = true;
-
-			DoShowVolumeControls = false;
-
-			var module = await Module;
-
-			await module.InvokeVoidAsync("muteVolume", ComponentElement, IsMuted);
-		}
-
-		private async Task OnVolumeButtonClick(MouseEventArgs args)
-		{
-			if (IsMuted)
-			{
-				IsMuted = false;
-
-				var module = await Module;
-
-				await module.InvokeVoidAsync("muteVolume", ComponentElement, IsMuted);
-			}
-			else DoShowVolumeControls = !DoShowVolumeControls;
-		}
-
-		protected async Task OnVolumeChanging(ProgressBarChangeEventArgs args)
-		{
-			Volume = args.NewValue;
-
-			var module = await Module;
-
-			await module.InvokeVoidAsync("changeVolume", ComponentElement, Volume);
-
-			await ProgressiveDelay();
-		}
-
-		protected async Task OnVolumeChanged(ProgressBarChangeEventArgs args)
-		{
-			DoShowVolumeControls = false;
-
-			if (Convert.ToDouble(args.NewValue) == 0)
-			{
-				IsMuted = true;
-				Volume = 1;
-			}
-		}
-
-		#endregion
-
 		#region Time / Duration
 
 		private string GetTime(double seconds)
@@ -379,6 +329,12 @@ namespace AngryMonkey.Cloud.Components
 
 				await CallReserveAspectRatio();
 			}
+
+			if (IsMuted != _isMuted)
+			{
+				_isMuted = IsMuted;
+				await MuteVolume();
+			}
 		}
 
 		async Task Implement(VideoEvents eventName)
@@ -483,11 +439,39 @@ namespace AngryMonkey.Cloud.Components
 
 				newValue = Math.Round(newValue, 1);
 
-				await OnVolumeChanging(new ProgressBarChangeEventArgs() { NewValue = newValue });
+				//await OnVolumeChanging(new ProgressBarChangeEventArgs() { NewValue = newValue });
 			}
 
 			await ProgressiveDelay();
 		}
+
+		#region Volume Methods
+
+		private async Task MuteVolume()
+		{
+			var module = await Module;
+
+			await module.InvokeVoidAsync("muteVolume", ComponentElement, IsMuted);
+		}
+
+		protected async Task OnVolumeChanging(VolumeBarChangeEventArgs args)
+		{
+			Volume = args.NewValue;
+
+			if (args.IsMuted != args.WasMuted)
+			{
+				IsMuted = args.IsMuted;
+				await MuteVolume();
+			}
+
+			var module = await Module;
+
+			await module.InvokeVoidAsync("changeVolume", ComponentElement, Volume);
+
+			await ProgressiveDelay();
+		}
+
+		#endregion
 
 		private async Task OnComponentClick(MouseEventArgs args)
 		{

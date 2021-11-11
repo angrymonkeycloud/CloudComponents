@@ -1,7 +1,6 @@
 ﻿@import '../General/css/common.less';
 
 .amc-progressbar {
-	--amc-progressbar-accentColor: #fff;
 	--amc-progressbar-seekbuttonSize: 20px;
 	.ComponentsDefault();
 	display: grid;
@@ -24,14 +23,14 @@
 	}
 
 	&-left {
-		background-color: var(--amc-progressbar-accentColor);
+		background-color: var(--amc-accentColor);
 		grid-area: left;
 	}
 
 	&-right {
-		background-color: #fff;
+		background-color: var(--amc-accentColor);
 		grid-area: right;
-		opacity: .7;
+		opacity: .4;
 	}
 
 	&-middle {
@@ -43,7 +42,6 @@
 				outline: none;
 				border: none;
 				border-radius: 0;
-				font-size: 0;
 				padding: 0;
 				margin: 0;
 				z-index: 1;
@@ -51,7 +49,7 @@
 				transition: background-color 50ms ease-in-out, filter 100ms ease-in-out;
 
 				&:focus, &:hover {
-					filter: drop-shadow(0 0 4px var(--amc-progressbar-accentColor));
+					filter: drop-shadow(0 0 4px var(--amc-accentColor));
 				}
 			}
 		}
@@ -62,7 +60,7 @@
 			&-middle {
 
 				button {
-					background-color: var(--amc-progressbar-accentColor);
+					background-color: var(--amc-accentColor);
 					height: 1px;
 					width: 5px;
 				}
@@ -75,10 +73,12 @@
 			&-middle {
 
 				button {
-					width: var(--amc-progressbar-seekbuttonSize);
-					height: var(--amc-progressbar-seekbuttonSize);
+					width: 1.5em;
+					height: 1.5em;
+					/*width: var(--amc-progressbar-seekbuttonSize);
+					height: var(--amc-progressbar-seekbuttonSize);*/
 					display: block;
-					border: 2px solid var(--amc-progressbar-accentColor);
+					border: 2px solid var(--amc-accentColor);
 					border-radius: 50%;
 					background-color: transparent;
 				}
@@ -90,7 +90,7 @@
 			.amc-progressbar {
 				&-middle {
 					button {
-						background-color: var(--amc-progressbar-accentColor);
+						background-color: var(--amc-accentColor);
 					}
 				}
 			}
@@ -103,11 +103,13 @@
 			&-middle {
 
 				button {
-					width: var(--amc-progressbar-seekbuttonSize);
-					height: var(--amc-progressbar-seekbuttonSize);
+					width: 1.5em;
+					height: 1.5em;
+					/*width: var(--amc-progressbar-seekbuttonSize);
+					height: var(--amc-progressbar-seekbuttonSize);*/
 					display: block;
 					border-radius: 50%;
-					background-color: var(--amc-progressbar-accentColor);
+					background-color: var(--amc-accentColor);
 					border: 2px solid transparent;
 				}
 			}
@@ -119,7 +121,7 @@
 				&-middle {
 					button {
 						background-color: transparent;
-						border-color: var(--amc-progressbar-accentColor);
+						border-color: var(--amc-accentColor);
 					}
 				}
 			}
