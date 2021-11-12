@@ -454,6 +454,10 @@ namespace AngryMonkey.Cloud.Components
 			await module.InvokeVoidAsync("muteVolume", ComponentElement, IsMuted);
 		}
 
+		protected void OnVolumeButtonClick()
+        {
+			DoShowVolumeControls = !DoShowVolumeControls;
+		}
 		protected async Task OnVolumeChanging(VolumeBarChangeEventArgs args)
 		{
 			Volume = args.NewValue;

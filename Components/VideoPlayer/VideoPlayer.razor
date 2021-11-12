@@ -142,7 +142,7 @@
                 }
 
                 @* Volume *@
-                <div class="amc-videoplayer-volume @(DoShowVolumeControls? "_extended": string.Empty)">
+                <div class="amc-videoplayer-volume @(DoShowVolumeControls? "_extended": string.Empty)" @onclick="OnVolumeButtonClick">
                     <VolumeBar Value="@Volume" IsMuted="IsMuted" Extended="DoShowVolumeControls" OnChanging="OnVolumeChanging"></VolumeBar>
                 </div>
 
