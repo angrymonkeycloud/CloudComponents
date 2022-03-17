@@ -38,6 +38,12 @@
 		<None Include=".mateconfig.json">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</None>
+		<None Include="Icons\AngryMonkeyCloudLogo.razor" />
+		<None Include="Icons\Loading.razor" />
+		<None Include="Icons\PauseButton.razor" />
+		<None Include="Icons\PlayButton.razor" />
+		<None Include="Icons\Volume.razor" />
+		<None Include="Icons\VolumeMute.razor" />
 		<None Include="tsconfig.json">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</None>

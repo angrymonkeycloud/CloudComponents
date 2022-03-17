@@ -1,0 +1,8 @@
+﻿.amc-svg-stroke {
+  stroke: black;
+}
+svg {
+  width: 30px;
+  height: 30px;
+  fill: transparent;
+}
