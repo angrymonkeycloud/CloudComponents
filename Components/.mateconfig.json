@@ -31,10 +31,6 @@
 			"input": "VolumeBar/VolumeBar.less"
 		},
 		{
-			"output": "wwwroot/pagebase/pagebase.js",
-			"input": "pagebase/pagebase.ts"
-		},
-		{
 			"output": "DateTimePicker/DateTimePicker.razor.css",
 			"input": "DateTimePicker/DateTimePicker.less"
 		},

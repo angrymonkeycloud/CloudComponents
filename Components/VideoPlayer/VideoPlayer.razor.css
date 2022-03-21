@@ -283,15 +283,18 @@
   opacity: 0.8;
   transition: opacity 0.2s ease-in-out;
 }
+.amc-videoplayer button .amc-svg-fill,
 .amc-videoplayer button .amc-videoplayer-svg-fill {
   fill: #fff;
 }
+.amc-videoplayer button .amc-svg-stroke,
 .amc-videoplayer button .amc-videoplayer-svg-stroke {
   fill: none;
   stroke: #fff;
   stroke-width: 0.5;
   stroke-miterlimit: 10;
 }
+.amc-videoplayer button .amc-svg-stroke._corner-rounded,
 .amc-videoplayer button .amc-videoplayer-svg-stroke._corner-rounded {
   stroke-linecap: round;
 }
@@ -332,7 +335,7 @@
   padding: 4px;
   display: flex;
 }
-.amc-videoplayer-controls button svg {
+.amc-videoplayer-controls button ::deep svg {
   width: 24px;
   height: 24px;
 }

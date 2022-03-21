@@ -35,7 +35,7 @@
 			opacity: .8;
 		}
 	}
-/*
+	/*
 	::deep .amc-progressbar {
 		--amc-progressbar-accentColor: var(--amc-videoplayer-accentColor);
 	}*/
@@ -224,6 +224,7 @@
 		opacity: .8;
 		transition: opacity .2s ease-in-out;
 
+		.amc,
 		.amc-videoplayer {
 			&-svg {
 				&-fill {
@@ -291,7 +292,7 @@
 			padding: 4px;
 			display: flex;
 
-			svg {
+		::deep	svg {
 				width: 24px;
 				height: 24px;
 			}
