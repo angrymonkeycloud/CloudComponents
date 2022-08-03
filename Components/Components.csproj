@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
+		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
 		<AssemblyName>AngryMonkey.Cloud.Components</AssemblyName>
 		<RootNamespace>AngryMonkey.Cloud.Components</RootNamespace>
 		<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
@@ -13,6 +14,10 @@
 		<PackageProjectUrl>https://www.angrymonkeycloud.com/</PackageProjectUrl>
 		<Version>1.0.5</Version>
 	</PropertyGroup>
+	
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <Compile Remove="Icons\**" />

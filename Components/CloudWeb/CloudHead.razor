@@ -1,0 +1,20 @@
+﻿@namespace AngryMonkey.Cloud.Components
+@using Microsoft.Extensions.DependencyInjection
+
+@inject CloudWeb cloudWeb
+
+@if (!string.IsNullOrEmpty(TitleResult))
+{
+	<PageTitle>@TitleResult</PageTitle>
+}
+
+
+@if (!string.IsNullOrEmpty(KeywordsResult))
+{
+	<meta name="keywords" content="@KeywordsResult" />
+}
+
+@if (!string.IsNullOrEmpty(DescriptionResult))
+{
+	<meta name="description" content="@DescriptionResult" />
+}
