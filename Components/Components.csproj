@@ -13,6 +13,7 @@
 		<PackageLicenseExpression></PackageLicenseExpression>
 		<PackageProjectUrl>https://www.angrymonkeycloud.com/</PackageProjectUrl>
 		<Version>1.0.5</Version>
+		<Configurations>Debug;Release;Release_Server</Configurations>
 	</PropertyGroup>
 	
 	<ItemGroup>

@@ -1,0 +1,19 @@
+﻿@page "/Popup"
+
+<CloudHead Title="Popup" />
+
+<Popup @ref="popup">
+	Popup Opened!
+</Popup>
+
+<button @onclick="OpenPopup">Open Popup</button>
+
+
+@code {
+	private Popup popup;
+
+	private void OpenPopup()
+	{
+		popup.Open();
+	}
+}

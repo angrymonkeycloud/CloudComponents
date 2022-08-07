@@ -23,6 +23,10 @@
 			"input": "ProgressBar/progressbar.less"
 		},
 		{
+			"output": "Popup/Popup.razor.css",
+			"input": "Popup/popup.less"
+		},
+		{
 			"output": "wwwroot/progressbar/progressbar.js",
 			"input": "ProgressBar/progressbar.ts"
 		},

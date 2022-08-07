@@ -1,0 +1,12 @@
+﻿@namespace AngryMonkey.Cloud.Components
+@inject IJSRuntime jsRuntime
+
+@if (Visible)
+{
+    <aside @ref="ComponentElement" tabindex="0" class="amc-popup" @onclick="Close">
+        <div class="amc-popup-content">
+            @ChildContent
+        </div>
+    </aside>
+
+}
