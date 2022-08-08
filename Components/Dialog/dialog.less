@@ -1,0 +1,58 @@
+﻿@import '../General/css/common.less';
+
+.amc-dialog {
+	.ComponentsDefault();
+	background-color: rgba(255, 255, 255, .6);
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	touch-action: none;
+	z-index: 99999999;
+
+	&-content {
+		padding: 5px;
+		max-width: 600px;
+		width: 50vw;
+						}
+
+	&-title {
+		font-size: 2em;
+	}
+
+	&-buttons {
+		margin-top: 20px;
+		display: flex;
+		justify-content: right;
+
+		button {
+			&,
+			&:focus,
+			&:hover {
+				padding: 7px 10px;
+				margin-right: 5px;
+				color: var(--amc-accentColor);
+				background-color: #fff;
+				border-radius: 4px;
+				border: 1px solid transparent;
+
+				&:focus {
+					border-color: var(--amc-accentColor);
+				}
+
+				&:hover {
+					color: #fff;
+					background-color: var(--amc-accentColor);
+					border-color: var(--amc-accentColor);
+				}
+			}
+		}
+	}
+}

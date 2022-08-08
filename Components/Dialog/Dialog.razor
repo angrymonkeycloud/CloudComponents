@@ -1,0 +1,21 @@
+﻿@namespace AngryMonkey.Cloud.Components
+@inject IJSRuntime jsRuntime
+
+@if (IsOpened)
+{
+	<aside @ref="ComponentElement" class="amc-dialog">
+		<div class="amc-dialog-content">
+			<div class="amc-dialog-title">@Title</div>
+			<div class="amc-dialog-message">@ChildContent</div>
+			@if (Buttons != null && Buttons.Any())
+			{
+				<div class="amc-dialog-buttons">
+					@foreach (DialogButton button in Buttons)
+					{
+						<button @onclick="() => {ButtonClicked(button);}">@button.Text</button>
+					}
+				</div>
+			}
+		</div>
+	</aside>
+}

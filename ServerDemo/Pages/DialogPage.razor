@@ -1,0 +1,45 @@
+﻿@page "/Dialog"
+
+<CloudHead Title="Dialog" />
+
+<Dialog @ref="dialog" Title="Dialog Title" Buttons="DialogButtons">
+	Dialog Content
+</Dialog>
+
+<button @onclick="OpenDialog">Open Dialog</button>
+
+<div>
+	<h2>Dialog Reply</h2>
+	<div>@DialogReply</div>
+</div>
+
+
+@code {
+	private Dialog? dialog;
+	private List<DialogButton> DialogButtons = new();
+	private static string DialogReply = string.Empty;
+
+	private void OpenDialog()
+	{
+		DialogButtons = new()
+		{
+			new DialogButton(){
+				Text = "OK",
+				OnReply = () => {
+					DialogReply = "Ok";
+					StateHasChanged();
+				}
+			},
+
+			new DialogButton(){
+				Text = "Not OK",
+				OnReply = () => {
+					DialogReply = "Not Ok";
+					StateHasChanged();
+				}
+			}
+		};
+
+		dialog.Open();
+	}
+}

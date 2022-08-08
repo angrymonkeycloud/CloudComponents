@@ -3,7 +3,7 @@
 
 @if (Visible)
 {
-    <aside @ref="ComponentElement" tabindex="0" class="amc-popup" @onclick="Close">
+    <aside @ref="ComponentElement" class="amc-popup" @onclick="ComponentClicked">
         <div class="amc-popup-content">
             @ChildContent
         </div>

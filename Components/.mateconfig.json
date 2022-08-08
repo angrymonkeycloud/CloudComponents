@@ -27,6 +27,10 @@
 			"input": "Popup/popup.less"
 		},
 		{
+			"output": "Dialog/Dialog.razor.css",
+			"input": "Dialog/dialog.less"
+		},
+		{
 			"output": "wwwroot/progressbar/progressbar.js",
 			"input": "ProgressBar/progressbar.ts"
 		},

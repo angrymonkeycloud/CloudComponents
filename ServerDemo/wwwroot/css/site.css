@@ -78,6 +78,9 @@ body main > .amc-progressbar {
 body main > .amc-volumebar {
   --amc-accentColor: var(--LinkColor);
 }
+body main > .amc-dialog {
+  --amc-accentColor: var(--LinkColor);
+}
 body main > .amc-videoplayer {
   --amc-accentColor: #fff;
   max-width: 800px;

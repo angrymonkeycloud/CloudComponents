@@ -14,6 +14,7 @@ namespace AngryMonkey.Cloud.Components
 		[Parameter] public RenderFragment ChildContent { get; set; }
 		private ElementReference ComponentElement { get; set; }
 		public bool Visible { get; set; } = false;
+		[Parameter] public bool CloseOnAnywhereClick { get; set; } = true;
 
 		public void Open()
 		{
@@ -23,6 +24,12 @@ namespace AngryMonkey.Cloud.Components
 		public void Close()
 		{
 			Visible = false;
+		}
+
+		protected void ComponentClicked()
+		{
+			if (CloseOnAnywhereClick)
+				Close();
 		}
 	}
 }
