@@ -14,7 +14,6 @@ builder.Services.AddCloudWeb(new CloudWebOptions()
 	SiteBundles = new List<CloudBundle>()
 	{
 		//new CloudBundle(){ JQuery = "3.4.1"},
-		new CloudBundle(){ Source = "ServerDemo.styles.css", MinOnRelease = false},
 		new CloudBundle(){ Source = "css/site.css"},
 		new CloudBundle(){ Source = "js/site.js"}
 	}

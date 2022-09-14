@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using AngryMonkey.Cloud.Components.Icons;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System;
@@ -17,22 +18,33 @@ namespace AngryMonkey.Cloud.Components
 		[Parameter] public List<DialogButton> Buttons { get; set; }
 		[Parameter] public bool IsOpened { get; set; }
 
-		public void Open()
+		private Task<IJSObjectReference> _module;
+		private Task<IJSObjectReference> Module => _module ??= GeneralMethods.GetIJSObjectReference(jsRuntime, "dialog/dialog.js");
+
+		public async Task Open()
 		{
 			IsOpened = true;
+
+			var module = await Module;
+
+			await module.InvokeVoidAsync("DialogOpened", ComponentElement);
 		}
 
-		public void Close()
+		public async Task Close()
 		{
 			IsOpened = false;
+
+			var module = await Module;
+
+			await module.InvokeVoidAsync("DialogClosed", ComponentElement);
 		}
 
-		protected void ButtonClicked(DialogButton button)
+		protected async Task ButtonClicked(DialogButton button)
 		{
 			if (button.OnReply != null)
 				button.OnReply.Invoke();
 
-			Close();
+			await Close();
 		}
 	}
 }

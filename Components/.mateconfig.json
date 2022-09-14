@@ -7,9 +7,27 @@
 				"sourceMap": false,
 				"declaration": false
 			}
+		},
+		{
+			"name": "cloudweb",
+			"js": {
+				"minify": true,
+				"sourceMap": false,
+				"declaration": false,
+				"webClean": true
+			}
 		}
 	],
 	"files": [
+		{
+			"output": "CloudWeb/css/cloud.css",
+			"input": "General/css/cloud.less"
+		},
+		{
+			"output": "CloudWeb/js/cloud.js",
+			"input": [ "General/js/main.ts", "General/js/common.ts" ],
+			"builds": "cloudweb"
+		},
 		{
 			"output": "VideoPlayer/VideoPlayer.razor.css",
 			"input": "VideoPlayer/videoplayer.less"
@@ -31,8 +49,8 @@
 			"input": "Dialog/dialog.less"
 		},
 		{
-			"output": "wwwroot/progressbar/progressbar.js",
-			"input": "ProgressBar/progressbar.ts"
+			"output": "wwwroot/dialog/dialog.js",
+			"input": "Dialog/dialog.ts"
 		},
 		{
 			"output": "VolumeBar/VolumeBar.razor.css",

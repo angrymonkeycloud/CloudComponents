@@ -1,0 +1,179 @@
+.Selectable {
+  -webkit-touch-callout: initial;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+.UnSelectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.HorizontalScrolling {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.Header {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  padding: 0;
+  z-index: 999;
+}
+.Selectable {
+  -webkit-touch-callout: initial;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+.UnSelectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.HorizontalScrolling {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+body > header,
+body > footer {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+button,
+a {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+html {
+  height: 100%;
+}
+html,
+body {
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+html._noscroll,
+body._noscroll {
+  overflow: hidden;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+h1 {
+  font-size: 2rem;
+  /* Make all H1 large, remove nested-shrinking sizes. */
+  margin: 0.67em 0;
+}
+h2 {
+  font-size: 1.5rem;
+}
+h3 {
+  font-size: 1.17rem;
+}
+h4 {
+  font-size: 1rem;
+}
+h5 {
+  font-size: 0.83rem;
+}
+h6 {
+  font-size: 0.67rem;
+}
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1;
+}
+pre {
+  white-space: pre-wrap;
+  /* Overflow by default is bad. */
+}
+hr {
+  border: 0.5px solid;
+}
+*:focus,
+*:active {
+  outline: none;
+}
+input,
+select,
+textarea,
+button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border-radius: 0;
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+}
+a,
+a:focus,
+a:active,
+a:visited,
+a:hover {
+  text-decoration: none;
+}
+img,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+  display: block;
+  /* Switch display mode to block, since that's what we usually want for images. */
+  vertical-align: middle;
+  /* If you override, and make an image inline, it's likely you'll want middle vertical alignment. */
+}
+img,
+video {
+  max-width: 100%;
+  /* Make images and video flexible by default. */
+  height: auto;
+  /* Ensure images and video maintain their aspect ratio when max-width comes into play. */
+}
+img {
+  display: inline-block;
+  max-width: 100%;
+}
+:root {
+  /* Consistent line spacing, which does not unnecessarily grow to accommodate things that would fit anyway */
+  /* From CSS Inline Layout Module Level 3: https://drafts.csswg.org/css-inline-3/#line-sizing-property */
+  line-sizing: normal;
+  /* Improve spacing of punctuation marks and at script changes in CJK languages */
+  /* From CSS Text Module Level 4: https://drafts.csswg.org/css-text-4/#text-spacing-property */
+  text-spacing: trim-start allow-end trim-adjacent ideograph-alpha ideograph-numeric;
+}
+[disabled="disabled"] {
+  opacity: 0.4;
+  pointer-events: none;
+}
+textarea {
+  resize: none;
+}
+code,
+kbd,
+samp {
+  font-family: monospace;
+  font-size: 1rem;
+}

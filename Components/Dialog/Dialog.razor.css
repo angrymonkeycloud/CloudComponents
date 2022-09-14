@@ -65,7 +65,7 @@
   user-select: none;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 0.9rem;
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(255, 255, 255, 0.7);
   width: 100vw;
   height: 100vh;
   position: fixed;
@@ -128,12 +128,13 @@
   margin-top: 20px;
   display: flex;
   justify-content: right;
+  padding: 1px;
+  gap: 5px;
 }
 .amc-dialog-buttons button,
 .amc-dialog-buttons button:focus,
 .amc-dialog-buttons button:hover {
-  padding: 7px 10px;
-  margin-right: 5px;
+  padding: 0.4em 0.6em;
   color: var(--amc-accentColor);
   background-color: #fff;
   border-radius: 4px;

@@ -21,15 +21,15 @@ namespace AngryMonkey.Cloud.Components
 			Visible = true;
 		}
 
-		public void Close()
+		public async Task Close()
 		{
 			Visible = false;
 		}
 
-		protected void ComponentClicked()
+		protected async Task ComponentClicked()
 		{
 			if (CloseOnAnywhereClick)
-				Close();
+				await Close();
 		}
 	}
 }

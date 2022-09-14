@@ -8,5 +8,5 @@ namespace AngryMonkey.Cloud.Components;
 
 public interface IClosable
 {
-	void Close();
+	Task Close();
 }

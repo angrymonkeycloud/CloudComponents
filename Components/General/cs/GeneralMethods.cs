@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AngryMonkey.Cloud.Components
 {
-	internal class GeneralMethods
+	public class GeneralMethods
 	{
 		internal static Task<IJSObjectReference> GetIJSObjectReference(IJSRuntime jsRuntime, string path)
 		{
@@ -18,6 +18,19 @@ namespace AngryMonkey.Cloud.Components
 			string importPath = $"./_content/{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}/{path}?v={Guid.NewGuid()}";
 
 			return jsRuntime.InvokeAsync<IJSObjectReference>("import", importPath).AsTask();
+		}
+
+		public static string ToUrlFriendly(string text)
+		{
+			List<char> nonFriendly = text.Where(c => !char.IsLetterOrDigit(c)).ToList();
+
+			foreach (char c in nonFriendly)
+				text = text.Replace(c, '-');
+
+			while (text.Contains("--"))
+				text = text.Replace("--", "-");
+
+			return text.Trim('-').ToLower();
 		}
 	}
 }

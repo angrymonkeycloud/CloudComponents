@@ -12,27 +12,42 @@
 		<Description />
 		<PackageLicenseExpression></PackageLicenseExpression>
 		<PackageProjectUrl>https://www.angrymonkeycloud.com/</PackageProjectUrl>
-		<Version>1.0.5</Version>
+
+		<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
+		<FileVersion>$(PackageVersion)</FileVersion>
+		<Version>2.0.0</Version>
+		<PackageIcon>AngryMonkeyCloudLogo-64x64.png</PackageIcon>
+		<PackageOutputPath>..\NugetPackage\</PackageOutputPath>
+
 		<Configurations>Debug;Release;Release_Server</Configurations>
 	</PropertyGroup>
-	
+
+	<ItemGroup>
+		<None Update="AngryMonkeyCloudLogo-64x64.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Icons\**" />
-	  <Content Remove="Icons\**" />
-	  <EmbeddedResource Remove="Icons\**" />
-	  <None Remove="Icons\**" />
+		<Compile Remove="Icons\**" />
+		<Content Remove="Icons\**" />
+		<EmbeddedResource Remove="Icons\**" />
+		<None Remove="Icons\**" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Content Remove=".mateconfig.json" />
 		<Content Remove="tsconfig.json" />
+		<Content Remove="wwwroot\cloud.css" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Remove="CloudWeb\css\cloud.css" />
 		<None Remove="ProgressBar\progressbar.min.js" />
 	</ItemGroup>
 	<ItemGroup>
@@ -54,6 +69,39 @@
 		<None Include="tsconfig.json">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</None>
+		<None Include="wwwroot\cloud.css" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="CloudWeb\css\cloud.css" Pack="true">
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</EmbeddedResource>
+
+		<EmbeddedResource Include="CloudWeb\css\cloud.min.css" Pack="true">
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</EmbeddedResource>
+
+		<EmbeddedResource Include="CloudWeb\js\cloud.js" Pack="true">
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</EmbeddedResource>
+
+		<EmbeddedResource Include="CloudWeb\js\cloud.min.js" Pack="true">
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</EmbeddedResource>
+
+		<EmbeddedResource Include="General\css\variables.less" Pack="true">
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</EmbeddedResource>
+
+		<EmbeddedResource Include="General\css\common.less" Pack="true">
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</EmbeddedResource>
 	</ItemGroup>
 
 </Project>
