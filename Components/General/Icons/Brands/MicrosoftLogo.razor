@@ -1,0 +1,21 @@
+﻿@namespace AngryMonkey.Cloud.Components.Icons
+
+<svg viewBox="0 0 23 23">
+	@if (UseDefaultTheme)
+	{
+		<style type="text/css">
+		
+		</style>
+	}
+
+	<path class="amc-svg-fill amc-svg-stroke _1 @DefaultClass" d="M0,0h11v11H0V0z" />
+	<path class="amc-svg-fill amc-svg-stroke _2 @DefaultClass" d="M12,0h11v11H12V0z" />
+	<path class="amc-svg-fill amc-svg-stroke _3 @DefaultClass" d="M0,12h11v11H0V12z" />
+	<path class="amc-svg-fill amc-svg-stroke _4 @DefaultClass" d="M12,12h11v11H12V12z" />
+</svg>
+
+@code{
+
+	[Parameter]	public bool UseDefaultTheme { get; set; } = false;
+	protected string DefaultClass => UseDefaultTheme ? "_default" : null;
+}

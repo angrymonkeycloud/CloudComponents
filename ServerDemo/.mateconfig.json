@@ -17,7 +17,10 @@
 		{
 			"output": "wwwroot/js/site.js",
 			"input": "src/js/site.ts"
+		},
+		{
+			"output": "wwwroot/css/iconspage.css",
+			"input": "src/css/iconspage.less"
 		}
-
 	]
 }

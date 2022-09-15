@@ -2,10 +2,11 @@
   --LinkColor: #00698f;
 }
 body {
-  background-color: #c4e3ed;
+  background-color: #fff;
 }
 body .components {
   width: 100%;
+  background-color: #000;
 }
 body .components-links {
   display: flex;
@@ -57,6 +58,15 @@ body .components-icon {
 }
 body main {
   margin-top: 50px;
+  margin-left: auto;
+  margin-right: auto;
+}
+body main > section {
+  display: flex;
+  align-items: center;
+}
+body main > section > div {
+  max-width: 1000px;
   margin-left: auto;
   margin-right: auto;
 }

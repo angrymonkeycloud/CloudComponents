@@ -1,0 +1,31 @@
+﻿@page "/Icons"
+@using AngryMonkey.Cloud.Components.Icons
+
+<CloudHead Title="Icons" />
+
+<HeadContent>
+    <CloudBundle Source="css/iconspage.css" />
+</HeadContent>
+
+<section class="actions">
+    <div>
+        <label>
+        <input type="checkbox" @bind-value="UseDefaultTheme" @bind-value:event="oninput" />
+        Use Default Theme
+        </label>
+    </div>
+</section>
+
+<section class="icons">
+    <div>
+        <MicrosoftLogo UseDefaultTheme="@UseDefaultTheme" />
+        <AppleLogo UseDefaultTheme="@UseDefaultTheme" />
+        <GoogleLogo UseDefaultTheme="@UseDefaultTheme" />
+        <AmazonLogo UseDefaultTheme="@UseDefaultTheme" />
+        <MetaLogo UseDefaultTheme="@UseDefaultTheme" />
+    </div>
+</section>
+
+@code {
+    [Parameter] public bool UseDefaultTheme { get; set; } = false;
+}

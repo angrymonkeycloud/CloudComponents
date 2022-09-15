@@ -1,10 +1,11 @@
 ﻿@import "variables.less";
 
 body {
-	background-color: #c4e3ed;
+	background-color: #fff;
 
 	.components {
 		width: 100%;
+		background-color: #000;
 
 
 		&-links {
@@ -67,6 +68,17 @@ body {
 		margin-top: 50px;
 		margin-left: auto;
 		margin-right: auto;
+
+		> section {
+			display: flex;
+			align-items: center;
+
+			> div {
+				max-width: 1000px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+		}
 
 		> .amc-progressbar {
 			--amc-accentColor: var(--LinkColor);
