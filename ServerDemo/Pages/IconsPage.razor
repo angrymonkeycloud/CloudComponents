@@ -7,25 +7,42 @@
     <CloudBundle Source="css/iconspage.css" />
 </HeadContent>
 
-<section class="actions">
-    <div>
-        <label>
-        <input type="checkbox" @bind-value="UseDefaultTheme" @bind-value:event="oninput" />
-        Use Default Theme
-        </label>
-    </div>
-</section>
+<style type="text/css">
+    body .icons svg .amc-svg-fill {
+        fill: @Color
+    }
+</style>
 
 <section class="icons">
     <div>
         <MicrosoftLogo UseDefaultTheme="@UseDefaultTheme" />
         <AppleLogo UseDefaultTheme="@UseDefaultTheme" />
         <GoogleLogo UseDefaultTheme="@UseDefaultTheme" />
-        <AmazonLogo UseDefaultTheme="@UseDefaultTheme" />
         <MetaLogo UseDefaultTheme="@UseDefaultTheme" />
+        <FacebookLogo UseDefaultTheme="@UseDefaultTheme" />
+        <InstagramLogo UseDefaultTheme="@UseDefaultTheme" />
+    </div>
+</section>
+
+<br />
+<br />
+<br />
+
+<section class="actions">
+    <div>
+        <label>
+            <input type="checkbox" @bind-value="UseDefaultTheme" @bind-value:event="oninput" />
+            Use Default Theme
+        </label>
+
+        @if (!UseDefaultTheme)
+        {
+            <input type="color" @bind-value="Color" @bind-value:event="oninput" />
+        }
     </div>
 </section>
 
 @code {
-    [Parameter] public bool UseDefaultTheme { get; set; } = false;
+    public bool UseDefaultTheme { get; set; } = false;
+    public string Color { get; set; } = "#000";
 }
