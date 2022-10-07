@@ -1,0 +1,13 @@
+﻿@namespace AngryMonkey.Cloud.Components
+@using Microsoft.Extensions.DependencyInjection
+
+@inject CloudWeb cloudWeb
+
+<title>@cloudWeb.Options.DefaultTitle</title>
+
+@foreach (CloudBundle bundle in cloudWeb.Options.SiteBundles)
+{
+	<CloudBundle Source="@bundle.Source" MinOnRelease="@bundle.MinOnRelease" JQuery="@bundle.JQuery" />
+}
+
+<HeadOutlet />

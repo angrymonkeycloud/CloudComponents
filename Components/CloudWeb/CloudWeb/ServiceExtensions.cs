@@ -1,7 +1,5 @@
-﻿//using Microsoft.Extensions.DependencyInjection;
-using AngryMonkey.Cloud.Components;
+﻿using AngryMonkey.Cloud.Components;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,7 +16,6 @@ public class CloudWeb
 
 public static class MvcServiceCollectionExtensions
 {
-
 	public static CloudWeb AddCloudWeb(this IServiceCollection services, CloudWebOptions options)
 	{
 		TransferFileToProject("CloudWeb/css/cloud.css", "wwwroot/amc/css/cloud.css");

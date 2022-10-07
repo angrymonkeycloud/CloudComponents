@@ -1,34 +1,34 @@
-import { CoreSideBar } from "./sidebar";
-import { CoreMain } from "./main";
+//import { CoreSideBar } from "./sidebar";
+//import { CoreMain } from "./main";
 
-$(window).resize(function () {
+//$(window).resize(function () {
 
-    if ($(this).width() !== CoreSideBar.WindowsWidth) {
+//    if ($(this).width() !== CoreSideBar.WindowsWidth) {
 
-        CoreSideBar.WindowsWidth = $(this).width();
+//        CoreSideBar.WindowsWidth = $(this).width();
 
-        if (CoreSideBar.isOpened)
-            CoreSideBar.close();
-    }
-});
+//        if (CoreSideBar.isOpened)
+//            CoreSideBar.close();
+//    }
+//});
 
-$(window).on("load", function () {
+//$(window).on("load", function () {
 
-    if (CoreSideBar.isOpened)
-        CoreSideBar.close();
-});
+//    if (CoreSideBar.isOpened)
+//        CoreSideBar.close();
+//});
 
-// Dock Links
+//// Dock Links
 
-$(document).on('click', 'a[href*="#"]:not([href="#"])', function () {
+//$(document).on('click', 'a[href*="#"]:not([href="#"])', function () {
 
-    if (location.pathname.replace(/^\//, '') === this.pathname.replace(/^\//, '') && location.hostname === this.hostname) {
+//    if (location.pathname.replace(/^\//, '') === this.pathname.replace(/^\//, '') && location.hostname === this.hostname) {
 
-        let target = $(this.hash);
-        target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+//        let target = $(this.hash);
+//        target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
 
-        if (target.length)
-            CoreMain.scrollTo(target[0], 200);
-        return false;
-    }
-});
+//        if (target.length)
+//            CoreMain.scrollTo(target[0], 200);
+//        return false;
+//    }
+//});
