@@ -10,6 +10,8 @@ using System.Reflection;
 using System.IO;
 using System.Text;
 using System.Security.Cryptography;
+using System.Runtime.CompilerServices;
+using System.Diagnostics;
 
 namespace AngryMonkey.Cloud.Components
 {
@@ -24,7 +26,7 @@ namespace AngryMonkey.Cloud.Components
 		[Parameter]
 		public bool MinOnRelease { get; set; } = true;
 
-		private static string BuildVersion => GetHashString(new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime.ToString());
+		private static string BuildVersion => !string.IsNullOrEmpty(Assembly.GetExecutingAssembly().Location) ? GetHashString(new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime.ToString()) : Assembly.GetEntryAssembly().GetName().Version.ToString();
 
 		private static byte[] GetHash(string inputString)
 		{
