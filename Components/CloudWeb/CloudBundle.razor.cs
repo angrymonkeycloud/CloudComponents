@@ -57,8 +57,6 @@ namespace AngryMonkey.Cloud.Components
 
 				string source = Source;
 
-#if !DEBUG
-
 				if (MinOnRelease && !source.Contains(".min.", StringComparison.OrdinalIgnoreCase))
 				{
 					List<string> sourceSplitted = Source.Split('.').ToList();
@@ -74,18 +72,12 @@ namespace AngryMonkey.Cloud.Components
 					source = $"{source}{separator}v={BuildVersion}";
 				}
 
-#endif
-
-				switch (Source.Split('.').Last().Trim().ToLower())
+				return Source.Split('.').Last().Trim().ToLower() switch
 				{
-					case "css":
-						return $"<link href=\"{source}\" rel=\"stylesheet\">";
-
-					case "js":
-						return $"<script src=\"{source}\" defer></script>";
-
-					default: return null;
-				}
+					"css" => $"<link href=\"{source}\" rel=\"stylesheet\">",
+					"js" => $"<script src=\"{source}\" defer></script>",
+					_ => null,
+				};
 			}
 		}
 	}
