@@ -39,61 +39,73 @@
 .ComponentsDefault ::deep .amc-svg-stroke._corner-rounded {
   stroke-linecap: round;
 }
-.amc-popup {
+.amc-tabs {
   user-select: none;
   font-family: 'Segoe UI';
   font-size: 0.9rem;
-  background-color: rgba(0, 0, 0, 0.5);
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  touch-action: none;
-  z-index: 99999999;
+  min-height: 1.4em;
+  justify-content: space-around;
 }
-.amc-popup button,
-.amc-popup button:active,
-.amc-popup button:focus,
-.amc-popup button:visited {
+.amc-tabs button,
+.amc-tabs button:active,
+.amc-tabs button:focus,
+.amc-tabs button:visited {
   background: none;
   outline: none !important;
   border: none;
   border-radius: 0;
   cursor: pointer;
 }
-.amc-popup,
-.amc-popup * {
+.amc-tabs,
+.amc-tabs * {
   -webkit-tap-highlight-color: transparent;
 }
-.amc-popup ::deep .--amc-iconbutton,
-.amc-popup ::deep .--amc-iconbutton:active,
-.amc-popup ::deep .--amc-iconbutton:focus,
-.amc-popup ::deep .--amc-iconbutton:visited {
+.amc-tabs ::deep .--amc-iconbutton,
+.amc-tabs ::deep .--amc-iconbutton:active,
+.amc-tabs ::deep .--amc-iconbutton:focus,
+.amc-tabs ::deep .--amc-iconbutton:visited {
   padding: 4px;
   display: flex;
 }
-.amc-popup ::deep .--amc-iconbutton svg {
+.amc-tabs ::deep .--amc-iconbutton svg {
   height: 1.8em;
 }
-.amc-popup ::deep .amc-svg-fill {
+.amc-tabs ::deep .amc-svg-fill {
   fill: var(--amc-accentColor);
 }
-.amc-popup ::deep .amc-svg-stroke {
+.amc-tabs ::deep .amc-svg-stroke {
   fill: none;
   stroke: var(--amc-accentColor);
   stroke-width: 0.5;
   stroke-miterlimit: 10;
 }
-.amc-popup ::deep .amc-svg-stroke._corner-rounded {
+.amc-tabs ::deep .amc-svg-stroke._corner-rounded {
   stroke-linecap: round;
 }
-.amc-popup-content {
-  background-color: #fff;
+.amc-tab {
+  border: none;
+  position: relative;
+}
+.amc-tab::after {
+  content: '';
+  position: absolute;
+  height: 2px;
+  width: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--amc-accentColor);
+  transition: width 200ms ease-in-out;
+}
+.amc-tab:hover::after {
+  width: 1em;
+}
+.amc-tab._active {
+  pointer-events: none;
+  cursor: default;
+  color: var(--amc-accentColor);
+}
+.amc-tab._active::after {
+  width: 2em;
 }

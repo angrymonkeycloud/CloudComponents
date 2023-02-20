@@ -96,3 +96,6 @@ body main .amc-datetimepicker-section .amc-datetimepicker {
   --amc-datetimepicker-accentColor: #fff !important;
   margin-bottom: 100px;
 }
+body main .amc-tabs {
+  --amc-accentColor: var(--LinkColor) !important;
+}

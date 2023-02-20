@@ -1,0 +1,65 @@
+﻿@page "/tabs"
+@using System.Reflection;
+
+<PageTitle>Tabs Component</PageTitle>
+
+<div class="amc-tabs-section">
+    <div>
+        <h2>Tabs</h2>
+        <Tabs TabsList="TabsList" />
+    </div>
+
+    <br />
+
+    @if (ShowSection1)
+    {
+        <div>Section 1 Content</div>
+    }
+
+    @if (ShowSection2)
+    {
+        <div>Section 2 Content</div>
+    }
+</div>
+
+@code {
+    bool ShowSection1 { get; set; } = false;
+    bool ShowSection2 { get; set; } = false;
+
+    List<TabItem> TabsList { get; set; }= new()
+        {
+            new(typeof(AngryMonkey.Cloud.Components.Icons.MicrosoftLogo)),
+            new(typeof(AngryMonkey.Cloud.Components.Icons.AppleLogo)),
+            new("section 3")
+        };
+
+    protected override void OnInitialized()
+    {
+        TabsList[0].OnActivated = EventCallback.Factory.Create(this, () =>
+        {
+            ShowSection1 = true;
+            ShowSection2 = false;
+            StateHasChanged();
+        });
+
+        TabsList[1].OnActivated = EventCallback.Factory.Create(this, () =>
+        {
+            ShowSection1 = false;
+            ShowSection2 = true;
+            StateHasChanged();
+        });
+
+        //    () =>
+        //{
+        //        ShowSection1 = true;
+        //        ShowSection2 = false;
+        //        StateHasChanged();
+        //    };
+
+        //TabsList[1].OnActivated += () =>
+        //{
+        //};
+
+        base.OnInitialized();
+    }
+}

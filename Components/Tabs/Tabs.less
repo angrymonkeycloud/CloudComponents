@@ -1,0 +1,43 @@
+﻿@import '../General/css/common.less';
+
+.amc {
+	&-tabs {
+		.ComponentsDefault();
+		display: flex;
+		min-height: 1.4em;
+		justify-content: space-around;
+	}
+
+	&-tab {
+		border: none;
+		position: relative;
+
+		&::after {
+			content: '';
+			position: absolute;
+			height: 2px;
+			width: 0;
+			bottom: 0;
+			left: 50%;
+			transform: translateX(-50%);
+			background-color: var(--amc-accentColor);
+			transition: width 200ms ease-in-out;
+		}
+
+		&:hover {
+			&::after {
+				width: 1em;
+			}
+		}
+
+		&._active {
+			pointer-events: none;
+			cursor: default;
+			color: var(--amc-accentColor);
+
+			&::after {
+				width: 2em;
+			}
+		}
+	}
+}

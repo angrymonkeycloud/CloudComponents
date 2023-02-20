@@ -1,0 +1,20 @@
+﻿@namespace AngryMonkey.Cloud.Components
+
+<div class="amc-tabs">
+    @foreach (TabItem tab in TabsList)
+    {
+        <button @onclick="(async () => { await OnTabClicked(tab); })" class="@tab.CssClass">
+
+            @if (tab.ContentType == null)
+            {
+                <span>
+                    @tab.Content.ToString()
+                </span>
+            }
+            else
+            {
+                <DynamicComponent Type="tab.ContentType" Parameters="(IDictionary<String, object>)tab.Content" />
+            }
+        </button>
+    }
+</div>

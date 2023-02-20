@@ -1,24 +1,6 @@
-.Selectable {
-  -webkit-touch-callout: initial;
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
-}
-.UnSelectable {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
 .ComponentsDefault {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Segoe UI';
   font-size: 0.9rem;
 }
 .ComponentsDefault button,
@@ -93,12 +75,8 @@
 .amc-datetimepicker {
   --amc-datetimepicker-backgroundColor: #fff;
   --amc-datetimepicker-accentColor: #000;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Segoe UI';
   font-size: 0.9rem;
   background-color: var(--amc-datetimepicker-backgroundColor);
   color: var(--amc-datetimepicker-accentColor);

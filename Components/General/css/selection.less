@@ -10,13 +10,27 @@
 
 body {
 
-    >header,
-    >footer {
-        .UnSelectable();
-    }
+	> header,
+	> footer {
+		user-select: none;
+	}
 }
 
 button,
 a {
-    .UnSelectable();
+	user-select: none;
+}
+
+section,
+aside {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+
+	> div,
+	> article {
+		max-width: var(--maxWidth);
+		margin-block: auto;
+		overflow: hidden;
+	}
 }

@@ -1,24 +1,6 @@
-.Selectable {
-  -webkit-touch-callout: initial;
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
-}
-.UnSelectable {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
 .ComponentsDefault {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Segoe UI';
   font-size: 0.9rem;
 }
 .ComponentsDefault button,
@@ -58,12 +40,8 @@
   stroke-linecap: round;
 }
 .amc-dialog {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Segoe UI';
   font-size: 0.9rem;
   background-color: rgba(255, 255, 255, 0.7);
   width: 100vw;

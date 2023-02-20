@@ -33,6 +33,10 @@
 			"input": "VideoPlayer/videoplayer.less"
 		},
 		{
+			"output": "Tabs/tabs.razor.css",
+			"input": "Tabs/tabs.less"
+		},
+		{
 			"output": "wwwroot/videoplayer/videoplayer.js",
 			"input": "VideoPlayer/videoplayer.ts"
 		},

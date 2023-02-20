@@ -25,20 +25,6 @@
   padding: 0;
   z-index: 999;
 }
-.Selectable {
-  -webkit-touch-callout: initial;
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
-}
-.UnSelectable {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
 .HorizontalScrolling {
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
@@ -46,19 +32,25 @@
 }
 body > header,
 body > footer {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
 }
 button,
 a {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
+}
+section,
+aside {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+section > div,
+aside > div,
+section > article,
+aside > article {
+  max-width: var(--maxWidth);
+  margin-block: auto;
+  overflow: hidden;
 }
 html {
   height: 100%;
