@@ -2,15 +2,8 @@
 
 @inject CloudWeb2 cloudWeb
 
-@{
-    List<CloudBundle> bundles = new(cloudWeb.PageDefaults.Bundles);
-    bundles.AddRange(CloudPage.Bundles);
-}
-
 <CloudHead CloudPage="CloudPage" />
-
 <CloudBundles CloudPage="CloudPage" />
-
 <HeadOutlet />
 
 @switch (CloudPage.BlazorRenderModeResult())

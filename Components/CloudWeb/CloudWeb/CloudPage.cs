@@ -15,6 +15,7 @@ public class CloudPage
     public bool FollowPage { get; set; } = true;
     public bool IsCrawler { get; set; } = true;
     public string BaseUrl { get; set; } = "/";
+    public string? CallingAssemblyName { get; set; }
     public bool AutoAppendBlazorStyles { get; set; } = true;
     public List<CloudPageFeatures> Features { get; set; } = new();
     public CloudPageBlazorRenderModes BlazorRenderMode { get; set; } = CloudPageBlazorRenderModes.None;
@@ -53,6 +54,15 @@ public class CloudPage
     public CloudPage SetBaseUrl(string baseUrl)
     {
         BaseUrl = baseUrl;
+
+        OnModified?.Invoke(this, new EventArgs());
+
+        return this;
+    }
+
+    public CloudPage SetCallingAssemblyName(string? callingAssemblyName)
+    {
+        CallingAssemblyName = callingAssemblyName;
 
         OnModified?.Invoke(this, new EventArgs());
 

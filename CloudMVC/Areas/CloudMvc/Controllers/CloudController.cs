@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,6 +19,7 @@ namespace AngryMonkey.CloudMVC
                 cloudPage.SetTitle(title);
 
             cloudPage.SetIsCrawler(IsCrawler());
+            cloudPage.SetCallingAssemblyName(Assembly.GetCallingAssembly().GetName().Name);
 
             cloudPage.OnModified += (object? sender, EventArgs e) => { ViewData["CloudPageStatic"] = cloudPage; };
 

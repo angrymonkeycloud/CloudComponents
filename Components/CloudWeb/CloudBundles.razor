@@ -13,17 +13,21 @@
     <script suppress-error="BL9992" src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.js" defer></script>
 }
 
+@if (CloudPage.BlazorRenderMode != CloudPageBlazorRenderModes.None)
+{
+    <link href="@($"{CloudPage.CallingAssemblyName}.styles.css")" rel="stylesheet">
+}
+
 <script suppress-error="BL9992">var exports = {};</script>
 
 @foreach (CloudBundle bundle in Bundles)
 {
-    <CloudBundle 
-        Source="@bundle.Source"
-        JQuery="@bundle.JQuery"
-        MinOnRelease="bundle.MinOnRelease"
-        Async="bundle.Async"
-        Defer="bundle.Defer"
-        AddOns="@bundle.AddOns" />
+    <CloudBundle Source="@bundle.Source"
+             JQuery="@bundle.JQuery"
+             MinOnRelease="bundle.MinOnRelease"
+             Async="bundle.Async"
+             Defer="bundle.Defer"
+             AddOns="@bundle.AddOns" />
 }
 
 @code {
