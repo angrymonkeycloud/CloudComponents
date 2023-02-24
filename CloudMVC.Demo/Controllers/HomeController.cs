@@ -14,10 +14,7 @@ namespace CloudMVC.Demo.Controllers
         {
             CloudPage("New Test")
                    .SetDescription("Test Description")
-                   .SetIndexPage(false)
-                   .SetFollowPage(false)
-                   .SetBlazor(CloudPageBlazorRenderModes.WebAssembly)
-                   .SetFeatures(CloudPageFeatures.Maps, CloudPageFeatures.TextEditor);
+                   .SetBlazor(CloudPageBlazorRenderModes.Server);
 
             return View();
         }

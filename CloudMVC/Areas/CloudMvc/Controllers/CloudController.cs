@@ -21,6 +21,19 @@ namespace AngryMonkey.CloudMVC
             cloudPage.SetIsCrawler(IsCrawler());
             cloudPage.SetCallingAssemblyName(Assembly.GetCallingAssembly().GetName().Name);
 
+            string host = Request.Host.Host.ToLower();
+
+            string[] robotsBlockUrls = new string[]
+            {
+                "azurewebsites.net"
+            };
+
+            if (robotsBlockUrls.Any(host.EndsWith))
+            {
+                cloudPage.SetIndexPage(false);
+                cloudPage.SetFollowPage(false);
+            }
+
             cloudPage.OnModified += (object? sender, EventArgs e) => { ViewData["CloudPageStatic"] = cloudPage; };
 
             ViewData.Add("CloudPageStatic", cloudPage);
