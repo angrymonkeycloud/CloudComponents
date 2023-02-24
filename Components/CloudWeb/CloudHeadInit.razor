@@ -1,13 +1,31 @@
 ﻿@namespace AngryMonkey.Cloud.Components
-@using Microsoft.Extensions.DependencyInjection
 
-@inject CloudWeb cloudWeb
+@inject CloudWeb2 cloudWeb
 
-<title>@cloudWeb.Options.DefaultTitle</title>
-
-@foreach (CloudBundle bundle in cloudWeb.Options.SiteBundles)
-{
-	<CloudBundle Source="@bundle.Source" MinOnRelease="@bundle.MinOnRelease" JQuery="@bundle.JQuery" />
+@{
+    List<CloudBundle> bundles = new(cloudWeb.PageDefaults.Bundles);
+    bundles.AddRange(CloudPage.Bundles);
 }
 
+<CloudHead CloudPage="CloudPage" />
+
+<CloudBundles CloudPage="CloudPage" />
+
 <HeadOutlet />
+
+@switch (CloudPage.BlazorRenderModeResult())
+{
+    case CloudPageBlazorRenderModes.Server:
+        <script suppress-error="BL9992" src="/_framework/blazor.server.js" defer></script>
+        break;
+
+    case CloudPageBlazorRenderModes.WebAssembly:
+        <script suppress-error="BL9992" src="/_framework/blazor.webassembly.js" defer></script>
+        break;
+
+    default: break;
+}
+
+@code {
+    [Parameter] public required CloudPage CloudPage { get; set; }
+}

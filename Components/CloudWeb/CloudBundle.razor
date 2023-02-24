@@ -1,4 +1,7 @@
 ﻿@namespace AngryMonkey.Cloud.Components
-@inject Microsoft.Extensions.DependencyInjection.CloudWeb cloudWeb
+@inject CloudWeb2 cloudWeb
 
-@((MarkupString)Result)
+@if (!string.IsNullOrEmpty(Result))
+{
+    @((MarkupString)Result)
+}

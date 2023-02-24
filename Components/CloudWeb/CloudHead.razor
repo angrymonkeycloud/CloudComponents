@@ -1,19 +1,38 @@
 ﻿@namespace AngryMonkey.Cloud.Components
-@using Microsoft.Extensions.DependencyInjection
 
-@inject CloudWeb cloudWeb
-
-@if (!string.IsNullOrEmpty(TitleResult))
-{
-	<PageTitle>@TitleResult</PageTitle>
+@inject CloudWeb2 cloudWeb
+@{
+    string? title = CloudPage.TitleResult(cloudWeb);
+    string? keywords = CloudPage.KeywordsResult();
+    string? description = CloudPage.DescriptionResult();
+    string? robots = CloudPage.RobotsResult();
 }
 
-@if (!string.IsNullOrEmpty(KeywordsResult))
+@if (!string.IsNullOrEmpty(title))
 {
-	<meta name="keywords" content="@KeywordsResult" />
+    <title>@title</title>
 }
 
-@if (!string.IsNullOrEmpty(DescriptionResult))
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<base href="@cloudWeb.PageDefaults.BaseUrl" />
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+
+@if (!string.IsNullOrEmpty(keywords))
 {
-	<meta name="description" content="@DescriptionResult" />
+    <meta name="keywords" content="@keywords" />
+}
+
+@if (!string.IsNullOrEmpty(description))
+{
+    <meta name="description" content="@description" />
+}
+
+@if (!string.IsNullOrEmpty(robots))
+{
+    <meta name="robots" content="@robots" />
+}
+
+@code {
+    [Parameter] public required CloudPage CloudPage { get; set; }
 }

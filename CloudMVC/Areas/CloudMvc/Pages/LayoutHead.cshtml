@@ -1,0 +1,26 @@
+﻿@*@using AngryMonkey.Cloud.Components;
+
+@model CloudMVC.BundlesModel
+
+<script>var exports = {};</script>
+
+@foreach(CloudBundle bundle in Model.Bundles)
+{
+    <component type="typeof(AngryMonkey.Cloud.Components.CloudBundle)"
+           param-Source="bundle.Source"
+           param-JQuery="bundle.JQuery"
+           param-MinOnRelease="bundle.MinOnRelease"
+           param-Async="bundle.Async"
+           param-Defer="bundle.Defer" />
+}
+
+@if (Model.AppendTinyEditor)
+{
+    <script src="https://cdn.tiny.cloud/1/f8trq6j2jvxse0u7va7inyvimycrrvdcxal44jh8smq4op5p/tinymce/5/tinymce.min.js" crossorigin="anonymous" defer=""></script>
+}
+
+
+<component type="typeof(CloudHeadInit)" param-CloudPage="@(ViewData["CloudPageStatic"])" render-mode="Static" />
+
+@await RenderSectionAsync("Styles", false)
+@await RenderSectionAsync("Scripts", false)*@

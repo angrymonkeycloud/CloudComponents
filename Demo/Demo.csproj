@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<AssemblyName>AngryMonkey.Cloud.Components.Demo</AssemblyName>
 		<RootNamespace>AngryMonkey.Cloud.Components.Demo</RootNamespace>
 		<Nullable>enable</Nullable>

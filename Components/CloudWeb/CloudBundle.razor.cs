@@ -15,70 +15,106 @@ using System.Diagnostics;
 
 namespace AngryMonkey.Cloud.Components
 {
-	public partial class CloudBundle
-	{
-		[Parameter]
-		public string Source { get; set; }
+    public partial class CloudBundle
+    {
+        [Parameter] public required string Source { get; set; }
+        [Parameter] public string? JQuery { get; set; }
+        [Parameter] public bool MinOnRelease { get; set; } = true;
+        [Parameter] public string? AddOns { get; set; }
+        [Parameter] public bool Defer { get; set; } = true;
+        [Parameter] public bool Async { get; set; } = false;
 
-		[Parameter]
-		public string JQuery { get; set; }
+        private string BuildVersion => GetHashString(File.GetLastWriteTimeUtc($"wwwroot/{Source}").ToString());
 
-		[Parameter]
-		public bool MinOnRelease { get; set; } = true;
+        private static byte[] GetHash(string inputString)
+        {
+            return SHA256.HashData(Encoding.UTF8.GetBytes(inputString));
+        }
 
-		private static string BuildVersion => !string.IsNullOrEmpty(Assembly.GetExecutingAssembly().Location) ? GetHashString(new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime.ToString()) : Assembly.GetEntryAssembly().GetName().Version.ToString();
+        private static string GetHashString(string inputString)
+        {
+            StringBuilder stringBuild = new();
 
-		private static byte[] GetHash(string inputString)
-		{
-			using HashAlgorithm algorithm = SHA256.Create();
+            foreach (byte b in GetHash(inputString))
+                stringBuild.Append(b.ToString("X2"));
 
-			return algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
-		}
+            return stringBuild.ToString();
+        }
 
-		private static string GetHashString(string inputString)
-		{
-			StringBuilder stringBuild = new();
+        private string? Result
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(JQuery))
+                    return $"<script crossorigin=\"anonymous\" src=\"https://code.jquery.com/jquery-{JQuery}.min.js\" integrity=\"sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=\" defer=\"\"></script>";
 
-			foreach (byte b in GetHash(inputString))
-				stringBuild.Append(b.ToString("X2"));
+                if (string.IsNullOrEmpty(Source) || !Source.Contains('.'))
+                    return null;
 
-			return stringBuild.ToString();
-		}
+                SourceTypes? sourceType = Source.Split('.').Last().Trim().ToLower() switch
+                {
+                    "css" => SourceTypes.CSS,
+                    "js" => SourceTypes.JS,
+                    _ => null,
+                };
 
-		private string Result
-		{
-			get
-			{
-				if (!string.IsNullOrEmpty(JQuery))
-					return $"<script crossorigin=\"anonymous\" src=\"https://code.jquery.com/jquery-{JQuery}.min.js\" integrity=\"sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=\" defer=\"\"></script>";
+                if (sourceType == null)
+                    return null;
 
-				if (string.IsNullOrEmpty(Source) || !Source.Contains('.'))
-					return null;
+                List<string> segments = new()
+                {
+                    sourceType == SourceTypes.CSS? "<link" : "<script"
+                };
 
-				string source = Source;
+                string source = Source;
 
-				if (MinOnRelease && !source.Contains(".min.", StringComparison.OrdinalIgnoreCase))
-				{
-					List<string> sourceSplitted = Source.Split('.').ToList();
+                if (MinOnRelease && !source.Contains(".min.", StringComparison.OrdinalIgnoreCase))
+                {
+                    List<string> sourceSplitted = Source.Split('.').ToList();
 
-					sourceSplitted.Insert(sourceSplitted.Count - 1, "min");
-					source = string.Join('.', sourceSplitted);
-				}
+                    sourceSplitted.Insert(sourceSplitted.Count - 1, "min");
+                    source = string.Join('.', sourceSplitted);
+                }
 
-				if (!source.StartsWith("http", StringComparison.OrdinalIgnoreCase))
-				{
-					string separator = source.Contains('?') ? "&" : "?";
+                if (!source.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                {
+                    string separator = source.Contains('?') ? "&" : "?";
 
-					source = $"{source}{separator}v={BuildVersion}";
-				}
+                    source = $"{source}{separator}v={BuildVersion}";
+                }
 
-				return Source.Split('.').Last().Trim().ToLower() switch
-				{
-					"css" => $"<link href=\"{source}\" rel=\"stylesheet\">",
-					"js" => $"<script src=\"{source}\" defer></script>",
-					_ => null,
-				};
-			}
-		}
-	}
+                segments.Add(sourceType == SourceTypes.CSS ? $"href=\"{source}\"" : $"src=\"{source}\"");
+
+                if (sourceType == SourceTypes.JS)
+                {
+                    if (Defer)
+                        segments.Add("defer");
+
+                    if (Async)
+                        segments.Add("async");
+                }
+
+                if (!string.IsNullOrEmpty(AddOns))
+                    segments.Add(AddOns);
+
+                segments.Add(sourceType == SourceTypes.CSS ? "rel=\"stylesheet\">" : "></script>");
+
+                return string.Join(" ", segments);
+
+                //return Source.Split('.').Last().Trim().ToLower() switch
+                //{
+                //    "css" => $"<link href=\"{source}\" rel=\"stylesheet\">",
+                //    "js" => $"<script src=\"{source}\" {(Defer ? "defer" : null)} {(Async ? "async" : null)}></script>",
+                //    _ => null,
+                //};
+            }
+        }
+
+        private enum SourceTypes
+        {
+            JS,
+            CSS,
+        }
+    }
+
 }

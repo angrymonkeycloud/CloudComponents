@@ -1,0 +1,15 @@
+﻿@{
+    CloudPage cloudPage = (ViewData["CloudPageStatic"] as CloudPage)!;
+}
+
+<h1>@cloudPage.Title</h1>
+<h2>@cloudPage.Description</h2>
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<div>
+    <component type="typeof(DateTimePicker)" render-mode="@cloudPage.GetRenderMode()" />
+</div>
