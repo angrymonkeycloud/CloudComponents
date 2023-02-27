@@ -1,9 +1,9 @@
 ﻿@page "/DockScrolling"
+@inject CloudPage cloudPage
 @{
+	cloudPage.Title = "Dock Scrolling";
 	int total = 10;
 }
-
-<CloudHead Title="Dock Scrolling" />
 
 <nav>
 	@for (int i = 1; i <= total; i++)

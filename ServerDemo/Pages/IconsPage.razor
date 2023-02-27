@@ -1,7 +1,10 @@
 ﻿@page "/Icons"
 @using AngryMonkey.Cloud.Components.Icons
+@inject CloudPage cloudPage
+@{
+    cloudPage.Title = "Icons";
+}
 
-<CloudHead Title="Icons" />
 
 <HeadContent>
     <CloudBundle Source="css/iconspage.css" />

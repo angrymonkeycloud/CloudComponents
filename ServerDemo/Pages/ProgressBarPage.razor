@@ -1,6 +1,8 @@
 ﻿@page "/ProgressBar"
-
-<CloudHead Title="Progress Bar" />
+@inject CloudPage cloudPage
+@{
+    cloudPage.Title = "Progress Bar";
+}
 
 <ProgressBar Value="20" Total="500" OnChanged="Log" Style="ProgressBarStyle.Flat" />
 

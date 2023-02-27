@@ -1,6 +1,8 @@
 ﻿@page "/Popup"
-
-<CloudHead Title="Popup" />
+@inject CloudPage cloudPage
+@{
+	cloudPage.Title = "Popup";
+}
 
 <Popup @ref="popup">
 	Popup Opened!

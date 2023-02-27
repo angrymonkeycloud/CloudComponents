@@ -16,7 +16,7 @@
 
 		<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
 		<FileVersion>$(PackageVersion)</FileVersion>
-		<Version>2.2.0</Version>
+		<Version>2.3.0</Version>
 		<PackageIcon>AngryMonkeyCloudLogo-64x64.png</PackageIcon>
 		<PackageOutputPath>..\NugetPackage\</PackageOutputPath>
 
@@ -44,7 +44,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Remove="CloudWeb\css\cloud.css" />
 		<None Remove="ProgressBar\progressbar.min.js" />
 	</ItemGroup>
 	<ItemGroup>
@@ -68,38 +67,6 @@
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</None>
 		<None Include="wwwroot\cloud.css" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<EmbeddedResource Include="CloudWeb\css\cloud.css" Pack="true">
-			<PackageCopyToOutput>true</PackageCopyToOutput>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</EmbeddedResource>
-
-		<EmbeddedResource Include="CloudWeb\css\cloud.min.css" Pack="true">
-			<PackageCopyToOutput>true</PackageCopyToOutput>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</EmbeddedResource>
-
-		<EmbeddedResource Include="CloudWeb\js\cloud.js" Pack="true">
-			<PackageCopyToOutput>true</PackageCopyToOutput>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</EmbeddedResource>
-
-		<EmbeddedResource Include="CloudWeb\js\cloud.min.js" Pack="true">
-			<PackageCopyToOutput>true</PackageCopyToOutput>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</EmbeddedResource>
-
-		<EmbeddedResource Include="General\css\variables.less" Pack="true">
-			<PackageCopyToOutput>true</PackageCopyToOutput>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</EmbeddedResource>
-
-		<EmbeddedResource Include="General\css\common.less" Pack="true">
-			<PackageCopyToOutput>true</PackageCopyToOutput>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</EmbeddedResource>
 	</ItemGroup>
 
 </Project>

@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\CloudWeb\CloudWeb\CloudWeb.csproj" />
     <ProjectReference Include="..\Components\Components.csproj" />
   </ItemGroup>
 

@@ -1,5 +1,7 @@
 ﻿@page "/VolumeBar"
-
-<CloudHead Title="Volume Bar" />
+@inject CloudPage cloudPage
+@{
+    cloudPage.Title = "Volume Bar";
+}
 
 <VolumeBar />
