@@ -20,3 +20,90 @@
         </div>
     }
 </div>
+
+@code {
+
+    private string ClassAttributes { get; set; } = string.Empty;
+
+    [Parameter] public bool Extended { get; set; } = false;
+    [Parameter] public bool IsMuted { get; set; } = false;
+    [Parameter] public double Value { get; set; } = 1;
+
+    [Parameter] public EventCallback<VolumeBarChangeEventArgs> OnChanging { get; set; }
+    [Parameter] public EventCallback<VolumeBarChangeEventArgs> OnChanged { get; set; }
+
+    private string DisplayVolume => $"{Value * 100}";
+
+    public async Task MuteVolume()
+    {
+        IsMuted = true;
+
+        Extended = false;
+
+        VolumeBarChangeEventArgs changeArgs = new()
+            {
+                PreviousValue = Value,
+                NewValue = Value,
+                WasMuted = false,
+                IsMuted = true
+            };
+
+        await OnChanging.InvokeAsync(changeArgs);
+    }
+
+    private async Task OnVolumeButtonClick(MouseEventArgs args)
+    {
+        if (IsMuted)
+        {
+            IsMuted = false;
+
+            VolumeBarChangeEventArgs changeArgs = new()
+                {
+                    PreviousValue = Value,
+                    NewValue = Value,
+                    WasMuted = true,
+                    IsMuted = false
+                };
+
+            await OnChanging.InvokeAsync(changeArgs);
+        }
+        else Extended = !Extended;
+    }
+
+    protected async Task OnProgressBarChanging(ProgressBarChangeEventArgs args)
+    {
+        VolumeBarChangeEventArgs changeArgs = new()
+            {
+                PreviousValue = args.PreviousValue,
+                NewValue = args.NewValue,
+                WasMuted = IsMuted,
+                IsMuted = IsMuted
+            };
+
+        Value = args.NewValue;
+
+        await OnChanging.InvokeAsync(changeArgs);
+    }
+
+    protected async Task OnProgressBarChanged(ProgressBarChangeEventArgs args)
+    {
+        Extended = false;
+
+        VolumeBarChangeEventArgs changeArgs = new()
+            {
+                PreviousValue = args.PreviousValue,
+                WasMuted = IsMuted,
+            };
+
+        if (Convert.ToDouble(args.NewValue) == 0)
+        {
+            IsMuted = true;
+            Value = 1;
+        }
+
+        changeArgs.IsMuted = IsMuted;
+        changeArgs.NewValue = Value;
+
+        await OnChanging.InvokeAsync(changeArgs);
+    }
+}

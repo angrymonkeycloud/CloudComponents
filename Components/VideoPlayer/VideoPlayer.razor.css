@@ -100,6 +100,9 @@
 .amc-videoplayer ::deep .amc-svg-stroke._corner-rounded {
   stroke-linecap: round;
 }
+.amc-videoplayer * {
+  color: #fff;
+}
 .amc-videoplayer-content {
   display: flex;
   flex-direction: column;

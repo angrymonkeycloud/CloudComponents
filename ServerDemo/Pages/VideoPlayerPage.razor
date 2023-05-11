@@ -4,4 +4,23 @@
     cloudPage.Title = "Video Player";
 }
 
-<VideoPlayer ReserveAspectRatio="true" VideoUrl="https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4" Autoplay="true" />
+<section>
+    <article>
+        <button @onclick="() => SetUrl(BlueMoonTrailerUrl)">Blue Moon Trailer</button>
+        <button @onclick="() => SetUrl(CoverboxUrl)">Coverbox</button>
+    </article>
+</section>
+
+<VideoPlayer ReserveAspectRatio="true" VideoUrl="@VideoUrl" Autoplay="true" />
+
+@code {
+    private const string BlueMoonTrailerUrl = "https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4";
+    private const string CoverboxUrl = "https://cbxinfo-staging.azurewebsites.net/video/coverbox-platform.mp4";
+
+    public string VideoUrl { get; set; } = "https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4";
+
+    public void SetUrl(string url)
+    {
+        VideoUrl = url;
+    }
+}

@@ -9,18 +9,34 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-CloudWebConfig webConfig = new()
+//CloudWebConfig webConfig = new()
+//{
+//};
+
+CloudWebConfig cloudWeb = new()
 {
-	TitleSuffix = " - Angry Monkey Cloud Components"
+	TitleSuffix = " - Angry Monkey Cloud Components",
+    PageDefaults = new()
+    {
+        Title = "Angry Monkey Cloud Components",
+        AutoAppendBlazorStyles = true,
+        CallingAssemblyName = "ServerDemo",
+        BlazorRenderMode = CloudPageBlazorRenderModes.Server,
+        Bundles = new()
+        {
+            new CloudBundle(){ Source = "/css/site.css"},
+            new CloudBundle(){ Source = "/js/site.js"},
+        }
+    }
 };
 
-webConfig.PageDefaults.SetBlazor(CloudPageBlazorRenderModes.Server)
-	.SetTitle("Angry Monkey Cloud Components")
-	.SetCallingAssemblyName("ServerDemo")
-	.AppendBundle("css/site.css")
-	.AppendBundle("js/site.js");
+//webConfig.PageDefaults.SetBlazor(CloudPageBlazorRenderModes.Server)
+//	.SetTitle("Angry Monkey Cloud Components")
+//	.SetCallingAssemblyName("ServerDemo")
+//	.AppendBundle("css/site.css")
+//	.AppendBundle("js/site.js");
 
-builder.Services.AddCloudWeb(webConfig);
+builder.Services.AddCloudWeb(cloudWeb);
 
 builder.Services.AddHttpClient();
 

@@ -461,6 +461,7 @@ namespace AngryMonkey.Cloud.Components
         {
             DoShowVolumeControls = !DoShowVolumeControls;
         }
+
         protected async Task OnVolumeChanging(VolumeBarChangeEventArgs args)
         {
             Volume = args.NewValue;
