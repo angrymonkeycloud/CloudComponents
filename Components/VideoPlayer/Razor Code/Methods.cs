@@ -211,6 +211,14 @@ namespace AngryMonkey.Cloud.Components
 
         public async Task OnVideoChange(ChangeEventArgs args)
         {
+            if(VideoUrl.Contains(".m3u8",StringComparison.OrdinalIgnoreCase))
+            {
+				var module = await Module;
+
+				await module.InvokeVoidAsync("setVideoUrl", ComponentElement, VideoUrl);
+			}
+
+
             VideoEventData eventData = JsonSerializer.Deserialize<VideoEventData>((string)args.Value);
 
             IsVideoPlaying = !eventData.State.Paused;

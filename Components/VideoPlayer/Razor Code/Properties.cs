@@ -60,7 +60,8 @@ namespace AngryMonkey.Cloud.Components
 
 		private bool HideControls => IsVideoPlaying && !IsUserInteracting && !IsUserChangingProgress && !ShowSideBar;
 
-		[Parameter] public string Title { get; set; }
+        [Parameter] public string? Id { get; set; }
+        [Parameter] public string Title { get; set; }
 		[Parameter] public bool Loop { get; set; } = false;
 		[Parameter] public bool Autoplay { get; set; } = false;
 		[Parameter] public bool ShowStopButton { get; set; } = false;
