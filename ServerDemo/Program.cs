@@ -26,7 +26,7 @@ CloudWebConfig cloudWeb = new()
         {
             new CloudBundle(){ Source = "/css/site.css"},
             new CloudBundle(){ Source = "/js/site.js"},
-            new CloudBundle(){ Source = "/js/video.js"},
+            //new CloudBundle(){ Source = "/js/video.js"},
             new CloudBundle(){ Source = "https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.3/hls.min.js"},
         }
     }

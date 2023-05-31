@@ -127,39 +127,59 @@ export function AddReserveAspectRatioListener(component, width, height) {
 export function RemoveReserveAspectRatioListener(component, listener) {
     window.removeEventListener('resize', listener);
 }
-
 export function setVideoUrl(component, url) {
     return new Promise(function (resolve, reject) {
-        var video = document.createElement('video');
+        var videoElement = document.createElement('video');
         var hls = new Hls();
-        hls.attachMedia(video);
-        hls.on(Hls.Events.FRAG_PARSING_METADATA, function (event, data) {
-            var metadata = data.samples[0].data;
-            var url = URL.createObjectURL(new Blob([metadata]));
-
-            return url;
+        hls.attachMedia(videoElement);
+        hls.on(Hls.Events.FRAG_LOADED, function (event, data) {
+            debugger;
+            var fragments = hls.levels[0].details.fragments;
+            var lastFragment = fragments[fragments.length - 1];
+            if (lastFragment) {
+                var blobUrl = URL.createObjectURL(lastFragment.blob);
+                resolve(blobUrl);
+                // You can use the blobUrl as needed
+            }
+            //resolve(videoUrl);
         });
-
         hls.loadSource(url);
         hls.startLoad();
     });
-
-
-    //// Get the video element
-    //var video = component.querySelector('video');
-
-    //if (!video.src.includes('blob:')) {
-    //    // Instantiate the hls.js player
-    //    var hls = new Hls();
-
-    //    // Load the M3U8 playlist
-    //    var m3u8Url = url;
-    //    hls.loadSource(m3u8Url);
-
-    //    // Attach the hls.js player to the video element
-    //    hls.attachMedia(video);
-
-    //    // Play the video
-    //    video.play();
-    //}
 }
+
+//export function setVideoUrl(component, url) {
+//    return new Promise(function (resolve, reject) {
+//        var video = component.createElement('video');
+//        var hls = new Hls();
+//        hls.attachMedia(video);
+//        hls.on(Hls.Events.FRAG_PARSING_METADATA, function (event, data) {
+//            var metadata = data.samples[0].data;
+//            var videoUrl = URL.createObjectURL(new Blob([metadata]));
+
+//            resolve(videoUrl);
+//        });
+
+//        hls.loadSource(url);
+//        hls.startLoad();
+//    });
+
+
+//    //// Get the video element
+//    //var video = component.querySelector('video');
+
+//    //if (!video.src.includes('blob:')) {
+//    //    // Instantiate the hls.js player
+//    //    var hls = new Hls();
+
+//    //    // Load the M3U8 playlist
+//    //    var m3u8Url = url;
+//    //    hls.loadSource(m3u8Url);
+
+//    //    // Attach the hls.js player to the video element
+//    //    hls.attachMedia(video);
+
+//    //    // Play the video
+//    //    video.play();
+//    //}
+//}
