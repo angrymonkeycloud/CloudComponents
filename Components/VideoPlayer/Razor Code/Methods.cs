@@ -342,6 +342,7 @@ namespace AngryMonkey.Cloud.Components
 
             if (VideoUrl != _videoUrl)
             {
+
                 if (IsStream)
                     await InitializeStreaming();
 
@@ -470,8 +471,8 @@ namespace AngryMonkey.Cloud.Components
         {
             var module = await Module;
 
-           await module.InvokeAsync<string>("setVideoUrl", ComponentElement, VideoUrl);
-            
+            string test = await module.InvokeAsync<string>("setVideoUrl", ComponentElement, VideoUrl);
+            VideoUrl = test;
         }
 
         protected void OnVolumeButtonClick()
