@@ -20,7 +20,7 @@
 		},
 		{
 			"output": "wwwroot/videoplayer/videoplayer.js",
-			"input": "VideoPlayer/videoplayer.ts"
+			"input": [ "VideoPlayer/videoplayer.ts", "VideoPlayer/stream.js" ]
 		},
 		{
 			"output": "ProgressBar/ProgressBar.razor.css",

@@ -240,3 +240,27 @@ body main .amc-datetimepicker-section .amc-datetimepicker {
   --amc-datetimepicker-accentColor: #fff !important;
   margin-bottom: 100px;
 }
+body main .video > article {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+body .--button {
+  min-width: 150px;
+  padding: 15px;
+  border: 1px solid var(--LinkColor);
+  color: var(--LinkColor);
+  background-color: transparent;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+  border-radius: 3px;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+body .--button:hover {
+  background-color: var(--LinkColor);
+  color: #fff;
+}

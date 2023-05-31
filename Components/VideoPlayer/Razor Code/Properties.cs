@@ -13,132 +13,144 @@ using System.Threading.Tasks;
 
 namespace AngryMonkey.Cloud.Components
 {
-	public partial class VideoPlayer
-	{
-		private ElementReference ComponentElement { get; set; }
+    public partial class VideoPlayer
+    {
+        private ElementReference ComponentElement { get; set; }
 
-		private Task<IJSObjectReference> _module;
-		private Task<IJSObjectReference> Module => _module ??= GeneralMethods.GetIJSObjectReference(jsRuntime, "videoplayer/videoplayer.js");
+        private Task<IJSObjectReference> _module;
+        private Task<IJSObjectReference> Module => _module ??= GeneralMethods.GetIJSObjectReference(jsRuntime, "videoplayer/videoplayer.js");
 
-		private string ClassAttributes { get; set; } = string.Empty;
+        private string ClassAttributes { get; set; } = string.Empty;
 
-		private bool IsUserChangingProgress = false;
-		private bool IsVideoPlaying = false;
-		private bool IsFullScreen = false;
+        private bool IsUserChangingProgress = false;
+        private bool IsVideoPlaying = false;
+        private bool IsFullScreen = false;
 
-		private bool _isMuted = false;
-		private bool IsMuted = false;
+        private bool _isMuted = false;
+        private bool IsMuted = false;
 
-		private bool DoShowVolumeControls = false;
-		private bool IsSeeking = false;
-		private bool ShowSeekingInfo = false;
 
-		private Dictionary<string, string> VideoSettingsInfo
-		{
-			get
-			{
-				Dictionary<string, string> info = new();
+        private bool DoShowVolumeControls = false;
+        private bool IsSeeking = false;
+        private bool ShowSeekingInfo = false;
 
-				if (!string.IsNullOrEmpty(Title))
-					info.Add("Title", Title);
+        private bool IsStream
+        {
+            get
+            {
+                string[] extentions = new[] { "m3u8" };
 
-				if (CurrentVideoInfo != null)
-				{
-					info.Add("Duration", GetTime(CurrentVideoInfo.Duration));
-					info.Add("Aspect Ratio", CurrentVideoInfo.DisplayAspectRatio);
-				}
+                return extentions.Any(ex => VideoUrl.EndsWith($".{ex}", StringComparison.OrdinalIgnoreCase));
+            }
+        }
 
-				info.Add("Status", Status.ToString());
 
-				return info;
-			}
-		}
+        private Dictionary<string, string> VideoSettingsInfo
+        {
+            get
+            {
+                Dictionary<string, string> info = new();
 
-		private VideoInfo CurrentVideoInfo { get; set; }
+                if (!string.IsNullOrEmpty(Title))
+                    info.Add("Title", Title);
 
-		private bool IsUserInteracting = false;
+                if (CurrentVideoInfo != null)
+                {
+                    info.Add("Duration", GetTime(CurrentVideoInfo.Duration));
+                    info.Add("Aspect Ratio", CurrentVideoInfo.DisplayAspectRatio);
+                }
 
-		private bool HideControls => IsVideoPlaying && !IsUserInteracting && !IsUserChangingProgress && !ShowSideBar;
+                info.Add("Status", Status.ToString());
 
-		[Parameter] public string Title { get; set; }
-		[Parameter] public bool Loop { get; set; } = false;
-		[Parameter] public bool Autoplay { get; set; } = false;
-		[Parameter] public bool ShowStopButton { get; set; } = false;
+                return info;
+            }
+        }
 
-		private bool _reserveAspectRatio = false;
-		[Parameter] public bool ReserveAspectRatio { get; set; } = false;
+        private VideoInfo CurrentVideoInfo { get; set; }
 
-		private string DisplayLoop => Loop ? "On" : "Off";
+        private bool IsUserInteracting = false;
 
-		[Parameter] public string VideoUrl { get; set; }
+        private bool HideControls => IsVideoPlaying && !IsUserInteracting && !IsUserChangingProgress && !ShowSideBar;
+        [Parameter] public string Title { get; set; }
+        [Parameter] public bool Loop { get; set; } = false;
+        [Parameter] public bool Autoplay { get; set; } = false;
+        [Parameter] public bool ShowStopButton { get; set; } = false;
 
-		[Parameter] public double Volume { get; set; } = 1;
+        private bool _reserveAspectRatio = false;
+        [Parameter] public bool ReserveAspectRatio { get; set; } = false;
 
-		private string DisplayVolume
-		{
-			get
-			{
-				return $"{Volume * 100}";
-			}
-		}
+        private string DisplayLoop => Loop ? "On" : "Off";
 
-		public double CurrentTime { get; set; } = 0;
+        private string _videoUrl { get; set; }
+        [Parameter] public string VideoUrl { get; set; }
 
-		private ProgressBarStyle ProgressBarStyle = ProgressBarStyle.Circle;
+        [Parameter] public double Volume { get; set; } = 1;
 
-		[Parameter] public Action<VideoState> TimeUpdate { get; set; }
+        private string DisplayVolume
+        {
+            get
+            {
+                return $"{Volume * 100}";
+            }
+        }
 
-		[Parameter] public EventCallback<VideoState> TimeUpdateEvent { get; set; }
-		bool TimeUpdateRequired => TimeUpdate is object;
-		bool TimeUpdateEventRequired => TimeUpdateEvent.HasDelegate;
-		bool EventFiredEventRequired => EventFiredEvent.HasDelegate;
-		bool EventFiredRequired => EventFired is object;
-		[Parameter] public Action<VideoEventData> EventFired { get; set; }
-		[Parameter] public EventCallback<VideoEventData> EventFiredEvent { get; set; }
-		[Parameter] public Dictionary<VideoEvents, VideoStateOptions> VideoEventOptions { get; set; }
-		bool RegisterEventFired => EventFiredEventRequired || EventFiredRequired;
+        public double CurrentTime { get; set; } = 0;
 
-		[Parameter] public VideoPlayerSettings Settings { get; set; }
+        private ProgressBarStyle ProgressBarStyle = ProgressBarStyle.Circle;
 
-		private Guid latestId = Guid.Empty;
+        [Parameter] public Action<VideoState> TimeUpdate { get; set; }
 
-		#region Time / Duration
+        [Parameter] public EventCallback<VideoState> TimeUpdateEvent { get; set; }
+        bool TimeUpdateRequired => TimeUpdate is object;
+        bool TimeUpdateEventRequired => TimeUpdateEvent.HasDelegate;
+        bool EventFiredEventRequired => EventFiredEvent.HasDelegate;
+        bool EventFiredRequired => EventFired is object;
+        [Parameter] public Action<VideoEventData> EventFired { get; set; }
+        [Parameter] public EventCallback<VideoEventData> EventFiredEvent { get; set; }
+        [Parameter] public Dictionary<VideoEvents, VideoStateOptions> VideoEventOptions { get; set; }
+        bool RegisterEventFired => EventFiredEventRequired || EventFiredRequired;
 
-		private string DisplayTimeDuration => $"{GetTime(CurrentTime)} / {GetTime(CurrentVideoInfo?.Duration ?? 0)}";
+        [Parameter] public VideoPlayerSettings Settings { get; set; }
 
-		public double SeekInfoTime { get; set; }
-		private string DisplaySeekInfoTime => GetTime(SeekInfoTime);
+        private Guid latestId = Guid.Empty;
 
-		#endregion
+        #region Time / Duration
 
-		#region Settings Menu
+        private string DisplayTimeDuration => $"{GetTime(CurrentTime)} / {GetTime(CurrentVideoInfo?.Duration ?? 0)}";
 
-		private bool ShowSideBar = false;
-		private bool ShowSideBarInfo = false;
-		private bool ShowSideBarPlaybackSpeed = false;
-		private bool ShowSideBarLoop = false;
-		private bool ShowSideBarMenu => !ShowSideBarInfo && !ShowSideBarPlaybackSpeed && !ShowSideBarLoop;
+        public double SeekInfoTime { get; set; }
+        private string DisplaySeekInfoTime => GetTime(SeekInfoTime);
 
-		private double PlaybackSpeed = 1;
-		private Dictionary<double, string> PlaybackSpeedOptions = new() { { 0.25, "0.25" }, { 0.5, "0.5" }, { 0.75, "0.75" }, { 1, "Normal" }, { 1.25, "1.25" }, { 1.5, "1.5" }, { 1.75, "1.75" }, { 2, "2" } };
-		private string DisplayPlaybackSpeed => PlaybackSpeedOptions[PlaybackSpeed];
+        #endregion
 
-		#endregion
+        #region Settings Menu
 
-		private VideoStatus Status { get; set; } = VideoStatus.Loading;
+        private bool ShowSideBar = false;
+        private bool ShowSideBarInfo = false;
+        private bool ShowSideBarPlaybackSpeed = false;
+        private bool ShowSideBarLoop = false;
+        private bool ShowSideBarMenu => !ShowSideBarInfo && !ShowSideBarPlaybackSpeed && !ShowSideBarLoop;
 
-		private enum VideoStatus
-		{
-			Loading,
-			Playing,
-			Paused,
-			Stoped,
-			Buffering,
-			Unknown
-		}
+        private double PlaybackSpeed = 1;
+        private Dictionary<double, string> PlaybackSpeedOptions = new() { { 0.25, "0.25" }, { 0.5, "0.5" }, { 0.75, "0.75" }, { 1, "Normal" }, { 1.25, "1.25" }, { 1.5, "1.5" }, { 1.75, "1.75" }, { 2, "2" } };
+        private string DisplayPlaybackSpeed => PlaybackSpeedOptions[PlaybackSpeed];
 
-		private bool _isEmptyTouched = false;
-		private bool _forceHideControls = false;
+        #endregion
 
-	}
+        private VideoStatus Status { get; set; } = VideoStatus.Loading;
+
+        private enum VideoStatus
+        {
+            Loading,
+            Playing,
+            Paused,
+            Stoped,
+            Buffering,
+            Unknown
+        }
+
+        private bool _isEmptyTouched = false;
+        private bool _forceHideControls = false;
+
+    }
 }
