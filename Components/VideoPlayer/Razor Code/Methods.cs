@@ -211,13 +211,6 @@ namespace AngryMonkey.Cloud.Components
 
         public async Task OnVideoChange(ChangeEventArgs args)
         {
-            if(VideoUrl.Contains(".m3u8",StringComparison.OrdinalIgnoreCase))
-            {
-				var module = await Module;
-
-				await module.InvokeVoidAsync("setVideoUrl", ComponentElement, VideoUrl);
-			}
-
 
             VideoEventData eventData = JsonSerializer.Deserialize<VideoEventData>((string)args.Value);
 
@@ -346,6 +339,14 @@ namespace AngryMonkey.Cloud.Components
                 _isMuted = IsMuted;
                 await MuteVolume();
             }
+
+            if (VideoUrl != _videoUrl)
+            {
+                if (IsStream)
+                    await InitializeStreaming();
+
+                _videoUrl = VideoUrl;
+            }
         }
 
         async Task Implement(VideoEvents eventName)
@@ -463,6 +464,14 @@ namespace AngryMonkey.Cloud.Components
             var module = await Module;
 
             await module.InvokeVoidAsync("muteVolume", ComponentElement, IsMuted);
+        }
+
+        private async Task InitializeStreaming()
+        {
+            var module = await Module;
+
+           await module.InvokeAsync<string>("setVideoUrl", ComponentElement, VideoUrl);
+            
         }
 
         protected void OnVolumeButtonClick()

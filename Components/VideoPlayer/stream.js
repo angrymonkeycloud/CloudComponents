@@ -1,5 +1,4 @@
 export function setVideoUrl(component, url) {
-    // Get the video element
     var video = component.querySelector('video');
 
     if (!video.src.includes('blob:')) {
