@@ -33,17 +33,25 @@ namespace AngryMonkey.Cloud.Components
         private bool DoShowVolumeControls = false;
         private bool IsSeeking = false;
         private bool ShowSeekingInfo = false;
+        private bool IsStream { get; set; }
+        private bool StreamInitialized { get; set; } = false;
 
-        private bool IsStream
+        private bool RequireStreamInit()
         {
-            get
-            {
-                string[] extentions = new[] { "m3u8" };
+            string[] extentions = new[] { "m3u8" };
 
-                return extentions.Any(ex => VideoUrl.EndsWith($".{ex}", StringComparison.OrdinalIgnoreCase));
-            }
+            return extentions.Any(ex => VideoUrl.EndsWith($".{ex}", StringComparison.OrdinalIgnoreCase));
         }
 
+        //private void UpdateStreamValue()
+        //{
+        //    string[] extentions = new[] { "m3u8" };
+
+        //    IsStream = extentions.Any(ex => VideoUrl.EndsWith($".{ex}", StringComparison.OrdinalIgnoreCase));
+        //}
+
+        private bool ShowProgressBar => !IsStream;
+        private bool ShowDuration => !IsStream;
 
         private Dictionary<string, string> VideoSettingsInfo
         {
@@ -66,7 +74,7 @@ namespace AngryMonkey.Cloud.Components
             }
         }
 
-        private VideoInfo CurrentVideoInfo { get; set; }
+        private VideoInfo? CurrentVideoInfo { get; set; }
 
         private bool IsUserInteracting = false;
 
@@ -75,6 +83,8 @@ namespace AngryMonkey.Cloud.Components
         [Parameter] public bool Loop { get; set; } = false;
         [Parameter] public bool Autoplay { get; set; } = false;
         [Parameter] public bool ShowStopButton { get; set; } = false;
+
+        public bool EnableLoop => !IsStream;
 
         private bool _reserveAspectRatio = false;
         [Parameter] public bool ReserveAspectRatio { get; set; } = false;

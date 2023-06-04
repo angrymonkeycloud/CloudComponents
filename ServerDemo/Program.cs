@@ -15,7 +15,7 @@ builder.Services.AddServerSideBlazor();
 
 CloudWebConfig cloudWeb = new()
 {
-	TitleSuffix = " - Angry Monkey Cloud Components",
+    TitleSuffix = " - Angry Monkey Cloud Components",
     PageDefaults = new()
     {
         Title = "Angry Monkey Cloud Components",
@@ -25,9 +25,7 @@ CloudWebConfig cloudWeb = new()
         Bundles = new()
         {
             new CloudBundle(){ Source = "/css/site.css"},
-            new CloudBundle(){ Source = "/js/site.js"},
-            //new CloudBundle(){ Source = "/js/video.js"},
-            new CloudBundle(){ Source = "https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.3/hls.min.js"},
+            new CloudBundle(){ Source = "/js/site.js"}
         }
     }
 };
@@ -47,9 +45,9 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-	app.UseExceptionHandler("/Error");
-	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-	app.UseHsts();
+    app.UseExceptionHandler("/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();

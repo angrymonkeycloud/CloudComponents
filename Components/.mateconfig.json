@@ -20,7 +20,11 @@
 		},
 		{
 			"output": "wwwroot/videoplayer/videoplayer.js",
-			"input": [ "VideoPlayer/videoplayer.ts", "VideoPlayer/stream.js" ]
+			"input": [ "node_modules/hls.js/dist/hls.js", "VideoPlayer/videoplayer.ts" ]
+		},
+		{
+			"output": "wwwroot/progressbar/progressbar.js",
+			"input": "ProgressBar/progressbar.ts"
 		},
 		{
 			"output": "ProgressBar/ProgressBar.razor.css",

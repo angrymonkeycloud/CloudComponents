@@ -16,7 +16,7 @@
 
 		<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
 		<FileVersion>$(PackageVersion)</FileVersion>
-		<Version>2.3.1</Version>
+		<Version>2.3.3</Version>
 		<PackageIcon>AngryMonkeyCloudLogo-64x64.png</PackageIcon>
 		<PackageOutputPath>..\NugetPackage\</PackageOutputPath>
 
@@ -67,6 +67,8 @@
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</None>
 		<None Include="wwwroot\cloud.css" />
+		<None Include="wwwroot\progressbar\progressbar.js" />
+		<None Include="wwwroot\progressbar\ProgressBar.min.js" />
 	</ItemGroup>
 
 </Project>

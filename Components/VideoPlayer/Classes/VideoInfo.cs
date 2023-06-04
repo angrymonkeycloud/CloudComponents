@@ -6,7 +6,7 @@ namespace AngryMonkey.Cloud.Components
 {
 	public class VideoInfo
 	{
-		public double Duration { get; set; }
+		public double? Duration { get; set; }
 		public double Width { get; set; }
 		public double Height { get; set; }
 		public double AspectRatio => Width / Height;

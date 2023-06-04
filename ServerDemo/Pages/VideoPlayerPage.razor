@@ -15,12 +15,14 @@
 
 <VideoPlayer ReserveAspectRatio="true"  VideoUrl="@VideoUrl" Autoplay="true" />
 
+<video id="TestVideo"></video>
+
 @code {
     private const string BlueMoonTrailerUrl = "https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4";
     private const string CoverboxUrl = "https://cbxinfo-staging.azurewebsites.net/video/coverbox-platform.mp4";
-    private const string LiveStreamingUrl = "https://stmv1.cnarlatam.com/cineinfantil/cineinfantil/playlist.m3u8"; //"https://manar.live/iptv/playlist.m3u8";
+    private const string LiveStreamingUrl = "https://stmv1.cnarlatam.com/cineinfantil/cineinfantil/playlist.m3u8";
 
-    public string VideoUrl { get; set; } = "https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4";
+    public string VideoUrl { get; set; } = BlueMoonTrailerUrl;
 
     public void SetUrl(string url)
     {

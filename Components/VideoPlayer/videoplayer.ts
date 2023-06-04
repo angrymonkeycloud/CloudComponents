@@ -23,7 +23,7 @@ export function getVideoInfo(component: HTMLElement): VideoInfo {
 
 	const videoInfo = new VideoInfo();
 
-	videoInfo.Duration = video.duration;
+	try { videoInfo.Duration = video.duration; } catch { }
 	videoInfo.Width = video.videoWidth;
 	videoInfo.Height = video.videoHeight;
 
@@ -304,27 +304,26 @@ declare class Hls {
 	get levels(): [any];
 }
 
-export function setVideoUrl(component, url) {
+
+export function initializeStreamingUrl(component: HTMLElement, url) {
+
 	return new Promise((resolve, reject) => {
-		const videoElement = document.createElement('video');
-		const hls = new Hls();
 
-		hls.attachMedia(videoElement);
+		let hls = new Hls();
+		const video = component.querySelector('video');
 
-		hls.on(Hls.Events.FRAG_LOADED, function (event, data) {
-			debugger;
-			const fragments = hls.levels[0].details.fragments;
-			const lastFragment = fragments[fragments.length - 1];
-
-			if (lastFragment) {
-				const blobUrl = URL.createObjectURL(lastFragment.blob);
-				resolve(blobUrl);
-				// You can use the blobUrl as needed
-			}
-			//resolve(videoUrl);
+		hls.on(Hls.Events.MEDIA_ATTACHED, function (event, data) {
+			resolve(data.media.currentSrc);
 		});
 
 		hls.loadSource(url);
-		hls.startLoad();
+		hls.attachMedia(video);
 	});
 }
+
+//export function initializeStreamingMedia(component) {
+
+//	const videoElement = component.querySelector('video');
+
+//	hls.attachMedia(videoElement);
+//}

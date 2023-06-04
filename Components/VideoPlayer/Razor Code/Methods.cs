@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -41,9 +42,12 @@ namespace AngryMonkey.Cloud.Components
 
         #region Time / Duration
 
-        private string GetTime(double seconds)
+        private string GetTime(double? seconds)
         {
-            TimeSpan time = TimeSpan.FromSeconds(seconds);
+            if (seconds == null)
+                return string.Empty;
+
+            TimeSpan time = TimeSpan.FromSeconds(seconds.Value);
             int timeLevel = GetTimeLevel();
 
             string result = $"{time:ss}";
@@ -146,6 +150,9 @@ namespace AngryMonkey.Cloud.Components
 
         protected async Task OnProgressChanged(ProgressBarChangeEventArgs args)
         {
+            if (CurrentVideoInfo == null || CurrentVideoInfo.Duration == null)
+                return;
+
             IsSeeking = false;
             ShowSeekingInfo = false;
 
@@ -173,6 +180,9 @@ namespace AngryMonkey.Cloud.Components
 
         protected async Task OnProgressChanging(ProgressBarChangeEventArgs args)
         {
+            if (CurrentVideoInfo == null || CurrentVideoInfo.Duration == null)
+                return;
+
             IsSeeking = true;
             ShowSeekingInfo = true;
             Repaint();
@@ -209,13 +219,21 @@ namespace AngryMonkey.Cloud.Components
             Repaint();
         }
 
+
         public async Task OnVideoChange(ChangeEventArgs args)
         {
-
             VideoEventData eventData = JsonSerializer.Deserialize<VideoEventData>((string)args.Value);
 
             IsVideoPlaying = !eventData.State.Paused;
             Repaint();
+
+            if (RequireStreamInit() && !StreamInitialized)
+            {
+                IsStream = true;
+                await StopVideo();
+                await InitializeStreaming();
+                await VideoLoaded();
+            }
 
             switch (eventData.EventName)
             {
@@ -237,6 +255,9 @@ namespace AngryMonkey.Cloud.Components
                     if (!IsUserChangingProgress)
                     {
                         CurrentTime = eventData.State.CurrentTime;
+
+                        if (CurrentVideoInfo == null || CurrentVideoInfo.Duration == null)
+                            return;
 
                         if (CurrentTime == CurrentVideoInfo.Duration)
                         {
@@ -342,10 +363,7 @@ namespace AngryMonkey.Cloud.Components
 
             if (VideoUrl != _videoUrl)
             {
-
-                if (IsStream)
-                    await InitializeStreaming();
-
+                StreamInitialized = false;
                 _videoUrl = VideoUrl;
             }
         }
@@ -363,6 +381,9 @@ namespace AngryMonkey.Cloud.Components
         public async Task VideoLoaded()
         {
             var module = await Module;
+
+            //if (IsStream)
+            //    await module.InvokeVoidAsync("initializeStreamingMedia", ComponentElement);
 
             CurrentVideoInfo = await module.InvokeAsync<VideoInfo>("getVideoInfo", ComponentElement);
         }
@@ -471,8 +492,9 @@ namespace AngryMonkey.Cloud.Components
         {
             var module = await Module;
 
-            string test = await module.InvokeAsync<string>("setVideoUrl", ComponentElement, VideoUrl);
-            VideoUrl = test;
+            await module.InvokeAsync<string>("initializeStreamingUrl", ComponentElement, VideoUrl);
+
+            StreamInitialized = true;
         }
 
         protected void OnVolumeButtonClick()
