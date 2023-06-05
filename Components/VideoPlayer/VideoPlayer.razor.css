@@ -244,6 +244,7 @@
 .amc-videoplayer-empty:hover .amc-videoplayer-close {
   opacity: 1;
 }
+.amc-videoplayer-error,
 .amc-videoplayer-video {
   height: 100%;
   width: 100%;
@@ -252,9 +253,17 @@
   background-color: #000;
   z-index: -2;
 }
+.amc-videoplayer-error video,
 .amc-videoplayer-video video {
   height: 100%;
   width: 100%;
+}
+.amc-videoplayer-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4em;
+  color: rgba(255, 255, 255, 0.4);
 }
 .amc-videoplayer button {
   background: none;

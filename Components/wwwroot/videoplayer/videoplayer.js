@@ -26428,6 +26428,14 @@ export function AddReserveAspectRatioListener(component, width, height) {
 export function RemoveReserveAspectRatioListener(component, listener) {
     window.removeEventListener('resize', listener);
 }
+export var ErrorTypes;
+(function (ErrorTypes) {
+    ErrorTypes["NETWORK_ERROR"] = "networkError";
+    ErrorTypes["MEDIA_ERROR"] = "mediaError";
+    ErrorTypes["KEY_SYSTEM_ERROR"] = "keySystemError";
+    ErrorTypes["MUX_ERROR"] = "muxError";
+    ErrorTypes["OTHER_ERROR"] = "otherError";
+})(ErrorTypes || (ErrorTypes = {}));
 export function initializeStreamingUrl(component, url) {
     return new Promise(function (resolve, reject) {
         var hls = new Hls();
@@ -26435,11 +26443,14 @@ export function initializeStreamingUrl(component, url) {
         hls.on(Hls.Events.MEDIA_ATTACHED, function (event, data) {
             resolve(data.media.currentSrc);
         });
+        hls.on(Hls.Events.ERROR, function (event, data) {
+            try {
+                hls.destroy();
+            }
+            catch (_a) { }
+            reject('Error: ' + data.type);
+        });
         hls.loadSource(url);
         hls.attachMedia(video);
     });
 }
-//export function initializeStreamingMedia(component) {
-//	const videoElement = component.querySelector('video');
-//	hls.attachMedia(videoElement);
-//}

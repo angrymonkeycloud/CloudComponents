@@ -75,7 +75,11 @@ namespace AngryMonkey.Cloud.Components
 		{
 			var module = await Module;
 
-			await module.InvokeVoidAsync("repaint", ComponentElement, Value, Total);
+			try
+			{
+				await module.InvokeVoidAsync("repaint", ComponentElement, Value, Total);
+			}
+			catch { }
 		}
 
 		private async Task OnComponentMouseDown(MouseEventArgs e)

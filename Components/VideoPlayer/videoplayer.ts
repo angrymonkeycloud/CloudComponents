@@ -202,28 +202,6 @@ export function RemoveReserveAspectRatioListener(component: HTMLElement, listene
 	window.removeEventListener('resize', listener);
 }
 
-//interface Hls {
-//    loadSource(source: string): void;
-//    attachMedia(element: HTMLMediaElement): void;
-//    startLoad(): void;
-//    stopLoad(): void;
-//    destroy(): void;
-//    on(event: string, callback: Function): void;
-//    off(event: string, callback: Function): void;
-//    getCurrentTime(): number;
-//    getDuration(): number;
-//    isDynamic(): boolean;
-//    isSeekable(): boolean;
-//    isPaused(): boolean;
-//    getBufferedRanges(): { start: number; end: number }[];
-//    pause(): void;
-//    play(): void;
-//    seekTo(time: number): void;
-//    setMaxBufferSize(size: number): void;
-//    setMaxBufferLength(length: number): void;
-//    setMaxBufferHole(hole: number): void;
-//}
-
 export declare enum Events {
 	MEDIA_ATTACHING = "hlsMediaAttaching",
 	MEDIA_ATTACHED = "hlsMediaAttached",
@@ -280,6 +258,15 @@ export declare enum Events {
 	LIVE_BACK_BUFFER_REACHED = "hlsLiveBackBufferReached",
 	BACK_BUFFER_REACHED = "hlsBackBufferReached"
 }
+
+export enum ErrorTypes {
+	NETWORK_ERROR = 'networkError',
+	MEDIA_ERROR = 'mediaError',
+	KEY_SYSTEM_ERROR = 'keySystemError',
+	MUX_ERROR = 'muxError',
+	OTHER_ERROR = 'otherError'
+}
+
 declare class Hls {
 	loadSource(source: string): void;
 	attachMedia(element: HTMLMediaElement): void;
@@ -296,11 +283,13 @@ declare class Hls {
 	getBufferedRanges(): { start: number; end: number }[];
 	pause(): void;
 	play(): void;
+	recoverMediaError();
 	seekTo(time: number): void;
 	setMaxBufferSize(size: number): void;
 	setMaxBufferLength(length: number): void;
 	setMaxBufferHole(hole: number): void;
 	static get Events(): typeof Events;
+	static get ErrorTypes(): typeof ErrorTypes;
 	get levels(): [any];
 }
 
@@ -316,14 +305,16 @@ export function initializeStreamingUrl(component: HTMLElement, url) {
 			resolve(data.media.currentSrc);
 		});
 
+		hls.on(Hls.Events.ERROR, function (event, data) {
+
+			try {
+				hls.destroy();
+			} catch { }
+
+			reject('Error: ' + data.type);
+		});
+
 		hls.loadSource(url);
 		hls.attachMedia(video);
 	});
 }
-
-//export function initializeStreamingMedia(component) {
-
-//	const videoElement = component.querySelector('video');
-
-//	hls.attachMedia(videoElement);
-//}

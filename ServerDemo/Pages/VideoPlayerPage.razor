@@ -10,19 +10,36 @@
         <button class="--button" @onclick="() => SetUrl(BlueMoonTrailerUrl)">Blue Moon Trailer</button>
         <button class="--button" @onclick="() => SetUrl(CoverboxUrl)">Coverbox</button>
         <button class="--button" @onclick="() => SetUrl(LiveStreamingUrl)">Live Streaming</button>
+        <button class="--button" @onclick="() => SetUrl(LiveStreamingNowWorking)">Live Streaming (Not Working)</button>
     </article>
 </section>
 
-<VideoPlayer ReserveAspectRatio="true"  VideoUrl="@VideoUrl" Autoplay="true" />
+<h2>@ErrorMessage</h2>
+
+<VideoPlayer @ref="Player" ReserveAspectRatio="true" VideoUrl="@VideoUrl" Autoplay="true" OnVideoError="Player_OnVideoError" OnVideoReady="Player_OnVideoReady" />
 
 <video id="TestVideo"></video>
 
 @code {
+    private VideoPlayer Player { get; set; }
     private const string BlueMoonTrailerUrl = "https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4";
     private const string CoverboxUrl = "https://cbxinfo-staging.azurewebsites.net/video/coverbox-platform.mp4";
     private const string LiveStreamingUrl = "https://stmv1.cnarlatam.com/cineinfantil/cineinfantil/playlist.m3u8";
+    private const string LiveStreamingNowWorking = "https://dsadsadsadasdsadasdsadas.m3u8";
+
+    private string? ErrorMessage { get; set; }
 
     public string VideoUrl { get; set; } = BlueMoonTrailerUrl;
+
+    private void Player_OnVideoReady()
+    {
+        ErrorMessage = null;
+    }
+
+    private void Player_OnVideoError()
+    {
+        ErrorMessage = "Error";
+    }
 
     public void SetUrl(string url)
     {

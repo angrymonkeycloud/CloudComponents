@@ -194,7 +194,7 @@ namespace AngryMonkey.Cloud.Components
 
         protected async Task OnProgressMouseMove(MouseEventArgs args)
         {
-            if (IsSeeking)
+            if (IsSeeking || HasError || Status == VideoStatus.Streaming)
                 return;
 
             ShowSeekingInfo = true;
@@ -219,77 +219,107 @@ namespace AngryMonkey.Cloud.Components
             Repaint();
         }
 
-        public async Task OnVideoChange(ChangeEventArgs args)
+        public async Task OnVideoChange(ChangeEventArgs? args)
         {
-            VideoEventData eventData = JsonSerializer.Deserialize<VideoEventData>((string)args.Value);
+            if (HasError)
+                return;
 
-            IsVideoPlaying = !eventData.State.Paused;
-            Repaint();
+            VideoEventData? eventData = null;
+
+            if (args != null)
+                try
+                {
+                    eventData = JsonSerializer.Deserialize<VideoEventData>((string)args.Value);
+                }
+                catch { }
+
+            if (eventData != null)
+            {
+                IsVideoPlaying = !eventData.State.Paused;
+                Repaint();
+            }
 
             if (RequireStreamInit() && !StreamInitialized)
             {
                 Status = VideoStatus.Streaming;
                 IsStream = true;
                 await StopVideo();
-                await InitializeStreaming();
-                await VideoLoaded();
+                try
+                {
+                    await InitializeStreaming();
+                    await VideoLoaded();
+                }
+                catch
+                {
+                    await OnVideoError.InvokeAsync();
+                    HasError = true;
+                    return;
+                }
             }
 
-            switch (eventData.EventName)
-            {
-                case VideoEvents.LoadedMetadata:
-                    do
-                    {
-                        await VideoLoaded();
-
-                        if (CurrentVideoInfo == null)
-                            await Task.Delay(200);
-
-                        Status = VideoStatus.Stoped;
-
-                        if (Autoplay)
-                            await PlayVideo();
-
-                    } while (CurrentVideoInfo == null);
-                    break;
-
-                case VideoEvents.TimeUpdate:
-
-                    if (!IsUserChangingProgress)
-                    {
-                        CurrentTime = eventData.State.CurrentTime;
-
-                        if (CurrentVideoInfo == null || CurrentVideoInfo.Duration == null)
-                            return;
-
-                        if (CurrentTime == CurrentVideoInfo.Duration)
+            if (eventData != null)
+                switch (eventData.EventName)
+                {
+                    case VideoEvents.LoadedMetadata:
+                        do
                         {
-                            await StopVideo();
+                            await VideoLoaded();
 
-                            if (Loop)
-                                await PlayVideo();
+                            if (CurrentVideoInfo == null)
+                                await Task.Delay(200);
+                            else
+                            {
+                                Status = VideoStatus.Stoped;
+
+                                await OnVideoReady.InvokeAsync();
+
+                                if (Autoplay)
+                                    await PlayVideo();
+                            }
+                        } while (CurrentVideoInfo == null);
+                        break;
+
+                    case VideoEvents.TimeUpdate:
+
+                        if (!IsUserChangingProgress)
+                        {
+                            CurrentTime = eventData.State.CurrentTime;
+
+                            if (CurrentVideoInfo == null || CurrentVideoInfo.Duration == null)
+                                return;
+
+                            if (CurrentTime == CurrentVideoInfo.Duration)
+                            {
+                                await StopVideo();
+
+                                if (Loop)
+                                    await PlayVideo();
+                            }
                         }
-                    }
-                    break;
+                        break;
 
-                case VideoEvents.Waiting:
-                    Status = VideoStatus.Buffering;
-                    break;
+                    case VideoEvents.Waiting:
+                        Status = VideoStatus.Buffering;
+                        break;
 
-                case VideoEvents.Playing:
-                    Status = VideoStatus.Playing;
-                    break;
+                    case VideoEvents.Playing:
+                        Status = VideoStatus.Playing;
+                        break;
 
-                case VideoEvents.Play:
-                    Status = VideoStatus.Playing;
-                    break;
+                    case VideoEvents.Play:
+                        Status = VideoStatus.Playing;
+                        break;
 
-                case VideoEvents.Pause:
-                    Status = CurrentTime == 0 ? VideoStatus.Stoped : VideoStatus.Paused;
-                    break;
+                    case VideoEvents.Pause:
+                        Status = CurrentTime == 0 ? VideoStatus.Stoped : VideoStatus.Paused;
+                        break;
 
-                default: break;
-            }
+                    case VideoEvents.Error:
+                        HasError = true;
+                        break;
+
+                    default: break;
+                }
         }
 
         protected async Task OnEmptyTouch(TouchEventArgs args)
@@ -330,18 +360,30 @@ namespace AngryMonkey.Cloud.Components
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
+                await Init();
+        }
+
+        private async Task Init()
+        {
+
+            var module = await Module;
+
+            try
             {
-                var module = await Module;
-
                 await module.InvokeVoidAsync("init", ComponentElement);
-
-                await Implement(VideoEvents.TimeUpdate);
-                await Implement(VideoEvents.Play);
-                await Implement(VideoEvents.Playing);
-                await Implement(VideoEvents.Pause);
-                await Implement(VideoEvents.Waiting);
-                await Implement(VideoEvents.LoadedMetadata);
             }
+            catch
+            {
+                await Task.Delay(100);
+                await Init();
+            }
+
+            await Implement(VideoEvents.TimeUpdate);
+            await Implement(VideoEvents.Play);
+            await Implement(VideoEvents.Playing);
+            await Implement(VideoEvents.Pause);
+            await Implement(VideoEvents.Waiting);
+            await Implement(VideoEvents.LoadedMetadata);
         }
 
         protected override async void OnParametersSet()
@@ -363,8 +405,20 @@ namespace AngryMonkey.Cloud.Components
 
             if (VideoUrl != _videoUrl)
             {
+                bool wasError = HasError;
+
                 StreamInitialized = false;
+                IsStream = false;
+                HasError = false;
                 _videoUrl = VideoUrl;
+
+                StateHasChanged();
+
+                if (wasError)
+                {
+                    await Init();
+                    await OnVideoChange(null);
+                }
             }
         }
 
@@ -382,14 +436,14 @@ namespace AngryMonkey.Cloud.Components
         {
             var module = await Module;
 
-            //if (IsStream)
-            //    await module.InvokeVoidAsync("initializeStreamingMedia", ComponentElement);
-
             CurrentVideoInfo = await module.InvokeAsync<VideoInfo>("getVideoInfo", ComponentElement);
         }
 
         public async Task PlayVideo()
         {
+            if (HasError)
+                return;
+
             if (CurrentVideoInfo == null)
                 await VideoLoaded();
 
@@ -433,6 +487,7 @@ namespace AngryMonkey.Cloud.Components
             var module = await Module;
 
             await module.InvokeVoidAsync("stop", ComponentElement);
+            Status = VideoStatus.Stoped;
 
             Repaint();
         }

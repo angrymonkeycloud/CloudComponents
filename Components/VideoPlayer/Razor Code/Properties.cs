@@ -35,6 +35,7 @@ namespace AngryMonkey.Cloud.Components
         private bool ShowSeekingInfo = false;
         private bool IsStream { get; set; }
         private bool StreamInitialized { get; set; } = false;
+        private bool HasError { get; set; } = false;
 
         private bool RequireStreamInit()
         {
@@ -111,6 +112,8 @@ namespace AngryMonkey.Cloud.Components
         [Parameter] public Action<VideoState> TimeUpdate { get; set; }
 
         [Parameter] public EventCallback<VideoState> TimeUpdateEvent { get; set; }
+        [Parameter] public EventCallback OnVideoError { get; set; }
+        [Parameter] public EventCallback OnVideoReady { get; set; }
         bool TimeUpdateRequired => TimeUpdate is object;
         bool TimeUpdateEventRequired => TimeUpdateEvent.HasDelegate;
         bool EventFiredEventRequired => EventFiredEvent.HasDelegate;
