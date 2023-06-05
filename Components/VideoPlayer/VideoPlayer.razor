@@ -155,7 +155,7 @@
 
                 @* Status *@
                 <div class="amc-videoplayer-status">
-                    @if (Status == VideoStatus.Buffering)
+                    @if (Status == VideoStatus.Buffering || Status == VideoStatus.Streaming)
                     {
                         <AngryMonkey.Cloud.Components.Icons.Loading />
                     }

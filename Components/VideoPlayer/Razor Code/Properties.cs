@@ -156,6 +156,7 @@ namespace AngryMonkey.Cloud.Components
             Paused,
             Stoped,
             Buffering,
+            Streaming,
             Unknown
         }
 

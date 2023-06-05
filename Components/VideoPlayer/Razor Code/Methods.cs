@@ -228,6 +228,7 @@ namespace AngryMonkey.Cloud.Components
 
             if (RequireStreamInit() && !StreamInitialized)
             {
+                Status = VideoStatus.Streaming;
                 IsStream = true;
                 await StopVideo();
                 await InitializeStreaming();
