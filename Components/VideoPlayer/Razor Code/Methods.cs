@@ -219,7 +219,6 @@ namespace AngryMonkey.Cloud.Components
             Repaint();
         }
 
-
         public async Task OnVideoChange(ChangeEventArgs args)
         {
             VideoEventData eventData = JsonSerializer.Deserialize<VideoEventData>((string)args.Value);
@@ -246,6 +245,9 @@ namespace AngryMonkey.Cloud.Components
                             await Task.Delay(200);
 
                         Status = VideoStatus.Stoped;
+
+                        if (Autoplay)
+                            await PlayVideo();
 
                     } while (CurrentVideoInfo == null);
                     break;
@@ -338,9 +340,6 @@ namespace AngryMonkey.Cloud.Components
                 await Implement(VideoEvents.Pause);
                 await Implement(VideoEvents.Waiting);
                 await Implement(VideoEvents.LoadedMetadata);
-
-                if (Autoplay)
-                    await PlayVideo();
             }
         }
 
