@@ -26436,21 +26436,37 @@ export var ErrorTypes;
     ErrorTypes["MUX_ERROR"] = "muxError";
     ErrorTypes["OTHER_ERROR"] = "otherError";
 })(ErrorTypes || (ErrorTypes = {}));
+var hls;
+var hlsHasInitialized = false;
 export function initializeStreamingUrl(component, url) {
     return new Promise(function (resolve, reject) {
-        var hls = new Hls();
+        if (hlsHasInitialized)
+            return;
+        hls = new Hls();
+        hlsHasInitialized = true;
         var video = component.querySelector('video');
-        hls.on(Hls.Events.MEDIA_ATTACHED, function (event, data) {
-            resolve(data.media.currentSrc);
+        hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+            if (data.levels.length === 0) {
+                disposeStreaming();
+                reject('Error: ' + data.type);
+            }
+            hls.on(Hls.Events.MEDIA_ATTACHED, function (event, data) {
+                resolve(data.media.currentSrc);
+            });
+            hls.attachMedia(video);
         });
         hls.on(Hls.Events.ERROR, function (event, data) {
-            try {
-                hls.destroy();
-            }
-            catch (_a) { }
+            disposeStreaming();
             reject('Error: ' + data.type);
         });
         hls.loadSource(url);
-        hls.attachMedia(video);
     });
+}
+export function disposeStreaming() {
+    hlsHasInitialized = false;
+    try {
+        hls.destroy();
+    }
+    catch (_a) { }
+    hls = null;
 }

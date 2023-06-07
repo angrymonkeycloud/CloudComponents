@@ -293,28 +293,52 @@ declare class Hls {
 	get levels(): [any];
 }
 
-
+let hls;
+let hlsHasInitialized = false;
 export function initializeStreamingUrl(component: HTMLElement, url) {
 
 	return new Promise((resolve, reject) => {
 
-		let hls = new Hls();
+		if (hlsHasInitialized)
+			return;
+
+		hls = new Hls();
+		hlsHasInitialized = true;
+
 		const video = component.querySelector('video');
 
-		hls.on(Hls.Events.MEDIA_ATTACHED, function (event, data) {
-			resolve(data.media.currentSrc);
+		hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+
+			if (data.levels.length === 0) {
+
+				disposeStreaming();
+				reject('Error: ' + data.type);
+			}
+
+			hls.on(Hls.Events.MEDIA_ATTACHED, function (event, data) {
+				resolve(data.media.currentSrc);
+			});
+
+			hls.attachMedia(video);
 		});
 
 		hls.on(Hls.Events.ERROR, function (event, data) {
 
-			try {
-				hls.destroy();
-			} catch { }
-
+			disposeStreaming();
 			reject('Error: ' + data.type);
 		});
 
 		hls.loadSource(url);
-		hls.attachMedia(video);
 	});
+}
+
+export function disposeStreaming() {
+
+	hlsHasInitialized = false;
+
+	try {
+		hls.destroy();
+	} catch { }
+
+	hls = null;
 }

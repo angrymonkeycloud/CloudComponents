@@ -246,13 +246,21 @@ namespace AngryMonkey.Cloud.Components
                 await StopVideo();
                 try
                 {
-                    await InitializeStreaming();
+                    var module = await Module;
+                    await module.InvokeAsync<string>("initializeStreamingUrl", ComponentElement, VideoUrl);
+
+                    StreamInitialized = true;
+
                     await VideoLoaded();
                 }
                 catch
                 {
+                    if (StreamInitialized)
+                        return;
+
                     await OnVideoError.InvokeAsync();
                     HasError = true;
+
                     return;
                 }
             }
@@ -312,10 +320,6 @@ namespace AngryMonkey.Cloud.Components
 
                     case VideoEvents.Pause:
                         Status = CurrentTime == 0 ? VideoStatus.Stoped : VideoStatus.Paused;
-                        break;
-
-                    case VideoEvents.Error:
-                        HasError = true;
                         break;
 
                     default: break;
@@ -406,6 +410,9 @@ namespace AngryMonkey.Cloud.Components
             if (VideoUrl != _videoUrl)
             {
                 bool wasError = HasError;
+
+                var module = await Module;
+                await module.InvokeAsync<string>("disposeStreaming");
 
                 StreamInitialized = false;
                 IsStream = false;
@@ -543,15 +550,6 @@ namespace AngryMonkey.Cloud.Components
             await module.InvokeVoidAsync("muteVolume", ComponentElement, IsMuted);
         }
 
-        private async Task InitializeStreaming()
-        {
-            var module = await Module;
-
-            await module.InvokeAsync<string>("initializeStreamingUrl", ComponentElement, VideoUrl);
-
-            StreamInitialized = true;
-        }
-
         protected void OnVolumeButtonClick()
         {
             DoShowVolumeControls = !DoShowVolumeControls;
@@ -613,5 +611,22 @@ namespace AngryMonkey.Cloud.Components
             IsUserInteracting = false;
             Repaint();
         }
+
+        #region Validations
+
+        //public async Task<bool> IsValidM3u8Url()
+        //{
+        //    using var httpClient = new HttpClient();
+        //    var request = new HttpRequestMessage(HttpMethod.Head, VideoUrl);
+
+        //    try
+        //    {
+        //        using HttpResponseMessage response = await httpClient.SendAsync(request);
+        //        return response.Content.Headers.ContentType?.MediaType?.Equals("application/vnd.apple.mpegurl") ?? false;
+        //    }
+        //    catch { return false; }
+        //}
+
+        #endregion
     }
 }
