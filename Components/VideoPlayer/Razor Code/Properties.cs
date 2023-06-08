@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -41,7 +42,7 @@ namespace AngryMonkey.Cloud.Components
         {
             string[] extentions = new[] { "m3u8" };
 
-            return extentions.Any(ex => VideoUrl.EndsWith($".{ex}", StringComparison.OrdinalIgnoreCase));
+            return extentions.Any(ex => new FileInfo(VideoUrl).Extension.StartsWith($".{ex}", StringComparison.OrdinalIgnoreCase));
         }
 
         //private void UpdateStreamValue()
@@ -53,6 +54,9 @@ namespace AngryMonkey.Cloud.Components
 
         private bool ShowProgressBar => !IsStream;
         private bool ShowDuration => !IsStream;
+
+        private bool VideoReady { get; set; } = false;
+        private bool ShowBottomSections => VideoReady;
 
         private Dictionary<string, string> VideoSettingsInfo
         {

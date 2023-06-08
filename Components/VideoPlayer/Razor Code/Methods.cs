@@ -239,7 +239,7 @@ namespace AngryMonkey.Cloud.Components
                 Repaint();
             }
 
-            if (RequireStreamInit() && !StreamInitialized)
+            if (!VideoReady && RequireStreamInit())
             {
                 Status = VideoStatus.Streaming;
                 IsStream = true;
@@ -410,6 +410,7 @@ namespace AngryMonkey.Cloud.Components
             if (VideoUrl != _videoUrl)
             {
                 bool wasError = HasError;
+                VideoReady = false;
 
                 var module = await Module;
                 await module.InvokeAsync<string>("disposeStreaming");
@@ -444,6 +445,7 @@ namespace AngryMonkey.Cloud.Components
             var module = await Module;
 
             CurrentVideoInfo = await module.InvokeAsync<VideoInfo>("getVideoInfo", ComponentElement);
+            VideoReady = true;
         }
 
         public async Task PlayVideo()
