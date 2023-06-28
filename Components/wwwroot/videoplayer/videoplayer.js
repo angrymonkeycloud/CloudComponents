@@ -26438,6 +26438,12 @@ export var ErrorTypes;
 })(ErrorTypes || (ErrorTypes = {}));
 var hls;
 var hlsHasInitialized = false;
+export function IsStreamingPlayableNatively(component) {
+    var video = component.querySelector('video');
+    if (video.canPlayType('application/vnd.apple.mpegurl'))
+        return true;
+    return false;
+}
 export function initializeStreamingUrl(component, url) {
     return new Promise(function (resolve, reject) {
         if (hlsHasInitialized)

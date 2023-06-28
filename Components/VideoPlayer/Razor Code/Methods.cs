@@ -221,7 +221,7 @@ namespace AngryMonkey.Cloud.Components
 
         public async Task OnVideoChange(ChangeEventArgs? args)
         {
-            if (HasError)
+            if (HasError || string.IsNullOrEmpty(VideoUrl))
                 return;
 
             VideoEventData? eventData = null;
@@ -247,7 +247,11 @@ namespace AngryMonkey.Cloud.Components
                 try
                 {
                     var module = await Module;
-                    await module.InvokeAsync<string>("initializeStreamingUrl", ComponentElement, VideoUrl);
+
+                    bool isPlayableNatively = await module.InvokeAsync<bool>("IsStreamingPlayableNatively", ComponentElement);
+
+                    if (!isPlayableNatively)
+                        await module.InvokeAsync<string>("initializeStreamingUrl", ComponentElement, VideoUrl);
 
                     StreamInitialized = true;
 
@@ -266,6 +270,7 @@ namespace AngryMonkey.Cloud.Components
             }
 
             if (eventData != null)
+            {
                 switch (eventData.EventName)
                 {
                     case VideoEvents.LoadedMetadata:
@@ -324,6 +329,9 @@ namespace AngryMonkey.Cloud.Components
 
                     default: break;
                 }
+
+                await OnEvent.InvokeAsync(eventData);
+            }
         }
 
         protected async Task OnEmptyTouch(TouchEventArgs args)
@@ -417,11 +425,18 @@ namespace AngryMonkey.Cloud.Components
 
             if (VideoUrl != _videoUrl)
             {
+                if (IsVideoPlaying)
+                    await StopVideo();
+
                 bool wasError = HasError;
                 VideoReady = false;
 
-                var module = await Module;
-                await module.InvokeAsync<string>("disposeStreaming");
+                try
+                {
+                    var module = await Module;
+                    await module.InvokeAsync<string>("disposeStreaming");
+                }
+                catch { }
 
                 StreamInitialized = false;
                 IsStream = false;

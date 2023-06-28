@@ -96,8 +96,8 @@ namespace AngryMonkey.Cloud.Components
 
         private string DisplayLoop => Loop ? "On" : "Off";
 
-        private string _videoUrl { get; set; }
-        [Parameter] public string VideoUrl { get; set; }
+        private string? _videoUrl { get; set; }
+        [Parameter] public string? VideoUrl { get; set; }
 
         [Parameter] public double Volume { get; set; } = 1;
 
@@ -115,21 +115,26 @@ namespace AngryMonkey.Cloud.Components
 
         [Parameter] public Action<VideoState> TimeUpdate { get; set; }
 
-        [Parameter] public EventCallback<VideoState> TimeUpdateEvent { get; set; }
-        [Parameter] public EventCallback OnVideoError { get; set; }
-        [Parameter] public EventCallback OnVideoReady { get; set; }
         bool TimeUpdateRequired => TimeUpdate is object;
         bool TimeUpdateEventRequired => TimeUpdateEvent.HasDelegate;
-        bool EventFiredEventRequired => EventFiredEvent.HasDelegate;
+        bool EventFiredEventRequired => OnEvent.HasDelegate;
         bool EventFiredRequired => EventFired is object;
         [Parameter] public Action<VideoEventData> EventFired { get; set; }
-        [Parameter] public EventCallback<VideoEventData> EventFiredEvent { get; set; }
         [Parameter] public Dictionary<VideoEvents, VideoStateOptions> VideoEventOptions { get; set; }
         bool RegisterEventFired => EventFiredEventRequired || EventFiredRequired;
 
         [Parameter] public VideoPlayerSettings Settings { get; set; }
 
         private Guid latestId = Guid.Empty;
+
+        #region Events Callbacks
+
+        [Parameter] public EventCallback<VideoEventData> OnEvent { get; set; }
+        [Parameter] public EventCallback<VideoState> TimeUpdateEvent { get; set; }
+        [Parameter] public EventCallback OnVideoError { get; set; }
+        [Parameter] public EventCallback OnVideoReady { get; set; }
+
+        #endregion
 
         #region Time / Duration
 

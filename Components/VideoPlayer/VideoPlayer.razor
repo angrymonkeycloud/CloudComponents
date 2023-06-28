@@ -6,7 +6,7 @@
     @if (!HasError)
     {
         <div class="amc-videoplayer-video">
-            <video src="@VideoUrl" @onchange="OnVideoChange"></video>
+            <video src="@_videoUrl" @onchange="OnVideoChange" playsinline x-webkit-airplay="deny"></video>
         </div>
 
         <div class="amc-videoplayer-content">

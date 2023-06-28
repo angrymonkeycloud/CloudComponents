@@ -288,6 +288,7 @@ declare class Hls {
 	setMaxBufferSize(size: number): void;
 	setMaxBufferLength(length: number): void;
 	setMaxBufferHole(hole: number): void;
+	static IsSupported(): Boolean;
 	static get Events(): typeof Events;
 	static get ErrorTypes(): typeof ErrorTypes;
 	get levels(): [any];
@@ -295,6 +296,17 @@ declare class Hls {
 
 let hls;
 let hlsHasInitialized = false;
+
+export function IsStreamingPlayableNatively(component: HTMLElement) {
+
+	const video = component.querySelector('video');
+
+	if (video.canPlayType('application/vnd.apple.mpegurl'))
+		return true;
+
+	return false;
+}
+
 export function initializeStreamingUrl(component: HTMLElement, url) {
 
 	return new Promise((resolve, reject) => {
