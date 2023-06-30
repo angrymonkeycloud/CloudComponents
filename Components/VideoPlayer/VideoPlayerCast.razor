@@ -1,0 +1,60 @@
+﻿@namespace AngryMonkey.Cloud.Components
+@inject IJSRuntime jsRuntime
+
+<div @ref="ComponentElement" class="amc-videoplayer-cast">
+    <div class="amc-videoplayer-controls">
+        <div class="amc-videoplayer-controls-left">
+            @if (Metadata.ShowDuration)
+            {
+                @* Current Time / Duration *@
+                <div class="amc-videoplayer-timeduration">
+                    @Metadata.DisplayTimeDuration
+                </div>
+            }
+
+            @* Stop *@
+            @if (Metadata.ShowStopButton)
+            {
+                <div class="amc-videoplayer-stop">
+                    <button @onclick="StopCast">
+                        <svg viewBox="0 0 8 8">
+                            <rect class="amc-videoplayer-svg-stroke" x="1.5" y="1.5" width="5" height="5" rx="0.78" />
+                        </svg>
+                    </button>
+                </div>
+            }
+
+            @* Status *@
+            <div class="amc-videoplayer-status">
+                @if (Metadata.CastStatus != VideoPlayerMetadata.CastStatuses.Casting || Metadata.Status == VideoPlayerMetadata.VideoStatus.Buffering)
+                {
+                    <AngryMonkey.Cloud.Components.Icons.Loading />
+                }
+            </div>
+        </div>
+
+        <div class="amc-videoplayer-controls-middle">
+            @* Play *@
+            <div class="amc-videoplayer-play">
+                <button @onclick="PlayCast">
+                    <AngryMonkey.Cloud.Components.Icons.PlayButton />
+                </button>
+            </div>
+
+            @* Pause *@
+            <div class="amc-videoplayer-pause">
+                <button @onclick="PauseCast">
+                    <AngryMonkey.Cloud.Components.Icons.PauseButton />
+                </button>
+            </div>
+        </div>
+
+        <div class="amc-videoplayer-controls-right">
+            <div class="amc-videoplayer-cast">
+                <button @onclick="StopCast">
+                    <AngryMonkey.Cloud.Components.Icons.Cast />
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

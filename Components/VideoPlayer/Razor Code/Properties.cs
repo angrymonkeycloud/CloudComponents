@@ -23,26 +23,13 @@ namespace AngryMonkey.Cloud.Components
 
         private string ClassAttributes { get; set; } = string.Empty;
 
-        private bool IsUserChangingProgress = false;
-        private bool IsVideoPlaying = false;
-        private bool IsFullScreen = false;
-
-        private bool _isMuted = false;
-        private bool IsMuted = false;
-
-
-        private bool DoShowVolumeControls = false;
-        private bool IsSeeking = false;
-        private bool ShowSeekingInfo = false;
-        private bool IsStream { get; set; }
-        private bool StreamInitialized { get; set; } = false;
-        private bool HasError { get; set; } = false;
+        [Parameter] public required VideoPlayerMetadata Metadata { get; set; }
 
         private bool RequireStreamInit()
         {
             string[] extentions = new[] { "m3u8" };
 
-            return extentions.Any(ex => new FileInfo(VideoUrl).Extension.StartsWith($".{ex}", StringComparison.OrdinalIgnoreCase));
+            return extentions.Any(ex => new FileInfo(Metadata.VideoUrl).Extension.StartsWith($".{ex}", StringComparison.OrdinalIgnoreCase));
         }
 
         //private void UpdateStreamValue()
@@ -52,69 +39,30 @@ namespace AngryMonkey.Cloud.Components
         //    IsStream = extentions.Any(ex => VideoUrl.EndsWith($".{ex}", StringComparison.OrdinalIgnoreCase));
         //}
 
-        private bool ShowProgressBar => !IsStream;
-        private bool ShowDuration => !IsStream;
+        [Parameter] public Action<VideoState> TimeUpdate { get; set; }
 
-        private bool VideoReady { get; set; } = false;
-        private bool ShowBottomSections => VideoReady;
-
-        private Dictionary<string, string> VideoSettingsInfo
-        {
-            get
-            {
-                Dictionary<string, string> info = new();
-
-                if (!string.IsNullOrEmpty(Title))
-                    info.Add("Title", Title);
-
-                if (CurrentVideoInfo != null)
-                {
-                    info.Add("Duration", GetTime(CurrentVideoInfo.Duration));
-                    info.Add("Aspect Ratio", CurrentVideoInfo.DisplayAspectRatio);
-                }
-
-                info.Add("Status", Status.ToString());
-
-                return info;
-            }
-        }
-
-        private VideoInfo? CurrentVideoInfo { get; set; }
-
-        private bool IsUserInteracting = false;
-
-        private bool HideControls => IsVideoPlaying && !IsUserInteracting && !IsUserChangingProgress && !ShowSideBar;
-        [Parameter] public string Title { get; set; }
-        [Parameter] public bool Loop { get; set; } = false;
-        [Parameter] public bool Autoplay { get; set; } = false;
-        [Parameter] public bool ShowStopButton { get; set; } = false;
-
-        public bool EnableLoop => !IsStream;
 
         private bool _reserveAspectRatio = false;
-        [Parameter] public bool ReserveAspectRatio { get; set; } = false;
 
-        private string DisplayLoop => Loop ? "On" : "Off";
+        private string DisplayLoop => Metadata.Loop ? "On" : "Off";
 
         private string? _videoUrl { get; set; }
-        [Parameter] public string? VideoUrl { get; set; }
-
-        [Parameter] public double Volume { get; set; } = 1;
 
         private string DisplayVolume
         {
             get
             {
-                return $"{Volume * 100}";
+                return $"{Metadata.Volume * 100}";
             }
         }
 
-        public double CurrentTime { get; set; } = 0;
 
         private ProgressBarStyle ProgressBarStyle = ProgressBarStyle.Circle;
 
-        [Parameter] public Action<VideoState> TimeUpdate { get; set; }
 
+        private bool IsUserInteracting = false;
+        private bool ShowBottomSections => Metadata.VideoReady;
+        private bool HideControls => Metadata.IsVideoPlaying && !IsUserInteracting && !Metadata.IsUserChangingProgress && !ShowSideBar;
         bool TimeUpdateRequired => TimeUpdate is object;
         bool TimeUpdateEventRequired => TimeUpdateEvent.HasDelegate;
         bool EventFiredEventRequired => OnEvent.HasDelegate;
@@ -136,15 +84,6 @@ namespace AngryMonkey.Cloud.Components
 
         #endregion
 
-        #region Time / Duration
-
-        private string DisplayTimeDuration => $"{GetTime(CurrentTime)} / {GetTime(CurrentVideoInfo?.Duration ?? 0)}";
-
-        public double SeekInfoTime { get; set; }
-        private string DisplaySeekInfoTime => GetTime(SeekInfoTime);
-
-        #endregion
-
         #region Settings Menu
 
         private bool ShowSideBar = false;
@@ -159,18 +98,6 @@ namespace AngryMonkey.Cloud.Components
 
         #endregion
 
-        private VideoStatus Status { get; set; } = VideoStatus.Loading;
-
-        private enum VideoStatus
-        {
-            Loading,
-            Playing,
-            Paused,
-            Stoped,
-            Buffering,
-            Streaming,
-            Unknown
-        }
 
         private bool _isEmptyTouched = false;
         private bool _forceHideControls = false;

@@ -3,8 +3,13 @@
 
 <div class="amc-videoplayer @ClassAttributes" @ref="ComponentElement" @onmousemove="MainMouseMove" @onfullscreenchange="OnFullScreenChange" @onmousewheel="OnMouseWheel" @onclick="OnComponentClick">
 
-    @if (!HasError)
+    @if (!Metadata.HasError)
     {
+        @if (Metadata.IsCasting || Metadata.CastingInitialized)
+        {
+            <VideoPlayerCast @ref="VideoPlayerCast" Player="this" Metadata="Metadata" />
+        }
+
         <div class="amc-videoplayer-video">
             <video src="@_videoUrl" @onchange="OnVideoChange" playsinline x-webkit-airplay="deny"></video>
         </div>
@@ -45,14 +50,14 @@
                             <div class="amc-videoplayer-sidebar-menu">
                                 <button class="amc-videoplayer-menu-info" @onclick="ShowVideoInfo">
                                     Video Info
-                                    <div class="amc-videoplayer-settings-subvalue">@Status</div>
+                                    <div class="amc-videoplayer-settings-subvalue">@Metadata.Status</div>
                                 </button>
                                 <button class="amc-videoplayer-menu-playbackspeed" @onclick="ShowVideoPlaybackSpeedOptions">
                                     Playback speed
                                     <div class="amc-videoplayer-settings-subvalue">@DisplayPlaybackSpeed</div>
                                 </button>
 
-                                @if (EnableLoop)
+                                @if (Metadata.EnableLoop)
                                 {
                                     <button class="amc-videoplayer-menu-loop" @onclick="ShowVideoLoop">
                                         Loop
@@ -72,7 +77,7 @@
                             @if (ShowSideBarInfo)
                             {
                                 <div class="amc-videoplayer-sidebar-section">
-                                    @foreach (var info in VideoSettingsInfo)
+                                    @foreach (var info in Metadata.VideoSettingsInfo)
                                     {
                                         <label>@info.Key</label>
                                         <div class="amc-videoplayer-value">@info.Value</div>
@@ -111,13 +116,48 @@
                 </div>*@
 
                         <div class="amc-videoplayer-seekinfo-duration">
-                            @DisplaySeekInfoTime
+                            @Metadata.DisplaySeekInfoTime
                         </div>
                     </div>
                 </div>
 
                 <div class="amc-videoplayer-controls">
                     <div class="amc-videoplayer-controls-left">
+                        @if (Metadata.ShowDuration)
+                        {
+                            @* Current Time / Duration *@
+                            <div class="amc-videoplayer-timeduration">
+                                @Metadata.DisplayTimeDuration
+                            </div>
+                        }
+
+                        @* Stop *@
+                        @if (Metadata.ShowStopButton)
+                        {
+                            <div class="amc-videoplayer-stop">
+                                <button @onclick="StopVideo">
+                                    <svg viewBox="0 0 8 8">
+                                        <rect class="amc-videoplayer-svg-stroke" x="1.5" y="1.5" width="5" height="5" rx="0.78" />
+                                    </svg>
+                                </button>
+                            </div>
+                        }
+
+                        @* Volume *@
+                        <div class="amc-videoplayer-volume @(Metadata.DoShowVolumeControls? "_extended": string.Empty)" @onclick="OnVolumeButtonClick">
+                            <VolumeBar Value="@Metadata.Volume" IsMuted="Metadata.IsMuted" Extended="Metadata.DoShowVolumeControls" OnChanging="OnVolumeChanging"></VolumeBar>
+                        </div>
+
+                        @* Status *@
+                        <div class="amc-videoplayer-status">
+                            @if (Metadata.Status == VideoPlayerMetadata.VideoStatus.Buffering || Metadata.Status == VideoPlayerMetadata.VideoStatus.Streaming)
+                            {
+                                <AngryMonkey.Cloud.Components.Icons.Loading />
+                            }
+                        </div>
+                    </div>
+
+                    <div class="amc-videoplayer-controls-middle">
                         @* Play *@
                         <div class="amc-videoplayer-play">
                             <button @onclick="PlayVideo">
@@ -131,45 +171,6 @@
                                 <AngryMonkey.Cloud.Components.Icons.PauseButton />
                             </button>
                         </div>
-
-                        @* Stop *@
-                        @if (ShowStopButton)
-                        {
-                            <div class="amc-videoplayer-stop">
-                                <button @onclick="StopVideo">
-                                    <svg viewBox="0 0 8 8">
-                                        <rect class="amc-videoplayer-svg-stroke" x="1.5" y="1.5" width="5" height="5" rx="0.78" />
-                                    </svg>
-                                </button>
-                            </div>
-                        }
-
-                        @* Volume *@
-                        <div class="amc-videoplayer-volume @(DoShowVolumeControls? "_extended": string.Empty)" @onclick="OnVolumeButtonClick">
-                            <VolumeBar Value="@Volume" IsMuted="IsMuted" Extended="DoShowVolumeControls" OnChanging="OnVolumeChanging"></VolumeBar>
-                        </div>
-
-                        @if (ShowDuration)
-                        {
-                            @* Current Time / Duration *@
-                            <div class="amc-videoplayer-timeduration">
-                                @DisplayTimeDuration
-                            </div>
-                        }
-
-                        @* Status *@
-                        <div class="amc-videoplayer-status">
-                            @if (Status == VideoStatus.Buffering || Status == VideoStatus.Streaming)
-                            {
-                                <AngryMonkey.Cloud.Components.Icons.Loading />
-                            }
-                        </div>
-                    </div>
-
-                    <div class="amc-videoplayer-controls-middle">
-                        <div class="amc-videoplayer-duration">
-                            <span></span>
-                        </div>
                     </div>
 
                     <div class="amc-videoplayer-controls-right">
@@ -182,8 +183,15 @@
                             </button>
                         </div>
 
+                        @* Cast *@
+                        <div class="amc-videoplayer-castbutton">
+                            <button @onclick="Cast">
+                                <AngryMonkey.Cloud.Components.Icons.Cast />
+                            </button>
+                        </div>
+
                         <div class="amc-videoplayer-fullscreen">
-                            @if (!IsFullScreen)
+                            @if (!Metadata.IsFullScreen)
                             {
                                 <button class="amc-videoplayer-enterfullscreen" @onclick="EnterFullScreen">
                                     <svg viewBox="0 0 8 8">
@@ -209,14 +217,14 @@
                     </div>
                 </div>
 
-                @if (ShowProgressBar)
+                @if (Metadata.ShowProgressBar)
                 {
                     <div class="amc-videoplayer-progress"
                     @onmousedown="OnProgressMouseDown"
                     @ontouchstart="OnProgressTouchStart"
                     @onmousemove="OnProgressMouseMove"
                     @onmouseout="OnProgressMouseOut">
-                        <ProgressBar Value="CurrentTime" Total="CurrentVideoInfo?.Duration ?? 0" Style="ProgressBarStyle" OnChanged="OnProgressChanged" OnChanging="OnProgressChanging" />
+                        <ProgressBar Value="Metadata.CurrentTime" Total="Metadata.CurrentVideoInfo?.Duration ?? 0" Style="ProgressBarStyle" OnChanged="OnProgressChanged" OnChanging="OnProgressChanging" />
                     </div>
                 }
             }
@@ -229,4 +237,3 @@
         </div>
     }
 </div>
-

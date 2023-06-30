@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
@@ -16,75 +17,32 @@ namespace AngryMonkey.Cloud.Components
 {
     public partial class VideoPlayer
     {
-        private void Repaint()
+        internal void Repaint()
         {
             ProgressBarStyle = HideControls ? ProgressBarStyle.Flat : ProgressBarStyle.Circle;
 
             List<string> attributes = new();
 
-            if (HideControls)
+            if (HideControls && !Metadata.IsCasting)
             {
-                DoShowVolumeControls = false;
+                Metadata.DoShowVolumeControls = false;
                 attributes.Add("_hidecontrols");
             }
 
-            if (IsVideoPlaying)
+            if (Metadata.IsVideoPlaying)
                 attributes.Add("_playing");
 
-            if (IsFullScreen)
+            if (Metadata.IsFullScreen)
                 attributes.Add("_fullscreen");
 
-            if (ShowSeekingInfo)
+            if (Metadata.ShowSeekingInfo)
                 attributes.Add("_showseekinginfo");
+
+            if (Metadata.IsCasting)
+                attributes.Add("_casting");
 
             ClassAttributes = string.Join(' ', attributes);
         }
-
-        #region Time / Duration
-
-        private string GetTime(double? seconds)
-        {
-            if (seconds == null)
-                return string.Empty;
-
-            TimeSpan time = TimeSpan.FromSeconds(seconds.Value);
-            int timeLevel = GetTimeLevel();
-
-            string result = $"{time:ss}";
-
-            if (timeLevel > 0)
-            {
-                result = $"{time:mm}:{result}";
-
-                if (timeLevel > 1)
-                {
-                    result = $"{time:hh}:{result}";
-
-                    if (timeLevel > 2)
-                        result = $"{time:dd}:{result}";
-                }
-            }
-
-            return result[0] == '0' ? result.Remove(0, 1) : result;
-        }
-
-        private int GetTimeLevel()
-        {
-            TimeSpan time = TimeSpan.FromSeconds(CurrentVideoInfo?.Duration ?? 0);
-
-            if (time.TotalMinutes < 1)
-                return 0;
-
-            if (time.TotalHours < 1)
-                return 1;
-
-            if (time.TotalDays < 1)
-                return 2;
-
-            return 3;
-        }
-
-        #endregion
 
         #region Settings Menu
 
@@ -129,7 +87,7 @@ namespace AngryMonkey.Cloud.Components
 
         protected void ChangeLoop()
         {
-            Loop = !Loop;
+            Metadata.Loop = !Metadata.Loop;
 
             ShowSideBarLoop = false;
         }
@@ -138,23 +96,23 @@ namespace AngryMonkey.Cloud.Components
 
         protected async Task OnProgressMouseDown(MouseEventArgs args)
         {
-            IsUserChangingProgress = true;
+            Metadata.IsUserChangingProgress = true;
             await ProgressiveDelay();
         }
 
         protected async Task OnProgressTouchStart(TouchEventArgs args)
         {
-            IsUserChangingProgress = true;
+            Metadata.IsUserChangingProgress = true;
             await ProgressiveDelay();
         }
 
         protected async Task OnProgressChanged(ProgressBarChangeEventArgs args)
         {
-            if (CurrentVideoInfo == null || CurrentVideoInfo.Duration == null)
+            if (Metadata.CurrentVideoInfo?.Duration == null)
                 return;
 
-            IsSeeking = false;
-            ShowSeekingInfo = false;
+            Metadata.IsSeeking = false;
+            Metadata.ShowSeekingInfo = false;
 
             Repaint();
 
@@ -170,9 +128,9 @@ namespace AngryMonkey.Cloud.Components
 
             await module.InvokeVoidAsync("changeCurrentTime", ComponentElement, args.NewValue);
 
-            IsUserChangingProgress = false;
+            Metadata.IsUserChangingProgress = false;
 
-            if (CurrentTime == CurrentVideoInfo.Duration)
+            if (Metadata.CurrentTime == Metadata.CurrentVideoInfo.Duration)
                 await StopVideo();
 
             await ProgressiveDelay();
@@ -180,24 +138,24 @@ namespace AngryMonkey.Cloud.Components
 
         protected async Task OnProgressChanging(ProgressBarChangeEventArgs args)
         {
-            if (CurrentVideoInfo == null || CurrentVideoInfo.Duration == null)
+            if (Metadata.CurrentVideoInfo == null || Metadata.CurrentVideoInfo.Duration == null)
                 return;
 
-            IsSeeking = true;
-            ShowSeekingInfo = true;
+            Metadata.IsSeeking = true;
+            Metadata.ShowSeekingInfo = true;
             Repaint();
-            SeekInfoTime = args.NewValue;
+            Metadata.SeekInfoTime = args.NewValue;
 
             var module = await Module;
-            await module.InvokeVoidAsync("seeking", ComponentElement, SeekInfoTime, CurrentVideoInfo.Duration);
+            await module.InvokeVoidAsync("seeking", ComponentElement, Metadata.SeekInfoTime, Metadata.CurrentVideoInfo.Duration);
         }
 
         protected async Task OnProgressMouseMove(MouseEventArgs args)
         {
-            if (IsSeeking || HasError || Status == VideoStatus.Streaming)
+            if (Metadata.IsSeeking || Metadata.HasError || Metadata.Status == VideoPlayerMetadata.VideoStatus.Streaming)
                 return;
 
-            ShowSeekingInfo = true;
+            Metadata.ShowSeekingInfo = true;
             Repaint();
 
             var module = await Module;
@@ -207,21 +165,21 @@ namespace AngryMonkey.Cloud.Components
             if (newValue < 0)
                 return;
 
-            SeekInfoTime = newValue;
+            Metadata.SeekInfoTime = newValue;
         }
 
         protected async Task OnProgressMouseOut(MouseEventArgs args)
         {
-            if (IsSeeking)
+            if (Metadata.IsSeeking)
                 return;
 
-            ShowSeekingInfo = false;
+            Metadata.ShowSeekingInfo = false;
             Repaint();
         }
 
         public async Task OnVideoChange(ChangeEventArgs? args)
         {
-            if (HasError || string.IsNullOrEmpty(VideoUrl))
+            if (Metadata.HasError || string.IsNullOrEmpty(Metadata.VideoUrl))
                 return;
 
             VideoEventData? eventData = null;
@@ -235,14 +193,14 @@ namespace AngryMonkey.Cloud.Components
 
             if (eventData != null)
             {
-                IsVideoPlaying = !eventData.State.Paused;
+                Metadata.IsVideoPlaying = !eventData.State.Paused;
                 Repaint();
             }
 
-            if (!VideoReady && !StreamInitialized && RequireStreamInit())
+            if (!Metadata.VideoReady && !Metadata.StreamInitialized && RequireStreamInit())
             {
-                Status = VideoStatus.Streaming;
-                IsStream = true;
+                Metadata.Status = VideoPlayerMetadata.VideoStatus.Streaming;
+                Metadata.IsStream = true;
                 await StopVideo();
                 try
                 {
@@ -251,19 +209,19 @@ namespace AngryMonkey.Cloud.Components
                     bool isPlayableNatively = await module.InvokeAsync<bool>("IsStreamingPlayableNatively", ComponentElement);
 
                     if (!isPlayableNatively)
-                        await module.InvokeAsync<string>("initializeStreamingUrl", ComponentElement, VideoUrl);
+                        await module.InvokeAsync<string>("initializeStreamingUrl", ComponentElement, Metadata.VideoUrl);
 
-                    StreamInitialized = true;
+                    Metadata.StreamInitialized = true;
 
                     await VideoLoaded();
                 }
                 catch
                 {
-                    if (StreamInitialized)
+                    if (Metadata.StreamInitialized)
                         return;
 
                     await OnVideoError.InvokeAsync();
-                    HasError = true;
+                    Metadata.HasError = true;
 
                     return;
                 }
@@ -278,53 +236,59 @@ namespace AngryMonkey.Cloud.Components
                         {
                             await VideoLoaded();
 
-                            if (CurrentVideoInfo == null)
+                            if (Metadata.CurrentVideoInfo == null)
                                 await Task.Delay(200);
                             else
                             {
-                                Status = VideoStatus.Stoped;
+                                Metadata.Status = VideoPlayerMetadata.VideoStatus.Stoped;
 
                                 await OnVideoReady.InvokeAsync();
 
-                                if (Autoplay)
+                                if (Metadata.Autoplay)
                                     await PlayVideo();
                             }
-                        } while (CurrentVideoInfo == null);
+                        } while (Metadata.CurrentVideoInfo == null);
                         break;
 
                     case VideoEvents.TimeUpdate:
 
-                        if (!IsUserChangingProgress)
+                        if (!Metadata.IsUserChangingProgress)
                         {
-                            CurrentTime = eventData.State.CurrentTime;
+                            Metadata.CurrentTime = eventData.State.CurrentTime;
 
-                            if (CurrentVideoInfo == null || CurrentVideoInfo.Duration == null)
+                            if (Metadata.CurrentVideoInfo?.Duration == null)
                                 return;
 
-                            if (CurrentTime == CurrentVideoInfo.Duration)
+                            if (Metadata.CurrentTime == Metadata.CurrentVideoInfo.Duration)
                             {
                                 await StopVideo();
 
-                                if (Loop)
+                                if (Metadata.Loop)
                                     await PlayVideo();
                             }
                         }
                         break;
 
                     case VideoEvents.Waiting:
-                        Status = VideoStatus.Buffering;
+                        Metadata.Status = VideoPlayerMetadata.VideoStatus.Buffering;
                         break;
 
                     case VideoEvents.Playing:
-                        Status = VideoStatus.Playing;
+
+                        if (!Metadata.IsCasting)
+                            Metadata.Status = VideoPlayerMetadata.VideoStatus.Playing;
+                        else
+                        {
+                            await PauseVideo();
+                        }
                         break;
 
                     case VideoEvents.Play:
-                        Status = VideoStatus.Playing;
+                        Metadata.Status = VideoPlayerMetadata.VideoStatus.Playing;
                         break;
 
                     case VideoEvents.Pause:
-                        Status = CurrentTime == 0 ? VideoStatus.Stoped : VideoStatus.Paused;
+                        Metadata.Status = Metadata.CurrentTime == 0 ? VideoPlayerMetadata.VideoStatus.Stoped : VideoPlayerMetadata.VideoStatus.Paused;
                         break;
 
                     default: break;
@@ -338,7 +302,7 @@ namespace AngryMonkey.Cloud.Components
         {
             _isEmptyTouched = true;
 
-            if (IsVideoPlaying && !HideControls)
+            if (Metadata.IsVideoPlaying && !HideControls)
             {
                 _forceHideControls = true;
                 IsUserInteracting = false;
@@ -364,7 +328,7 @@ namespace AngryMonkey.Cloud.Components
                 return;
             }
 
-            if (IsVideoPlaying)
+            if (Metadata.IsVideoPlaying)
                 await PauseVideo();
             else await PlayVideo();
         }
@@ -373,19 +337,18 @@ namespace AngryMonkey.Cloud.Components
         {
             if (firstRender)
             {
-                if (!string.IsNullOrEmpty(VideoUrl))
-                    _videoUrl = VideoUrl;
+                if (!string.IsNullOrEmpty(Metadata.VideoUrl))
+                    _videoUrl = Metadata.VideoUrl;
 
                 await Init();
 
-                if (Autoplay)
+                if (Metadata.Autoplay)
                     await PlayVideo();
             }
         }
 
         private async Task Init()
         {
-
             var module = await Module;
 
             try
@@ -410,26 +373,28 @@ namespace AngryMonkey.Cloud.Components
         {
             base.OnParametersSet();
 
-            if (ReserveAspectRatio != _reserveAspectRatio)
+            Metadata.Title = Metadata.Title;
+
+            if (Metadata.ReserveAspectRatio != _reserveAspectRatio)
             {
-                _reserveAspectRatio = ReserveAspectRatio;
+                _reserveAspectRatio = Metadata.ReserveAspectRatio;
 
                 await CallReserveAspectRatio();
             }
 
-            if (IsMuted != _isMuted)
+            if (Metadata.IsMuted != Metadata._isMuted)
             {
-                _isMuted = IsMuted;
+                Metadata._isMuted = Metadata.IsMuted;
                 await MuteVolume();
             }
 
-            if (VideoUrl != _videoUrl)
+            if (Metadata.VideoUrl != _videoUrl)
             {
-                if (IsVideoPlaying)
+                if (Metadata.IsVideoPlaying)
                     await StopVideo();
 
-                bool wasError = HasError;
-                VideoReady = false;
+                bool wasError = Metadata.HasError;
+                Metadata.VideoReady = false;
 
                 try
                 {
@@ -438,10 +403,10 @@ namespace AngryMonkey.Cloud.Components
                 }
                 catch { }
 
-                StreamInitialized = false;
-                IsStream = false;
-                HasError = false;
-                _videoUrl = VideoUrl;
+                Metadata.StreamInitialized = false;
+                Metadata.IsStream = false;
+                Metadata.HasError = false;
+                _videoUrl = Metadata.VideoUrl;
 
                 StateHasChanged();
 
@@ -450,6 +415,9 @@ namespace AngryMonkey.Cloud.Components
                     await Init();
                     await OnVideoChange(null);
                 }
+
+                if (Metadata.IsCasting)
+                    await Cast();
             }
         }
 
@@ -467,17 +435,17 @@ namespace AngryMonkey.Cloud.Components
         {
             var module = await Module;
 
-            CurrentVideoInfo = await module.InvokeAsync<VideoInfo>("getVideoInfo", ComponentElement);
-            VideoReady = true;
+            Metadata.CurrentVideoInfo = await module.InvokeAsync<VideoInfo>("getVideoInfo", ComponentElement);
+            Metadata.VideoReady = true;
             await CallReserveAspectRatio();
         }
 
         public async Task PlayVideo()
         {
-            if (HasError)
+            if (Metadata.HasError)
                 return;
 
-            if (CurrentVideoInfo == null)
+            if (Metadata.CurrentVideoInfo == null)
                 await VideoLoaded();
 
             var module = await Module;
@@ -508,19 +476,19 @@ namespace AngryMonkey.Cloud.Components
 
         public async Task OnFullScreenChange(EventArgs args)
         {
-            IsFullScreen = !IsFullScreen;
+            Metadata.IsFullScreen = !Metadata.IsFullScreen;
 
             Repaint();
         }
 
         public async Task StopVideo()
         {
-            CurrentTime = 0;
+            Metadata.CurrentTime = 0;
 
             var module = await Module;
 
             await module.InvokeVoidAsync("stop", ComponentElement);
-            Status = VideoStatus.Stoped;
+            Metadata.Status = VideoPlayerMetadata.VideoStatus.Stoped;
 
             Repaint();
         }
@@ -538,26 +506,26 @@ namespace AngryMonkey.Cloud.Components
 
         private async Task CallReserveAspectRatio()
         {
-            while (CurrentVideoInfo == null)
+            while (Metadata.CurrentVideoInfo == null)
                 await Task.Delay(1000);
 
             var module = await Module;
 
-            if (ReserveAspectRatio)
-                _resizeListener = await module.InvokeAsync<object>("AddReserveAspectRatioListener", ComponentElement, CurrentVideoInfo.Width, CurrentVideoInfo.Height);
+            if (Metadata.ReserveAspectRatio)
+                _resizeListener = await module.InvokeAsync<object>("AddReserveAspectRatioListener", ComponentElement, Metadata.CurrentVideoInfo.Width, Metadata.CurrentVideoInfo.Height);
             else await module.InvokeVoidAsync("RemoveReserveAspectRatioListener", ComponentElement, _resizeListener);
         }
 
         protected async Task OnMouseWheel(WheelEventArgs args)
         {
-            if (DoShowVolumeControls)
+            if (Metadata.DoShowVolumeControls)
             {
                 double newValue;
 
                 if (args.DeltaY < 0)
-                    newValue = Volume <= .9 ? Volume + .1 : 1;
+                    newValue = Metadata.Volume <= .9 ? Metadata.Volume + .1 : 1;
                 else
-                    newValue = Volume >= .1 ? Volume - .1 : 0;
+                    newValue = Metadata.Volume >= .1 ? Metadata.Volume - .1 : 0;
 
                 newValue = Math.Round(newValue, 1);
 
@@ -573,27 +541,27 @@ namespace AngryMonkey.Cloud.Components
         {
             var module = await Module;
 
-            await module.InvokeVoidAsync("muteVolume", ComponentElement, IsMuted);
+            await module.InvokeVoidAsync("muteVolume", ComponentElement, Metadata.IsMuted);
         }
 
         protected void OnVolumeButtonClick()
         {
-            DoShowVolumeControls = !DoShowVolumeControls;
+            Metadata.DoShowVolumeControls = !Metadata.DoShowVolumeControls;
         }
 
         protected async Task OnVolumeChanging(VolumeBarChangeEventArgs args)
         {
-            Volume = args.NewValue;
+            Metadata.Volume = args.NewValue;
 
             if (args.IsMuted != args.WasMuted)
             {
-                IsMuted = args.IsMuted;
+                Metadata.IsMuted = args.IsMuted;
                 await MuteVolume();
             }
 
             var module = await Module;
 
-            await module.InvokeVoidAsync("changeVolume", ComponentElement, Volume);
+            await module.InvokeVoidAsync("changeVolume", ComponentElement, Metadata.Volume);
 
             await ProgressiveDelay();
         }
@@ -654,5 +622,21 @@ namespace AngryMonkey.Cloud.Components
         //}
 
         #endregion
+
+        public VideoPlayerCast VideoPlayerCast { get; set; }
+
+        private async Task Cast()
+        {
+            if (Metadata.IsFullScreen)
+                await ExitFullScreen();
+
+            await PauseVideo();
+
+            if (Metadata.IsCasting)
+                await VideoPlayerCast.StartCast();
+            else Metadata.CastStatus = VideoPlayerMetadata.CastStatuses.Initializing;
+
+            Repaint();
+        }
     }
 }

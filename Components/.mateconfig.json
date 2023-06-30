@@ -11,7 +11,7 @@
 	],
 	"files": [
 		{
-			"output": "VideoPlayer/VideoPlayer.razor.css",
+			"output": [ "VideoPlayer/VideoPlayer.razor.css", "VideoPlayer/VideoPlayerCast.razor.css" ],
 			"input": "VideoPlayer/videoplayer.less"
 		},
 		{
@@ -21,6 +21,10 @@
 		{
 			"output": "wwwroot/videoplayer/videoplayer.js",
 			"input": [ "node_modules/hls.js/dist/hls.js", "VideoPlayer/videoplayer.ts" ]
+		},
+		{
+			"output": "wwwroot/videoplayer/videoplayercast.js",
+			"input": "VideoPlayer/VideoPlayerCast.razor.ts"
 		},
 		{
 			"output": "wwwroot/progressbar/progressbar.js",

@@ -1,0 +1,14 @@
+﻿@page "/VideoPlayer"
+@using AngryMonkey.Cloud.Components
+
+<PageTitle>Blazor Video Player Component</PageTitle>
+
+<VideoPlayer Metadata="Metadata" />
+
+@code{
+    VideoPlayerMetadata Metadata { get; set; } = new()
+    {
+        ReserveAspectRatio = true,
+        VideoUrl = "https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4"
+    };
+}

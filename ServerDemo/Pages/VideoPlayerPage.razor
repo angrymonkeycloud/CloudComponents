@@ -19,7 +19,7 @@
 
 <h2>@ErrorMessage</h2>
 
-<VideoPlayer @ref="Player" ReserveAspectRatio="true" VideoUrl="@VideoUrl" Autoplay="true" OnVideoError="Player_OnVideoError" OnVideoReady="Player_OnVideoReady" OnEvent="Player_OnEvent" />
+<VideoPlayer @ref="Player" Metadata="PlayerMetadata" OnVideoError="Player_OnVideoError" OnVideoReady="Player_OnVideoReady" OnEvent="Player_OnEvent" />
 
 <div>
     @foreach(string eventLog in EventLogs)
@@ -32,6 +32,14 @@
 
 @code {
     private VideoPlayer Player { get; set; }
+
+    private VideoPlayerMetadata PlayerMetadata { get; set; } = new()
+    {
+        ReserveAspectRatio = true,
+        Autoplay = true,
+        VideoUrl = BlueMoonTrailerUrl
+    };
+
     private const string BlueMoonTrailerUrl = "https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4";
     private const string CoverboxUrl = "https://cbxinfo-staging.azurewebsites.net/video/coverbox-platform.mp4";
     private const string LiveStreamingUrl = "https://stmv1.cnarlatam.com/cineinfantil/cineinfantil/playlist.m3u8";
@@ -41,8 +49,6 @@
 
     private string? ErrorMessage { get; set; }
     private List<string> EventLogs { get; set; } = new();
-
-    public string? VideoUrl { get; set; } = BlueMoonTrailerUrl;
 
     private void Player_OnVideoReady()
     {
@@ -65,7 +71,7 @@
     public void SetUrl(string? url)
     {
         EventLogs = new();
-        VideoUrl = url;
+        PlayerMetadata.VideoUrl = url;
         StateHasChanged();
     }
 }
