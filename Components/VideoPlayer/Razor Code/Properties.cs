@@ -27,6 +27,9 @@ namespace AngryMonkey.Cloud.Components
 
         private bool RequireStreamInit()
         {
+            if (string.IsNullOrEmpty(Metadata?.VideoUrl))
+                return false;
+
             string[] extentions = new[] { "m3u8" };
 
             return extentions.Any(ex => new FileInfo(Metadata.VideoUrl).Extension.StartsWith($".{ex}", StringComparison.OrdinalIgnoreCase));
@@ -61,8 +64,8 @@ namespace AngryMonkey.Cloud.Components
 
 
         private bool IsUserInteracting = false;
-        private bool ShowBottomSections => Metadata.VideoReady;
-        private bool HideControls => Metadata.IsVideoPlaying && !IsUserInteracting && !Metadata.IsUserChangingProgress && !ShowSideBar;
+        private bool ShowBottomSections => Metadata.VideoState == VideoStates.Ready;
+        private bool HideControls => Metadata.IsPlayingState && !IsUserInteracting && !Metadata.IsUserChangingProgress && !ShowSideBar;
         bool TimeUpdateRequired => TimeUpdate is object;
         bool TimeUpdateEventRequired => TimeUpdateEvent.HasDelegate;
         bool EventFiredEventRequired => OnEvent.HasDelegate;
@@ -82,6 +85,8 @@ namespace AngryMonkey.Cloud.Components
         [Parameter] public EventCallback OnVideoError { get; set; }
         [Parameter] public EventCallback OnVideoReady { get; set; }
 
+        [Parameter] public EventCallback<PlayingStates> OnPlayingStateChanged { get; set; }
+        [Parameter] public EventCallback<VideoStates> OnVideoStateChanged { get; set; }
         #endregion
 
         #region Settings Menu

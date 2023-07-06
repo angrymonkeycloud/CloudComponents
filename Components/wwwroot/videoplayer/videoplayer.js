@@ -26303,11 +26303,8 @@ var VideoInfo = /** @class */ (function () {
 }());
 export function init(component) {
     var video = component.querySelector('video');
-    video.onloadeddata = function () {
-        var evt = document.createEvent("HTMLEvents");
-        evt.initEvent("load", false, true);
-        video.dispatchEvent(evt);
-    };
+    var event = new Event('load', { bubbles: true, cancelable: true });
+    video.dispatchEvent(event);
 }
 export function getVideoInfo(component) {
     var video = component.querySelector('video');

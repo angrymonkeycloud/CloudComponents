@@ -2,6 +2,15 @@
 @inject IJSRuntime jsRuntime
 
 <div @ref="ComponentElement" class="amc-videoplayer-cast">
+
+    <div class="amc-videoplayer-cast-info">
+        <div class="amc-videoplayer-cast-icon">
+            <AngryMonkey.Cloud.Components.Icons.Cast />
+        </div>
+        <div class="amc-videoplayer-cast-title">@Metadata.Title</div>
+        <div class="amc-videoplayer-cast-status">@InfoStatus</div>
+    </div>
+
     <div class="amc-videoplayer-controls">
         <div class="amc-videoplayer-controls-left">
             @if (Metadata.ShowDuration)
@@ -26,7 +35,7 @@
 
             @* Status *@
             <div class="amc-videoplayer-status">
-                @if (Metadata.CastStatus != VideoPlayerMetadata.CastStatuses.Casting || Metadata.Status == VideoPlayerMetadata.VideoStatus.Buffering)
+                @if (Metadata.CastStatus != VideoPlayerMetadata.CastStatuses.Casting || Metadata.PlayingState == PlayingStates.Buffering)
                 {
                     <AngryMonkey.Cloud.Components.Icons.Loading />
                 }
@@ -50,9 +59,9 @@
         </div>
 
         <div class="amc-videoplayer-controls-right">
-            <div class="amc-videoplayer-cast">
+            <div class="amc-videoplayer-castbutton">
                 <button @onclick="StopCast">
-                    <AngryMonkey.Cloud.Components.Icons.Cast />
+                    <AngryMonkey.Cloud.Components.Icons.Close />
                 </button>
             </div>
         </div>

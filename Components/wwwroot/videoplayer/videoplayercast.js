@@ -39,24 +39,35 @@ var firstCasting = true;
 var castPosition = null;
 var castJsUrl = 'https://cdnjs.cloudflare.com/ajax/libs/castjs/5.2.0/cast.min.js';
 function loadJs(sourceUrl) {
-    return new Promise(function (resolve, reject) {
-        var scripts = document.getElementsByTagName('script');
-        for (var i = 0; i < scripts.length; i++)
-            if (scripts[i].src == sourceUrl) {
-                resolve(null);
-                return;
-            }
-        var tag = document.createElement('script');
-        tag.src = sourceUrl;
-        tag.type = "text/javascript";
-        tag.onload = function () {
-            resolve(null);
-        };
-        tag.onerror = function () {
-            console.error("Failed to load script: " + sourceUrl);
-            reject("Failed to load script");
-        };
-        document.body.appendChild(tag);
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            return [2 /*return*/, new Promise(function (resolve, reject) {
+                    var scripts = document.getElementsByTagName('script');
+                    for (var i = 0; i < scripts.length; i++)
+                        if (scripts[i].src == sourceUrl) {
+                            resolve(null);
+                            return;
+                        }
+                    var tag = document.createElement('script');
+                    tag.src = sourceUrl;
+                    tag.type = "text/javascript";
+                    tag.onload = function () {
+                        resolve(null);
+                    };
+                    tag.onerror = function () {
+                        console.error("Failed to load script: " + sourceUrl);
+                        reject("Failed to load script");
+                    };
+                    document.body.appendChild(tag);
+                })];
+        });
+    });
+}
+export function createCastJsInstance() {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            return [2 /*return*/, new window.Castjs()];
+        });
     });
 }
 export function init() {
@@ -65,16 +76,16 @@ export function init() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    console.log('init: start');
                     console.log(cjs);
-                    console.log(1);
                     return [4 /*yield*/, loadJs(castJsUrl)];
                 case 1:
                     _a.sent();
-                    console.log(2);
+                    console.log('init: js loaded');
+                    if (!cjs)
+                        cjs = new Castjs();
                     return [2 /*return*/, new Promise(function (resolve, reject) {
-                            if (!cjs)
-                                cjs = new Castjs();
-                            console.log(3);
+                            console.log('init: before event');
                             cjs.on('event', function (e) { return __awaiter(_this, void 0, void 0, function () {
                                 var additionalValue, log;
                                 return __generator(this, function (_a) {
@@ -86,63 +97,71 @@ export function init() {
                                                 additionalValue = cjs.time;
                                                 log = false;
                                             }
-                                            if (log)
-                                                console.log(4);
-                                            if (log)
+                                            if (e === 'connect') {
+                                                additionalValue = cjs.device;
+                                            }
+                                            if (log) {
+                                                console.log('event: started');
+                                                console.log('----------------');
                                                 console.log(e);
-                                            if (log)
-                                                console.log(5);
+                                                console.log('----------------');
+                                            }
                                             if (e === 'available') {
-                                                console.log(6);
+                                                console.log('event: available');
                                                 resolve(null);
                                                 return [2 /*return*/];
                                             }
-                                            if (log)
-                                                console.log(7);
-                                            if (firstCasting && e === 'playing') {
-                                                if (castPosition !== null) {
-                                                    cjs.seek(castPosition);
-                                                    castPosition = null;
-                                                }
-                                                firstCasting = false;
-                                            }
-                                            if (log)
-                                                console.log(8);
+                                            //if (firstCasting && e === 'playing') {
+                                            //	if (castPosition !== null) {
+                                            //		cjs.seek(castPosition);
+                                            //		castPosition = null;
+                                            //	}
+                                            //	firstCasting = false;
+                                            //}
                                             return [4 /*yield*/, DotNet.invokeMethodAsync('AngryMonkey.Cloud.Components', 'HandleCastJsEventStatic', e, additionalValue)];
                                         case 1:
+                                            //if (firstCasting && e === 'playing') {
+                                            //	if (castPosition !== null) {
+                                            //		cjs.seek(castPosition);
+                                            //		castPosition = null;
+                                            //	}
+                                            //	firstCasting = false;
+                                            //}
                                             _a.sent();
                                             if (log)
-                                                console.log(9);
+                                                console.log('event: ended');
                                             return [2 /*return*/];
                                     }
                                 });
                             }); });
-                            console.log(4.1);
+                            console.log('event: before error');
                             cjs.on('error', function (e) {
                                 console.log('error: ' + e);
                                 reject(e);
                             });
-                            console.log(4.2);
+                            if (cjs.available)
+                                resolve(null);
+                            console.log('init: end');
                         })];
             }
         });
     });
 }
-export function startCasting(url, position) {
+export function startCasting(url, title, position) {
     return __awaiter(this, void 0, void 0, function () {
         var alreadyCasting;
         return __generator(this, function (_a) {
-            console.log(100);
+            console.log('casting: started');
             console.log(cjs);
             alreadyCasting = cjs.connected && cjs.src === url;
-            console.log(101);
+            console.log('casting: already casting = ' + alreadyCasting);
             if (!alreadyCasting) {
                 firstCasting = true;
-                console.log(102);
+                console.log('casting: cast url');
                 cjs.cast(url, {
-                    title: 'Coverbox TV',
+                    title: title,
                 });
-                console.log(103);
+                console.log('casting: cast url end');
             }
             if (position !== undefined) {
                 if (firstCasting)
@@ -150,9 +169,18 @@ export function startCasting(url, position) {
                 else
                     cjs.seek(position);
             }
-            console.log(104);
+            console.log('casting: before play');
+            console.log('casting: Available = ' + cjs.available);
+            console.log('casting: Connected = ' + cjs.connected);
+            console.log(cjs);
+            console.log('_____________________________________');
             cjs.play();
-            console.log(105);
+            console.log('casting: after play');
+            console.log('casting: Available = ' + cjs.available);
+            console.log('casting: Connected = ' + cjs.connected);
+            console.log(cjs);
+            console.log('_____________________________________');
+            console.log('casting: end');
             return [2 /*return*/];
         });
     });

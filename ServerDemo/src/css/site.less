@@ -123,14 +123,22 @@ body {
 			}
 		}
 
-		.video{
-			> article{
-				display:flex;
-				align-items:stretch;
-				justify-content:center;
-				gap:10px;
-				margin-bottom:30px;
-				flex-wrap:wrap;
+		.video {
+
+			.-button {
+				&._active {
+					background-color: var(--LinkColor);
+					color: #fff;
+				}
+			}
+
+			> article {
+				display: flex;
+				align-items: stretch;
+				justify-content: center;
+				gap: 10px;
+				margin-bottom: 30px;
+				flex-wrap: wrap;
 			}
 		}
 	}
@@ -145,7 +153,7 @@ body {
 		text-transform: capitalize;
 		border-radius: 3px;
 		transition: all .3s ease-in-out;
-		cursor:pointer;
+		cursor: pointer;
 
 		&:hover {
 			background-color: var(--LinkColor);

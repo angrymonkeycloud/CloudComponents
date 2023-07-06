@@ -1,55 +1,115 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Components;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace AngryMonkey.Cloud.Components;
 
+public enum VideoStates
+{
+    NoVideo,
+    Loading,
+    Ready,
+    Error
+}
+
+public enum PlayingStates
+{
+    NotPlaying,
+    Buffering,
+    Playing,
+    Paused
+}
+
 public class VideoPlayerMetadata
 {
     // Public
 
-    public string Title { get; set; }
+    public string? Title { get; set; }
     public bool Loop { get; set; } = false;
     public bool Autoplay { get; set; } = false;
     public bool ShowStopButton { get; set; } = false;
     public bool ReserveAspectRatio { get; set; } = false;
     public string? VideoUrl { get; set; }
     public double Volume { get; set; } = 1;
+    public bool IsLive { get; set; } = false;
 
     // Internal
 
     internal bool IsUserChangingProgress = false;
-    internal bool IsVideoPlaying = false;
+    //internal bool IsVideoPlaying = false;
     internal bool IsFullScreen = false;
     internal bool _isMuted = false;
     internal bool IsMuted = false;
     internal bool DoShowVolumeControls = false;
     internal bool IsSeeking = false;
     internal bool ShowSeekingInfo = false;
-    internal bool IsStream { get; set; }
-    internal bool StreamInitialized { get; set; } = false;
-    internal bool HasError { get; set; } = false;
-    internal bool ShowProgressBar => !IsStream;
-    internal bool ShowDuration => !IsStream;
-    internal bool VideoReady { get; set; } = false;
-    internal bool EnableLoop => !IsStream;
+    //internal bool IsStream { get; set; }
+    internal bool LiveInitialized { get; set; } = false;
+    internal bool ShowProgressBar => !IsLive && VideoState == VideoStates.Ready;
+    internal bool ShowDuration => !IsLive;
+    internal bool EnableLoop => !IsLive;
 
     internal VideoInfo? CurrentVideoInfo { get; set; }
     internal double CurrentTime { get; set; } = 0;
+    internal VideoPlayer? Player { get; set; }
 
-    public VideoStatus Status { get; set; } = VideoStatus.Loading;
+    public bool IsPlayingState { get; private set; }
 
-    public enum VideoStatus
+    private PlayingStates _playingState = PlayingStates.NotPlaying;
+    public PlayingStates PlayingState
     {
-        Loading,
-        Playing,
-        Paused,
-        Stoped,
-        Buffering,
-        Streaming,
-        Unknown
+        get { return _playingState; }
+        set
+        {
+            if (value == _playingState)
+                return;
+
+            _playingState = value;
+
+            if (_playingState == PlayingStates.Playing)
+                IsPlayingState = true;
+            else if (_playingState == PlayingStates.NotPlaying)
+                IsPlayingState = false;
+
+            if (Player == null)
+                return;
+
+            Task.Run(async () =>
+            {
+                await Player.OnPlayingStateChanged.InvokeAsync(PlayingState);
+            });
+        }
+    }
+
+    private VideoStates _videoState = VideoStates.NoVideo;
+    public VideoStates VideoState
+    {
+        get { return _videoState; }
+        set
+        {
+            if (value == _videoState)
+                return;
+
+            _videoState = value;
+            IsPlayingState = false;
+
+            if (Player == null)
+                return;
+
+            Task.Run(async () =>
+            {
+                if (_videoState == VideoStates.Ready)
+                    await Player.OnVideoReady.InvokeAsync();
+                else if (_videoState == VideoStates.Error)
+                    await Player.OnVideoError.InvokeAsync();
+
+                await Player.OnVideoStateChanged.InvokeAsync(VideoState);
+            });
+        }
     }
 
     #region Time / Duration
@@ -76,7 +136,7 @@ public class VideoPlayerMetadata
                 info.Add("Aspect Ratio", CurrentVideoInfo.DisplayAspectRatio);
             }
 
-            info.Add("Status", Status.ToString());
+            info.Add("Status", PlayingState.ToString());
 
             return info;
         }

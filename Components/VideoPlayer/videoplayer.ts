@@ -6,15 +6,10 @@
 
 export function init(component: HTMLElement) {
 
-	const video = component.querySelector('video');
+	const video = component.querySelector('video') as HTMLVideoElement;
 
-	video.onloadeddata = function () {
-
-		const evt = document.createEvent("HTMLEvents");
-		evt.initEvent("load", false, true);
-
-		video.dispatchEvent(evt);
-	};
+	const event = new Event('load', { bubbles: true, cancelable: true });
+	video.dispatchEvent(event);
 }
 
 export function getVideoInfo(component: HTMLElement): VideoInfo {

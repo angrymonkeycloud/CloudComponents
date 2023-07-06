@@ -24,9 +24,22 @@ public partial class VideoPlayerCast
     [Parameter] public required VideoPlayerMetadata Metadata { get; set; }
     private string CastJsUrl = "https://cdnjs.cloudflare.com/ajax/libs/castjs/5.2.0/cast.min.js";
 
+    private string? CastDeviceName;
+
     public VideoPlayerCast()
     {
         PlayerCast = this;
+    }
+
+    private string InfoStatus
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(CastDeviceName))
+                return CastDeviceName;
+
+            return "Casting";
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -35,16 +48,16 @@ public partial class VideoPlayerCast
         {
             //if (!Metadata.CastingInitialized)
             //{
-                var module = await Module;
+            var module = await Module;
 
-                await module.InvokeVoidAsync("init");
-                Metadata.CastingInitialized = true;
+            await module.InvokeVoidAsync("init");
+            Metadata.CastingInitialized = true;
             //}
 
             //if (Metadata.CastStatus == VideoPlayerMetadata.CastStatuses.Initializing)
             //{
-                Metadata.CastStatus = VideoPlayerMetadata.CastStatuses.Connecting;
-                await StartCast();
+            Metadata.CastStatus = VideoPlayerMetadata.CastStatuses.Connecting;
+            await StartCast();
             //}
         }
     }
@@ -55,7 +68,7 @@ public partial class VideoPlayerCast
 
         try
         {
-            await module.InvokeVoidAsync("startCasting", Metadata.VideoUrl, Metadata.IsStream ? Metadata.CurrentTime : null);
+            await module.InvokeVoidAsync("startCasting", Metadata.VideoUrl, $"{Metadata.Title} | Coverbox TV", Metadata.IsLive ? Metadata.CurrentTime : null);
         }
         catch (Exception e)
         {
@@ -72,6 +85,8 @@ public partial class VideoPlayerCast
 
         Metadata.CastStatus = VideoPlayerMetadata.CastStatuses.NotCasting;
         Metadata.CastingInitialized = false;
+
+        await Player.PlayVideo();
     }
 
     private async Task PlayCast()
@@ -94,21 +109,20 @@ public partial class VideoPlayerCast
         switch (eventData.ToLower())
         {
             case "playing":
-                Metadata.Status = VideoPlayerMetadata.VideoStatus.Playing;
-                Metadata.IsVideoPlaying = true;
+                Metadata.PlayingState = PlayingStates.Playing;
                 break;
 
             case "pause":
-                Metadata.Status = VideoPlayerMetadata.VideoStatus.Paused;
-                Metadata.IsVideoPlaying = false;
+                Metadata.PlayingState = PlayingStates.Paused;
                 break;
 
             case "buffering":
-                Metadata.Status = VideoPlayerMetadata.VideoStatus.Buffering;
+                Metadata.PlayingState = PlayingStates.Buffering;
                 break;
 
             case "connect":
                 Metadata.CastStatus = VideoPlayerMetadata.CastStatuses.Casting;
+                CastDeviceName = value?.ToString();
                 break;
 
             case "timeupdate":

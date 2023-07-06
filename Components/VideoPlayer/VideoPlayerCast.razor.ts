@@ -49,7 +49,7 @@ let firstCasting = true;
 let castPosition: number = null;
 const castJsUrl = 'https://cdnjs.cloudflare.com/ajax/libs/castjs/5.2.0/cast.min.js';
 
- async function loadJs(sourceUrl) {
+async function loadJs(sourceUrl) {
 	return new Promise((resolve, reject) => {
 
 		var scripts = document.getElementsByTagName('script');
@@ -83,20 +83,20 @@ export async function createCastJsInstance(): Promise<any> {
 
 export async function init() {
 
+	console.log('init: start');
+
 	console.log(cjs);
-	console.log(1);
 
 	await loadJs(castJsUrl);
 
-	console.log(2);
+	console.log('init: js loaded');
+
+	if (!cjs)
+		cjs = new Castjs();
 
 	return new Promise((resolve, reject) => {
 
-		if (!cjs)
-			cjs = new Castjs();
-
-		console.log(3);
-
+		console.log('init: before event');
 
 		cjs.on('event', async (e) => {
 
@@ -109,25 +109,23 @@ export async function init() {
 				log = false;
 			}
 
+			if (e === 'connect') {
+				additionalValue = cjs.device;
+			}
 
-			if (log)
-				console.log(4);
-
-			if (log)
+			if (log) {
+				console.log('event: started');
+				console.log('----------------');
 				console.log(e);
-
-			if (log)
-				console.log(5);
+				console.log('----------------');
+			}
 
 			if (e === 'available') {
-				console.log(6);
+				console.log('event: available');
 
 				resolve(null);
 				return;
 			}
-
-			if (log)
-				console.log(7);
 
 			//if (firstCasting && e === 'playing') {
 
@@ -140,17 +138,13 @@ export async function init() {
 			//	firstCasting = false;
 			//}
 
-			if (log)
-				console.log(8);
-
 			await DotNet.invokeMethodAsync('AngryMonkey.Cloud.Components', 'HandleCastJsEventStatic', e, additionalValue);
 
 			if (log)
-				console.log(9);
-
+				console.log('event: ended');
 		});
 
-		console.log(4.1);
+		console.log('event: before error');
 
 		cjs.on('error', (e) => {
 			console.log('error: ' + e);
@@ -158,30 +152,33 @@ export async function init() {
 			reject(e);
 		});
 
-		console.log(4.2);
+		if (cjs.available)
+			resolve(null);
+
+		console.log('init: end');
 	});
 }
 
-export async function startCasting(url: string, position: number) {
+export async function startCasting(url: string, title: string, position: number) {
 
-	console.log(100);
-
+	console.log('casting: started');
+	
 	console.log(cjs);
 
 	let alreadyCasting = cjs.connected && cjs.src === url;
 
-	console.log(101);
+	console.log('casting: already casting = ' + alreadyCasting);
 
 	if (!alreadyCasting) {
 		firstCasting = true;
 
-		console.log(102);
+		console.log('casting: cast url');
 
 		cjs.cast(url, {
-			title: 'Coverbox TV',
+			title: title,
 		});
 
-		console.log(103);
+		console.log('casting: cast url end');
 	}
 
 	if (position !== undefined) {
@@ -191,12 +188,21 @@ export async function startCasting(url: string, position: number) {
 			cjs.seek(position);
 	}
 
-	console.log(104);
+	console.log('casting: before play');
+	console.log('casting: Available = ' + cjs.available);
+	console.log('casting: Connected = ' + cjs.connected);
+	console.log(cjs);
+	console.log('_____________________________________');
 
 	cjs.play();
 
-	console.log(105);
+	console.log('casting: after play');
+	console.log('casting: Available = ' + cjs.available);
+	console.log('casting: Connected = ' + cjs.connected);
+	console.log(cjs);
+	console.log('_____________________________________');
 
+	console.log('casting: end');
 }
 
 export function stopCasting() {

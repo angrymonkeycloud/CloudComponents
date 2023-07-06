@@ -240,6 +240,10 @@ body main .amc-datetimepicker-section .amc-datetimepicker {
   --amc-datetimepicker-accentColor: #fff !important;
   margin-bottom: 100px;
 }
+body main .video .-button._active {
+  background-color: var(--LinkColor);
+  color: #fff;
+}
 body main .video > article {
   display: flex;
   align-items: stretch;

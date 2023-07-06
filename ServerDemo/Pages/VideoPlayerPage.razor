@@ -7,22 +7,33 @@
 
 <section class="video">
     <article>
-        <button class="--button" @onclick="() => SetUrl(BlueMoonTrailerUrl)">Blue Moon Trailer</button>
-        <button class="--button" @onclick="() => SetUrl(CoverboxUrl)">Coverbox</button>
-        <button class="--button" @onclick="() => SetUrl(LiveStreamingUrl)">Live Streaming</button>
-        <button class="--button" @onclick="() => SetUrl(Mayadeen)">Mayadeen</button>
-        <button class="--button" @onclick="() => SetUrl(LiveStreamingNowWorking)">Live Streaming (Not Working)</button>
-        <button class="--button" @onclick="() => SetUrl(LiveStreamNotFound)">Live Streaming (Not Found)</button>
-        <button class="--button" @onclick="() => SetUrl(null)">Empty Url</button>
+        @foreach (VideoLink video in Videos)
+        {
+            <button class="--button @video.CssClass" @onclick="() => SetUrl(video)">@video.Title</button>
+        }
     </article>
 </section>
 
 <h2>@ErrorMessage</h2>
 
-<VideoPlayer @ref="Player" Metadata="PlayerMetadata" OnVideoError="Player_OnVideoError" OnVideoReady="Player_OnVideoReady" OnEvent="Player_OnEvent" />
+<VideoPlayer @ref="Player" Metadata="PlayerMetadata" OnVideoStateChanged="Player_OnVideoStateChanged" OnPlayingStateChanged="Player_OnPlayingStateChanged" OnVideoError="Player_OnVideoError" OnVideoReady="Player_OnVideoReady" OnEvent="Player_OnEvent" />
+
+
+@if (Player != null)
+{
+    <div class="properties">
+        @if (Videos.Any(key => key.IsActive))
+        {
+            <div>Video Url: @Videos.First(key => key.IsActive).Link</div>
+        }
+        <div>Video State: @Player.Metadata.VideoState</div>
+        <div>Playing State State: @Player.Metadata.PlayingState</div>
+        <div>Is Playing: @Player.Metadata.IsPlayingState</div>
+    </div>
+}
 
 <div>
-    @foreach(string eventLog in EventLogs)
+    @foreach (string eventLog in EventLogs)
     {
         <p>@eventLog</p>
     }
@@ -31,21 +42,35 @@
 <video id="TestVideo"></video>
 
 @code {
-    private VideoPlayer Player { get; set; }
 
-    private VideoPlayerMetadata PlayerMetadata { get; set; } = new()
+    class VideoLink
     {
-        ReserveAspectRatio = true,
-        Autoplay = true,
-        VideoUrl = BlueMoonTrailerUrl
+        public required string Title { get; set; }
+        public required string? Link { get; set; }
+        public bool IsActive { get; set; } = false;
+        public string CssClass => IsActive ? "_active" : string.Empty;
+    }
+
+    static List<VideoLink> Videos => new()
+    {
+        new(){ Title = "Empty Url", Link = null},
+        new(){ Title = "A Long Title for Live Stream live for testing", Link = "https://stmv1.cnarlatam.com/cineinfantil/cineinfantil/playlist.m3u8"},
+        new(){ Title = "Mayadeen", Link = "https://mdnlv.cdn.octivid.com/almdn/smil:mpegts.stream.smil/playlist.m3u8"},
+        new(){ Title = "Blue Moon Trailer Url", Link = "https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4"},
+        new(){ Title = "Coverbox", Link = "https://cbxinfo-staging.azurewebsites.net/video/coverbox-platform.mp4"},
+        new(){ Title = "Live Stream Not Working", Link = "http://istream.binarywaves.com:8081/hls/arabica/playlist.m3u8"},
+        new(){ Title = "Live Stream Not Found", Link = "https://dsadsadsadasdsadasdsadas.m3u8"},
     };
 
-    private const string BlueMoonTrailerUrl = "https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4";
-    private const string CoverboxUrl = "https://cbxinfo-staging.azurewebsites.net/video/coverbox-platform.mp4";
-    private const string LiveStreamingUrl = "https://stmv1.cnarlatam.com/cineinfantil/cineinfantil/playlist.m3u8";
-    private const string Mayadeen = "https://mdnlv.cdn.octivid.com/almdn/smil:mpegts.stream.smil/playlist.m3u8";
-    private const string LiveStreamingNowWorking = "http://istream.binarywaves.com:8081/hls/arabica/playlist.m3u8";
-    private const string LiveStreamNotFound = "https://dsadsadsadasdsadasdsadas.m3u8";
+    private VideoPlayer? Player { get; set; }
+
+    private VideoPlayerMetadata PlayerMetadata { get; set; } = new()
+        {
+            ReserveAspectRatio = true,
+            Autoplay = true,
+            Title = Videos.First().Title,
+            VideoUrl = Videos.First().Link,
+        };
 
     private string? ErrorMessage { get; set; }
     private List<string> EventLogs { get; set; } = new();
@@ -64,14 +89,35 @@
 
     private void Player_OnEvent(VideoEventData data)
     {
-        EventLogs.Add($"Event: {data.EventName}");
+        //EventLogs.Add($"Event: {data.EventName}");
         StateHasChanged();
     }
 
-    public void SetUrl(string? url)
+    private async Task Player_OnVideoStateChanged(VideoStates state)
     {
+        EventLogs.Add($"Video Sate: {state.ToString()}");
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    private async Task Player_OnPlayingStateChanged(PlayingStates state)
+    {
+        EventLogs.Add($"Playing Sate: {state.ToString()}");
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    void SetUrl(VideoLink video)
+    {
+        if (video.IsActive)
+            return;
+
+        foreach (VideoLink v in Videos.Where(key => key.IsActive))
+            v.IsActive = false;
+
+        video.IsActive = true;
+
         EventLogs = new();
-        PlayerMetadata.VideoUrl = url;
+        PlayerMetadata.Title = video.Title;
+        PlayerMetadata.VideoUrl = video.Link;
         StateHasChanged();
     }
 }
