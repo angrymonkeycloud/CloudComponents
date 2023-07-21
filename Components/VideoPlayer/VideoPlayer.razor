@@ -3,9 +3,12 @@
 
 <div class="amc-videoplayer @ClassAttributes" @ref="ComponentElement" @onmousemove="MainMouseMove" @onfullscreenchange="OnFullScreenChange" @onmousewheel="OnMouseWheel" @onclick="OnComponentClick">
 
-    <div class="amc-videoplayer-video">
-        <video src="@_videoUrl" @onchange="OnVideoChange" playsinline x-webkit-airplay="deny"></video>
-    </div>
+    @if (Metadata.ShowVideoElement)
+    {
+        <div class="amc-videoplayer-video">
+            <video src="@_videoUrl" @onchange="OnVideoChange" playsinline x-webkit-airplay="deny"></video>
+        </div>
+    }
 
     @if (Metadata.VideoState != VideoStates.Error)
     {
@@ -143,10 +146,13 @@
                             </div>
                         }
 
-                        @* Volume *@
-                        <div class="amc-videoplayer-volume @(Metadata.DoShowVolumeControls? "_extended": string.Empty)" @onclick="OnVolumeButtonClick">
-                            <VolumeBar Value="@Metadata.Volume" IsMuted="Metadata.IsMuted" Extended="Metadata.DoShowVolumeControls" OnChanging="OnVolumeChanging"></VolumeBar>
-                        </div>
+                        @if (Metadata.VolumeType != VolumeType.None)
+                        {
+                            @* Volume *@
+                            <div class="amc-videoplayer-volume @(Metadata.DoShowVolumeControls? "_extended": string.Empty)" @onclick="OnVolumeButtonClick">
+                                <VolumeBar Value="@Metadata.Volume" IsMuted="Metadata.IsMuted" Extended="Metadata.DoShowVolumeControls" OnChanging="OnVolumeChanging"></VolumeBar>
+                            </div>
+                        }
 
                         @* Status *@
                         <div class="amc-videoplayer-status">
@@ -174,14 +180,18 @@
                     </div>
 
                     <div class="amc-videoplayer-controls-right">
-                        <div class="amc-videoplayer-more">
-                            <button @onclick="MoreButtonInfo">
-                                <svg viewBox="0 0 8 8">
-                                    <path class="amc-videoplayer-svg-stroke" d="M1.57,4.55l.33,0A.16.16,0,0,1,2,4.68a2,2,0,0,0,.15.37.17.17,0,0,1,0,.18L2,5.48A.22.22,0,0,0,2,5.8l.34.35a.25.25,0,0,0,.33,0L2.89,6a.15.15,0,0,1,.17,0,1.37,1.37,0,0,0,.38.15.15.15,0,0,1,.1.13q0,.18,0,.33a.23.23,0,0,0,.24.22h.5a.24.24,0,0,0,.24-.22,3.25,3.25,0,0,0,0-.33.18.18,0,0,1,.11-.13,1.37,1.37,0,0,0,.38-.15.15.15,0,0,1,.17,0l.25.22a.23.23,0,0,0,.32,0l.35-.35a.23.23,0,0,0,0-.32L6,5.23a.17.17,0,0,1,0-.18,1.53,1.53,0,0,0,.16-.37.15.15,0,0,1,.12-.11l.33,0a.25.25,0,0,0,.23-.25V3.81a.24.24,0,0,0-.23-.24l-.33,0a.13.13,0,0,1-.12-.1,1.8,1.8,0,0,0-.16-.38.15.15,0,0,1,0-.17l.22-.25a.25.25,0,0,0,0-.33L5.8,2a.23.23,0,0,0-.32,0,2.32,2.32,0,0,0-.25.22.15.15,0,0,1-.17,0A2.5,2.5,0,0,0,4.68,2a.16.16,0,0,1-.11-.13,3,3,0,0,0,0-.32.25.25,0,0,0-.24-.23h-.5a.24.24,0,0,0-.24.23c0,.09,0,.21,0,.32a.14.14,0,0,1-.1.13,2.5,2.5,0,0,0-.38.15.15.15,0,0,1-.17,0A2.32,2.32,0,0,0,2.64,2a.24.24,0,0,0-.33,0L2,2.31a.25.25,0,0,0,0,.33l.22.25a.15.15,0,0,1,0,.17A2.5,2.5,0,0,0,2,3.44a.13.13,0,0,1-.13.1l-.32,0a.24.24,0,0,0-.23.24V4.3A.24.24,0,0,0,1.57,4.55Z" />
-                                    <path class="amc-videoplayer-svg-stroke" d="M4.06,4.83a.77.77,0,1,0-.77-.77A.76.76,0,0,0,4.06,4.83Z" />
-                                </svg>
-                            </button>
-                        </div>
+
+                        @if (Metadata.ShowSettings)
+                        {
+                            <div class="amc-videoplayer-more">
+                                <button @onclick="MoreButtonInfo">
+                                    <svg viewBox="0 0 8 8">
+                                        <path class="amc-videoplayer-svg-stroke" d="M1.57,4.55l.33,0A.16.16,0,0,1,2,4.68a2,2,0,0,0,.15.37.17.17,0,0,1,0,.18L2,5.48A.22.22,0,0,0,2,5.8l.34.35a.25.25,0,0,0,.33,0L2.89,6a.15.15,0,0,1,.17,0,1.37,1.37,0,0,0,.38.15.15.15,0,0,1,.1.13q0,.18,0,.33a.23.23,0,0,0,.24.22h.5a.24.24,0,0,0,.24-.22,3.25,3.25,0,0,0,0-.33.18.18,0,0,1,.11-.13,1.37,1.37,0,0,0,.38-.15.15.15,0,0,1,.17,0l.25.22a.23.23,0,0,0,.32,0l.35-.35a.23.23,0,0,0,0-.32L6,5.23a.17.17,0,0,1,0-.18,1.53,1.53,0,0,0,.16-.37.15.15,0,0,1,.12-.11l.33,0a.25.25,0,0,0,.23-.25V3.81a.24.24,0,0,0-.23-.24l-.33,0a.13.13,0,0,1-.12-.1,1.8,1.8,0,0,0-.16-.38.15.15,0,0,1,0-.17l.22-.25a.25.25,0,0,0,0-.33L5.8,2a.23.23,0,0,0-.32,0,2.32,2.32,0,0,0-.25.22.15.15,0,0,1-.17,0A2.5,2.5,0,0,0,4.68,2a.16.16,0,0,1-.11-.13,3,3,0,0,0,0-.32.25.25,0,0,0-.24-.23h-.5a.24.24,0,0,0-.24.23c0,.09,0,.21,0,.32a.14.14,0,0,1-.1.13,2.5,2.5,0,0,0-.38.15.15.15,0,0,1-.17,0A2.32,2.32,0,0,0,2.64,2a.24.24,0,0,0-.33,0L2,2.31a.25.25,0,0,0,0,.33l.22.25a.15.15,0,0,1,0,.17A2.5,2.5,0,0,0,2,3.44a.13.13,0,0,1-.13.1l-.32,0a.24.24,0,0,0-.23.24V4.3A.24.24,0,0,0,1.57,4.55Z" />
+                                        <path class="amc-videoplayer-svg-stroke" d="M4.06,4.83a.77.77,0,1,0-.77-.77A.76.76,0,0,0,4.06,4.83Z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        }
 
                         @* Cast *@
                         <div class="amc-videoplayer-castbutton">
@@ -217,7 +227,7 @@
                     </div>
                 </div>
 
-                @if (Metadata.ShowProgressBar)
+                @if (Metadata.ShowProgressBarElement)
                 {
                     <div class="amc-videoplayer-progress"
                     @onmousedown="OnProgressMouseDown"

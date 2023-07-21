@@ -163,12 +163,16 @@ namespace AngryMonkey.Cloud.Components
 
             var module = await Module;
 
-            double newValue = await module.InvokeAsync<double>("seeking", ComponentElement, args.ClientX);
+            try
+            {
+                double? newValue = await module.InvokeAsync<double?>("seeking", ComponentElement, args.ClientX);
 
-            if (newValue < 0)
-                return;
+                if (newValue == null || newValue < 0)
+                    return;
 
-            Metadata.SeekInfoTime = newValue;
+                Metadata.SeekInfoTime = newValue.Value;
+            }
+            catch { }
         }
 
         protected async Task OnProgressMouseOut(MouseEventArgs args)
@@ -182,7 +186,7 @@ namespace AngryMonkey.Cloud.Components
 
         public async Task OnVideoChange(ChangeEventArgs? args)
         {
-            if (Metadata.VideoState == VideoStates.Error || string.IsNullOrEmpty(Metadata.VideoUrl))
+            if (!Metadata.ShowVideoElement || Metadata.VideoState == VideoStates.Error || string.IsNullOrEmpty(Metadata.VideoUrl))
                 return;
 
             VideoEventData? eventData = null;
@@ -356,6 +360,9 @@ namespace AngryMonkey.Cloud.Components
 
         private async Task Init()
         {
+            if (!Metadata.ShowVideoElement)
+                return;
+
             if (string.IsNullOrEmpty(Metadata.VideoUrl))
                 Metadata.VideoState = VideoStates.NoVideo;
             else Metadata.VideoState = VideoStates.Loading;
@@ -445,6 +452,9 @@ namespace AngryMonkey.Cloud.Components
 
         public async Task VideoLoaded()
         {
+            if (!Metadata.ShowVideoElement)
+                return;
+
             var module = await Module;
 
             Metadata.CurrentVideoInfo = await module.InvokeAsync<VideoInfo>("getVideoInfo", ComponentElement);
@@ -460,34 +470,53 @@ namespace AngryMonkey.Cloud.Components
             if (Metadata.CurrentVideoInfo == null)
                 await VideoLoaded();
 
-            var module = await Module;
+            if (Metadata.ShowVideoElement)
+            {
+                var module = await Module;
 
-            await module.InvokeVoidAsync("play", ComponentElement);
-            Metadata.PlayingState = PlayingStates.Playing;
+                await module.InvokeVoidAsync("play", ComponentElement);
+                Metadata.PlayingState = PlayingStates.Playing;
+            }
+
+            await OnAction.InvokeAsync(new() { Action = ActionCodes.Play });
         }
 
         public async Task PauseVideo()
         {
-            var module = await Module;
+            if (Metadata.ShowVideoElement)
+            {
+                var module = await Module;
 
-            await module.InvokeVoidAsync("pause", ComponentElement);
-            Metadata.PlayingState = PlayingStates.Paused;
+                await module.InvokeVoidAsync("pause", ComponentElement);
+                Metadata.PlayingState = PlayingStates.Paused;
+            }
+            await OnAction.InvokeAsync(new() { Action = ActionCodes.Pause });
         }
 
         #region Full Screen
 
         public async Task EnterFullScreen()
         {
-            var module = await Module;
+            if (Metadata.ShowVideoElement)
+            {
+                var module = await Module;
 
-            await module.InvokeVoidAsync("enterFullScreen", ComponentElement);
+                await module.InvokeVoidAsync("enterFullScreen", ComponentElement);
+            }
+
+            await OnAction.InvokeAsync(new() { Action = ActionCodes.FullScreen });
         }
 
         public async Task ExitFullScreen()
         {
-            var module = await Module;
+            if (Metadata.ShowVideoElement)
+            {
+                var module = await Module;
 
-            await module.InvokeVoidAsync("exitFullScreen", ComponentElement);
+                await module.InvokeVoidAsync("exitFullScreen", ComponentElement);
+            }
+
+            await OnAction.InvokeAsync(new() { Action = ActionCodes.FullScreen });
         }
 
         public async Task OnFullScreenChange(EventArgs args)
@@ -651,18 +680,29 @@ namespace AngryMonkey.Cloud.Components
 
         public VideoPlayerCast VideoPlayerCast { get; set; }
 
-        private async Task Cast()
+        public async Task Cast()
         {
             if (Metadata.IsFullScreen)
                 await ExitFullScreen();
 
             await PauseVideo();
 
-            if (Metadata.IsCasting)
-                await VideoPlayerCast.StartCast();
-            else Metadata.CastStatus = VideoPlayerMetadata.CastStatuses.Initializing;
+            if (Metadata.ShowVideoElement)
+            {
+                if (Metadata.IsCasting)
+                    await VideoPlayerCast.StartCast();
+                else Metadata.CastStatus = VideoPlayerMetadata.CastStatuses.Initializing;
+            }
+
+            await OnAction.InvokeAsync(new() { Action = ActionCodes.Cast });
 
             Repaint();
+        }
+
+        public void UpdatedExternally()
+        {
+            Repaint();
+            StateHasChanged();
         }
     }
 }

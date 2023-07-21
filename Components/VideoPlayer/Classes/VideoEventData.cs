@@ -12,5 +12,18 @@ namespace AngryMonkey.Cloud.Components
 
 		[JsonPropertyName("state")]
 		public VideoState State { get; set; }
-	}
+    }
+
+	public enum ActionCodes
+	{
+		Play,
+		Pause,
+		FullScreen,
+		Cast
+}
+
+    public class PlayerAction
+    {
+        public ActionCodes Action { get; set; }
+    }
 }

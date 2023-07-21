@@ -81,6 +81,7 @@ namespace AngryMonkey.Cloud.Components
         #region Events Callbacks
 
         [Parameter] public EventCallback<VideoEventData> OnEvent { get; set; }
+        [Parameter] public EventCallback<PlayerAction> OnAction { get; set; }
         [Parameter] public EventCallback<VideoState> TimeUpdateEvent { get; set; }
         [Parameter] public EventCallback OnVideoError { get; set; }
         [Parameter] public EventCallback OnVideoReady { get; set; }

@@ -1,0 +1,128 @@
+﻿@page "/VideoPlayerOver"
+@inject CloudPage cloudPage
+@inject IJSRuntime JR
+@{
+    cloudPage.Title = "Video Player";
+}
+
+<h2>Controls</h2>
+<VideoPlayer @ref="PlayerControls" OnAction="OnAction" Metadata="PlayerControlsMetadata" />
+
+<h2>Video</h2>
+<VideoPlayer @ref="Player" Metadata="PlayerMetadata" OnVideoStateChanged="Player_OnVideoStateChanged" OnPlayingStateChanged="Player_OnPlayingStateChanged" OnVideoError="Player_OnVideoError" OnVideoReady="Player_OnVideoReady" OnEvent="Player_OnEvent" />
+
+@code {
+
+    class VideoLink
+    {
+        public required string Title { get; set; }
+        public required string? Link { get; set; }
+        public bool IsActive { get; set; } = false;
+        public string CssClass => IsActive ? "_active" : string.Empty;
+    }
+
+    private VideoPlayer? Player { get; set; }
+    private VideoPlayer? PlayerControls { get; set; }
+
+    private VideoPlayerMetadata PlayerControlsMetadata { get; set; } = new()
+        {
+            ReserveAspectRatio = true,
+            Autoplay = true,
+            ShowVideoElement = false
+        };
+
+    private VideoPlayerMetadata PlayerMetadata { get; set; } = new()
+        {
+            ReserveAspectRatio = true,
+            Autoplay = true,
+            Title = "Blue Moon Trailer",
+            VideoUrl = "https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4",
+        };
+
+    private string? ErrorMessage { get; set; }
+    private List<string> EventLogs { get; set; } = new();
+
+    private void Player_OnVideoReady()
+    {
+        ErrorMessage = null;
+        StateHasChanged();
+    }
+
+    private void Player_OnVideoError()
+    {
+        ErrorMessage = "Error";
+        StateHasChanged();
+    }
+
+    private void Player_OnEvent(VideoEventData data)
+    {
+        if (PlayerControls == null || Player == null)
+            return;
+
+        switch (data.EventName)
+        {
+            case VideoEvents.Play:
+                PlayerControls.Metadata.CurrentTime = Player.Metadata.CurrentTime;
+                PlayerControls.Metadata.VideoState = VideoStates.Ready;
+                PlayerControls.Metadata.PlayingState = PlayingStates.Playing;
+                break;
+
+            case VideoEvents.Pause:
+                PlayerControls.Metadata.PlayingState = PlayingStates.Paused;
+                break;
+
+            case VideoEvents.DurationChange:
+                PlayerControls.Metadata.CurrentTime = Player.Metadata.CurrentTime;
+                PlayerControls.Metadata.VideoState = VideoStates.Ready;
+                break;
+
+
+
+            default: break;
+        }
+
+        PlayerControls.UpdatedExternally();
+    }
+
+    private async Task OnAction(PlayerAction action)
+    {
+        if (Player == null)
+            return;
+
+        switch (action.Action)
+        {
+            case ActionCodes.Play:
+                await Player.PlayVideo();
+                break;
+
+            case ActionCodes.Pause:
+                await Player.PauseVideo();
+                break;
+
+            case ActionCodes.FullScreen:
+                if (Player.Metadata.IsFullScreen)
+                    await Player.ExitFullScreen();
+                else
+                    await Player.EnterFullScreen();
+                break;
+
+            case ActionCodes.Cast:
+                await Player.Cast();
+                break;
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task Player_OnVideoStateChanged(VideoStates state)
+    {
+        EventLogs.Add($"Video Sate: {state.ToString()}");
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    private async Task Player_OnPlayingStateChanged(PlayingStates state)
+    {
+        EventLogs.Add($"Playing Sate: {state.ToString()}");
+        await InvokeAsync(() => StateHasChanged());
+    }
+}

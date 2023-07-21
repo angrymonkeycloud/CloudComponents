@@ -24,6 +24,13 @@ public enum PlayingStates
     Paused
 }
 
+public enum VolumeType
+{
+    Full,
+    Mute,
+    None
+}
+
 public class VideoPlayerMetadata
 {
     // Public
@@ -36,12 +43,18 @@ public class VideoPlayerMetadata
     public string? VideoUrl { get; set; }
     public double Volume { get; set; } = 1;
     public bool IsLive { get; set; } = false;
+    public bool ShowVideoElement { get; set; } = true;
+    public bool ShowSettings { get; set; } = true;
+    public bool ShowProgressBar { get; set; } = true;
+    public VolumeType VolumeType { get; set; } = VolumeType.Full;
+    public bool IsFullScreen = false;
+    public double CurrentTime { get; set; } = 0;
+    public bool IsPlayingState { get; private set; }
 
     // Internal
 
     internal bool IsUserChangingProgress = false;
     //internal bool IsVideoPlaying = false;
-    internal bool IsFullScreen = false;
     internal bool _isMuted = false;
     internal bool IsMuted = false;
     internal bool DoShowVolumeControls = false;
@@ -49,15 +62,13 @@ public class VideoPlayerMetadata
     internal bool ShowSeekingInfo = false;
     //internal bool IsStream { get; set; }
     internal bool LiveInitialized { get; set; } = false;
-    internal bool ShowProgressBar => !IsLive && VideoState == VideoStates.Ready;
-    internal bool ShowDuration => !IsLive;
+    internal bool ShowProgressBarElement => !IsLive && VideoState == VideoStates.Ready;
+    internal bool ShowDuration => ShowProgressBar && !IsLive;
     internal bool EnableLoop => !IsLive;
 
     internal VideoInfo? CurrentVideoInfo { get; set; }
-    internal double CurrentTime { get; set; } = 0;
     internal VideoPlayer? Player { get; set; }
 
-    public bool IsPlayingState { get; private set; }
 
     private PlayingStates _playingState = PlayingStates.NotPlaying;
     public PlayingStates PlayingState
@@ -190,7 +201,7 @@ public class VideoPlayerMetadata
 
     #region Cast
 
-    internal bool IsCasting => CastStatus != CastStatuses.NotCasting;
+    public bool IsCasting => CastStatus != CastStatuses.NotCasting;
     internal bool CastingInitialized { get; set; } = false;
     internal CastStatuses CastStatus { get; set; } = CastStatuses.NotCasting;
     internal enum CastStatuses
