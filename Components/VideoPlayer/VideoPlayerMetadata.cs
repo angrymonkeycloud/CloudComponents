@@ -50,6 +50,7 @@ public class VideoPlayerMetadata
     public bool IsFullScreen = false;
     public double CurrentTime { get; set; } = 0;
     public bool IsPlayingState { get; private set; }
+    public bool EnableControls { get; set; } = true;
 
     // Internal
 
