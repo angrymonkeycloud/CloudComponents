@@ -21,6 +21,13 @@
         {
             <div class="amc-videoplayer-content">
 
+                @if (!ShowSideBar &&  ChildContent != null)
+                {
+                    <div class="amc-videoplayer-header">
+                        @ChildContent
+                    </div>
+                }
+
                 <div class="amc-videoplayer-top">
 
                     <div class="amc-videoplayer-empty" @onclick="OnEmptyClick" @ontouchstart="OnEmptyTouch">

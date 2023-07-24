@@ -388,6 +388,7 @@
   cursor: none;
 }
 .amc-videoplayer._hidecontrols .amc-videoplayer-info,
+.amc-videoplayer._hidecontrols .amc-videoplayer-header,
 .amc-videoplayer._hidecontrols .amc-videoplayer-controls {
   display: none;
 }

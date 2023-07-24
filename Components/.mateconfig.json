@@ -20,7 +20,7 @@
 		},
 		{
 			"output": "wwwroot/videoplayer/videoplayer.js",
-			"input": [ "node_modules/hls.js/dist/hls.js", "VideoPlayer/videoplayer.ts" ]
+			"input": [ "VideoPlayer/hls.js", "VideoPlayer/videoplayer.ts" ]
 		},
 		{
 			"output": "wwwroot/videoplayer/videoplayercast.js",

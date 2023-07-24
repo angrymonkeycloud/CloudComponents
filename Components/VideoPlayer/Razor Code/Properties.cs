@@ -16,6 +16,8 @@ namespace AngryMonkey.Cloud.Components
 {
     public partial class VideoPlayer
     {
+        [Parameter] public RenderFragment? ChildContent { get; set; }
+
         private ElementReference ComponentElement { get; set; }
 
         private Task<IJSObjectReference> _module;
