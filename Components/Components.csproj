@@ -16,7 +16,7 @@
 
 		<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
 		<FileVersion>$(PackageVersion)</FileVersion>
-		<Version>2.5.4</Version>
+		<Version>2.5.5</Version>
 		<PackageIcon>AngryMonkeyCloudLogo-64x64.png</PackageIcon>
 		<PackageOutputPath>..\NugetPackage\</PackageOutputPath>
 

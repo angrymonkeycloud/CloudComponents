@@ -699,10 +699,13 @@ namespace AngryMonkey.Cloud.Components
             Repaint();
         }
 
-        public void UpdatedExternally()
+        public async Task UpdatedExternally()
         {
-            Repaint();
-            StateHasChanged();
+            await InvokeAsync(() =>
+            {
+                Repaint();
+                StateHasChanged();
+            });
         }
     }
 }
