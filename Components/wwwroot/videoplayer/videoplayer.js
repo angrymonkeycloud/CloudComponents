@@ -40,12 +40,10 @@ export function play(component) {
     var video = component.querySelector('video');
     video.play();
 }
-//export function checkPoster(component: HTMLElement) {
-//	const video = component.querySelector('video');
-//	if (video.hasAttribute("poster"))
-//		return;
-//	video.setAttribute("poster", "");
-//}
+export function removePoster(component) {
+    var video = component.querySelector('video');
+    video.setAttribute("poster", "");
+}
 export function pause(component) {
     var video = component.querySelector('video');
     video.pause();
