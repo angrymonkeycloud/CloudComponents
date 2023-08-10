@@ -17,7 +17,28 @@ namespace AngryMonkey.Cloud.Components
     public partial class VideoPlayer
     {
         [Parameter] public RenderFragment? ChildContent { get; set; }
-        [Parameter] public string Poster { get; set; } = string.Empty;
+
+        private string? _Poster { get; set; }
+
+        [Parameter]
+        public string? Poster
+        {
+            get => _Poster;
+            set
+            {
+                if (_Poster == value)
+                    return;
+
+                _Poster = value;
+
+                if (string.IsNullOrEmpty(_Poster))
+                    Task.Run(async () =>
+                    {
+                        var module = await Module;
+                        await module.InvokeVoidAsync("removePoster", ComponentElement);
+                    });
+            }
+        }
 
         private ElementReference ComponentElement { get; set; }
 
