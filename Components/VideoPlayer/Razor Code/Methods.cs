@@ -391,6 +391,10 @@ namespace AngryMonkey.Cloud.Components
 
             Metadata.VideoState = VideoStates.Ready;
 
+
+            //await module.InvokeVoidAsync("checkPoster", ComponentElement);
+
+
             StateHasChanged();
         }
 

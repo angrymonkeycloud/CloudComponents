@@ -60,6 +60,15 @@ export function play(component: HTMLElement) {
 	video.play();
 
 }
+//export function checkPoster(component: HTMLElement) {
+
+//	const video = component.querySelector('video');
+
+//	if (video.hasAttribute("poster"))
+//		return;
+
+//	video.setAttribute("poster", "");
+//}
 
 export function pause(component: HTMLElement) {
 
