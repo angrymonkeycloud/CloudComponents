@@ -17,6 +17,7 @@ namespace AngryMonkey.Cloud.Components
     public partial class VideoPlayer
     {
         [Parameter] public RenderFragment? ChildContent { get; set; }
+        [Parameter] public string Poster { get; set; } = string.Empty;
 
         private ElementReference ComponentElement { get; set; }
 
