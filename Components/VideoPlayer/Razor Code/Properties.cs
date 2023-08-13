@@ -34,8 +34,8 @@ namespace AngryMonkey.Cloud.Components
                 if (string.IsNullOrEmpty(_Poster))
                     Task.Run(async () =>
                     {
-                        var module = await Module;
-                        await module.InvokeVoidAsync("removePoster", ComponentElement);
+                        await JS.InvokeVoidAsync("amcVideoPlayerRemovePoster", ComponentElement);
+                        await InvokeAsync(StateHasChanged);
                     });
             }
         }
