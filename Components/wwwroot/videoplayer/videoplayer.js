@@ -40,6 +40,10 @@ export function play(component) {
     var video = component.querySelector('video');
     video.play();
 }
+export function removePoster(component) {
+    var video = component.querySelector('video');
+    video.setAttribute("poster", "");
+}
 export function pause(component) {
     var video = component.querySelector('video');
     video.pause();

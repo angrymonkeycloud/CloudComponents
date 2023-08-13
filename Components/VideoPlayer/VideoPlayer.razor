@@ -6,7 +6,7 @@
     @if (Metadata.ShowVideoElement)
     {
         <div class="amc-videoplayer-video">
-            <video src="@_videoUrl" @onchange="OnVideoChange" playsinline x-webkit-airplay="deny"></video>
+            <video src="@_videoUrl" poster="@_Poster" @onchange="OnVideoChange" playsinline x-webkit-airplay="deny"></video>
         </div>
     }
 
