@@ -16,9 +16,6 @@ public partial class VideoPlayerCast
 {
     private ElementReference ComponentElement { get; set; }
 
-    private Task<IJSObjectReference> _module;
-    private Task<IJSObjectReference> Module => _module ??= GeneralMethods.GetIJSObjectReference(jsRuntime, "videoplayer/videoplayercast.js");
-
     static VideoPlayerCast PlayerCast;
     [Parameter] public required VideoPlayer Player { get; set; }
     [Parameter] public required VideoPlayerMetadata Metadata { get; set; }
@@ -48,9 +45,7 @@ public partial class VideoPlayerCast
         {
             //if (!Metadata.CastingInitialized)
             //{
-            var module = await Module;
-
-            await module.InvokeVoidAsync("init");
+            await JS.InvokeVoidAsync("amcVideoPlayerCastInit");
             Metadata.CastingInitialized = true;
             //}
 
@@ -64,11 +59,9 @@ public partial class VideoPlayerCast
 
     internal async Task StartCast()
     {
-        var module = await Module;
-
         try
         {
-            await module.InvokeVoidAsync("startCasting", Metadata.VideoUrl, $"{Metadata.Title} | Coverbox TV", Metadata.IsLive ? Metadata.CurrentTime : null);
+            await JS.InvokeVoidAsync("amcVideoPlayerStartCasting", Metadata.VideoUrl, $"{Metadata.Title} | Coverbox TV", Metadata.IsLive ? Metadata.CurrentTime : null);
         }
         catch (Exception e)
         {
@@ -79,9 +72,7 @@ public partial class VideoPlayerCast
     }
     private async Task StopCast()
     {
-        var module = await Module;
-
-        await module.InvokeVoidAsync("stopCasting");
+        await JS.InvokeVoidAsync("amcVideoPlayerStopCasting");
 
         Metadata.CastStatus = VideoPlayerMetadata.CastStatuses.NotCasting;
         Metadata.CastingInitialized = false;
@@ -91,16 +82,12 @@ public partial class VideoPlayerCast
 
     private async Task PlayCast()
     {
-        var module = await Module;
-
-        await module.InvokeVoidAsync("playCasting");
+        await JS.InvokeVoidAsync("amcVideoPlayerPlayCasting");
     }
 
     private async Task PauseCast()
     {
-        var module = await Module;
-
-        await module.InvokeVoidAsync("pauseCasting");
+        await JS.InvokeVoidAsync("amcVideoPlayerPauseCasting");
     }
 
     public async Task HandleCastJsEvent(string eventData, object? value)

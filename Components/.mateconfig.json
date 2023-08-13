@@ -19,16 +19,8 @@
 			"input": "Tabs/tabs.less"
 		},
 		{
-			"output": "wwwroot/videoplayer/videoplayer.js",
-			"input": [ "VideoPlayer/hls.js", "VideoPlayer/videoplayer.ts" ]
-		},
-		{
-			"output": "wwwroot/videoplayer/videoplayercast.js",
-			"input": "VideoPlayer/VideoPlayerCast.razor.ts"
-		},
-		{
-			"output": "wwwroot/progressbar/progressbar.js",
-			"input": "ProgressBar/progressbar.ts"
+			"output": "wwwroot/js/amc-components.js",
+			"input": [ "VideoPlayer/hls.js", "ProgressBar/progressbar.js", "VideoPlayer/videoplayer.js", "VideoPlayer/videoplayercast.js" ]
 		},
 		{
 			"output": "ProgressBar/ProgressBar.razor.css",

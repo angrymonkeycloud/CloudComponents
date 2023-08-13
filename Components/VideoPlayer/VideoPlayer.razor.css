@@ -60,7 +60,6 @@
   --backgroundColor: rgba(0, 0, 0, 0.4);
   --transitionDuration: 200ms;
   position: relative;
-  display: flex;
   justify-content: stretch;
   align-items: stretch;
   /*
@@ -103,6 +102,12 @@
 }
 .amc-videoplayer ::deep .amc-svg-stroke._corner-rounded {
   stroke-linecap: round;
+}
+.amc-videoplayer video {
+  display: none;
+}
+.amc-videoplayer._ready video {
+  display: block;
 }
 .amc-videoplayer * {
   color: #fff;

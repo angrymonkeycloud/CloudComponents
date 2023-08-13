@@ -40,18 +40,6 @@ namespace AngryMonkey.Cloud.Components
 
 		private ElementReference ComponentElement { get; set; }
 
-		private Task<IJSObjectReference> _module;
-		private Task<IJSObjectReference> Module => _module ??= GeneralMethods.GetIJSObjectReference(jsRuntime, "progressbar/progressbar.js");
-
-		public async ValueTask DisposeAsync()
-		{
-			if (_module != null)
-			{
-				var module = await _module;
-				await module.DisposeAsync();
-			}
-		}
-
 		#endregion
 
 		protected override async void OnParametersSet()
@@ -73,27 +61,21 @@ namespace AngryMonkey.Cloud.Components
 
 		private async Task Repaint()
 		{
-			var module = await Module;
-
 			try
 			{
-				await module.InvokeVoidAsync("repaint", ComponentElement, Value, Total);
+				await JS.InvokeVoidAsync("amcProgressBarRepaint", ComponentElement, Value, Total);
 			}
 			catch { }
 		}
 
 		private async Task OnComponentMouseDown(MouseEventArgs e)
 		{
-			var module = await Module;
-
-			await module.InvokeVoidAsync("mouseDown", ComponentElement, e.ClientX);
+			await JS.InvokeVoidAsync("amcProgressBarMouseDown", ComponentElement, e.ClientX);
 		}
 
 		protected async Task OnComponentTouchStart(TouchEventArgs args)
 		{
-			var module = await Module;
-
-			await module.InvokeVoidAsync("touchDown", ComponentElement, args.Touches[0].ClientX);
+			await JS.InvokeVoidAsync("amcProgressBarTouchDown", ComponentElement, args.Touches[0].ClientX);
 		}
 
 		private async Task OnRangeChange(ChangeEventArgs args)
@@ -138,9 +120,7 @@ namespace AngryMonkey.Cloud.Components
 
 		private async Task<ProgressBarSeekButtonInfo> GetInfo()
 		{
-			var module = await Module;
-
-			return await module.InvokeAsync<ProgressBarSeekButtonInfo>("getInfo", ComponentElement);
+			return await JS.InvokeAsync<ProgressBarSeekButtonInfo>("amcProgressBarGetInfo", ComponentElement);
 		}
 	}
 }

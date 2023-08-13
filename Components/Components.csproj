@@ -16,7 +16,7 @@
 
 		<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
 		<FileVersion>$(PackageVersion)</FileVersion>
-		<Version>2.5.5</Version>
+		<Version>2.5.9</Version>
 		<PackageIcon>AngryMonkeyCloudLogo-64x64.png</PackageIcon>
 		<PackageOutputPath>..\NugetPackage\</PackageOutputPath>
 
@@ -28,7 +28,7 @@
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
-	</ItemGroup>
+  </ItemGroup>
 
 	<ItemGroup>
 		<Compile Remove="Icons\**" />
@@ -67,8 +67,12 @@
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</None>
 		<None Include="wwwroot\cloud.css" />
-		<None Include="wwwroot\progressbar\progressbar.js" />
-		<None Include="wwwroot\progressbar\ProgressBar.min.js" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Update="wwwroot\js\amc-components.min.js" PackagePath="content\AngryMonkey.Cloud.Components" Pack="true">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 </Project>

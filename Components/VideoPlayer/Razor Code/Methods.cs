@@ -44,6 +44,8 @@ namespace AngryMonkey.Cloud.Components
             if (Metadata.IsCasting)
                 attributes.Add("_casting");
 
+            attributes.Add($"_{Metadata.VideoState.ToString().ToLower()}");
+
             ClassAttributes = string.Join(' ', attributes);
         }
 
@@ -53,9 +55,7 @@ namespace AngryMonkey.Cloud.Components
         {
             PlaybackSpeed = newSpeed;
 
-            var module = await Module;
-
-            await module.InvokeVoidAsync("setVideoPlaybackSpeed", ComponentElement, PlaybackSpeed);
+            await JS.InvokeVoidAsync("amcVideoPlayerSetVideoPlaybackSpeed", ComponentElement, PlaybackSpeed);
 
             ShowSideBarPlaybackSpeed = false;
         }
@@ -127,9 +127,7 @@ namespace AngryMonkey.Cloud.Components
                     return;
             }
 
-            var module = await Module;
-
-            await module.InvokeVoidAsync("changeCurrentTime", ComponentElement, args.NewValue);
+            await JS.InvokeVoidAsync("amcVideoPlayerChangeCurrentTime", ComponentElement, args.NewValue);
 
             Metadata.IsUserChangingProgress = false;
 
@@ -149,8 +147,7 @@ namespace AngryMonkey.Cloud.Components
             Repaint();
             Metadata.SeekInfoTime = args.NewValue;
 
-            var module = await Module;
-            await module.InvokeVoidAsync("seeking", ComponentElement, Metadata.SeekInfoTime, Metadata.CurrentVideoInfo.Duration);
+            await JS.InvokeVoidAsync("amcVideoPlayerSeeking", ComponentElement, Metadata.SeekInfoTime, Metadata.CurrentVideoInfo.Duration);
         }
 
         protected async Task OnProgressMouseMove(MouseEventArgs args)
@@ -161,11 +158,9 @@ namespace AngryMonkey.Cloud.Components
             Metadata.ShowSeekingInfo = true;
             Repaint();
 
-            var module = await Module;
-
             try
             {
-                double? newValue = await module.InvokeAsync<double?>("seeking", ComponentElement, args.ClientX);
+                double? newValue = await JS.InvokeAsync<double?>("amcVideoPlayerSeeking", ComponentElement, args.ClientX);
 
                 if (newValue == null || newValue < 0)
                     return;
@@ -210,12 +205,10 @@ namespace AngryMonkey.Cloud.Components
 
                 try
                 {
-                    var module = await Module;
-
-                    bool isPlayableNatively = await module.InvokeAsync<bool>("IsStreamingPlayableNatively", ComponentElement);
+                    bool isPlayableNatively = await JS.InvokeAsync<bool>("amcVideoPlayerIsStreamingPlayableNatively", ComponentElement);
 
                     if (!isPlayableNatively)
-                        await module.InvokeAsync<string>("initializeStreamingUrl", ComponentElement, Metadata.VideoUrl);
+                        await JS.InvokeAsync<string>("amcVideoPlayerInitializeStreamingUrl", ComponentElement, Metadata.VideoUrl);
 
                     Metadata.LiveInitialized = true;
 
@@ -367,11 +360,9 @@ namespace AngryMonkey.Cloud.Components
                 Metadata.VideoState = VideoStates.NoVideo;
             else Metadata.VideoState = VideoStates.Loading;
 
-            var module = await Module;
-
             try
             {
-                await module.InvokeVoidAsync("init", ComponentElement);
+                await JS.InvokeVoidAsync("amcVideoPlayerInit", ComponentElement);
             }
             catch (Exception e)
             {
@@ -425,8 +416,7 @@ namespace AngryMonkey.Cloud.Components
 
                 try
                 {
-                    var module = await Module;
-                    await module.InvokeAsync<string>("disposeStreaming");
+                    await JS.InvokeVoidAsync("amcVideoPlayerDisposeStreaming");
                 }
                 catch { }
 
@@ -445,9 +435,7 @@ namespace AngryMonkey.Cloud.Components
             VideoStateOptions options = new() { All = true };
             VideoEventOptions?.TryGetValue(eventName, out options);
 
-            var module = await Module;
-
-            await module.InvokeVoidAsync("registerCustomEventHandler", ComponentElement, eventName.ToString().ToLower(), options.GetPayload());
+            await JS.InvokeVoidAsync("amcVideoPlayerRegisterCustomEventHandler", ComponentElement, eventName.ToString().ToLower(), options.GetPayload());
         }
 
         public async Task VideoLoaded()
@@ -455,9 +443,7 @@ namespace AngryMonkey.Cloud.Components
             if (!Metadata.ShowVideoElement)
                 return;
 
-            var module = await Module;
-
-            Metadata.CurrentVideoInfo = await module.InvokeAsync<VideoInfo>("getVideoInfo", ComponentElement);
+            Metadata.CurrentVideoInfo = await JS.InvokeAsync<VideoInfo>("amcVideoPlayerGetVideoInfo", ComponentElement);
             Metadata.VideoState = VideoStates.Ready;
             await CallReserveAspectRatio();
         }
@@ -472,9 +458,7 @@ namespace AngryMonkey.Cloud.Components
 
             if (Metadata.ShowVideoElement)
             {
-                var module = await Module;
-
-                await module.InvokeVoidAsync("play", ComponentElement);
+                await JS.InvokeVoidAsync("amcVideoPlayerPlay", ComponentElement);
                 Metadata.PlayingState = PlayingStates.Playing;
             }
 
@@ -485,9 +469,7 @@ namespace AngryMonkey.Cloud.Components
         {
             if (Metadata.ShowVideoElement)
             {
-                var module = await Module;
-
-                await module.InvokeVoidAsync("pause", ComponentElement);
+                await JS.InvokeVoidAsync("amcVideoPlayerPause", ComponentElement);
                 Metadata.PlayingState = PlayingStates.Paused;
             }
             await OnAction.InvokeAsync(new() { Action = ActionCodes.Pause });
@@ -498,11 +480,7 @@ namespace AngryMonkey.Cloud.Components
         public async Task EnterFullScreen()
         {
             if (Metadata.ShowVideoElement)
-            {
-                var module = await Module;
-
-                await module.InvokeVoidAsync("enterFullScreen", ComponentElement);
-            }
+                await JS.InvokeVoidAsync("amcVideoPlayerEnterFullScreen", ComponentElement);
 
             await OnAction.InvokeAsync(new() { Action = ActionCodes.FullScreen });
         }
@@ -510,11 +488,7 @@ namespace AngryMonkey.Cloud.Components
         public async Task ExitFullScreen()
         {
             if (Metadata.ShowVideoElement)
-            {
-                var module = await Module;
-
-                await module.InvokeVoidAsync("exitFullScreen", ComponentElement);
-            }
+                await JS.InvokeVoidAsync("amcVideoPlayerExitFullScreen", ComponentElement);
 
             await OnAction.InvokeAsync(new() { Action = ActionCodes.FullScreen });
         }
@@ -532,11 +506,9 @@ namespace AngryMonkey.Cloud.Components
         {
             Metadata.CurrentTime = 0;
 
-            var module = await Module;
-
             try
             {
-                await module.InvokeVoidAsync("stop", ComponentElement);
+                await JS.InvokeVoidAsync("amcVideoPlayerStop", ComponentElement);
             }
             catch (Exception e)
             {
@@ -548,15 +520,6 @@ namespace AngryMonkey.Cloud.Components
             Repaint();
         }
 
-        public async ValueTask DisposeAsync()
-        {
-            if (_module != null)
-            {
-                var module = await _module;
-                await module.DisposeAsync();
-            }
-        }
-
         private object _resizeListener = null;
 
         private async Task CallReserveAspectRatio()
@@ -564,11 +527,9 @@ namespace AngryMonkey.Cloud.Components
             while (Metadata.CurrentVideoInfo == null)
                 await Task.Delay(1000);
 
-            var module = await Module;
-
             if (Metadata.ReserveAspectRatio)
-                _resizeListener = await module.InvokeAsync<object>("AddReserveAspectRatioListener", ComponentElement, Metadata.CurrentVideoInfo.Width, Metadata.CurrentVideoInfo.Height);
-            else await module.InvokeVoidAsync("RemoveReserveAspectRatioListener", ComponentElement, _resizeListener);
+                _resizeListener = await JS.InvokeAsync<object>("amcVideoPlayerAddReserveAspectRatioListener", ComponentElement, Metadata.CurrentVideoInfo.Width, Metadata.CurrentVideoInfo.Height);
+            else await JS.InvokeVoidAsync("amcVideoPlayerRemoveReserveAspectRatioListener", ComponentElement, _resizeListener);
         }
 
         protected async Task OnMouseWheel(WheelEventArgs args)
@@ -594,9 +555,7 @@ namespace AngryMonkey.Cloud.Components
 
         private async Task MuteVolume()
         {
-            var module = await Module;
-
-            await module.InvokeVoidAsync("muteVolume", ComponentElement, Metadata.IsMuted);
+            await JS.InvokeVoidAsync("amcVideoPlayerMuteVolume", ComponentElement, Metadata.IsMuted);
         }
 
         protected void OnVolumeButtonClick()
@@ -614,9 +573,7 @@ namespace AngryMonkey.Cloud.Components
                 await MuteVolume();
             }
 
-            var module = await Module;
-
-            await module.InvokeVoidAsync("changeVolume", ComponentElement, Metadata.Volume);
+            await JS.InvokeVoidAsync("amcVideoPlayerChangeVolume", ComponentElement, Metadata.Volume);
 
             await ProgressiveDelay();
         }

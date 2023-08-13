@@ -20,9 +20,6 @@ namespace AngryMonkey.Cloud.Components
 
         private ElementReference ComponentElement { get; set; }
 
-        private Task<IJSObjectReference> _module;
-        private Task<IJSObjectReference> Module => _module ??= GeneralMethods.GetIJSObjectReference(jsRuntime, "videoplayer/videoplayer.js");
-
         private string ClassAttributes { get; set; } = string.Empty;
 
         [Parameter] public required VideoPlayerMetadata Metadata { get; set; }

@@ -25,9 +25,18 @@
 	--backgroundColor: rgba(0, 0, 0, .4);
 	--transitionDuration: 200ms;
 	position: relative;
-	display: flex;
 	justify-content: stretch;
 	align-items: stretch;
+
+	video {
+		display: none;
+	}
+
+	&._ready {
+		video {
+			display: block;
+		}
+	}
 
 	* {
 		color: #fff;
