@@ -349,6 +349,8 @@ namespace AngryMonkey.Cloud.Components
                 if (Metadata.Autoplay)
                     await PlayVideo();
             }
+
+            await base.OnAfterRenderAsync(firstRender);
         }
 
         private async Task Init()
