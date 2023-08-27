@@ -67,12 +67,13 @@
     private VideoPlayer? Player { get; set; }
 
     private VideoPlayerMetadata PlayerMetadata { get; set; } = new()
-        {
-            ReserveAspectRatio = true,
-            Autoplay = true,
-            Title = Videos.First().Title,
-            VideoUrl = Videos.First().Link
-        };
+    {
+        ReserveAspectRatio = true,
+        Autoplay = true,
+        Title = Videos.First().Title,
+        VideoUrl = Videos.First().Link,
+        EnableControls = true
+    };
 
     private string? ErrorMessage { get; set; }
     private List<string> EventLogs { get; set; } = new();

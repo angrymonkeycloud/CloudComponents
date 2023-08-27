@@ -19,6 +19,7 @@ namespace AngryMonkey.Cloud.Components
         [Parameter] public RenderFragment? ChildContent { get; set; }
 
         private string? _Poster { get; set; }
+        private bool ShowContent => Metadata.EnableControls || ChildContent != null;
 
         [Parameter]
         public string? Poster
