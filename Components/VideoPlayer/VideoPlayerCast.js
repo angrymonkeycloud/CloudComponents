@@ -87,7 +87,7 @@ window.amcVideoPlayerCastInit = async () => {
 
     console.log(cjs);
 
-    await loadJs(castJsUrl);
+    await amcVideoPlayerLoadJs(castJsUrl);
 
     console.log('init: js loaded');
 

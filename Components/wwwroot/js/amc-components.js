@@ -175,6 +175,12 @@ window.amcVideoPlayerGetVideoInfo = (component) => {
     return videoInfo;
 }
 
+window.amcVideoPlayerRemovePoster = (component) => {
+
+    const video = component.querySelector('video');
+    video.setAttribute("poster", "");
+}
+
 window.amcVideoPlayerSetVideoPlaybackSpeed = (component, value) => {
 
     const video = component.querySelector('video');
@@ -588,7 +594,7 @@ window.amcVideoPlayerCastInit = async () => {
 
     console.log(cjs);
 
-    await loadJs(castJsUrl);
+    await amcVideoPlayerLoadJs(castJsUrl);
 
     console.log('init: js loaded');
 
