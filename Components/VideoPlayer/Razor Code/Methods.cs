@@ -205,9 +205,9 @@ namespace AngryMonkey.Cloud.Components
 
                 try
                 {
-                    bool isPlayableNatively = await JS.InvokeAsync<bool>("amcVideoPlayerIsStreamingPlayableNatively", ComponentElement);
+                    Metadata.LivePlaysNatively = await JS.InvokeAsync<bool>("amcVideoPlayerIsStreamingPlayableNatively", ComponentElement);
 
-                    if (!isPlayableNatively)
+                    if (!Metadata.LivePlaysNatively)
                         await JS.InvokeAsync<string>("amcVideoPlayerInitializeStreamingUrl", ComponentElement, Metadata.VideoUrl);
 
                     Metadata.LiveInitialized = true;
@@ -335,6 +335,8 @@ namespace AngryMonkey.Cloud.Components
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
+            await base.OnAfterRenderAsync(firstRender);
+
             if (firstRender)
             {
                 await Init();
@@ -349,8 +351,6 @@ namespace AngryMonkey.Cloud.Components
                 if (Metadata.Autoplay)
                     await PlayVideo();
             }
-
-            await base.OnAfterRenderAsync(firstRender);
         }
 
         private async Task Init()

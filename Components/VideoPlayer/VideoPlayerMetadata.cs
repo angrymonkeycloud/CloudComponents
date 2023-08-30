@@ -63,6 +63,7 @@ public class VideoPlayerMetadata
     internal bool ShowSeekingInfo = false;
     //internal bool IsStream { get; set; }
     internal bool LiveInitialized { get; set; } = false;
+    public bool LivePlaysNatively { get; set; } = false;
     internal bool ShowProgressBarElement => !IsLive && VideoState == VideoStates.Ready;
     internal bool ShowDuration => ShowProgressBar && !IsLive;
     internal bool EnableLoop => !IsLive;
