@@ -1,78 +1,78 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
-		<Nullable>enable</Nullable>
-		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-		<AssemblyName>AngryMonkey.Cloud.Components</AssemblyName>
-		<RootNamespace>AngryMonkey.Cloud.Components</RootNamespace>
-		<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
-		<Product>Cloud Components</Product>
-		<Authors>Angry Monkey</Authors>
-		<Company>Angry Monkey</Company>
-		<Description />
-		<PackageLicenseExpression></PackageLicenseExpression>
-		<PackageProjectUrl>https://www.angrymonkeycloud.com/</PackageProjectUrl>
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <AssemblyName>AngryMonkey.Cloud.Components</AssemblyName>
+    <RootNamespace>AngryMonkey.Cloud.Components</RootNamespace>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <Product>Cloud Components</Product>
+    <Authors>Angry Monkey</Authors>
+    <Company>Angry Monkey</Company>
+    <Description />
+    <PackageLicenseExpression></PackageLicenseExpression>
+    <PackageProjectUrl>https://www.angrymonkeycloud.com/</PackageProjectUrl>
 
-		<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
-		<FileVersion>$(PackageVersion)</FileVersion>
-		<Version>2.5.14</Version>
-		<PackageIcon>AngryMonkeyCloudLogo-64x64.png</PackageIcon>
-		<PackageOutputPath>..\NugetPackage\</PackageOutputPath>
+    <AssemblyVersion>$(PackageVersion)</AssemblyVersion>
+    <FileVersion>$(PackageVersion)</FileVersion>
+    <Version>2.5.14</Version>
+    <PackageIcon>AngryMonkeyCloudLogo-64x64.png</PackageIcon>
+    <PackageOutputPath>..\NugetPackage\</PackageOutputPath>
 
-		<Configurations>Debug;Release;Release_Server</Configurations>
-	</PropertyGroup>
+    <Configurations>Debug;Release;Release_Server</Configurations>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<None Update="AngryMonkeyCloudLogo-64x64.png">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
+  <ItemGroup>
+    <None Update="AngryMonkeyCloudLogo-64x64.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
-	<ItemGroup>
-		<Compile Remove="Icons\**" />
-		<Content Remove="Icons\**" />
-		<EmbeddedResource Remove="Icons\**" />
-		<None Remove="Icons\**" />
-	</ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Icons\**" />
+    <Content Remove="Icons\**" />
+    <EmbeddedResource Remove="Icons\**" />
+    <None Remove="Icons\**" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<Content Remove=".mateconfig.json" />
-		<Content Remove="tsconfig.json" />
-		<Content Remove="wwwroot\cloud.css" />
-	</ItemGroup>
+  <ItemGroup>
+    <Content Remove=".mateconfig.json" />
+    <Content Remove="tsconfig.json" />
+    <Content Remove="wwwroot\cloud.css" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<None Remove="ProgressBar\progressbar.min.js" />
-	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.5" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.5" />
-	</ItemGroup>
+  <ItemGroup>
+    <None Remove="ProgressBar\progressbar.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.5" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<SupportedPlatform Include="browser" />
-	</ItemGroup>
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<Folder Include="GridView\" />
-	</ItemGroup>
+  <ItemGroup>
+    <Folder Include="GridView\" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<None Include=".mateconfig.json">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</None>
-		<None Include="tsconfig.json">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</None>
-		<None Include="wwwroot\cloud.css" />
-	</ItemGroup>
+  <ItemGroup>
+    <None Include=".mateconfig.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Include="tsconfig.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\cloud.css" />
+  </ItemGroup>
 
-	<ItemGroup>
-	  <Content Update="wwwroot\js\amc-components.min.js" PackagePath="content\AngryMonkey.Cloud.Components" Pack="true">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
-	</ItemGroup>
+  <ItemGroup>
+    <Content Update="wwwroot\js\amc-components.min.js" PackagePath="content\AngryMonkey.Cloud.Components" Pack="true">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
 </Project>
