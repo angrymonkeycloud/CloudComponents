@@ -301,7 +301,7 @@ namespace AngryMonkey.Cloud.Components
 
         public async Task OnVideoChange(ChangeEventArgs? args)
         {
-            if (!Metadata.ShowVideoElement || Metadata.VideoState == VideoStates.Error || string.IsNullOrEmpty(Metadata.VideoUrl))
+            if (Metadata.VideoState == VideoStates.Error || string.IsNullOrEmpty(Metadata.VideoUrl))
                 return;
 
             VideoEventData? eventData = null;
@@ -474,9 +474,6 @@ namespace AngryMonkey.Cloud.Components
 
         private async Task Init()
         {
-            if (!Metadata.ShowVideoElement)
-                return;
-
             if (string.IsNullOrEmpty(Metadata.VideoUrl))
                 Metadata.VideoState = VideoStates.NoVideo;
             else Metadata.VideoState = VideoStates.Loading;
@@ -561,9 +558,6 @@ namespace AngryMonkey.Cloud.Components
 
         public async Task VideoLoaded()
         {
-            if (!Metadata.ShowVideoElement)
-                return;
-
             Metadata.CurrentVideoInfo = await JS.InvokeAsync<VideoInfo>("amcVideoPlayerGetVideoInfo", ComponentElement);
             Metadata.VideoState = VideoStates.Ready;
             await CallReserveAspectRatio();
@@ -577,22 +571,17 @@ namespace AngryMonkey.Cloud.Components
             if (Metadata.CurrentVideoInfo == null)
                 await VideoLoaded();
 
-            if (Metadata.ShowVideoElement)
-            {
-                await JS.InvokeVoidAsync("amcVideoPlayerPlay", ComponentElement);
-                Metadata.PlayingState = PlayingStates.Playing;
-            }
+            await JS.InvokeVoidAsync("amcVideoPlayerPlay", ComponentElement);
+            Metadata.PlayingState = PlayingStates.Playing;
 
             await OnAction.InvokeAsync(new() { Action = ActionCodes.Play });
         }
 
         public async Task PauseVideo()
         {
-            if (Metadata.ShowVideoElement)
-            {
-                await JS.InvokeVoidAsync("amcVideoPlayerPause", ComponentElement);
-                Metadata.PlayingState = PlayingStates.Paused;
-            }
+            await JS.InvokeVoidAsync("amcVideoPlayerPause", ComponentElement);
+            Metadata.PlayingState = PlayingStates.Paused;
+
             await OnAction.InvokeAsync(new() { Action = ActionCodes.Pause });
         }
 
@@ -600,16 +589,14 @@ namespace AngryMonkey.Cloud.Components
 
         public async Task EnterFullScreen()
         {
-            if (Metadata.ShowVideoElement)
-                await JS.InvokeVoidAsync("amcVideoPlayerEnterFullScreen", ComponentElement);
+            await JS.InvokeVoidAsync("amcVideoPlayerEnterFullScreen", ComponentElement);
 
             await OnAction.InvokeAsync(new() { Action = ActionCodes.FullScreen });
         }
 
         public async Task ExitFullScreen()
         {
-            if (Metadata.ShowVideoElement)
-                await JS.InvokeVoidAsync("amcVideoPlayerExitFullScreen", ComponentElement);
+            await JS.InvokeVoidAsync("amcVideoPlayerExitFullScreen", ComponentElement);
 
             await OnAction.InvokeAsync(new() { Action = ActionCodes.FullScreen });
         }
@@ -639,6 +626,8 @@ namespace AngryMonkey.Cloud.Components
             Metadata.PlayingState = PlayingStates.NotPlaying;
 
             Repaint();
+
+            await OnAction.InvokeAsync(new() { Action = ActionCodes.Stop });
         }
 
         private object _resizeListener = null;
@@ -730,7 +719,7 @@ namespace AngryMonkey.Cloud.Components
             Guid id = Guid.NewGuid();
             latestId = id;
 
-            await Task.Delay(3000);
+            await Task.Delay(2000);
 
             if (id != latestId)
                 return;
@@ -765,12 +754,9 @@ namespace AngryMonkey.Cloud.Components
 
             await PauseVideo();
 
-            if (Metadata.ShowVideoElement)
-            {
-                if (Metadata.IsCasting)
-                    await VideoPlayerCast.StartCast();
-                else Metadata.CastStatus = VideoPlayerMetadata.CastStatuses.Initializing;
-            }
+            if (Metadata.IsCasting)
+                await VideoPlayerCast.StartCast();
+            else Metadata.CastStatus = VideoPlayerMetadata.CastStatuses.Initializing;
 
             await OnAction.InvokeAsync(new() { Action = ActionCodes.Cast });
 

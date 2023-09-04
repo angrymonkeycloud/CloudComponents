@@ -18,6 +18,7 @@ namespace AngryMonkey.Cloud.Components
 	{
 		Play,
 		Pause,
+		Stop,
 		FullScreen,
 		Cast
 }

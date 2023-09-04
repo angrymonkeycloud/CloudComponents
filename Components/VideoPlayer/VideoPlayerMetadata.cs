@@ -43,7 +43,6 @@ public class VideoPlayerMetadata
     public string? VideoUrl { get; set; }
     public double Volume { get; set; } = 1;
     public bool IsLive { get; set; } = false;
-    public bool ShowVideoElement { get; set; } = true;
     public bool ShowSettings { get; set; } = true;
     public bool ShowProgressBar { get; set; } = true;
     public VolumeType VolumeType { get; set; } = VolumeType.Full;
