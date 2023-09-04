@@ -20,7 +20,7 @@
 		},
 		{
 			"output": "wwwroot/js/amc-components.js",
-			"input": [ "VideoPlayer/hls.js", "ProgressBar/progressbar.js", "VideoPlayer/videoplayer.js", "VideoPlayer/videoplayercast.js" ]
+			"input": [ "VideoPlayer/hls.js", "ProgressBar/progressbar.js", "VideoPlayer/VideoPlayer.razor.js", "VideoPlayer/VideoPlayerCast.razor.js" ]
 		},
 		{
 			"output": "ProgressBar/ProgressBar.razor.css",
