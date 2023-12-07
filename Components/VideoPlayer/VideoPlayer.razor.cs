@@ -56,7 +56,7 @@ namespace AngryMonkey.Cloud.Components
             if (string.IsNullOrEmpty(Metadata?.VideoUrl))
                 return false;
 
-            string[] extentions = new[] { "m3u8" };
+            string[] extentions = ["m3u8"];
 
             return extentions.Any(ex => new FileInfo(Metadata.VideoUrl).Extension.StartsWith($".{ex}", StringComparison.OrdinalIgnoreCase));
         }
@@ -77,13 +77,7 @@ namespace AngryMonkey.Cloud.Components
 
         private string? _videoUrl { get; set; }
 
-        private string DisplayVolume
-        {
-            get
-            {
-                return $"{Metadata.Volume * 100}";
-            }
-        }
+        private string DisplayVolume => $"{Metadata.Volume * 100}";
 
 
         private ProgressBarStyle ProgressBarStyle = ProgressBarStyle.Circle;

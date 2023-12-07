@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<AssemblyName>AngryMonkey.Cloud.Components.Demo</AssemblyName>
 		<RootNamespace>AngryMonkey.Cloud.Components.Demo</RootNamespace>
 		<Nullable>enable</Nullable>
@@ -19,8 +19,8 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="AngryMonkey.CloudWeb" Version="1.0.8" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.8" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.8" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

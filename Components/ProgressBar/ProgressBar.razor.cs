@@ -2,17 +2,12 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AngryMonkey.Cloud.Components
 {
 	public partial class ProgressBar
 	{
-		#region Parameters
-
 		[Parameter] public double BufferValue { get; set; }
 
 		[Parameter] public ProgressBarStyle Style { get; set; } = ProgressBarStyle.Flat;
@@ -27,20 +22,10 @@ namespace AngryMonkey.Cloud.Components
 		private double _total = 0;
 		[Parameter] public double Total { get; set; }
 
-		#endregion
+        private ElementReference ComponentElement { get; set; }
 
-		#region Events Parameters
-
-		[Parameter] public EventCallback<ProgressBarChangeEventArgs> OnChanging { get; set; }
+        [Parameter] public EventCallback<ProgressBarChangeEventArgs> OnChanging { get; set; }
 		[Parameter] public EventCallback<ProgressBarChangeEventArgs> OnChanged { get; set; }
-
-		#endregion
-
-		#region Common
-
-		private ElementReference ComponentElement { get; set; }
-
-		#endregion
 
 		protected override async void OnParametersSet()
 		{
@@ -120,7 +105,7 @@ namespace AngryMonkey.Cloud.Components
 
 		private async Task<ProgressBarSeekButtonInfo> GetInfo()
 		{
-			return await JS.InvokeAsync<ProgressBarSeekButtonInfo>("amcProgressBarGetInfo", ComponentElement);
+            return await JS.InvokeAsync<ProgressBarSeekButtonInfo>("amcProgressBarGetInfo", ComponentElement);
 		}
 	}
 }
