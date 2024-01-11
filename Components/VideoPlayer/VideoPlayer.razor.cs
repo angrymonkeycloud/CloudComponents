@@ -22,7 +22,7 @@ namespace AngryMonkey.Cloud.Components
 
         [Parameter] public RenderFragment? ChildContent { get; set; }
 
-        private string? _Poster { get; set; }
+        private string? _Poster;
         private bool ShowContent => Metadata.EnableControls || ChildContent != null;
 
         [Parameter]
@@ -135,7 +135,7 @@ namespace AngryMonkey.Cloud.Components
         {
             ProgressBarStyle = HideControls ? ProgressBarStyle.Flat : ProgressBarStyle.Circle;
 
-            List<string> attributes = new();
+            List<string> attributes = [];
 
             if (HideControls && !Metadata.IsCasting)
             {
@@ -448,8 +448,6 @@ namespace AngryMonkey.Cloud.Components
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            await base.OnAfterRenderAsync(firstRender);
-
             if (firstRender)
             {
                 await Init();
