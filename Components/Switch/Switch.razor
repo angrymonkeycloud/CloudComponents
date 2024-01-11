@@ -1,0 +1,73 @@
+﻿<div class="amc-switch @CssClass">
+    <div>
+        <span class="amc-switch-slider">
+            <span class="amc-switch-circle">
+                <Checkmark />
+                <CrossIcon />
+            </span>
+        </span>
+        <button @onclick='SwitchButton'>switch</button>
+    </div>
+
+    @if (DisplayText)
+    {
+        <span class="amc-switch-text">@TextDisplayed</span>
+    }
+</div>
+
+@code {
+
+    private bool? _value;
+
+    [Parameter] public bool DisplayText { get; set; } = true;
+    [Parameter] public bool AllowNone { get; set; } = false;
+    [Parameter] public EventCallback<bool?> ValueChanged { get; set; }
+
+    [Parameter] public string TrueDefaultText { get; set; } = "on";
+    [Parameter] public string FalseDefaultText { get; set; } = "off";
+    [Parameter] public string NoneDefaultText { get; set; } = "not set";
+
+    [Parameter]
+    public bool? Value
+    {
+        get => _value;
+        set
+        {
+            if (_value == value) return;
+
+            _value = value;
+            ValueChanged.InvokeAsync(value);
+        }
+    }
+
+    protected string CssClass => Value switch
+    {
+        true => "_true",
+        false => "_false",
+        _ => "_none"
+    };
+
+    protected string TextDisplayed => !Value.HasValue ? NoneDefaultText : (Value.Value ? TrueDefaultText : FalseDefaultText);
+
+    protected void SwitchButton()
+    {
+        switch (Value)
+        {
+            case true:
+
+                Value = false;
+                break;
+
+            case false:
+
+                Value = AllowNone ? null : true;
+                break;
+
+            default:
+
+                Value = true;
+                break;
+
+        };
+    }
+}

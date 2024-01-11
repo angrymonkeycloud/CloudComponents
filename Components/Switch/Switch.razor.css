@@ -1,0 +1,79 @@
+.amc-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  --amc-accentColor: #000;
+}
+.amc-switch > div {
+  position: relative;
+  min-height: 20px;
+  height: 1.4em;
+  aspect-ratio: 2;
+  overflow: hidden;
+}
+.amc-switch > div button {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+.amc-switch-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  transition: 0.4s ease-in-out;
+  border-radius: 50px;
+  pointer-events: none;
+  padding: 3px;
+  border: 0.05em solid var(--amc-accentColor);
+  overflow: hidden;
+}
+.amc-switch-circle {
+  pointer-events: none;
+  position: relative;
+  content: "";
+  height: 100%;
+  border-radius: 50%;
+  aspect-ratio: 1;
+  bottom: 0;
+  transition: 0.4s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--amc-accentColor);
+  left: 50%;
+  transform: translateX(-50%);
+}
+.amc-switch-circle ::deep svg {
+  width: 100%;
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  transition: 0.4s ease-in-out;
+  opacity: 0;
+  padding: 3px;
+}
+.amc-switch-circle ::deep .amc-svg-fill {
+  fill: #fff;
+  transition: 0.4s ease-in-out;
+}
+.amc-switch-text {
+  font-size: 0.8em;
+  text-transform: capitalize;
+}
+.amc-switch._true .amc-switch-circle {
+  left: 100%;
+  transform: translateX(-100%);
+}
+.amc-switch._true .amc-switch-circle ::deep svg:first-child {
+  opacity: 1;
+}
+.amc-switch._false .amc-switch-circle {
+  left: 0;
+  transform: translateX(0);
+}
+.amc-switch._false .amc-switch-circle ::deep svg:last-child {
+  opacity: 1;
+}

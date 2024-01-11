@@ -1,0 +1,103 @@
+.amc-switch {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+    --amc-accentColor: #000;
+
+    > div {
+        position: relative;
+        min-height: 20px;
+        height: 1.4em;
+        aspect-ratio: 2/1;
+        overflow: hidden;
+
+        button {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+        }
+    }
+
+    &-slider {
+        position: absolute;
+        cursor: pointer;
+        inset: 0;
+        transition: .4s ease-in-out;
+        border-radius: 50px;
+        pointer-events: none;
+        overflow: hidden;
+        padding: 3px;
+        border: .05em solid var(--amc-accentColor);
+        overflow: hidden;
+    }
+
+    &-circle {
+        pointer-events: none;
+        position: relative;
+        content: "";
+        height: 100%;
+        border-radius: 50%;
+        aspect-ratio: 1/1;
+        bottom: 0;
+        transition: .4s ease-in-out;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--amc-accentColor);
+        left: 50%;
+        transform: translateX(-50%);
+
+        ::deep svg {
+            width: 100%;
+            position: absolute;
+            inset: 0;
+            height: 100%;
+            transition: .4s ease-in-out;
+            opacity: 0;
+            padding: 3px;
+        }
+
+        ::deep .amc-svg-fill {
+            fill: #fff;
+            transition: .4s ease-in-out;
+        }
+    }
+
+    &-text {
+        font-size: .8em;
+        text-transform: capitalize;
+    }
+
+    &._true {
+        .amc-switch {
+            &-circle {
+                left: 100%;
+                transform: translateX(-100%);
+
+                ::deep svg {
+                    &:first-child {
+                        opacity: 1;
+                    }
+                }
+            }
+        }
+    }
+
+    &._false {
+        .amc-switch {
+            &-circle {
+                left: 0;
+                transform: translateX(0);
+
+                ::deep svg {
+                    &:last-child {
+                        opacity: 1;
+                    }
+                }
+            }
+        }
+    }
+}
