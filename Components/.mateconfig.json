@@ -31,6 +31,10 @@
 			"input": "Popup/popup.less"
 		},
 		{
+			"output": "Switch/Switch.razor.css",
+			"input": "Switch/switch.less"
+		},
+		{
 			"output": "Dialog/Dialog.razor.css",
 			"input": "Dialog/dialog.less"
 		},
