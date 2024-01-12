@@ -1,9 +1,11 @@
-﻿<div class="amc-switch @CssClass">
+﻿@namespace AngryMonkey.Cloud.Components
+
+<div class="amc-switch @CssClass">
     <div>
         <span class="amc-switch-slider">
             <span class="amc-switch-circle">
-                <Checkmark />
-                <CrossIcon />
+                <AngryMonkey.Cloud.Components.Icons.Checkmark />
+                <AngryMonkey.Cloud.Components.Icons.CrossIcon />
             </span>
         </span>
         <button @onclick='SwitchButton'>switch</button>
@@ -21,7 +23,7 @@
 
     [Parameter] public bool DisplayText { get; set; } = true;
     [Parameter] public bool AllowNone { get; set; } = false;
-    [Parameter] public EventCallback<bool?> ValueChanged { get; set; }
+    [Parameter] public EventCallback<bool?>? ValueChanged { get; set; }
 
     [Parameter] public string TrueDefaultText { get; set; } = "on";
     [Parameter] public string FalseDefaultText { get; set; } = "off";
@@ -36,7 +38,7 @@
             if (_value == value) return;
 
             _value = value;
-            ValueChanged.InvokeAsync(value);
+            ValueChanged?.InvokeAsync(_value);
         }
     }
 

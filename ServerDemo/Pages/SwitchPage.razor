@@ -1,0 +1,21 @@
+﻿@page "/Switch"
+@inject CloudPage cloudPage
+@{
+    cloudPage.Title = "Popup";
+}
+
+<AngryMonkey.Cloud.Components.Switch @bind-Value="Value"></AngryMonkey.Cloud.Components.Switch>
+
+@if (Value.HasValue)
+{
+    <div>@Value.ToString()</div>
+}
+
+@code {
+
+    private bool? Value { get; set; }
+
+    protected async Task TestOnValueChanged()
+    {
+    }
+}
