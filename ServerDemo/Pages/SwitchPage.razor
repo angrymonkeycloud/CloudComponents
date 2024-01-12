@@ -4,7 +4,7 @@
     cloudPage.Title = "Popup";
 }
 
-<AngryMonkey.Cloud.Components.Switch @bind-Value="Value"></AngryMonkey.Cloud.Components.Switch>
+<AngryMonkey.Cloud.Components.Switch Value="Value" ValueChanged="()=>TestOnValueChanged()"></AngryMonkey.Cloud.Components.Switch>
 
 @if (Value.HasValue)
 {
@@ -17,5 +17,6 @@
 
     protected async Task TestOnValueChanged()
     {
+        Console.WriteLine("ss");
     }
 }
