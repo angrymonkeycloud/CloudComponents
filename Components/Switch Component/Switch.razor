@@ -23,7 +23,7 @@
 
     [Parameter] public bool DisplayText { get; set; } = true;
     [Parameter] public bool AllowNone { get; set; } = false;
-    [Parameter] public EventCallback<bool?>? ValueChanged { get; set; }
+    [Parameter] public EventCallback<bool?> ValueChanged { get; set; }
 
     [Parameter] public string TrueDefaultText { get; set; } = "on";
     [Parameter] public string FalseDefaultText { get; set; } = "off";
@@ -38,7 +38,7 @@
             if (_value == value) return;
 
             _value = value;
-            ValueChanged?.InvokeAsync(_value);
+            ValueChanged.InvokeAsync(_value);
         }
     }
 
