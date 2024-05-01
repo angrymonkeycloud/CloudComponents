@@ -21,6 +21,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp1.Client", "Blazor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp1.Shared", "BlazorApp1\Shared\BlazorApp1.Shared.csproj", "{6C9D5A41-FD20-4D6C-9A0A-158305A2FACF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Components.BlazorDemo", "Components.BlazorDemo\Components.BlazorDemo\Components.BlazorDemo.csproj", "{8F08B887-F0B8-4F01-A8DA-877BC43A2EEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Components.BlazorDemo.Client", "Components.BlazorDemo\Components.BlazorDemo.Client\Components.BlazorDemo.Client.csproj", "{540C611B-F079-4315-859F-EEA6302E6E9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +74,18 @@ Global
 		{6C9D5A41-FD20-4D6C-9A0A-158305A2FACF}.Release_Server|Any CPU.Build.0 = Release|Any CPU
 		{6C9D5A41-FD20-4D6C-9A0A-158305A2FACF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C9D5A41-FD20-4D6C-9A0A-158305A2FACF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F08B887-F0B8-4F01-A8DA-877BC43A2EEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F08B887-F0B8-4F01-A8DA-877BC43A2EEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F08B887-F0B8-4F01-A8DA-877BC43A2EEB}.Release_Server|Any CPU.ActiveCfg = Release|Any CPU
+		{8F08B887-F0B8-4F01-A8DA-877BC43A2EEB}.Release_Server|Any CPU.Build.0 = Release|Any CPU
+		{8F08B887-F0B8-4F01-A8DA-877BC43A2EEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F08B887-F0B8-4F01-A8DA-877BC43A2EEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{540C611B-F079-4315-859F-EEA6302E6E9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{540C611B-F079-4315-859F-EEA6302E6E9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{540C611B-F079-4315-859F-EEA6302E6E9D}.Release_Server|Any CPU.ActiveCfg = Release|Any CPU
+		{540C611B-F079-4315-859F-EEA6302E6E9D}.Release_Server|Any CPU.Build.0 = Release|Any CPU
+		{540C611B-F079-4315-859F-EEA6302E6E9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{540C611B-F079-4315-859F-EEA6302E6E9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -82,6 +98,8 @@ Global
 		{E2611D4D-6277-440C-BF83-CD5E562AFE35} = {ECE275AE-809F-4FC4-95B9-FDF52B4DE314}
 		{49852E47-71D8-4301-97A8-227BB4F852F9} = {ECE275AE-809F-4FC4-95B9-FDF52B4DE314}
 		{6C9D5A41-FD20-4D6C-9A0A-158305A2FACF} = {ECE275AE-809F-4FC4-95B9-FDF52B4DE314}
+		{8F08B887-F0B8-4F01-A8DA-877BC43A2EEB} = {ECE275AE-809F-4FC4-95B9-FDF52B4DE314}
+		{540C611B-F079-4315-859F-EEA6302E6E9D} = {ECE275AE-809F-4FC4-95B9-FDF52B4DE314}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0E2B2251-4D4B-4031-8703-54146C8A2312}

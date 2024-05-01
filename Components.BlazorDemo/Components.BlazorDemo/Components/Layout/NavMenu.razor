@@ -1,0 +1,41 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">Components.BlazorDemo</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+
+        @foreach (NvLink link in Links)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="@link.Link">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> @link.Name
+                </NavLink>
+            </div>
+        }
+    </nav>
+</div>
+
+@code {
+    public class NvLink
+    {
+        public required string Link { get; set; }
+        public required string Name { get; set; }
+    }
+
+    public readonly List<NvLink> Links = new List<NvLink>()
+    {
+        new NvLink(){ Link = "counter", Name = "Counter"},
+        new NvLink(){ Link = "weather", Name = "Weather"},
+        new NvLink(){ Link = "videoplayer", Name = "Video Player"}
+    };
+}
