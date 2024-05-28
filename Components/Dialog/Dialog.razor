@@ -1,7 +1,11 @@
 ﻿@namespace AngryMonkey.Cloud.Components
-@inject IJSRuntime jsRuntime
 
-<div @ref="ComponentElement">
+@implements IAsyncDisposable
+
+@inject IJSRuntime _js
+@inject NavigationManager _navigation
+
+@* <div @ref="ComponentElement">
 	@if (IsOpened)
 	{
 		<aside class="amc-dialog">
@@ -20,4 +24,26 @@
 			</div>
 		</aside>
 	}
-</div>
+</div> *@
+
+<dialog @ref="ComponentElement" class="amc-dialog" @oncancel="Close">
+    @if (IsOpened)
+    {
+        <div class="amc-dialog-title">@Title</div>
+
+        @if (ChildContent != null)
+        {
+            <div class="amc-dialog-message">@ChildContent</div>
+        }
+		 
+        @if (Buttons != null && Buttons.Any())
+        {
+            <div class="amc-dialog-buttons">
+                @foreach (DialogButton button in Buttons)
+                {
+                    <button @onclick="async () => { await ButtonClicked(button);}">@button.Text</button>
+                }
+            </div>
+        }
+    }
+</dialog>

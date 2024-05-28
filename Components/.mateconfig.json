@@ -20,7 +20,11 @@
 		},
 		{
 			"output": "wwwroot/js/amc-components.js",
-			"input": [ "VideoPlayer/hls.js", "ProgressBar/progressbar.js", "VideoPlayer/VideoPlayer.razor.js", "VideoPlayer/VideoPlayerCast.razor.js" ]
+			"input": [ "VideoPlayer/hls.js", "Dialog/dialog.js", "ProgressBar/progressbar.js", "VideoPlayer/VideoPlayer.razor.js", "VideoPlayer/VideoPlayerCast.razor.js" ]
+		},
+		{
+			"output": "wwwroot/css/amc-components.css",
+			"input": [ "Dialog/dialog.less" ]
 		},
 		{
 			"output": "ProgressBar/ProgressBar.razor.css",
@@ -31,16 +35,8 @@
 			"input": "Popup/popup.less"
 		},
 		{
-			"output": "Switch/Switch.razor.css",
-			"input": "Switch/switch.less"
-		},
-		{
-			"output": "Dialog/Dialog.razor.css",
-			"input": "Dialog/dialog.less"
-		},
-		{
-			"output": "wwwroot/dialog/dialog.js",
-			"input": "Dialog/dialog.ts"
+			"output": "SwitchComponent/Switch.razor.css",
+			"input": "SwitchComponent/Switch.razor.less"
 		},
 		{
 			"output": "VolumeBar/VolumeBar.razor.css",

@@ -43,20 +43,15 @@
   user-select: none;
   font-family: 'Segoe UI';
   font-size: 0.9rem;
-  background-color: rgba(255, 255, 255, 0.7);
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  touch-action: none;
-  z-index: 99999999;
+  --backdropColor: rgba(255, 255, 255, 0.7);
+  --backgroundColor: #fff;
+  --shadowColor: rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  max-width: 600px;
+  width: 50vw;
+  background-color: var(--backgroundColor);
+  border: none;
+  box-shadow: 0px 0px 4px var(--shadowColor);
 }
 .amc-dialog button,
 .amc-dialog button:active,
@@ -94,10 +89,13 @@
 .amc-dialog ::deep .amc-svg-stroke._corner-rounded {
   stroke-linecap: round;
 }
-.amc-dialog-content {
-  padding: 5px;
-  max-width: 600px;
-  width: 50vw;
+@media (prefers-color-scheme: dark) {
+  .amc-dialog {
+    --backdropColor: rgba(0, 0, 0, 0.7);
+  }
+}
+.amc-dialog::backdrop {
+  background-color: var(--backdropColor);
 }
 .amc-dialog-title {
   font-size: 2em;

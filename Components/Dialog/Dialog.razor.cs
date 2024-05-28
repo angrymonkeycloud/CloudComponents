@@ -1,50 +1,69 @@
-﻿using AngryMonkey.Cloud.Components.Icons;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AngryMonkey.Cloud.Components
 {
-	public partial class Dialog : IClosable
-	{
-		private ElementReference ComponentElement { get; set; }
-		[Parameter] public RenderFragment ChildContent { get; set; }
-		[Parameter] public string Title { get; set; }
-		[Parameter] public List<DialogButton> Buttons { get; set; }
-		[Parameter] public bool IsOpened { get; set; }
+    public partial class Dialog : IClosable
+    {
+        private ElementReference ComponentElement { get; set; }
+        [Parameter] public RenderFragment? ChildContent { get; set; }
+        [Parameter] public required string Title { get; set; }
+        [Parameter] public required List<DialogButton> Buttons { get; set; }
+        [Parameter] public bool IsOpened { get; set; }
 
-		private Task<IJSObjectReference> _module;
-		private Task<IJSObjectReference> Module => _module ??= GeneralMethods.GetIJSObjectReference(jsRuntime, "dialog/dialog.js");
+        [Parameter] public EventCallback OnOpened { get; set; }
+        [Parameter] public EventCallback OnClosed { get; set; }
 
-		public async Task Open()
-		{
-			IsOpened = true;
+        protected async Task ButtonClicked(DialogButton button)
+        {
+            button.OnReply?.Invoke();
 
-			var module = await Module;
+            await Close();
+        }
 
-			await module.InvokeVoidAsync("DialogOpened", ComponentElement);
-		}
+        public async Task Open()
+        {
+            IsOpened = true;
 
-		public async Task Close()
-		{
-			IsOpened = false;
+            StateHasChanged();
 
-			var module = await Module;
+            await _js.InvokeVoidAsync("Dialog.Open", ComponentElement);
+            await _js.InvokeVoidAsync("Dialog.FocusDefault", ComponentElement);
 
-			await module.InvokeVoidAsync("DialogClosed", ComponentElement);
-		}
+            _navigation.LocationChanged += HandleLocationChanged;
 
-		protected async Task ButtonClicked(DialogButton button)
-		{
-			if (button.OnReply != null)
-				button.OnReply.Invoke();
+            await OnOpened.InvokeAsync();
+        }
 
-			await Close();
-		}
-	}
+        private async void HandleLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+        {
+            if (!IsOpened)
+                return;
+
+            await Close();
+        }
+
+        public async Task Close()
+        {
+            IsOpened = false;
+
+            StateHasChanged();
+
+            await _js.InvokeVoidAsync("Dialog.Close", ComponentElement);
+            await OnClosed.InvokeAsync();
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (!IsOpened)
+                return;
+
+            await Close();
+
+            _navigation.LocationChanged -= HandleLocationChanged;
+        }
+    }
 }

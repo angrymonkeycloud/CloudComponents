@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Components;
-using System;
+﻿using System;
 
 namespace AngryMonkey.Cloud.Components
 {
 	public class DialogButton
 	{
-		public string Text { get; set; }
-		public Action OnReply { get; set; }
+		public required string Text { get; set; }
+		public Action? OnReply { get; set; }
 	}
 }

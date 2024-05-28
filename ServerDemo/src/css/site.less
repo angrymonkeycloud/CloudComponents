@@ -1,163 +1,167 @@
-﻿@import "https://cdn.amcapi.com/cloudweb/1.0.2/cloud-base.less";
-@import "https://cdn.amcapi.com/cloudweb/1.0.2/cloud-sections.less";
+﻿@import "https://cdn.amcapi.com/cloudweb/1.0.3/cloud-base.less";
+@import "https://cdn.amcapi.com/cloudweb/1.0.3/cloud-sections.less";
 @import "variables.less";
 
 body {
-	background-color: #fff;
+    background-color: #fff;
 
-	.components {
-		width: 100%;
-		background-color: #000;
+    .components {
+        width: 100%;
+        background-color: #000;
 
 
-		&-links {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			padding: 20px 10px;
+        &-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 10px;
 
-			a {
-				&, &:hover, &:active, &:focus, &:visited {
-					color: #fff;
-					text-decoration: none;
-					padding: 10px;
-					font-size: 1em;
-					font-family: sans-serif;
-					letter-spacing: 2px;
-					margin-left: 20px;
-					border-bottom: 1px groove transparent;
-				}
+            a {
+                &, &:hover, &:active, &:focus, &:visited {
+                    color: #fff;
+                    text-decoration: none;
+                    padding: 10px;
+                    font-size: 1em;
+                    font-family: sans-serif;
+                    letter-spacing: 2px;
+                    margin-left: 20px;
+                    border-bottom: 1px groove transparent;
+                }
 
-				&:hover {
-					border-color: #fff;
-				}
-			}
-		}
+                &:hover {
+                    border-color: #fff;
+                }
+            }
+        }
 
-		&-icon {
-			display: none;
-		}
-	}
+        &-icon {
+            display: none;
+        }
+    }
 
-	@media screen and (max-width: 1000px) {
-		.components {
+    @media screen and (max-width: 1000px) {
+        .components {
 
-			&-links {
-				flex-direction: column;
-				justify-content: flex-start;
-				align-items: center;
+            &-links {
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
 
-				a {
-					&, &:hover, &:active, &:focus, &:visited {
-						padding: 5px;
-						margin-top: 10px;
-					}
+                a {
+                    &, &:hover, &:active, &:focus, &:visited {
+                        padding: 5px;
+                        margin-top: 10px;
+                    }
 
-					&:hover {
-						border-bottom: 1px groove #fff;
-						color: white;
+                    &:hover {
+                        border-bottom: 1px groove #fff;
+                        color: white;
 
-						&:active {
-							border-bottom-color: var(--LinkColor);
-						}
-					}
-				}
-			}
-		}
-	}
+                        &:active {
+                            border-bottom-color: var(--LinkColor);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-	main {
-		margin-top: 50px;
-		margin-left: auto;
-		margin-right: auto;
+    main {
+        margin-top: 50px;
+        margin-left: auto;
+        margin-right: auto;
 
-		> section {
-			display: flex;
-			align-items: center;
+        > section {
+            display: flex;
+            align-items: center;
 
-			> div {
-				max-width: 1000px;
-				margin-left: auto;
-				margin-right: auto;
-			}
-		}
+            > div {
+                max-width: 1000px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
 
-		> .amc-progressbar {
-			--amc-accentColor: var(--LinkColor);
-			width: 600px;
-		}
+        > .amc-progressbar {
+            --amc-accentColor: var(--LinkColor);
+            width: 600px;
+        }
 
-		> .amc-volumebar {
-			--amc-accentColor: var(--LinkColor);
-		}
+        > .amc-volumebar {
+            --amc-accentColor: var(--LinkColor);
+        }
 
-		> .amc-dialog {
-			--amc-accentColor: var(--LinkColor);
-		}
+        > .amc-dialog {
+            --amc-accentColor: var(--LinkColor);
+        }
 
-		> .amc-videoplayer {
-			--amc-accentColor: #fff;
-			max-width: 800px;
-			width: 100vw;
-			height: 450px;
-			margin-left: auto;
-			margin-right: auto;
+        > .amc-videoplayer {
+            --amc-accentColor: #fff;
+            max-width: 800px;
+            width: 100vw;
+            height: 450px;
+            margin-left: auto;
+            margin-right: auto;
 
-			* {
-				color: #000;
-			}
-		}
+            * {
+                color: #000;
+            }
+        }
 
-		.amc-datetimepicker-section {
+        .amc-datetimepicker-section {
 
-			h2 {
-				text-align: center;
-				opacity: .7;
-				margin-bottom: 20px;
-			}
+            h2 {
+                text-align: center;
+                opacity: .7;
+                margin-bottom: 20px;
+            }
 
-			.amc-datetimepicker {
-				--amc-datetimepicker-backgroundColor: var(--LinkColor) !important;
-				--amc-datetimepicker-accentColor: #fff !important;
-				margin-bottom: 100px;
-			}
-		}
+            .amc-datetimepicker {
+                --amc-datetimepicker-backgroundColor: var(--LinkColor) !important;
+                --amc-datetimepicker-accentColor: #fff !important;
+                margin-bottom: 100px;
+            }
+        }
 
-		.video {
+        .video {
 
-			.-button {
-				&._active {
-					background-color: var(--LinkColor);
-					color: #fff;
-				}
-			}
+            .-button {
+                &._active {
+                    background-color: var(--LinkColor);
+                    color: #fff;
+                }
+            }
 
-			> article {
-				display: flex;
-				align-items: stretch;
-				justify-content: center;
-				gap: 10px;
-				margin-bottom: 30px;
-				flex-wrap: wrap;
-			}
-		}
-	}
+            > article {
+                display: flex;
+                align-items: stretch;
+                justify-content: center;
+                gap: 10px;
+                margin-bottom: 30px;
+                flex-wrap: wrap;
+            }
+        }
+    }
 
-	.--button {
-		min-width: 150px;
-		padding: 15px;
-		border: 1px solid var(--LinkColor);
-		color: var(--LinkColor);
-		background-color: transparent;
-		font-size: .9rem;
-		text-transform: capitalize;
-		border-radius: 3px;
-		transition: all .3s ease-in-out;
-		cursor: pointer;
+    .--button {
+        min-width: 150px;
+        padding: 15px;
+        border: 1px solid var(--LinkColor);
+        color: var(--LinkColor);
+        background-color: transparent;
+        font-size: .9rem;
+        text-transform: capitalize;
+        border-radius: 3px;
+        transition: all .3s ease-in-out;
+        cursor: pointer;
 
-		&:hover {
-			background-color: var(--LinkColor);
-			color: #fff;
-		}
-	}
+        &:hover {
+            background-color: var(--LinkColor);
+            color: #fff;
+        }
+    }
+}
+
+html:has(dialog[open]) {
+    overflow: hidden !important;
 }
