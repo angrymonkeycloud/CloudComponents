@@ -21,9 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp1.Client", "Blazor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp1.Shared", "BlazorApp1\Shared\BlazorApp1.Shared.csproj", "{6C9D5A41-FD20-4D6C-9A0A-158305A2FACF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Components.BlazorDemo", "Components.BlazorDemo\Components.BlazorDemo\Components.BlazorDemo.csproj", "{8F08B887-F0B8-4F01-A8DA-877BC43A2EEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Components.BlazorDemo", "Components.BlazorDemo\Components.BlazorDemo\Components.BlazorDemo.csproj", "{8F08B887-F0B8-4F01-A8DA-877BC43A2EEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Components.BlazorDemo.Client", "Components.BlazorDemo\Components.BlazorDemo.Client\Components.BlazorDemo.Client.csproj", "{540C611B-F079-4315-859F-EEA6302E6E9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Components.BlazorDemo.Client", "Components.BlazorDemo\Components.BlazorDemo.Client\Components.BlazorDemo.Client.csproj", "{540C611B-F079-4315-859F-EEA6302E6E9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

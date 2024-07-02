@@ -35,9 +35,11 @@
 		{
 			new DialogButton(){
 				Text = "OK",
+				AutoClose = false,
 				OnReply = () => {
 					DialogReply = "Ok";
 					StateHasChanged();
+					dialog.Close();
 				}
 			},
 

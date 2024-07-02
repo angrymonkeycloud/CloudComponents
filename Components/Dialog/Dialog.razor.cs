@@ -21,7 +21,8 @@ namespace AngryMonkey.Cloud.Components
         {
             button.OnReply?.Invoke();
 
-            await Close();
+            if (button.AutoClose)
+                await Close();
         }
 
         public async Task Open()
