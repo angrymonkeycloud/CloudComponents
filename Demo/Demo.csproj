@@ -19,8 +19,8 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="AngryMonkey.CloudWeb" Version="1.0.8" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.4" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.4" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.7" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.7" />
 	</ItemGroup>
 
 	<ItemGroup>
