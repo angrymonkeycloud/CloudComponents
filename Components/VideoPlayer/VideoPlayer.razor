@@ -1,10 +1,9 @@
 ﻿@namespace AngryMonkey.Cloud.Components
-@inject IJSRuntime JS
 
 <div class="amc-videoplayer @ClassAttributes" @ref="ComponentElement" @onmousemove="MainMouseMove" @onfullscreenchange="OnFullScreenChange" @onmousewheel="OnMouseWheel" @onclick="OnComponentClick">
 
     <div class="amc-videoplayer-video">
-        <video src="@_videoUrl" poster="@_Poster" @onchange="OnVideoChange" playsinline x-webkit-airplay="deny"></video>
+        <video src="@_videoUrl" poster="@_Poster" onchange="@(EventCallback.Factory.Create<ChangeEventArgs>(this, OnVideoChange))" playsinline x-webkit-airplay="deny"></video>
     </div>
 
     @if (Metadata.VideoState != VideoStates.Error)
