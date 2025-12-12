@@ -8,11 +8,8 @@
 @inject NavigationManager navManager
 @inject IJSRuntime js
 
-<div>Test Popup</div>
-
 @if (IsOpen)
 {
-    <div>Test Popup Opened</div>
     <div class="modal _open @Size @AdditionalClasses" popover @onclick="OnOverlayClick">
         @if (UseDefaultChrome)
         {
@@ -31,7 +28,7 @@
                     @ChildContent
                 </div>
 
-                @if (Footer is null || !HeaderClose)
+                @if (Footer is not null || !HeaderClose)
                 {
                     <div class="actions">
 
