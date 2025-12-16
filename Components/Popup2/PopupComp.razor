@@ -10,7 +10,7 @@
 
 @if (IsOpen)
 {
-    <div class="modal _open @Size @AdditionalClasses" popover @onclick="OnOverlayClick">
+    <div class="amc-popup modal _open @Size @AdditionalClasses" popover @onclick="OnOverlayClick">
         @if (UseDefaultChrome)
         {
             <div class="modal-content" @onclick:stopPropagation="true" role="dialog" aria-modal="true">

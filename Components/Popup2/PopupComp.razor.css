@@ -45,10 +45,6 @@
   flex-shrink: 0;
   margin-left: 1rem;
 }
-.modal .header .closemodal:hover {
-  background: #e5e7eb;
-  color: var(--primaryDarkColor);
-}
 @media (max-width: 767px) {
   .modal .header .closemodal {
     width: 1.75rem;
@@ -75,7 +71,7 @@
   gap: 20px;
   background-color: transparent;
   border: none;
-  background-color: var(--primaryColor);
+  background-color: var(--amc-accentColor);
   cursor: pointer;
   padding: 10px;
   border-radius: 50%;
@@ -94,7 +90,7 @@
   gap: 20px;
   background-color: transparent;
   border: none;
-  background-color: var(--primaryColor);
+  background-color: var(--amc-accentColor);
   cursor: pointer;
   padding: 10px;
   border-radius: 50%;
@@ -128,7 +124,7 @@
 .modal-content .header strong {
   font-size: 1.125rem;
   font-weight: 700;
-  color: var(--primaryDarkColor);
+  color: var(--amc-accentColor);
 }
 .modal-content .body {
   flex: 1;
