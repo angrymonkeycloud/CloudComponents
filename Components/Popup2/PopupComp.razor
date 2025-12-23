@@ -96,7 +96,9 @@
         _wasOpened = true;
         IsOpen = true;
 
-        StateHasChanged();
+        await IsOpenChanged.InvokeAsync(true);
+
+        await InvokeAsync(StateHasChanged);
 
         navManager.NavigateTo($"{navManager.Uri}#popup", replace: false);
     }
