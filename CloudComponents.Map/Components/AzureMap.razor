@@ -1,0 +1,55 @@
+@namespace CloudComponents.Map.Components
+@using CloudComponents.Map.Options
+@using AngryMonkey.Cloud.Components
+
+<div class="map-host" style="height:@Height; width:@Width;">
+    <div id="@MapId" class="map-canvas"></div>
+
+    @if (AddMarkerTrigger == MarkerAddTrigger.CenterPin)
+    {
+        <div class="map-pin @(_isLocating ? "_loading" : null)" aria-hidden="true">
+            <svg viewBox="0 0 24 36" class="icon">
+                <path d="M12 0C5.4 0 0 5.4 0 12c0 8.5 12 24 12 24s12-15.5 12-24C24 5.4 18.6 0 12 0z" fill="#e81123" />
+                <circle cx="12" cy="12" r="4.5" fill="#fff" />
+            </svg>
+            <div class="shadow"></div>
+        </div>
+    }
+
+    @if (ShowCurrentLocationButton && Locator is not null)
+    {
+        <button type="button"
+                class="btn @(_isLocating ? "_loading" : null)"
+                title="Show my location"
+                aria-label="Show my location"
+                disabled="@_isLocating"
+                @onclick="LocateMeAsync">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke-linecap="round" />
+                <circle cx="12" cy="12" r="8" fill="none" />
+            </svg>
+        </button>
+    }
+</div>
+
+<PopupComp IsOpen="_showPermissionPrompt"
+           IsOpenChanged="OnPermissionPopupOpenChanged"
+           Title="@LocationPromptTitle"
+           Size="_small"
+           HeaderClose="true">
+    <ChildContent>
+        <p class="map-permission-message">@LocationPromptMessage</p>
+    </ChildContent>
+    <Footer>
+        <button type="button" class="map-permission-cancel" @onclick="CancelLocationConsent">
+            @LocationPromptCancelText
+        </button>
+        <button type="button" class="map-permission-confirm" @onclick="ConfirmLocationConsent">
+            @LocationPromptConfirmText
+        </button>
+    </Footer>
+</PopupComp>
+
+
+
