@@ -1,21 +1,21 @@
 ﻿@page "/Popup"
 @inject CloudPage cloudPage
 @{
-	cloudPage.Title = "Popup";
+	cloudPage.SetTitle("Popup");
 }
 
-<Popup @ref="popup">
+<PopupComp @ref="popup">
 	Popup Opened!
-</Popup>
+</PopupComp>
 
 <button @onclick="OpenPopup">Open Popup</button>
 
 
 @code {
-	private Popup? popup;
+	private PopupComp? popup;
 
-	private void OpenPopup()
+	private async Task OpenPopup()
 	{
-		popup.Open();
+		await popup.Open();
 	}
 }

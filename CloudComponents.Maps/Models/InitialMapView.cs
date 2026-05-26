@@ -1,4 +1,4 @@
-namespace CloudComponents.Map.Models;
+namespace CloudComponents.Maps.Models;
 
 /// <summary>
 /// Initial camera setup for an <c>AzureMap</c>. When <c>null</c> is passed to

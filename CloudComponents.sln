@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.2.11415.280 d18.0
+VisualStudioVersion = 18.2.11415.280
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Components", "Components\Components.csproj", "{5C9C82BC-E60C-4FFE-A8F4-96A5DFF36D75}"
 EndProject
@@ -25,11 +25,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Components.BlazorDemo", "Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Components.BlazorDemo.Client", "Components.BlazorDemo\Components.BlazorDemo.Client\Components.BlazorDemo.Client.csproj", "{540C611B-F079-4315-859F-EEA6302E6E9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.Map", "CloudComponents.Map\CloudComponents.Map.csproj", "{577C929E-B5E1-9354-631F-5E203F7B15F4}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Maps", "Maps", "{185FF486-A759-4A7E-BEF7-BBF8AC541F4E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.Map.Mobile", "CloudComponents.Map.Mobile\CloudComponents.Map.Mobile.csproj", "{535A5712-B23C-E7D0-184B-247F2A22F096}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.Maps", "CloudComponents.Maps\CloudComponents.Maps.csproj", "{294B45CA-BCD0-022F-9AF4-7BE920B64B52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.Map.Web", "CloudComponents.Map.Web\CloudComponents.Map.Web.csproj", "{C6B0917C-A7B6-BEEF-03E7-00B79B0FF3E0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.Maps.Web", "CloudComponents.Maps.Web\CloudComponents.Maps.Web.csproj", "{4D751F3C-DDCE-99E5-5AFD-26BF0090EAD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.Maps.Mobile", "CloudComponents.Maps.Mobile\CloudComponents.Maps.Mobile.csproj", "{A25CC2A0-E130-76EE-C8E0-9F1A5F3B64FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -92,24 +94,24 @@ Global
 		{540C611B-F079-4315-859F-EEA6302E6E9D}.Release_Server|Any CPU.Build.0 = Release|Any CPU
 		{540C611B-F079-4315-859F-EEA6302E6E9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{540C611B-F079-4315-859F-EEA6302E6E9D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{577C929E-B5E1-9354-631F-5E203F7B15F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{577C929E-B5E1-9354-631F-5E203F7B15F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{577C929E-B5E1-9354-631F-5E203F7B15F4}.Release_Server|Any CPU.ActiveCfg = Release|Any CPU
-		{577C929E-B5E1-9354-631F-5E203F7B15F4}.Release_Server|Any CPU.Build.0 = Release|Any CPU
-		{577C929E-B5E1-9354-631F-5E203F7B15F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{577C929E-B5E1-9354-631F-5E203F7B15F4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{535A5712-B23C-E7D0-184B-247F2A22F096}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{535A5712-B23C-E7D0-184B-247F2A22F096}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{535A5712-B23C-E7D0-184B-247F2A22F096}.Release_Server|Any CPU.ActiveCfg = Release|Any CPU
-		{535A5712-B23C-E7D0-184B-247F2A22F096}.Release_Server|Any CPU.Build.0 = Release|Any CPU
-		{535A5712-B23C-E7D0-184B-247F2A22F096}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{535A5712-B23C-E7D0-184B-247F2A22F096}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C6B0917C-A7B6-BEEF-03E7-00B79B0FF3E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C6B0917C-A7B6-BEEF-03E7-00B79B0FF3E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C6B0917C-A7B6-BEEF-03E7-00B79B0FF3E0}.Release_Server|Any CPU.ActiveCfg = Release|Any CPU
-		{C6B0917C-A7B6-BEEF-03E7-00B79B0FF3E0}.Release_Server|Any CPU.Build.0 = Release|Any CPU
-		{C6B0917C-A7B6-BEEF-03E7-00B79B0FF3E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C6B0917C-A7B6-BEEF-03E7-00B79B0FF3E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{294B45CA-BCD0-022F-9AF4-7BE920B64B52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{294B45CA-BCD0-022F-9AF4-7BE920B64B52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{294B45CA-BCD0-022F-9AF4-7BE920B64B52}.Release_Server|Any CPU.ActiveCfg = Release|Any CPU
+		{294B45CA-BCD0-022F-9AF4-7BE920B64B52}.Release_Server|Any CPU.Build.0 = Release|Any CPU
+		{294B45CA-BCD0-022F-9AF4-7BE920B64B52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{294B45CA-BCD0-022F-9AF4-7BE920B64B52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D751F3C-DDCE-99E5-5AFD-26BF0090EAD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D751F3C-DDCE-99E5-5AFD-26BF0090EAD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D751F3C-DDCE-99E5-5AFD-26BF0090EAD9}.Release_Server|Any CPU.ActiveCfg = Release|Any CPU
+		{4D751F3C-DDCE-99E5-5AFD-26BF0090EAD9}.Release_Server|Any CPU.Build.0 = Release|Any CPU
+		{4D751F3C-DDCE-99E5-5AFD-26BF0090EAD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D751F3C-DDCE-99E5-5AFD-26BF0090EAD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A25CC2A0-E130-76EE-C8E0-9F1A5F3B64FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A25CC2A0-E130-76EE-C8E0-9F1A5F3B64FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A25CC2A0-E130-76EE-C8E0-9F1A5F3B64FC}.Release_Server|Any CPU.ActiveCfg = Release|Any CPU
+		{A25CC2A0-E130-76EE-C8E0-9F1A5F3B64FC}.Release_Server|Any CPU.Build.0 = Release|Any CPU
+		{A25CC2A0-E130-76EE-C8E0-9F1A5F3B64FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A25CC2A0-E130-76EE-C8E0-9F1A5F3B64FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -124,9 +126,9 @@ Global
 		{6C9D5A41-FD20-4D6C-9A0A-158305A2FACF} = {ECE275AE-809F-4FC4-95B9-FDF52B4DE314}
 		{8F08B887-F0B8-4F01-A8DA-877BC43A2EEB} = {ECE275AE-809F-4FC4-95B9-FDF52B4DE314}
 		{540C611B-F079-4315-859F-EEA6302E6E9D} = {ECE275AE-809F-4FC4-95B9-FDF52B4DE314}
-		{577C929E-B5E1-9354-631F-5E203F7B15F4} = {D52BFA7D-5BEB-4725-A236-AD118B84FBB6}
-		{535A5712-B23C-E7D0-184B-247F2A22F096} = {D52BFA7D-5BEB-4725-A236-AD118B84FBB6}
-		{C6B0917C-A7B6-BEEF-03E7-00B79B0FF3E0} = {D52BFA7D-5BEB-4725-A236-AD118B84FBB6}
+		{294B45CA-BCD0-022F-9AF4-7BE920B64B52} = {185FF486-A759-4A7E-BEF7-BBF8AC541F4E}
+		{4D751F3C-DDCE-99E5-5AFD-26BF0090EAD9} = {185FF486-A759-4A7E-BEF7-BBF8AC541F4E}
+		{A25CC2A0-E130-76EE-C8E0-9F1A5F3B64FC} = {185FF486-A759-4A7E-BEF7-BBF8AC541F4E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0E2B2251-4D4B-4031-8703-54146C8A2312}

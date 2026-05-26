@@ -1,4 +1,4 @@
-namespace CloudComponents.Map.Options;
+namespace CloudComponents.Maps.Options;
 
 /// <summary>
 /// Library-wide Azure Maps configuration, normally registered through

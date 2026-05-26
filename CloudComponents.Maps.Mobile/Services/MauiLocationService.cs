@@ -1,6 +1,6 @@
-using CloudComponents.Map.Services;
+using CloudComponents.Maps.Services;
 
-namespace CloudComponents.Map.Mobile.Services;
+namespace CloudComponents.Maps.Mobile.Services;
 
 /// <summary>
 /// .NET MAUI implementation of <see cref="ILocationService"/> using the native

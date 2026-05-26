@@ -1,4 +1,4 @@
-﻿namespace CloudComponents.Map.Services;
+﻿namespace CloudComponents.Maps.Services;
 
 /// <summary>Browser/device geolocation permission state.</summary>
 public enum LocationPermissionState

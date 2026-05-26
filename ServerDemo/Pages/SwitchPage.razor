@@ -1,7 +1,7 @@
 ﻿@page "/Switch"
 @inject CloudPage cloudPage
 @{
-    cloudPage.Title = "Popup";
+    cloudPage.SetTitle("Popup");
 }
 
 <AngryMonkey.Cloud.Components.Switch @bind-Value="Value" @bind-Value:after="TestOnValueChanged"></AngryMonkey.Cloud.Components.Switch>

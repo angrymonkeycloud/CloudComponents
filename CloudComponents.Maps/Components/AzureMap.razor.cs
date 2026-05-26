@@ -1,11 +1,11 @@
-﻿using CloudComponents.Map.Models;
-using CloudComponents.Map.Options;
-using CloudComponents.Map.Services;
+﻿using CloudComponents.Maps.Models;
+using CloudComponents.Maps.Options;
+using CloudComponents.Maps.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 
-namespace CloudComponents.Map.Components;
+namespace CloudComponents.Maps.Components;
 
 /// <summary>
 /// Azure Maps Blazor component. Encapsulates the Azure Maps Web SDK behind a
@@ -13,7 +13,7 @@ namespace CloudComponents.Map.Components;
 /// </summary>
 public partial class AzureMap : ComponentBase, IAsyncDisposable
 {
-    private const string ModulePath = "./_content/CloudComponents.Map/mapInterop.js";
+    private const string ModulePath = "./_content/CloudComponents.Maps/mapInterop.js";
 
     private IJSObjectReference? _module;
     private IJSObjectReference? _controller;
@@ -474,7 +474,7 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     };
 
     private IJSObjectReference EnsureController()
-        => _controller ?? throw new InvalidOperationException("Map has not been initialized yet.");
+        => _controller ?? throw new InvalidOperationException("Maps has not been initialized yet.");
 
     public async ValueTask DisposeAsync()
     {

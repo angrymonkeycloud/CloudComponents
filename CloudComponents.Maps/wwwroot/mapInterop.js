@@ -1,5 +1,5 @@
 ﻿// ES module — loaded via Blazor JS isolation:
-// import('./_content/CloudComponents.Map/mapInterop.js')
+// import('./_content/CloudComponents.Maps/mapInterop.js')
 // The Azure Maps Web SDK (atlas) is loaded on-demand by this module.
 
 const ATLAS_VERSION = '3';
@@ -98,7 +98,7 @@ export async function queryLocationPermission() {
     }
 }
 
-// ----- Map controller -------------------------------------------------------
+// ----- Maps controller -------------------------------------------------------
 
 class AzureMapController {
     constructor(dotNetRef, options) {
@@ -147,7 +147,7 @@ class AzureMapController {
         this._addControls();
         this._applyTraffic();
 
-        // Map clicks → notify .NET; optionally drop a pin on single-click.
+        // Maps clicks → notify .NET; optionally drop a pin on single-click.
         this._map.events.add('click', (e) => {
             if (!e?.position) return;
             const [lng, lat] = e.position;

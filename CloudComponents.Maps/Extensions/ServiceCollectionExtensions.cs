@@ -1,7 +1,7 @@
-using CloudComponents.Map.Options;
+using CloudComponents.Maps.Options;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CloudComponents.Map.Extensions;
+namespace CloudComponents.Maps.Extensions;
 
 public static class ServiceCollectionExtensions
 {
