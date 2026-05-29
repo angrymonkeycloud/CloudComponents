@@ -105,7 +105,10 @@ class AzureMapController {
         this._dotNetRef = dotNetRef;
         this._options = options;
         this._markers = new Map();
+        this._regions = [];
+        this._regionDataSource = null;
         this._currentLocationMarker = null;
+        this._activePopupId = null;
         this._trafficFlow = !!options.showTrafficFlow;
         this._trafficIncidents = !!options.showTrafficIncidents;
         this._addTrigger = options.addMarkerTrigger || 'double';   // 'disabled' | 'single' | 'double'
@@ -151,6 +154,17 @@ class AzureMapController {
         this._map.events.add('click', (e) => {
             if (!e?.position) return;
             const [lng, lat] = e.position;
+
+            // Azure Maps fires the map-level 'click' for the same gesture that
+            // hit a marker. The marker handler sets a one-shot flag so we
+            // don't dismiss the popup we just opened.
+            if (this._suppressNextMapClick) {
+                this._suppressNextMapClick = false;
+            } else if (!this._wasOnMarker(e)) {
+                // Plain background click → dismiss any open marker popup.
+                this._closeActivePopup();
+            }
+
             this._dotNetRef?.invokeMethodAsync('NotifyMapClickAsync', lat, lng);
 
             if (this._addTrigger === 'single' && !this._wasOnMarker(e)) {
@@ -293,10 +307,19 @@ class AzureMapController {
         const entry = { marker, popup };
         this._markers.set(info.id, entry);
 
-        // Single click → open popup + notify
+        // Single click → close any other open popup, open this one, notify .NET
         this._map.events.add('click', marker, () => {
-            try { entry.popup.open(this._map); } catch { /* noop */ }
+            // Prevent the map-level 'click' that fires for the same gesture
+            // from closing the popup we are about to open.
+            this._suppressNextMapClick = true;
+            this._closeActivePopup(info.id);
+            try { entry.popup.open(this._map); this._activePopupId = info.id; } catch { /* noop */ }
             this._dotNetRef?.invokeMethodAsync('NotifyMarkerClickAsync', info.id);
+        });
+
+        // Keep our active-id in sync if the user closes the popup manually.
+        this._map.events.add('close', entry.popup, () => {
+            if (this._activePopupId === info.id) this._activePopupId = null;
         });
 
         // Double-click on a marker → remove it (when enabled)
@@ -318,8 +341,16 @@ class AzureMapController {
         const entry = this._markers.get(id);
         if (!entry) return;
         try { entry.popup.close(); } catch { /* noop */ }
+        if (this._activePopupId === id) this._activePopupId = null;
         this._map.markers.remove(entry.marker);
         this._markers.delete(id);
+    }
+
+    _closeActivePopup(exceptId) {
+        if (!this._activePopupId || this._activePopupId === exceptId) return;
+        const prev = this._markers.get(this._activePopupId);
+        if (prev) { try { prev.popup.close(); } catch { /* noop */ } }
+        this._activePopupId = null;
     }
 
     clearMarkers() {
@@ -328,6 +359,148 @@ class AzureMapController {
             this._map.markers.remove(entry.marker);
         });
         this._markers.clear();
+        this._activePopupId = null;
+    }
+
+    // ── Circle overlay API ───────────────────────────────────────────────
+
+    addRegion(info) {
+        if (!info) return;
+        if (!this._regionDataSource) {
+            this._regionDataSource = new atlas.source.DataSource();
+            this._map.sources.add(this._regionDataSource);
+            this._map.layers.add(new atlas.layer.PolygonLayer(this._regionDataSource, null, {
+                fillColor: ['get', 'fillColor'],
+                fillOpacity: 1
+            }));
+            this._map.layers.add(new atlas.layer.LineLayer(this._regionDataSource, null, {
+                strokeColor: ['get', 'strokeColor'],
+                strokeWidth: ['get', 'strokeWidth']
+            }));
+            this._map.layers.add(new atlas.layer.SymbolLayer(this._regionDataSource, null, {
+                textOptions: {
+                    textField: ['get', 'label'],
+                    offset: [0, 0],
+                    size: 13,
+                    color: '#333',
+                    haloColor: '#fff',
+                    haloWidth: 1.5
+                },
+                filter: ['has', 'label']
+            }));
+        }
+
+        // Build polygon from GeoJSON coordinate rings
+        const shape = new atlas.Shape(new atlas.data.Polygon(info.coordinates), info.id, {
+            fillColor: info.fillColor || 'rgba(0, 120, 212, 0.15)',
+            strokeColor: info.strokeColor || '#0078d4',
+            strokeWidth: info.strokeWidth ?? 2,
+            label: info.label || ''
+        });
+        this._regionDataSource.add(shape);
+        this._regions.push(info.id);
+    }
+
+    clearRegions() {
+        if (this._regionDataSource) {
+            this._regionDataSource.clear();
+        }
+        this._regions = [];
+    }
+
+    /// Geocode a query string using the Azure Maps Search API.
+    /// Returns { latitude, longitude, north, south, east, west, geometryId } or null.
+    async geocode(query) {
+        if (!query) return null;
+        try {
+            const key = this._options.subscriptionKey;
+            const url = `https://atlas.microsoft.com/search/address/json?api-version=1.0&subscription-key=${encodeURIComponent(key)}&query=${encodeURIComponent(query)}&limit=1&entityType=Municipality,CountrySubdivision,CountrySecondarySubdivision,CountryTertiarySubdivision`;
+            const resp = await fetch(url);
+            if (!resp.ok) return null;
+            const data = await resp.json();
+            const r = data?.results?.[0];
+            if (!r?.position) return null;
+            const vp = r.viewport || r.boundingBox;
+            const geoId = r.dataSources?.geometry?.id ?? null;
+            return {
+                latitude: r.position.lat,
+                longitude: r.position.lon,
+                north: vp?.topLeftPoint?.lat ?? r.position.lat,
+                south: vp?.btmRightPoint?.lat ?? r.position.lat,
+                east: vp?.btmRightPoint?.lon ?? r.position.lon,
+                west: vp?.topLeftPoint?.lon ?? r.position.lon,
+                geometryId: geoId
+            };
+        } catch {
+            return null;
+        }
+    }
+
+    /// Fetch the actual boundary polygon for a geometry ID from Azure Maps Search Polygon API.
+    /// Returns an array of coordinate rings (GeoJSON Polygon coordinates) or null.
+    async getPolygon(geometryId) {
+        if (!geometryId) return null;
+        try {
+            const key = this._options.subscriptionKey;
+            const url = `https://atlas.microsoft.com/search/polygon/json?api-version=1.0&subscription-key=${encodeURIComponent(key)}&geometries=${encodeURIComponent(geometryId)}`;
+            const resp = await fetch(url);
+            if (!resp.ok) return null;
+            const data = await resp.json();
+
+            // Try to extract polygon coordinates from various response formats
+            const coords = this._extractPolygonCoords(data);
+            return coords;
+        } catch {
+            return null;
+        }
+    }
+
+    /// Recursively extract polygon coordinates from any GeoJSON-like structure.
+    _extractPolygonCoords(obj) {
+        if (!obj || typeof obj !== 'object') return null;
+
+        // Direct Polygon
+        if (obj.type === 'Polygon' && obj.coordinates) return obj.coordinates;
+
+        // MultiPolygon — pick the largest sub-polygon
+        if (obj.type === 'MultiPolygon' && obj.coordinates) {
+            let best = obj.coordinates[0];
+            for (const poly of obj.coordinates) {
+                if (poly[0]?.length > best[0]?.length) best = poly;
+            }
+            return best;
+        }
+
+        // FeatureCollection → iterate features
+        if (obj.type === 'FeatureCollection' && Array.isArray(obj.features)) {
+            for (const f of obj.features) {
+                const c = this._extractPolygonCoords(f.geometry || f);
+                if (c) return c;
+            }
+        }
+
+        // Feature → unwrap geometry
+        if (obj.type === 'Feature' && obj.geometry) {
+            return this._extractPolygonCoords(obj.geometry);
+        }
+
+        // GeometryCollection → iterate geometries
+        if (obj.type === 'GeometryCollection' && Array.isArray(obj.geometries)) {
+            for (const g of obj.geometries) {
+                const c = this._extractPolygonCoords(g);
+                if (c) return c;
+            }
+        }
+
+        // Azure Maps additionalData wrapper
+        if (Array.isArray(obj.additionalData)) {
+            for (const ad of obj.additionalData) {
+                const c = this._extractPolygonCoords(ad.geometryData || ad);
+                if (c) return c;
+            }
+        }
+
+        return null;
     }
 
     setCenter(lat, lng, zoom) {
@@ -376,6 +549,7 @@ class AzureMapController {
 
     dispose() {
         this.clearMarkers();
+        this.clearRegions();
         try { this._map?.dispose(); } catch { /* noop */ }
         this._map = null;
         this._dotNetRef = null;
@@ -384,13 +558,45 @@ class AzureMapController {
     // ── Helpers ──────────────────────────────────────────────────────────
 
     _buildPopupContent(info) {
-        const safeLabel = info.label ? this._escapeHtml(info.label) : '';
+        const esc = (s) => (s == null ? '' : this._escapeHtml(s));
+        const title = info.title || info.label;
+
+        const image = info.imageUrl
+            ? `<div style="width:100%;height:120px;overflow:hidden;border-radius:8px 8px 0 0;">
+                   <img src="${esc(info.imageUrl)}" alt="${esc(title)}"
+                        style="width:100%;height:100%;object-fit:cover;" />
+               </div>`
+            : '';
+
+        const detailRow = (icon, text) => text
+            ? `<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#555;">
+                   <span style="opacity:.55;">${icon}</span>
+                   <span>${esc(text)}</span>
+               </div>`
+            : '';
+
+        const action = info.detailsUrl
+            ? `<a href="${esc(info.detailsUrl)}"
+                  style="display:inline-block;margin-top:8px;padding:6px 14px;border-radius:6px;
+                         background:#0078d4;color:#fff;text-decoration:none;font-weight:500;font-size:12px;">
+                   ${esc(info.detailsLabel || 'Open')} →
+               </a>`
+            : '';
+
         return `
-            <div style="padding:10px 14px;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:13px;min-width:180px;">
-                ${safeLabel ? `<div style="font-weight:600;margin-bottom:4px;color:#222;">${safeLabel}</div>` : ''}
-                <div style="color:#555;font-variant-numeric:tabular-nums;">
-                    <span style="opacity:.6;">Lat</span> ${info.latitude.toFixed(5)}<br/>
-                    <span style="opacity:.6;">Lng</span> ${info.longitude.toFixed(5)}
+            <div style="font-family:system-ui,-apple-system,'Segoe UI',sans-serif;min-width:220px;max-width:280px;">
+                ${image}
+                <div style="padding:10px 14px 12px;">
+                    ${title ? `<div style="font-weight:600;margin-bottom:6px;color:#111;font-size:14px;word-break:break-word;">${esc(title)}</div>` : ''}
+                    <div style="display:flex;flex-direction:column;gap:3px;">
+                        ${detailRow('📍', info.city)}
+                        ${detailRow('📐', info.area)}
+                        ${detailRow('💰', info.price)}
+                    </div>
+                    <div style="margin-top:6px;font-variant-numeric:tabular-nums;font-size:11px;color:#888;">
+                        ${info.latitude.toFixed(5)}, ${info.longitude.toFixed(5)}
+                    </div>
+                    ${action}
                 </div>
             </div>`;
     }
