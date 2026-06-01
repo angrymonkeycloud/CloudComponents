@@ -377,26 +377,26 @@ class AzureMapController {
                 strokeColor: ['get', 'strokeColor'],
                 strokeWidth: ['get', 'strokeWidth']
             }));
-            this._map.layers.add(new atlas.layer.SymbolLayer(this._regionDataSource, null, {
-                textOptions: {
-                    textField: ['get', 'label'],
-                    offset: [0, 0],
-                    size: 13,
-                    color: '#333',
-                    haloColor: '#fff',
-                    haloWidth: 1.5
-                },
-                filter: ['has', 'label']
-            }));
+            //this._map.layers.add(new atlas.layer.SymbolLayer(this._regionDataSource, null, {
+            //    textOptions: {
+            //        textField: ['get', 'label'],
+            //        offset: [0, 0],
+            //        size: 13,
+            //        color: '#333',
+            //        haloColor: '#fff',
+            //        haloWidth: 1.5
+            //    },
+            //    filter: ['has', 'label']
+            //}));
         }
 
-        // Build polygon from GeoJSON coordinate rings
-        const shape = new atlas.Shape(new atlas.data.Polygon(info.coordinates), info.id, {
+        const props = {
             fillColor: info.fillColor || 'rgba(0, 120, 212, 0.15)',
             strokeColor: info.strokeColor || '#0078d4',
-            strokeWidth: info.strokeWidth ?? 2,
-            label: info.label || ''
-        });
+            strokeWidth: info.strokeWidth ?? 2
+        };
+        if (info.label) props.label = info.label;
+        const shape = new atlas.Shape(new atlas.data.Polygon(info.coordinates), info.id, props);
         this._regionDataSource.add(shape);
         this._regions.push(info.id);
     }

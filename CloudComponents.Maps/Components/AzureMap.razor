@@ -16,6 +16,19 @@
         </div>
     }
 
+    @if (_regionLegendEntries.Count > 0)
+    {
+        <div class="map-legend">
+            @foreach (var entry in _regionLegendEntries)
+            {
+                <div class="map-legend-item">
+                    <span class="map-legend-swatch" style="background: @entry.Fill; border-color: @entry.Stroke;"></span>
+                    <span class="map-legend-label">@entry.Label</span>
+                </div>
+            }
+        </div>
+    }
+
     @if (ShowCurrentLocationButton && Locator is not null)
     {
         <button type="button"

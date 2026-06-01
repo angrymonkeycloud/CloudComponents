@@ -27,6 +27,9 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     private bool _appliedTrafficIncidents;
 
     private readonly Dictionary<string, MapMarker> _markersById = new();
+    private readonly List<RegionLegendItem> _regionLegendEntries = new();
+
+    private sealed record RegionLegendItem(string Label, string Fill, string Stroke);
 
     [Inject] private IJSRuntime JS { get; set; } = default!;
     [Inject] private IOptions<AzureMapsOptions>? GlobalOptions { get; set; }
@@ -351,13 +354,27 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     {
         var c = EnsureController();
         foreach (var region in regions)
+        {
             await c.InvokeVoidAsync("addRegion", region);
+
+            if (!string.IsNullOrWhiteSpace(region.Label)
+                && !_regionLegendEntries.Any(e => e.Label == region.Label))
+            {
+                _regionLegendEntries.Add(new RegionLegendItem(
+                    region.Label!, region.FillColor, region.StrokeColor));
+            }
+        }
+
+        if (_regionLegendEntries.Count > 0)
+            StateHasChanged();
     }
 
     public async Task ClearRegionsAsync()
     {
         if (_controller is null) return;
         await _controller.InvokeVoidAsync("clearRegions");
+        _regionLegendEntries.Clear();
+        StateHasChanged();
     }
 
     /// <summary>
