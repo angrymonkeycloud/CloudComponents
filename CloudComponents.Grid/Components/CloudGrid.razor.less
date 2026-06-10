@@ -1,0 +1,274 @@
+@import (reference) "../src/Variables.less";
+
+.TransitionFlash {
+    -webkit-transition: all 0.005s linear;
+    -moz-transition: all 0.005s linear;
+    -o-transition: all 0.005s linear;
+    transition: all 0.005s linear;
+}
+
+.TransitionFast {
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+
+.TransitionMedium {
+    -webkit-transition: all 0.4s ease;
+    -moz-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+}
+
+
+.TableHeader > div,
+.TableRow {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+
+.TableContainer {
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, .1);
+    border-top: none;
+    border-bottom: none;
+
+    &._subgrid,
+    &._dashboard {
+        height: 320px;
+    }
+
+    .Table {
+        width: 100%;
+        white-space: nowrap;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border-radius: 5px;
+        overflow: hidden;
+
+        .TableHeaderCheckBoxCell,
+        .TableCheckBoxCell {
+            width: 50px;
+
+            div {
+                width: 100%;
+                height: 100%;
+            }
+
+            > div > div {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+
+                input[type="checkbox"] {
+                    width: 18px;
+                    height: 18px;
+                    border: 1px solid #444;
+                    -webkit-appearance: checkbox;
+                }
+            }
+        }
+
+        .TableHeader > div > div,
+        a {
+            display: flex;
+
+            .TableHeaderCell,
+            .TableCell {
+                .TransitionFlash;
+                white-space: nowrap;
+                min-width: 40px;
+                max-width: 400px;
+                padding: 0 !important;
+
+                div {
+                    display: flex;
+                    padding: 0;
+                    width: 100%;
+
+                    .Label, .Value {
+                        padding-left: 5px;
+                        overflow: hidden;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+
+                        span {
+                            text-overflow: ellipsis;
+                            overflow: hidden;
+                        }
+                    }
+
+                    .Resizer,
+                    .Resizer-Right {
+                        display: block;
+                        width: 6px;
+                        height: unset;
+                        padding: 0;
+                        height: 100%;
+                    }
+                }
+            }
+        }
+
+        .TableHeader {
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-left-width: 0;
+            border-right-width: 0;
+
+            &.Disabled {
+                cursor: col-resize;
+                pointer-events: none;
+                opacity: 0.5;
+            }
+
+            > div {
+                display: table;
+
+                > div {
+
+                    .TableHeaderCell {
+
+                        div {
+                            height: 30px;
+
+                            .Label {
+                                font-weight: 600;
+                            }
+
+                            .Resizer,
+                            .Resizer-Right {
+                                cursor: col-resize;
+                            }
+
+                            .Resizer {
+                                border-right: 1px solid rgba(0, 0, 0, 0.1);
+                            }
+                        }
+
+                        &.Resizing {
+
+                            .Resizer {
+                                border-right: 1px solid rgba(0, 0, 0, 0.4);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .TableBody {
+            display: flex;
+            flex-direction: row;
+            overflow: auto;
+            flex: 1;
+            overflow-y: hidden;
+
+            &:has(.RecordNotSaved) {
+                padding:10px;
+            }
+
+            .table {
+
+                &-body {
+
+                    &-content {
+                        display: flex;
+                        flex-direction: column;
+                    }
+
+                    &-new {
+                        text-align: center;
+                        display: flex;
+                        justify-content: center;
+                        padding-top: 20px;
+
+                        a {
+                            align-self: flex-start;
+                        }
+                    }
+                }
+            }
+
+            > div {
+                min-width: 100%;
+                display: flex;
+                flex-direction: column;
+
+                .TableRow {
+                    min-width: 100%;
+                    display: flex;
+                    align-items: stretch;
+                    justify-content: stretch;
+                    padding: 0;
+                    height: 43px;
+
+                    > * {
+                        /*display: inline-block;*/
+                    }
+
+                    &.Checked {
+                        background-color: #f2f2f2;
+                    }
+
+                    > a,
+                    > a:active,
+                    > a:focus,
+                    > a:visited,
+                    > a:hover {
+                        color: @DarkGray1;
+                        text-decoration: none;
+                        white-space: nowrap;
+                        font-size: 0;
+                        height: 100%;
+                        width: 100%;
+                        padding-left: 10px;
+                        padding-right: 10px;
+
+                        .TableCell {
+                            display: inline-block;
+                            font-size: 14px;
+                            display: flex;
+                            align-items: center;
+
+                            .Value {
+                                padding-right: 10px;
+                                display: flex;
+                                flex-direction: row;
+
+                                .ValueSpan {
+                                    flex: 1;
+                                }
+                            }
+                        }
+
+                        .RowInfo {
+                            padding: 0 !important;
+                            font-size: 9px;
+                            white-space: nowrap;
+                            opacity: .8;
+                            height: 12px;
+
+                            span {
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                padding-left: 5px;
+                            }
+                        }
+                    }
+
+                    &:hover {
+                        background-color: @LightGray2;
+                        color: #000;
+                    }
+                }
+            }
+        }
+    }
+}

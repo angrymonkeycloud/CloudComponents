@@ -1,0 +1,121 @@
+@namespace CloudComponents.Grid.Components
+@using CloudComponents.Grid.Models
+
+<div class="TableContainer @CssClass" @attributes="AdditionalAttributes">
+
+    @if (AllowSelection)
+    {
+        <input type="hidden" id="SelectedRecords" value="@string.Join(",", SelectedRecords ?? new List<Guid>())" />
+    }
+
+    <div class="Table">
+
+        <div class="TableHeader @(IsLoading ? "Disabled" : null)">
+            <div>
+                <div>
+                    @if (AllowSelection)
+                    {
+                        <div class="TableHeaderCheckBoxCell">
+                            <div>
+                                <div>
+                                    <input type="checkbox" />
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @foreach (CloudGridColumn column in Columns)
+                    {
+                        <div class="TableHeaderCell" style="width: @(column.Width)px">
+                            <div>
+                                <div class="Label">
+                                    <span>@column.Label</span>
+                                </div>
+                                <div class="Resizer">&nbsp;</div>
+                                <div class="Resizer-Right">&nbsp;</div>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+
+        <div class="TableBody">
+            <div>
+                @if (IsLoading)
+                {
+                    <div>@LoadingText</div>
+                }
+                else if (IsSearching)
+                {
+                    <div>@SearchingText</div>
+                }
+                else if (!string.IsNullOrEmpty(Message))
+                {
+                    <div class='RecordNotSaved'>@Message</div>
+                }
+                else if (Data != null)
+                {
+                    foreach (CloudGridRow row in Data.Rows)
+                    {
+                        <div class="TableRow" data-id="@row.Id" @attributes="row.Attributes">
+                            <a href="@row.Link" target="@LinkTarget">
+                                @foreach (object? cell in row.Cells)
+                                {
+                                    <div class="TableCell" style="width: 300px">
+                                        <div>
+                                            <div class="Value">
+                                                <span class="ValueSpan">
+                                                    @if (cell == null)
+                                                    {
+                                                        <span>--</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        @cell
+                                                    }
+                                                </span>
+                                            </div>
+                                            <div class="Resizer">&nbsp;</div>
+                                            <div class="Resizer-Right">&nbsp;</div>
+                                        </div>
+                                    </div>
+                                }
+                            </a>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <CloudGridFooter Model="Data" AllowSelection="AllowSelection" ActionFunction="OnPageChanged" />
+    </div>
+
+</div>
+
+@code {
+    [Parameter] public List<CloudGridColumn> Columns { get; set; } = [];
+    [Parameter] public CloudGridDataResult? Data { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public bool IsSearching { get; set; }
+
+    /// <summary>
+    /// Optional message displayed instead of the rows (e.g. "No records.").
+    /// </summary>
+    [Parameter] public string? Message { get; set; }
+
+    [Parameter] public bool AllowSelection { get; set; }
+    [Parameter] public List<Guid>? SelectedRecords { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string LinkTarget { get; set; } = "_parent";
+    [Parameter] public string LoadingText { get; set; } = "retrieving data...";
+    [Parameter] public string SearchingText { get; set; } = "searching...";
+
+    /// <summary>
+    /// Raised when the user navigates between pages using the footer.
+    /// </summary>
+    [Parameter] public EventCallback<CloudGridPaginationType> OnPageChanged { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

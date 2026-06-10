@@ -1,0 +1,266 @@
+.TransitionFlash {
+  -webkit-transition: all 0.005s linear;
+  -moz-transition: all 0.005s linear;
+  -o-transition: all 0.005s linear;
+  transition: all 0.005s linear;
+}
+.TransitionFast {
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease;
+}
+.TransitionMedium {
+  -webkit-transition: all 0.4s ease;
+  -moz-transition: all 0.4s ease;
+  -o-transition: all 0.4s ease;
+  transition: all 0.4s ease;
+}
+.TableHeader > div,
+.TableRow {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.TableContainer {
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: none;
+  border-bottom: none;
+}
+.TableContainer._subgrid,
+.TableContainer._dashboard {
+  height: 320px;
+}
+.TableContainer .Table {
+  width: 100%;
+  white-space: nowrap;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.TableContainer .Table .TableHeaderCheckBoxCell,
+.TableContainer .Table .TableCheckBoxCell {
+  width: 50px;
+}
+.TableContainer .Table .TableHeaderCheckBoxCell div,
+.TableContainer .Table .TableCheckBoxCell div {
+  width: 100%;
+  height: 100%;
+}
+.TableContainer .Table .TableHeaderCheckBoxCell > div > div,
+.TableContainer .Table .TableCheckBoxCell > div > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.TableContainer .Table .TableHeaderCheckBoxCell > div > div input[type="checkbox"],
+.TableContainer .Table .TableCheckBoxCell > div > div input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  border: 1px solid #444;
+  -webkit-appearance: checkbox;
+}
+.TableContainer .Table .TableHeader > div > div,
+.TableContainer .Table a {
+  display: flex;
+}
+.TableContainer .Table .TableHeader > div > div .TableHeaderCell,
+.TableContainer .Table a .TableHeaderCell,
+.TableContainer .Table .TableHeader > div > div .TableCell,
+.TableContainer .Table a .TableCell {
+  -webkit-transition: all 0.005s linear;
+  -moz-transition: all 0.005s linear;
+  -o-transition: all 0.005s linear;
+  transition: all 0.005s linear;
+  white-space: nowrap;
+  min-width: 40px;
+  max-width: 400px;
+  padding: 0 !important;
+}
+.TableContainer .Table .TableHeader > div > div .TableHeaderCell div,
+.TableContainer .Table a .TableHeaderCell div,
+.TableContainer .Table .TableHeader > div > div .TableCell div,
+.TableContainer .Table a .TableCell div {
+  display: flex;
+  padding: 0;
+  width: 100%;
+}
+.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Label,
+.TableContainer .Table a .TableHeaderCell div .Label,
+.TableContainer .Table .TableHeader > div > div .TableCell div .Label,
+.TableContainer .Table a .TableCell div .Label,
+.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Value,
+.TableContainer .Table a .TableHeaderCell div .Value,
+.TableContainer .Table .TableHeader > div > div .TableCell div .Value,
+.TableContainer .Table a .TableCell div .Value {
+  padding-left: 5px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Label span,
+.TableContainer .Table a .TableHeaderCell div .Label span,
+.TableContainer .Table .TableHeader > div > div .TableCell div .Label span,
+.TableContainer .Table a .TableCell div .Label span,
+.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Value span,
+.TableContainer .Table a .TableHeaderCell div .Value span,
+.TableContainer .Table .TableHeader > div > div .TableCell div .Value span,
+.TableContainer .Table a .TableCell div .Value span {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Resizer,
+.TableContainer .Table a .TableHeaderCell div .Resizer,
+.TableContainer .Table .TableHeader > div > div .TableCell div .Resizer,
+.TableContainer .Table a .TableCell div .Resizer,
+.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Resizer-Right,
+.TableContainer .Table a .TableHeaderCell div .Resizer-Right,
+.TableContainer .Table .TableHeader > div > div .TableCell div .Resizer-Right,
+.TableContainer .Table a .TableCell div .Resizer-Right {
+  display: block;
+  width: 6px;
+  height: unset;
+  padding: 0;
+  height: 100%;
+}
+.TableContainer .Table .TableHeader {
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-left-width: 0;
+  border-right-width: 0;
+}
+.TableContainer .Table .TableHeader.Disabled {
+  cursor: col-resize;
+  pointer-events: none;
+  opacity: 0.5;
+}
+.TableContainer .Table .TableHeader > div {
+  display: table;
+}
+.TableContainer .Table .TableHeader > div > div .TableHeaderCell div {
+  height: 30px;
+}
+.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Label {
+  font-weight: 600;
+}
+.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Resizer,
+.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Resizer-Right {
+  cursor: col-resize;
+}
+.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Resizer {
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+.TableContainer .Table .TableHeader > div > div .TableHeaderCell.Resizing .Resizer {
+  border-right: 1px solid rgba(0, 0, 0, 0.4);
+}
+.TableContainer .Table .TableBody {
+  display: flex;
+  flex-direction: row;
+  overflow: auto;
+  flex: 1;
+  overflow-y: hidden;
+}
+.TableContainer .Table .TableBody:has(.RecordNotSaved) {
+  padding: 10px;
+}
+.TableContainer .Table .TableBody .table-body-content {
+  display: flex;
+  flex-direction: column;
+}
+.TableContainer .Table .TableBody .table-body-new {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  padding-top: 20px;
+}
+.TableContainer .Table .TableBody .table-body-new a {
+  align-self: flex-start;
+}
+.TableContainer .Table .TableBody > div {
+  min-width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.TableContainer .Table .TableBody > div .TableRow {
+  min-width: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
+  height: 43px;
+}
+.TableContainer .Table .TableBody > div .TableRow > * {
+  /*display: inline-block;*/
+}
+.TableContainer .Table .TableBody > div .TableRow.Checked {
+  background-color: #f2f2f2;
+}
+.TableContainer .Table .TableBody > div .TableRow > a,
+.TableContainer .Table .TableBody > div .TableRow > a:active,
+.TableContainer .Table .TableBody > div .TableRow > a:focus,
+.TableContainer .Table .TableBody > div .TableRow > a:visited,
+.TableContainer .Table .TableBody > div .TableRow > a:hover {
+  color: #505050;
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: 0;
+  height: 100%;
+  width: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.TableContainer .Table .TableBody > div .TableRow > a .TableCell,
+.TableContainer .Table .TableBody > div .TableRow > a:active .TableCell,
+.TableContainer .Table .TableBody > div .TableRow > a:focus .TableCell,
+.TableContainer .Table .TableBody > div .TableRow > a:visited .TableCell,
+.TableContainer .Table .TableBody > div .TableRow > a:hover .TableCell {
+  display: inline-block;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+.TableContainer .Table .TableBody > div .TableRow > a .TableCell .Value,
+.TableContainer .Table .TableBody > div .TableRow > a:active .TableCell .Value,
+.TableContainer .Table .TableBody > div .TableRow > a:focus .TableCell .Value,
+.TableContainer .Table .TableBody > div .TableRow > a:visited .TableCell .Value,
+.TableContainer .Table .TableBody > div .TableRow > a:hover .TableCell .Value {
+  padding-right: 10px;
+  display: flex;
+  flex-direction: row;
+}
+.TableContainer .Table .TableBody > div .TableRow > a .TableCell .Value .ValueSpan,
+.TableContainer .Table .TableBody > div .TableRow > a:active .TableCell .Value .ValueSpan,
+.TableContainer .Table .TableBody > div .TableRow > a:focus .TableCell .Value .ValueSpan,
+.TableContainer .Table .TableBody > div .TableRow > a:visited .TableCell .Value .ValueSpan,
+.TableContainer .Table .TableBody > div .TableRow > a:hover .TableCell .Value .ValueSpan {
+  flex: 1;
+}
+.TableContainer .Table .TableBody > div .TableRow > a .RowInfo,
+.TableContainer .Table .TableBody > div .TableRow > a:active .RowInfo,
+.TableContainer .Table .TableBody > div .TableRow > a:focus .RowInfo,
+.TableContainer .Table .TableBody > div .TableRow > a:visited .RowInfo,
+.TableContainer .Table .TableBody > div .TableRow > a:hover .RowInfo {
+  padding: 0 !important;
+  font-size: 9px;
+  white-space: nowrap;
+  opacity: 0.8;
+  height: 12px;
+}
+.TableContainer .Table .TableBody > div .TableRow > a .RowInfo span,
+.TableContainer .Table .TableBody > div .TableRow > a:active .RowInfo span,
+.TableContainer .Table .TableBody > div .TableRow > a:focus .RowInfo span,
+.TableContainer .Table .TableBody > div .TableRow > a:visited .RowInfo span,
+.TableContainer .Table .TableBody > div .TableRow > a:hover .RowInfo span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 5px;
+}
+.TableContainer .Table .TableBody > div .TableRow:hover {
+  background-color: #e8e8e8;
+  color: #000;
+}

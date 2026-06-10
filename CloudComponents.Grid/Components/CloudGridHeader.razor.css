@@ -1,0 +1,111 @@
+.grid-header {
+  height: 38px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: none;
+  border-start-start-radius: 5px;
+  border-start-end-radius: 5px;
+}
+.grid-header > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.grid-header-label {
+  justify-content: flex-start;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #000;
+  letter-spacing: 0.01em;
+  transition: all 0.18s ease;
+}
+.grid-header-buttons {
+  flex: 1;
+}
+.grid-header-actions {
+  flex-shrink: 0;
+}
+.grid-header-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 100%;
+  padding: 5px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--accentColor);
+  transition: all 0.18s ease;
+  opacity: 0.8;
+}
+.grid-header-button ::deep svg,
+.grid-header-button svg {
+  display: block;
+  height: 1rem;
+}
+.grid-header-button ::deep svg .--svg-fill,
+.grid-header-button svg .--svg-fill {
+  fill: var(--accentColor);
+  transition: all 0.18s ease;
+}
+.grid-header-button ::deep svg .--svg-stroke,
+.grid-header-button svg .--svg-stroke {
+  stroke: var(--accentColor);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.grid-header-button:hover {
+  background-color: var(--accentColor);
+  color: #fff;
+  opacity: 1;
+}
+.grid-header-button:hover ::deep svg .--svg-fill,
+.grid-header-button:hover svg .--svg-fill {
+  fill: #fff;
+}
+.grid-header-button:hover ::deep svg .--svg-stroke,
+.grid-header-button:hover svg .--svg-stroke {
+  stroke: #fff;
+}
+.grid-header-button:active {
+  border-color: var(--accentColor);
+  opacity: 1;
+}
+.grid-header-search-input {
+  height: 28px;
+  width: 200px;
+  padding: 0 10px;
+  font-size: 13px;
+  color: #505050;
+  background-color: #f8f8f8;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  outline: none;
+  transition: all 0.18s ease;
+  appearance: none;
+}
+.grid-header-search-input::placeholder {
+  color: rgba(0, 0, 0, 0.3);
+}
+.grid-header-search-input:focus {
+  background-color: #fff;
+  border-color: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+.grid-header-search-input::-webkit-search-decoration,
+.grid-header-search-input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}

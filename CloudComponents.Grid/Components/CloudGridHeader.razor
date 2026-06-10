@@ -1,0 +1,178 @@
+@namespace CloudComponents.Grid.Components
+
+<div class="grid-header">
+
+    <div class="grid-header-label">
+        <label>@Label</label>
+
+        <div class="grid-header-buttons">
+            @if (!string.IsNullOrEmpty(ViewUrl))
+            {
+                <a href="@ViewUrl" class="grid-header-button">
+                    <svg viewBox="0 0 20 20" fill="none">
+                        <path d="M5.707 15.707a1 1 0 0 1-1.414-1.414l4-4a1 1 0 1 1 1.414 1.414z" class="--svg-fill" />
+                        <path d="M5 16a1 1 0 1 1 0-2h4a1 1 0 1 1 0 2z" class="--svg-fill" />
+                        <path d="M6 15a1 1 0 1 1-2 0v-4a1 1 0 1 1 2 0zm5.707-5.293a1 1 0 0 1-1.414-1.414l4-4a1 1 0 1 1 1.414 1.414z" class="--svg-fill" />
+                        <path d="M16 9a1 1 0 1 1-2 0V5a1 1 0 1 1 2 0z" class="--svg-fill" />
+                        <path d="M11 6a1 1 0 1 1 0-2h4a1 1 0 1 1 0 2z" class="--svg-fill" />
+                    </svg>
+                </a>
+            }
+        </div>
+    </div>
+
+    <div class="grid-header-buttons">
+        @if (!string.IsNullOrEmpty(NewUrl))
+        {
+            <a href="@NewUrl" class="grid-header-button">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <line class="--svg-stroke" x1="12" y1="5" x2="12" y2="19" />
+                    <line class="--svg-stroke" x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                <span>@NewButtonText</span>
+            </a>
+        }
+    </div>
+
+    <div class="grid-header-actions">
+
+        @if (AllowSearch)
+        {
+            if (IsSearching)
+            {
+                <button type="button" class="grid-header-button" title="Search" @onclick="ClearSearch">
+                    cancel
+                </button>
+
+                <input @ref="_searchInput"
+                       type="search"
+                       class="grid-header-search-input"
+                       value="@SearchQuery"
+                       placeholder="Search..."
+                       @oninput="OnSearchInput"
+                       @onblur="OnSearchBlur"
+                       @onkeydown="OnSearchKeyDown" />
+            }
+            else
+            {
+                <button type="button" class="grid-header-button" title="Search" @onclick="OpenSearch">
+                    <svg viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                </button>
+            }
+        }
+
+    </div>
+
+</div>
+
+@code {
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>
+    /// Optional link rendered next to the label (expand/open view). Hidden when null or empty.
+    /// </summary>
+    [Parameter] public string? ViewUrl { get; set; }
+
+    /// <summary>
+    /// Optional link for the "new" button. Hidden when null or empty.
+    /// </summary>
+    [Parameter] public string? NewUrl { get; set; }
+
+    [Parameter] public string NewButtonText { get; set; } = "new";
+    [Parameter] public bool AllowSearch { get; set; } = true;
+    [Parameter] public int SearchDebounceMilliseconds { get; set; } = 300;
+
+    /// <summary>
+    /// Raised when the (debounced) search query changes. Null/empty means the search was cleared.
+    /// </summary>
+    [Parameter] public EventCallback<string?> OnSearchChanged { get; set; }
+
+    private bool IsSearching;
+    private string SearchQuery = string.Empty;
+    private bool FocusSearchInput;
+    private ElementReference _searchInput;
+    private CancellationTokenSource? _searchDebounceCts;
+
+    private void OpenSearch()
+    {
+        IsSearching = true;
+        FocusSearchInput = true;
+    }
+
+    private async Task OnSearchInput(ChangeEventArgs e)
+    {
+        SearchQuery = e.Value?.ToString() ?? string.Empty;
+
+        _searchDebounceCts?.Cancel();
+        _searchDebounceCts = new CancellationTokenSource();
+        CancellationToken token = _searchDebounceCts.Token;
+
+        try
+        {
+            await Task.Delay(SearchDebounceMilliseconds, token);
+        }
+        catch (TaskCanceledException)
+        {
+            return;
+        }
+
+        await NotifySearchChangedAsync();
+    }
+
+    private async Task OnSearchKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            if (string.IsNullOrEmpty(SearchQuery))
+                await ClearSearch();
+            else SearchQuery = string.Empty;
+        }
+    }
+
+    private async Task OnSearchBlur(FocusEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(SearchQuery))
+            return;
+
+        await ClearSearch();
+    }
+
+    private async Task ClearSearch()
+    {
+        IsSearching = false;
+
+        bool searchWasCleared = !string.IsNullOrEmpty(SearchQuery);
+
+        SearchQuery = string.Empty;
+
+        if (searchWasCleared)
+            await NotifySearchChangedAsync();
+    }
+
+    private Task NotifySearchChangedAsync()
+    {
+        string? query = string.IsNullOrWhiteSpace(SearchQuery) ? null : SearchQuery.Trim();
+        return OnSearchChanged.InvokeAsync(query);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!FocusSearchInput)
+            return;
+
+        FocusSearchInput = false;
+
+        try
+        {
+            await _searchInput.FocusAsync();
+        }
+        catch
+        {
+            // Element may not be available yet; ignore.
+        }
+    }
+}

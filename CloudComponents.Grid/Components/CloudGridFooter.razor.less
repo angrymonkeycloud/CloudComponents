@@ -1,0 +1,72 @@
+.TableFooter {
+    width: 100%;
+    height: 28px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.04);
+
+    > div {
+        display: flex;
+        padding-top: 6px;
+        font-size: 12px;
+
+        .GridInformation {
+            flex: 1;
+            opacity: 0.7;
+            padding-left: 8px;
+        }
+
+        .GridPaging {
+            display: flex;
+
+            > span {
+                opacity: 0.7;
+            }
+
+            svg {
+                width: 14px;
+                height: 14px;
+
+                polyline {
+                    fill: none;
+                    stroke-width: 4px;
+                    stroke-miterlimit: 10;
+                }
+            }
+
+            .SubgridNextPage, .SubgridPreviousPage {
+                cursor: pointer;
+                letter-spacing: 1px;
+                opacity: 1;
+                padding: 3px 12px;
+                font-weight: 600;
+
+                &:hover:not(.Disabled) {
+
+                    polyline {
+                        stroke-width: 6px;
+                    }
+                }
+
+                &.Disabled {
+                    pointer-events: none;
+                    opacity: 0;
+                    cursor: default !important;
+                }
+
+                svg {
+                    width: 1em;
+                    height: 1em;
+                    fill: var(--accentColor);
+
+                    polyline {
+                        stroke: var(--accentColor);
+                    }
+                }
+            }
+
+            .SubgridPreviousPage.Disabled {
+                display: none;
+            }
+        }
+    }
+}

@@ -1,0 +1,59 @@
+@namespace CloudComponents.Grid.Components
+@using CloudComponents.Grid.Models
+
+@if (Model != null)
+{
+    <div class="TableFooter">
+
+        @if (Model.Rows.Count > 0)
+        {
+            int total = Model.Total;
+            int recordsCount = Model.Rows.Count;
+            int pageNumber = Model.Page;
+            int count = Model.PageSize;
+            int startCount = (count * (pageNumber - 1)) + 1;
+            int endCount = (count * (pageNumber - 1)) + recordsCount;
+
+            <div>
+                <div class="GridInformation">
+                    @startCount - @endCount out of @total
+
+                    @if (AllowSelection)
+                    {
+                        <span class="SelectedInformation"></span>
+                    }
+                </div>
+
+                <div class="GridPaging">
+                    <span @onclick="LeftArrowClicked" class="SubgridPreviousPage @(startCount == 1 ? "Disabled" : string.Empty)" data-page="@(pageNumber - 1)">
+                        <svg viewBox="0 0 50 50">
+                            <polyline class="AccentStroke" points="36.8,1.5 13.3,24.8 36.8,48 " />
+                        </svg>
+                    </span>
+                    <span>Page @pageNumber</span>
+                    <span @onclick="RightArrowClicked" class="SubgridNextPage @(endCount == total ? "Disabled" : string.Empty)" data-page="@(pageNumber + 1)">
+                        <svg viewBox="0 0 50 50">
+                            <polyline class="AccentStroke" points="13.3,48.1 36.8,24.8 13.3,1.5 " />
+                        </svg>
+                    </span>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public CloudGridDataResult? Model { get; set; }
+    [Parameter] public bool AllowSelection { get; set; }
+    [Parameter] public required EventCallback<CloudGridPaginationType> ActionFunction { get; set; }
+
+    private async Task RightArrowClicked()
+    {
+        await ActionFunction.InvokeAsync(CloudGridPaginationType.RightArrow);
+    }
+
+    private async Task LeftArrowClicked()
+    {
+        await ActionFunction.InvokeAsync(CloudGridPaginationType.LeftArrow);
+    }
+}

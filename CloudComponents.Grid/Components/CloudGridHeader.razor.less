@@ -1,0 +1,130 @@
+@import (reference) "../src/Variables.less";
+
+@_header-height: 38px;
+@_border-color: rgba(0, 0, 0, 0.1);
+@_transition: all 0.18s ease;
+
+.grid-header {
+    height: @_header-height;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background-color: #fff;
+    border: 1px solid @_border-color;
+    border-bottom: none;
+    border-start-start-radius: 5px;
+    border-start-end-radius: 5px;
+
+    > div {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    &-label {
+        justify-content: flex-start;
+        cursor: pointer;
+        text-decoration: none;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: .8rem;
+        font-weight: 600;
+        color: @AccentColor;
+        letter-spacing: 0.01em;
+        transition: @_transition;
+    }
+
+    &-buttons {
+        flex: 1;
+    }
+
+    &-actions {
+        flex-shrink: 0;
+    }
+
+    &-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        height: 100%;
+        padding: 5px;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        cursor: pointer;
+        color: var(--accentColor);
+        transition: @_transition;
+        opacity: .8;
+
+        ::deep svg, svg {
+            display: block;
+            height: 1rem;
+
+            .--svg-fill {
+                fill: var(--accentColor);
+                transition: @_transition;
+            }
+
+            .--svg-stroke {
+                stroke: var(--accentColor);
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+        }
+
+        &:hover {
+            background-color: var(--accentColor);
+            color: #fff;
+            opacity: 1;
+
+            ::deep svg, svg {
+                .--svg-fill {
+                    fill: #fff;
+                }
+
+                .--svg-stroke {
+                    stroke: #fff;
+                }
+            }
+        }
+
+        &:active {
+            border-color: var(--accentColor);
+            opacity: 1;
+        }
+    }
+    // Search input - slides in
+    &-search-input {
+        height: 28px;
+        width: 200px;
+        padding: 0 10px;
+        font-size: 13px;
+        color: @DarkGray1;
+        background-color: @LightGray1;
+        border: 1px solid @_border-color;
+        border-radius: 6px;
+        outline: none;
+        transition: @_transition;
+        appearance: none;
+
+        &::placeholder {
+            color: rgba(0, 0, 0, 0.3);
+        }
+
+        &:focus {
+            background-color: #fff;
+            border-color: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+        // Remove native clear button on search inputs
+        &::-webkit-search-decoration,
+        &::-webkit-search-cancel-button {
+            -webkit-appearance: none;
+        }
+    }
+}
