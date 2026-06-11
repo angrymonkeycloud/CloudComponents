@@ -1,121 +1,187 @@
 @namespace CloudComponents.Grid.Components
 @using CloudComponents.Grid.Models
+@using Microsoft.AspNetCore.Components.Web.Virtualization
 
-<div class="TableContainer @CssClass" @attributes="AdditionalAttributes">
+@*
+    CloudGrid — generic, presentational data grid.
+
+    Markup follows the Angry Monkey CSS naming convention
+    (https://github.com/angrymonkeydocs/css-naming-convention):
+    - Block:       .cloudgrid
+    - Children:    .cloudgrid-head, .cloudgrid-headcell, .cloudgrid-row, ...
+    - Adjectives:  ._busy, ._sortable, ._sorted-ascending, ._selected, ...
+
+    All behavior lives in CloudGrid.razor.cs; styles in CloudGrid.razor.less.
+*@
+
+<div class="cloudgrid @RootClass" style="@RootStyle" @attributes="AdditionalAttributes">
 
     @if (AllowSelection)
     {
-        <input type="hidden" id="SelectedRecords" value="@string.Join(",", SelectedRecords ?? new List<Guid>())" />
+        <input type="hidden" id="SelectedRecords" value="@string.Join(",", _selectedRecords)" />
     }
 
-    <div class="Table">
+    <div class="cloudgrid-table @TableClass">
 
-        <div class="TableHeader @(IsLoading ? "Disabled" : null)">
-            <div>
-                <div>
-                    @if (AllowSelection)
-                    {
-                        <div class="TableHeaderCheckBoxCell">
-                            <div>
-                                <div>
-                                    <input type="checkbox" />
-                                </div>
-                            </div>
-                        </div>
-                    }
+        <div class="cloudgrid-head">
 
-                    @foreach (CloudGridColumn column in Columns)
-                    {
-                        <div class="TableHeaderCell" style="width: @(column.Width)px">
-                            <div>
-                                <div class="Label">
-                                    <span>@column.Label</span>
-                                </div>
-                                <div class="Resizer">&nbsp;</div>
-                                <div class="Resizer-Right">&nbsp;</div>
-                            </div>
-                        </div>
-                    }
-
+            @if (AllowSelection)
+            {
+                <div class="cloudgrid-check">
+                    <input type="checkbox" title="Select all" checked="@AllRowsSelected" @onchange="ToggleSelectAllAsync" />
                 </div>
-            </div>
+            }
+
+            @for (int i = 0; i < Columns.Count; i++)
+            {
+                int columnIndex = i;
+                CloudGridColumn column = Columns[columnIndex];
+
+                <div class="@HeadCellClass(columnIndex)"
+                     style="width: @Px(GetColumnWidth(columnIndex))"
+                     @onclick="() => SortByAsync(columnIndex)">
+
+                    <span>@column.Label</span>
+
+                    @if (_sortIndex == columnIndex)
+                    {
+                        <svg viewBox="0 0 10 6"><path d="M1 5 5 1 9 5" /></svg>
+                    }
+
+                    @if (column.Resizable)
+                    {
+                        <div class="cloudgrid-resizer"
+                             @onclick:stopPropagation
+                             @onpointerdown="e => BeginResize(columnIndex, e)"
+                             @onpointerdown:preventDefault
+                             @onpointerdown:stopPropagation></div>
+                    }
+                </div>
+            }
         </div>
 
-        <div class="TableBody">
-            <div>
-                @if (IsLoading)
+        <div class="cloudgrid-body" style="@BodyStyle">
+
+            @if (IsLoading)
+            {
+                <div class="cloudgrid-status _loading">@LoadingText</div>
+            }
+            else if (IsSearching)
+            {
+                <div class="cloudgrid-status _searching">@SearchingText</div>
+            }
+            else if (!string.IsNullOrEmpty(Message))
+            {
+                <div class="cloudgrid-status _message">@Message</div>
+            }
+            else if (Data != null)
+            {
+                @if (PagingMode == CloudGridPagingMode.InfiniteScroll)
                 {
-                    <div>@LoadingText</div>
+                    @* Blazor's built-in Virtualize detects scrolling near the end of
+                       the loaded rows and asks the provider for the missing range,
+                       which triggers loading the next page — no custom JavaScript. *@
+                    <Virtualize @ref="_virtualize" TItem="CloudGridRow" ItemsProvider="ProvideRowsAsync" ItemSize="@((float)EffectiveRowHeight)" OverscanCount="5">
+                        <ItemContent>@RenderRow(context)</ItemContent>
+                        <Placeholder>
+                            <div class="cloudgrid-row _placeholder"></div>
+                        </Placeholder>
+                    </Virtualize>
                 }
-                else if (IsSearching)
+                else
                 {
-                    <div>@SearchingText</div>
-                }
-                else if (!string.IsNullOrEmpty(Message))
-                {
-                    <div class='RecordNotSaved'>@Message</div>
-                }
-                else if (Data != null)
-                {
-                    foreach (CloudGridRow row in Data.Rows)
+                    foreach (CloudGridRow row in DisplayRows)
                     {
-                        <div class="TableRow" data-id="@row.Id" @attributes="row.Attributes">
-                            <a href="@row.Link" target="@LinkTarget">
-                                @foreach (object? cell in row.Cells)
-                                {
-                                    <div class="TableCell" style="width: 300px">
-                                        <div>
-                                            <div class="Value">
-                                                <span class="ValueSpan">
-                                                    @if (cell == null)
-                                                    {
-                                                        <span>--</span>
-                                                    }
-                                                    else
-                                                    {
-                                                        @cell
-                                                    }
-                                                </span>
-                                            </div>
-                                            <div class="Resizer">&nbsp;</div>
-                                            <div class="Resizer-Right">&nbsp;</div>
-                                        </div>
-                                    </div>
-                                }
-                            </a>
-                        </div>
+                        @RenderRow(row)
+                    }
+
+                    @if (PagingMode == CloudGridPagingMode.LoadMore && HasMoreRows)
+                    {
+                        <button type="button" class="cloudgrid-loadmore" disabled="@_loadMorePending" @onclick="LoadMoreAsync">
+                            @(_loadMorePending ? LoadingText : LoadMoreText)
+                        </button>
                     }
                 }
-            </div>
+            }
         </div>
-
-        <CloudGridFooter Model="Data" AllowSelection="AllowSelection" ActionFunction="OnPageChanged" />
     </div>
 
+    @if (Data is { Rows.Count: > 0 })
+    {
+        <footer>
+            <div class="cloudgrid-info">
+                @RangeStart - @RangeEnd out of @Data.Total
+            </div>
+
+            @if (PagingMode == CloudGridPagingMode.Pages)
+            {
+                <nav class="cloudgrid-pager">
+                    <button type="button" title="Previous page" disabled="@(!HasPreviousPage)" @onclick="PreviousPageAsync">
+                        <svg viewBox="0 0 50 50"><polyline points="36.8,1.5 13.3,24.8 36.8,48" /></svg>
+                    </button>
+
+                    <span>Page @Data.Page</span>
+
+                    <button type="button" title="Next page" disabled="@(!HasNextPage)" @onclick="NextPageAsync">
+                        <svg viewBox="0 0 50 50"><polyline points="13.3,48.1 36.8,24.8 13.3,1.5" /></svg>
+                    </button>
+                </nav>
+            }
+        </footer>
+    }
+
+    @if (_resizeIndex.HasValue)
+    {
+        @* Transparent overlay capturing pointer events while a column is being
+           resized, so dragging works without any JavaScript interop. *@
+        <div class="cloudgrid-shield"
+             @onpointermove="ResizeMove"
+             @onpointerup="EndResize"
+             @onpointercancel="EndResize"
+             @onpointerleave="EndResize"></div>
+    }
 </div>
 
 @code {
-    [Parameter] public List<CloudGridColumn> Columns { get; set; } = [];
-    [Parameter] public CloudGridDataResult? Data { get; set; }
-    [Parameter] public bool IsLoading { get; set; }
-    [Parameter] public bool IsSearching { get; set; }
+    // Markup-only helpers stay in the .razor file; all behavior lives in CloudGrid.razor.cs.
 
-    /// <summary>
-    /// Optional message displayed instead of the rows (e.g. "No records.").
-    /// </summary>
-    [Parameter] public string? Message { get; set; }
+    private RenderFragment<CloudGridRow> RenderRow => row => @<text>
+        <div class="@RowClass(row)" data-id="@row.Id" @attributes="row.Attributes">
 
-    [Parameter] public bool AllowSelection { get; set; }
-    [Parameter] public List<Guid>? SelectedRecords { get; set; }
-    [Parameter] public string? CssClass { get; set; }
-    [Parameter] public string LinkTarget { get; set; } = "_parent";
-    [Parameter] public string LoadingText { get; set; } = "retrieving data...";
-    [Parameter] public string SearchingText { get; set; } = "searching...";
+            @if (AllowSelection)
+            {
+                <div class="cloudgrid-check">
+                    <input type="checkbox" checked="@IsRowSelected(row)" @onchange="() => ToggleRowAsync(row)" />
+                </div>
+            }
 
-    /// <summary>
-    /// Raised when the user navigates between pages using the footer.
-    /// </summary>
-    [Parameter] public EventCallback<CloudGridPaginationType> OnPageChanged { get; set; }
+            @if (!string.IsNullOrEmpty(row.Link))
+            {
+                <a href="@row.Link" target="@LinkTarget">@RowCells(row)</a>
+            }
+            else
+            {
+                @RowCells(row)
+            }
+        </div>
+    </text>;
 
-    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+    private RenderFragment<CloudGridRow> RowCells => row => @<text>
+        @for (int c = 0; c < row.Cells.Count; c++)
+        {
+            object? cell = row.Cells[c];
+            bool isImage = c < Columns.Count && Columns[c].IsImage;
+
+            <div class="cloudgrid-cell" style="width: @Px(GetColumnWidth(c))">
+                @if (isImage && cell is string imageUrl && !string.IsNullOrWhiteSpace(imageUrl))
+                {
+                    <img src="@imageUrl" alt="" loading="lazy" />
+                }
+                else
+                {
+                    <span>@(cell ?? EmptyCellText)</span>
+                }
+            </div>
+        }
+    </text>;
 }

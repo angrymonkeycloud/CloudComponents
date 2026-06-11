@@ -1,111 +1,64 @@
-.grid-header {
-  height: 38px;
-  padding: 0 10px;
+.cloudgridheader {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  background-color: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-bottom: none;
-  border-start-start-radius: 5px;
-  border-start-end-radius: 5px;
+  gap: 8px;
+  padding: 4px 8px;
 }
-.grid-header > div {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.grid-header-label {
-  justify-content: flex-start;
-  cursor: pointer;
-  text-decoration: none;
+.cloudgridheader h2 {
+  flex: 1;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #000;
-  letter-spacing: 0.01em;
-  transition: all 0.18s ease;
 }
-.grid-header-buttons {
-  flex: 1;
-}
-.grid-header-actions {
-  flex-shrink: 0;
-}
-.grid-header-button {
-  display: inline-flex;
+.cloudgridheader-actions {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 3px;
-  height: 100%;
-  padding: 5px;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 4px;
+  gap: 4px;
+}
+.cloudgridheader-action {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 3px;
+  background: none;
+  color: var(--cloudgridheader-color, var(--cloudgrid-color, #505050));
+  font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
+  text-decoration: none;
   cursor: pointer;
-  color: var(--accentColor);
-  transition: all 0.18s ease;
-  opacity: 0.8;
 }
-.grid-header-button ::deep svg,
-.grid-header-button svg {
-  display: block;
-  height: 1rem;
+.cloudgridheader-action:hover {
+  background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, #e8e8e8));
 }
-.grid-header-button ::deep svg .--svg-fill,
-.grid-header-button svg .--svg-fill {
-  fill: var(--accentColor);
-  transition: all 0.18s ease;
+.cloudgridheader-action svg {
+  width: 16px;
+  height: 16px;
 }
-.grid-header-button ::deep svg .--svg-stroke,
-.grid-header-button svg .--svg-stroke {
-  stroke: var(--accentColor);
-  stroke-width: 2;
+.cloudgridheader-action svg path {
+  fill: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+}
+.cloudgridheader-action svg line {
+  stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+  stroke-width: 2px;
   stroke-linecap: round;
-  stroke-linejoin: round;
 }
-.grid-header-button:hover {
-  background-color: var(--accentColor);
-  color: #fff;
-  opacity: 1;
+.cloudgridheader-action svg circle {
+  fill: none;
+  stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+  stroke-width: 2px;
 }
-.grid-header-button:hover ::deep svg .--svg-fill,
-.grid-header-button:hover svg .--svg-fill {
-  fill: #fff;
+.cloudgridheader-search {
+  width: 180px;
+  padding: 4px 8px;
+  border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
+  border-radius: 3px;
+  font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
 }
-.grid-header-button:hover ::deep svg .--svg-stroke,
-.grid-header-button:hover svg .--svg-stroke {
-  stroke: #fff;
-}
-.grid-header-button:active {
-  border-color: var(--accentColor);
-  opacity: 1;
-}
-.grid-header-search-input {
-  height: 28px;
-  width: 200px;
-  padding: 0 10px;
-  font-size: 13px;
-  color: #505050;
-  background-color: #f8f8f8;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 6px;
+.cloudgridheader-search:focus {
   outline: none;
-  transition: all 0.18s ease;
-  appearance: none;
-}
-.grid-header-search-input::placeholder {
-  color: rgba(0, 0, 0, 0.3);
-}
-.grid-header-search-input:focus {
-  background-color: #fff;
-  border-color: rgba(0, 0, 0, 0.3);
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
-}
-.grid-header-search-input::-webkit-search-decoration,
-.grid-header-search-input::-webkit-search-cancel-button {
-  -webkit-appearance: none;
+  border-color: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
 }

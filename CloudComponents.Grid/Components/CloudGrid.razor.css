@@ -1,266 +1,227 @@
-.TransitionFlash {
-  -webkit-transition: all 0.005s linear;
-  -moz-transition: all 0.005s linear;
-  -o-transition: all 0.005s linear;
-  transition: all 0.005s linear;
-}
-.TransitionFast {
-  -webkit-transition: all 0.2s ease;
-  -moz-transition: all 0.2s ease;
-  -o-transition: all 0.2s ease;
-  transition: all 0.2s ease;
-}
-.TransitionMedium {
-  -webkit-transition: all 0.4s ease;
-  -moz-transition: all 0.4s ease;
-  -o-transition: all 0.4s ease;
-  transition: all 0.4s ease;
-}
-.TableHeader > div,
-.TableRow {
-  padding-left: 10px;
-  padding-right: 10px;
-}
-.TableContainer {
-  width: 100%;
-  background-color: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-top: none;
-  border-bottom: none;
-}
-.TableContainer._subgrid,
-.TableContainer._dashboard {
-  height: 320px;
-}
-.TableContainer .Table {
-  width: 100%;
-  white-space: nowrap;
-  height: 100%;
+﻿.cloudgrid {
   display: flex;
   flex-direction: column;
-  border-radius: 5px;
-  overflow: hidden;
-}
-.TableContainer .Table .TableHeaderCheckBoxCell,
-.TableContainer .Table .TableCheckBoxCell {
-  width: 50px;
-}
-.TableContainer .Table .TableHeaderCheckBoxCell div,
-.TableContainer .Table .TableCheckBoxCell div {
   width: 100%;
   height: 100%;
+  background-color: var(--cloudgrid-background, #fff);
+  color: var(--cloudgrid-color, #505050);
+  font-size: var(--cloudgrid-font-size, 14px);
+  --cloudgrid-row-height: 43px;
+  /*--cloudgrid-row-height: var(--cloudgrid-row-height, 43px);*/
 }
-.TableContainer .Table .TableHeaderCheckBoxCell > div > div,
-.TableContainer .Table .TableCheckBoxCell > div > div {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.TableContainer .Table .TableHeaderCheckBoxCell > div > div input[type="checkbox"],
-.TableContainer .Table .TableCheckBoxCell > div > div input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  border: 1px solid #444;
-  -webkit-appearance: checkbox;
-}
-.TableContainer .Table .TableHeader > div > div,
-.TableContainer .Table a {
-  display: flex;
-}
-.TableContainer .Table .TableHeader > div > div .TableHeaderCell,
-.TableContainer .Table a .TableHeaderCell,
-.TableContainer .Table .TableHeader > div > div .TableCell,
-.TableContainer .Table a .TableCell {
-  -webkit-transition: all 0.005s linear;
-  -moz-transition: all 0.005s linear;
-  -o-transition: all 0.005s linear;
-  transition: all 0.005s linear;
-  white-space: nowrap;
-  min-width: 40px;
-  max-width: 400px;
-  padding: 0 !important;
-}
-.TableContainer .Table .TableHeader > div > div .TableHeaderCell div,
-.TableContainer .Table a .TableHeaderCell div,
-.TableContainer .Table .TableHeader > div > div .TableCell div,
-.TableContainer .Table a .TableCell div {
-  display: flex;
-  padding: 0;
-  width: 100%;
-}
-.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Label,
-.TableContainer .Table a .TableHeaderCell div .Label,
-.TableContainer .Table .TableHeader > div > div .TableCell div .Label,
-.TableContainer .Table a .TableCell div .Label,
-.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Value,
-.TableContainer .Table a .TableHeaderCell div .Value,
-.TableContainer .Table .TableHeader > div > div .TableCell div .Value,
-.TableContainer .Table a .TableCell div .Value {
-  padding-left: 5px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Label span,
-.TableContainer .Table a .TableHeaderCell div .Label span,
-.TableContainer .Table .TableHeader > div > div .TableCell div .Label span,
-.TableContainer .Table a .TableCell div .Label span,
-.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Value span,
-.TableContainer .Table a .TableHeaderCell div .Value span,
-.TableContainer .Table .TableHeader > div > div .TableCell div .Value span,
-.TableContainer .Table a .TableCell div .Value span {
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Resizer,
-.TableContainer .Table a .TableHeaderCell div .Resizer,
-.TableContainer .Table .TableHeader > div > div .TableCell div .Resizer,
-.TableContainer .Table a .TableCell div .Resizer,
-.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Resizer-Right,
-.TableContainer .Table a .TableHeaderCell div .Resizer-Right,
-.TableContainer .Table .TableHeader > div > div .TableCell div .Resizer-Right,
-.TableContainer .Table a .TableCell div .Resizer-Right {
-  display: block;
-  width: 6px;
-  height: unset;
-  padding: 0;
-  height: 100%;
-}
-.TableContainer .Table .TableHeader {
-  overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-left-width: 0;
-  border-right-width: 0;
-}
-.TableContainer .Table .TableHeader.Disabled {
-  cursor: col-resize;
-  pointer-events: none;
+.cloudgrid._busy .cloudgrid-head {
   opacity: 0.5;
+  pointer-events: none;
 }
-.TableContainer .Table .TableHeader > div {
-  display: table;
-}
-.TableContainer .Table .TableHeader > div > div .TableHeaderCell div {
-  height: 30px;
-}
-.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Label {
-  font-weight: 600;
-}
-.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Resizer,
-.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Resizer-Right {
+.cloudgrid._resizing {
   cursor: col-resize;
+  user-select: none;
 }
-.TableContainer .Table .TableHeader > div > div .TableHeaderCell div .Resizer {
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
-}
-.TableContainer .Table .TableHeader > div > div .TableHeaderCell.Resizing .Resizer {
-  border-right: 1px solid rgba(0, 0, 0, 0.4);
-}
-.TableContainer .Table .TableBody {
-  display: flex;
-  flex-direction: row;
-  overflow: auto;
+.cloudgrid-table {
   flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+.cloudgrid-table._fixed {
+  flex: none;
   overflow-y: hidden;
 }
-.TableContainer .Table .TableBody:has(.RecordNotSaved) {
-  padding: 10px;
+.cloudgrid-table._scroll {
+  overflow-y: auto;
 }
-.TableContainer .Table .TableBody .table-body-content {
+.cloudgrid-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   display: flex;
-  flex-direction: column;
+  box-sizing: border-box;
+  height: 2.5em;
+  min-width: max-content;
+  background-color: var(--cloudgrid-head-background, #f8f8f8);
+  border-top: 1px solid var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15));
+  border-bottom: 1px solid var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15));
 }
-.TableContainer .Table .TableBody .table-body-new {
-  text-align: center;
+.cloudgrid-headcell {
+  position: relative;
   display: flex;
-  justify-content: center;
-  padding-top: 20px;
-}
-.TableContainer .Table .TableBody .table-body-new a {
-  align-self: flex-start;
-}
-.TableContainer .Table .TableBody > div {
-  min-width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-.TableContainer .Table .TableBody > div .TableRow {
-  min-width: 100%;
-  display: flex;
-  align-items: stretch;
-  justify-content: stretch;
-  padding: 0;
-  height: 43px;
-}
-.TableContainer .Table .TableBody > div .TableRow > * {
-  /*display: inline-block;*/
-}
-.TableContainer .Table .TableBody > div .TableRow.Checked {
-  background-color: #f2f2f2;
-}
-.TableContainer .Table .TableBody > div .TableRow > a,
-.TableContainer .Table .TableBody > div .TableRow > a:active,
-.TableContainer .Table .TableBody > div .TableRow > a:focus,
-.TableContainer .Table .TableBody > div .TableRow > a:visited,
-.TableContainer .Table .TableBody > div .TableRow > a:hover {
-  color: #505050;
-  text-decoration: none;
-  white-space: nowrap;
-  font-size: 0;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  box-sizing: border-box;
+  min-width: 40px;
   height: 100%;
-  width: 100%;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding: 0 12px 0 6px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
 }
-.TableContainer .Table .TableBody > div .TableRow > a .TableCell,
-.TableContainer .Table .TableBody > div .TableRow > a:active .TableCell,
-.TableContainer .Table .TableBody > div .TableRow > a:focus .TableCell,
-.TableContainer .Table .TableBody > div .TableRow > a:visited .TableCell,
-.TableContainer .Table .TableBody > div .TableRow > a:hover .TableCell {
-  display: inline-block;
-  font-size: 14px;
+.cloudgrid-headcell span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cloudgrid-headcell svg {
+  flex: none;
+  width: 10px;
+  height: 6px;
+}
+.cloudgrid-headcell svg path {
+  fill: none;
+  stroke: var(--cloudgrid-accent-color, #000);
+  stroke-width: 1.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.cloudgrid-headcell._sortable {
+  cursor: pointer;
+}
+.cloudgrid-headcell._sortable:hover {
+  background-color: var(--cloudgrid-hover-background, #e8e8e8);
+}
+.cloudgrid-headcell._sorted-descending svg {
+  transform: rotate(180deg);
+}
+.cloudgrid-resizer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 7px;
+  height: 100%;
+  cursor: col-resize;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+.cloudgrid-resizer:hover {
+  border-right: 3px solid var(--cloudgrid-accent-color, #000);
+}
+.cloudgrid-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 40px;
+}
+.cloudgrid-check input {
+  width: 16px;
+  height: 16px;
+  -webkit-appearance: checkbox;
+  cursor: pointer;
+}
+.cloudgrid-body {
+  min-width: max-content;
+}
+.cloudgrid-row {
+  display: flex;
+  box-sizing: border-box;
+  height: var(--cloudgrid-row-height);
+  min-width: 100%;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+.cloudgrid-row a {
+  display: contents;
+  color: inherit;
+  text-decoration: none;
+}
+.cloudgrid-row:hover {
+  background-color: var(--cloudgrid-hover-background, #e8e8e8);
+}
+.cloudgrid-row._selected {
+  background-color: var(--cloudgrid-selected-background, #f8f8f8);
+}
+.cloudgrid-row._placeholder {
+  opacity: 0.4;
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.05), transparent);
+}
+.cloudgrid-cell {
+  display: flex;
+  align-items: center;
+  flex: none;
+  box-sizing: border-box;
+  min-width: 40px;
+  height: 100%;
+  padding: 0 12px 0 6px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.cloudgrid-cell span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cloudgrid-cell img {
+  height: calc(var(--cloudgrid-row-height) - 8px);
+  max-width: 100%;
+  border-radius: 3px;
+  object-fit: cover;
+}
+.cloudgrid-status {
+  padding: 14px;
+  text-align: center;
+  opacity: 0.7;
+}
+.cloudgrid-loadmore {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  border: none;
+  background: none;
+  color: var(--cloudgrid-accent-color, #000);
+  font-size: var(--cloudgrid-font-size, 14px);
+  cursor: pointer;
+}
+.cloudgrid-loadmore:hover:enabled {
+  background-color: var(--cloudgrid-hover-background, #e8e8e8);
+}
+.cloudgrid-loadmore:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.cloudgrid > footer {
+  display: flex;
+  align-items: center;
+  flex: none;
+  height: 30px;
+  font-size: 12px;
+  border-top: 1px solid var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15));
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.04);
+}
+.cloudgrid-info {
+  flex: 1;
+  padding-left: 8px;
+  opacity: 0.7;
+}
+.cloudgrid-pager {
   display: flex;
   align-items: center;
 }
-.TableContainer .Table .TableBody > div .TableRow > a .TableCell .Value,
-.TableContainer .Table .TableBody > div .TableRow > a:active .TableCell .Value,
-.TableContainer .Table .TableBody > div .TableRow > a:focus .TableCell .Value,
-.TableContainer .Table .TableBody > div .TableRow > a:visited .TableCell .Value,
-.TableContainer .Table .TableBody > div .TableRow > a:hover .TableCell .Value {
-  padding-right: 10px;
-  display: flex;
-  flex-direction: row;
+.cloudgrid-pager span {
+  opacity: 0.7;
 }
-.TableContainer .Table .TableBody > div .TableRow > a .TableCell .Value .ValueSpan,
-.TableContainer .Table .TableBody > div .TableRow > a:active .TableCell .Value .ValueSpan,
-.TableContainer .Table .TableBody > div .TableRow > a:focus .TableCell .Value .ValueSpan,
-.TableContainer .Table .TableBody > div .TableRow > a:visited .TableCell .Value .ValueSpan,
-.TableContainer .Table .TableBody > div .TableRow > a:hover .TableCell .Value .ValueSpan {
-  flex: 1;
+.cloudgrid-pager button {
+  padding: 3px 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
 }
-.TableContainer .Table .TableBody > div .TableRow > a .RowInfo,
-.TableContainer .Table .TableBody > div .TableRow > a:active .RowInfo,
-.TableContainer .Table .TableBody > div .TableRow > a:focus .RowInfo,
-.TableContainer .Table .TableBody > div .TableRow > a:visited .RowInfo,
-.TableContainer .Table .TableBody > div .TableRow > a:hover .RowInfo {
-  padding: 0 !important;
-  font-size: 9px;
-  white-space: nowrap;
-  opacity: 0.8;
+.cloudgrid-pager button svg {
+  width: 12px;
   height: 12px;
 }
-.TableContainer .Table .TableBody > div .TableRow > a .RowInfo span,
-.TableContainer .Table .TableBody > div .TableRow > a:active .RowInfo span,
-.TableContainer .Table .TableBody > div .TableRow > a:focus .RowInfo span,
-.TableContainer .Table .TableBody > div .TableRow > a:visited .RowInfo span,
-.TableContainer .Table .TableBody > div .TableRow > a:hover .RowInfo span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-left: 5px;
+.cloudgrid-pager button svg polyline {
+  fill: none;
+  stroke: var(--cloudgrid-accent-color, #000);
+  stroke-width: 4px;
+  stroke-miterlimit: 10;
 }
-.TableContainer .Table .TableBody > div .TableRow:hover {
-  background-color: #e8e8e8;
-  color: #000;
+.cloudgrid-pager button:hover:enabled svg polyline {
+  stroke-width: 6px;
+}
+.cloudgrid-pager button:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+.cloudgrid-shield {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  cursor: col-resize;
+  touch-action: none;
 }
