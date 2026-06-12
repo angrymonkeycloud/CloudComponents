@@ -21,9 +21,26 @@
         <input type="hidden" id="SelectedRecords" value="@string.Join(",", _selectedRecords)" />
     }
 
+    @if (ShowBulkBar)
+    {
+        <div class="cloudgrid-bulkbar">
+            <span class="cloudgrid-bulkinfo">@_selectedRecords.Count selected</span>
+
+            @foreach (CloudGridRowButton button in BulkButtons)
+            {
+                @RenderButton((button, null))
+            }
+        </div>
+    }
+
     <div class="cloudgrid-table @TableClass">
 
         <div class="cloudgrid-head">
+
+            @if (AllowReordering)
+            {
+                <div class="cloudgrid-draghandle"></div>
+            }
 
             @if (AllowSelection)
             {
@@ -140,6 +157,17 @@
              @onpointercancel="EndResize"
              @onpointerleave="EndResize"></div>
     }
+
+    @if (_dragRowId.HasValue)
+    {
+        @* Same trick for row drag & drop: the shield tracks pointer movement
+           while a row is being re-arranged — no JavaScript interop needed. *@
+        <div class="cloudgrid-shield _rowdrag"
+             @onpointermove="RowDragMove"
+             @onpointerup="EndRowDrag"
+             @onpointercancel="EndRowDrag"
+             @onpointerleave="EndRowDrag"></div>
+    }
 </div>
 
 @code {
@@ -147,6 +175,21 @@
 
     private RenderFragment<CloudGridRow> RenderRow => row => @<text>
         <div class="@RowClass(row)" data-id="@row.Id" @attributes="row.Attributes">
+
+            @if (AllowReordering)
+            {
+                <div class="cloudgrid-draghandle"
+                     title="Drag to re-arrange"
+                     @onpointerdown="e => BeginRowDrag(row, e)"
+                     @onpointerdown:preventDefault
+                     @onpointerdown:stopPropagation>
+                    <svg viewBox="0 0 10 16">
+                        <circle cx="2.5" cy="2.5" r="1.5" /><circle cx="7.5" cy="2.5" r="1.5" />
+                        <circle cx="2.5" cy="8" r="1.5" /><circle cx="7.5" cy="8" r="1.5" />
+                        <circle cx="2.5" cy="13.5" r="1.5" /><circle cx="7.5" cy="13.5" r="1.5" />
+                    </svg>
+                </div>
+            }
 
             @if (AllowSelection)
             {
@@ -163,7 +206,43 @@
             {
                 @RowCells(row)
             }
+
+            @{
+                List<CloudGridRowButton> rowButtons = [.. RowVisibleButtons(row)];
+            }
+
+            @if (rowButtons.Count > 0)
+            {
+                <div class="cloudgrid-rowactions" @onclick:stopPropagation @onclick:preventDefault>
+                    @foreach (CloudGridRowButton button in rowButtons)
+                    {
+                        @RenderButton((button, row))
+                    }
+                </div>
+            }
         </div>
+    </text>;
+
+    /// <summary>
+    /// Renders a custom action button. A null row means the button was rendered
+    /// in the selection toolbar and applies to every selected row.
+    /// </summary>
+    private RenderFragment<(CloudGridRowButton Button, CloudGridRow? Row)> RenderButton => ctx => @<text>
+        <button type="button"
+                class="cloudgrid-action @ctx.Button.CssClass"
+                title="@(ctx.Button.Tooltip ?? ctx.Button.Text)"
+                @onclick="() => ctx.Row == null ? BulkButtonClickAsync(ctx.Button) : RowButtonClickAsync(ctx.Button, ctx.Row)"
+                @onclick:stopPropagation
+                @onclick:preventDefault>
+            @if (!string.IsNullOrEmpty(ctx.Button.IconSvg))
+            {
+                @((MarkupString)ctx.Button.IconSvg)
+            }
+            @if (!string.IsNullOrEmpty(ctx.Button.Text))
+            {
+                <span>@ctx.Button.Text</span>
+            }
+        </button>
     </text>;
 
     private RenderFragment<CloudGridRow> RowCells => row => @<text>

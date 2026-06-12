@@ -105,6 +105,71 @@
   -webkit-appearance: checkbox;
   cursor: pointer;
 }
+.cloudgrid-draghandle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 28px;
+  cursor: grab;
+  touch-action: none;
+}
+.cloudgrid-draghandle svg {
+  width: 10px;
+  height: 16px;
+}
+.cloudgrid-draghandle svg circle {
+  fill: var(--cloudgrid-border-color, rgba(0, 0, 0, 0.25));
+}
+.cloudgrid-draghandle:hover svg circle {
+  fill: var(--cloudgrid-accent-color, #000);
+}
+.cloudgrid._rowdragging .cloudgrid-draghandle {
+  cursor: grabbing;
+}
+.cloudgrid-bulkbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  box-sizing: border-box;
+  padding: 6px 8px;
+  background-color: var(--cloudgrid-head-background, #f8f8f8);
+  border-top: 1px solid var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15));
+}
+.cloudgrid-bulkinfo {
+  font-size: 12px;
+  opacity: 0.7;
+}
+.cloudgrid-rowactions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  margin-left: auto;
+  padding: 0 8px;
+  height: 100%;
+}
+.cloudgrid-action {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: 1px solid var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15));
+  border-radius: 3px;
+  background-color: var(--cloudgrid-background, #fff);
+  color: var(--cloudgrid-color, #505050);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cloudgrid-action svg {
+  width: 14px;
+  height: 14px;
+}
+.cloudgrid-action:hover {
+  background-color: var(--cloudgrid-hover-background, #e8e8e8);
+}
 .cloudgrid-body {
   min-width: max-content;
 }
@@ -126,6 +191,13 @@
 .cloudgrid-row._selected {
   background-color: var(--cloudgrid-selected-background, #f8f8f8);
 }
+.cloudgrid-row._dragging {
+  background-color: var(--cloudgrid-selected-background, #f8f8f8);
+  opacity: 0.85;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 2;
+}
 .cloudgrid-row._placeholder {
   opacity: 0.4;
   background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.05), transparent);
@@ -146,9 +218,9 @@
   text-overflow: ellipsis;
 }
 .cloudgrid-cell img {
-  height: calc(var(--cloudgrid-row-height) - 8px);
+  height: calc(var(--cloudgrid-row-height) - 1px);
+  align-self: flex-start;
   max-width: 100%;
-  border-radius: 3px;
   object-fit: cover;
 }
 .cloudgrid-status {
@@ -224,4 +296,7 @@
   z-index: 1000;
   cursor: col-resize;
   touch-action: none;
+}
+.cloudgrid-shield._rowdrag {
+  cursor: grabbing;
 }

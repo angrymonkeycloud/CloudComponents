@@ -140,6 +140,85 @@
         }
     }
 
+    &-draghandle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+        width: 28px;
+        cursor: grab;
+        touch-action: none;
+
+        svg {
+            width: 10px;
+            height: 16px;
+
+            circle {
+                fill: var(--cloudgrid-border-color, rgba(0, 0, 0, 0.25));
+            }
+        }
+
+        &:hover {
+
+            svg circle {
+                fill: var(--cloudgrid-accent-color, #000);
+            }
+        }
+    }
+
+    &._rowdragging &-draghandle {
+        cursor: grabbing;
+    }
+
+    &-bulkbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: none;
+        box-sizing: border-box;
+        padding: 6px 8px;
+        background-color: var(--cloudgrid-head-background, #f8f8f8);
+        border-top: 1px solid var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15));
+    }
+
+    &-bulkinfo {
+        font-size: 12px;
+        opacity: 0.7;
+    }
+
+    &-rowactions {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex: none;
+        margin-left: auto;
+        padding: 0 8px;
+        height: 100%;
+    }
+
+    &-action {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 8px;
+        border: 1px solid var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15));
+        border-radius: 3px;
+        background-color: var(--cloudgrid-background, #fff);
+        color: var(--cloudgrid-color, #505050);
+        font-size: 12px;
+        cursor: pointer;
+        white-space: nowrap;
+
+        svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        &:hover {
+            background-color: var(--cloudgrid-hover-background, #e8e8e8);
+        }
+    }
+
     &-body {
         min-width: max-content;
     }
@@ -163,6 +242,14 @@
 
         &._selected {
             background-color: var(--cloudgrid-selected-background, #f8f8f8);
+        }
+
+        &._dragging {
+            background-color: var(--cloudgrid-selected-background, #f8f8f8);
+            opacity: 0.85;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 2;
         }
         // Virtualize placeholder while the next page is loading (infinite scroll).
         &._placeholder {
@@ -188,9 +275,9 @@
         }
 
         img {
-            height: calc(var(--cloudgrid-row-height) - 8px);
+            height: calc(var(--cloudgrid-row-height) - 1px);
+            align-self: flex-start;
             max-width: 100%;
-            border-radius: 3px;
             object-fit: cover;
         }
     }
@@ -287,5 +374,9 @@
         z-index: 1000;
         cursor: col-resize;
         touch-action: none;
+
+        &._rowdrag {
+            cursor: grabbing;
+        }
     }
 }

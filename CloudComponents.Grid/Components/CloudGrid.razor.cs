@@ -42,6 +42,31 @@ public partial class CloudGrid
     /// <summary>Raised whenever the selection changes (row checkbox or select-all).</summary>
     [Parameter] public EventCallback<List<Guid>> SelectedRecordsChanged { get; set; }
 
+    /// <summary>
+    /// Renders a drag handle on each row letting the user re-arrange records
+    /// when true. The new order is surfaced through <see cref="OnRowsReordered"/>.
+    /// </summary>
+    [Parameter] public bool AllowReordering { get; set; }
+
+    /// <summary>Raised after the user drops a dragged row at a new position.</summary>
+    [Parameter] public EventCallback<CloudGridRowReorder> OnRowsReordered { get; set; }
+
+    /// <summary>
+    /// Custom action buttons rendered on each row and/or in the selection
+    /// toolbar. See <see cref="CloudGridRowButton"/> for per-button options.
+    /// </summary>
+    [Parameter] public List<CloudGridRowButton> RowButtons { get; set; } = [];
+
+    /// <summary>
+    /// Optional per-row filter deciding whether a button is rendered on a given
+    /// row (e.g. hide a status-transition button when the row is already in
+    /// that status). Returning true keeps the button visible.
+    /// </summary>
+    [Parameter] public Func<CloudGridRow, CloudGridRowButton, bool>? RowButtonFilter { get; set; }
+
+    /// <summary>Raised when a custom row/bulk button is clicked.</summary>
+    [Parameter] public EventCallback<CloudGridRowButtonEventArgs> OnRowButtonClicked { get; set; }
+
     /// <summary>Additional CSS class(es) appended to the root element.</summary>
     [Parameter] public string? CssClass { get; set; }
 
@@ -136,6 +161,105 @@ public partial class CloudGrid
 
         await SelectedRecordsChanged.InvokeAsync(_selectedRecords);
     }
+
+    #endregion
+
+    #region Row reordering
+
+    private Guid? _dragRowId;
+    private int _dragStartIndex;
+    private int _dragCurrentIndex;
+    private double _dragStartY;
+
+    private bool IsRowDragging(CloudGridRow row) => _dragRowId == row.Id;
+
+    private void BeginRowDrag(CloudGridRow row, PointerEventArgs e)
+    {
+        if (!AllowReordering || Data == null)
+            return;
+
+        int index = Data.Rows.FindIndex(r => r.Id == row.Id);
+
+        if (index < 0)
+            return;
+
+        _dragRowId = row.Id;
+        _dragStartIndex = index;
+        _dragCurrentIndex = index;
+        _dragStartY = e.ClientY;
+    }
+
+    private async Task RowDragMove(PointerEventArgs e)
+    {
+        if (!_dragRowId.HasValue || Data == null)
+            return;
+
+        int offset = (int)Math.Round((e.ClientY - _dragStartY) / EffectiveRowHeight);
+        int targetIndex = Math.Clamp(_dragStartIndex + offset, 0, Data.Rows.Count - 1);
+
+        if (targetIndex == _dragCurrentIndex)
+            return;
+
+        CloudGridRow dragged = Data.Rows[_dragCurrentIndex];
+        Data.Rows.RemoveAt(_dragCurrentIndex);
+        Data.Rows.Insert(targetIndex, dragged);
+        _dragCurrentIndex = targetIndex;
+
+        await RefreshVirtualizeAsync();
+    }
+
+    private async Task EndRowDrag()
+    {
+        if (_dragRowId is not Guid rowId || Data == null)
+        {
+            _dragRowId = null;
+            return;
+        }
+
+        int oldIndex = _dragStartIndex;
+        int newIndex = _dragCurrentIndex;
+
+        _dragRowId = null;
+
+        if (oldIndex != newIndex && OnRowsReordered.HasDelegate)
+            await OnRowsReordered.InvokeAsync(new CloudGridRowReorder
+            {
+                RecordId = rowId,
+                OldIndex = oldIndex,
+                NewIndex = newIndex,
+                OrderedRecordIds = [.. Data.Rows.Select(r => r.Id)]
+            });
+    }
+
+    #endregion
+
+    #region Row buttons
+
+    /// <summary>The selection toolbar shows when bulk buttons exist and rows are selected.</summary>
+    private bool ShowBulkBar => AllowSelection && _selectedRecords.Count > 0 && RowButtons.Any(b => b.AllowMultiple);
+
+    private IEnumerable<CloudGridRowButton> BulkButtons => RowButtons.Where(b => b.AllowMultiple);
+
+    private IEnumerable<CloudGridRowButton> RowVisibleButtons(CloudGridRow row) =>
+        RowButtons.Where(b => b.ShowOnRow
+            && (!b.VisibleOnSelectionOnly || IsRowSelected(row))
+            && (RowButtonFilter?.Invoke(row, b) ?? true));
+
+    private Task RowButtonClickAsync(CloudGridRowButton button, CloudGridRow row) =>
+        OnRowButtonClicked.InvokeAsync(new CloudGridRowButtonEventArgs
+        {
+            Button = button,
+            RecordIds = [row.Id]
+        });
+
+    private Task BulkButtonClickAsync(CloudGridRowButton button) =>
+        _selectedRecords.Count == 0
+            ? Task.CompletedTask
+            : OnRowButtonClicked.InvokeAsync(new CloudGridRowButtonEventArgs
+            {
+                Button = button,
+                RecordIds = [.. _selectedRecords]
+            });
 
     #endregion
 
@@ -363,11 +487,17 @@ public partial class CloudGrid
             if (AllowSelection)
                 classes.Add("_selectable");
 
+            if (AllowReordering)
+                classes.Add("_reorderable");
+
             if (IsLoading || IsSearching)
                 classes.Add("_busy");
 
             if (_resizeIndex.HasValue)
                 classes.Add("_resizing");
+
+            if (_dragRowId.HasValue)
+                classes.Add("_rowdragging");
 
             if (!string.IsNullOrWhiteSpace(CssClass))
                 classes.Add(CssClass);
@@ -389,8 +519,18 @@ public partial class CloudGrid
         return string.Join(' ', classes);
     }
 
-    private string RowClass(CloudGridRow row) =>
-        IsRowSelected(row) ? "cloudgrid-row _selected" : "cloudgrid-row";
+    private string RowClass(CloudGridRow row)
+    {
+        List<string> classes = ["cloudgrid-row"];
+
+        if (IsRowSelected(row))
+            classes.Add("_selected");
+
+        if (IsRowDragging(row))
+            classes.Add("_dragging");
+
+        return string.Join(' ', classes);
+    }
 
     /// <summary>Inline CSS variables on the root element (currently the row height).</summary>
     private string? RootStyle =>
