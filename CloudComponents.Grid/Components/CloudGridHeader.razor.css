@@ -1,4 +1,4 @@
-.cloudgridheader {
+﻿.cloudgridheader {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -50,6 +50,39 @@
   fill: none;
   stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
   stroke-width: 2px;
+}
+.cloudgridheader-action svg polyline {
+  fill: none;
+  stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+  stroke-width: 2px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.cloudgridheader-action._reorder-start {
+  opacity: 0.7;
+}
+.cloudgridheader-action._reorder-start:hover {
+  opacity: 1;
+}
+.cloudgridheader-action._reorder-save {
+  color: #2a7d2e;
+  font-weight: 600;
+}
+.cloudgridheader-action._reorder-save svg line,
+.cloudgridheader-action._reorder-save svg polyline {
+  stroke: #2a7d2e;
+}
+.cloudgridheader-action._reorder-save:hover {
+  background-color: #e6f4e7;
+}
+.cloudgridheader-action._reorder-cancel {
+  color: #b33;
+}
+.cloudgridheader-action._reorder-cancel svg line {
+  stroke: #b33;
+}
+.cloudgridheader-action._reorder-cancel:hover {
+  background-color: #fdecea;
 }
 .cloudgridheader-search {
   width: 180px;

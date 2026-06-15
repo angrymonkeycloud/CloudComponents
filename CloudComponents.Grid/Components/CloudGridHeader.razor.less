@@ -67,6 +67,37 @@
                 stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
                 stroke-width: 2px;
             }
+
+            polyline {
+                fill: none;
+                stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+                stroke-width: 2px;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+        }
+
+        &._reorder-start {
+            opacity: 0.7;
+
+            &:hover { opacity: 1; }
+        }
+
+        &._reorder-save {
+            color: #2a7d2e;
+            font-weight: 600;
+
+            svg line, svg polyline { stroke: #2a7d2e; }
+
+            &:hover { background-color: #e6f4e7; }
+        }
+
+        &._reorder-cancel {
+            color: #b33;
+
+            svg line { stroke: #b33; }
+
+            &:hover { background-color: #fdecea; }
         }
     }
 

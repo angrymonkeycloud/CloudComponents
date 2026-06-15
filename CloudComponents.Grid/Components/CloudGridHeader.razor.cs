@@ -34,6 +34,9 @@ public partial class CloudGridHeader
     /// </summary>
     [Parameter] public EventCallback<string?> OnSearchChanged { get; set; }
 
+    /// <summary>Optional extra action buttons rendered after the built-in search button.</summary>
+    [Parameter] public RenderFragment? ExtraActions { get; set; }
+
     #endregion
 
     #region Search
