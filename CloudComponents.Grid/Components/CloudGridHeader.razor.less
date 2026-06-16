@@ -27,12 +27,31 @@
 
     &-actions {
         display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
+    }
+
+    // When a mode is active (search open, reorder mode, …) hide every slot
+    // that isn't marked ._active, so the active slot owns the full row.
+    // Written at the .cloudgridheader level so &-slot resolves to
+    // .cloudgridheader-slot (not .cloudgridheader-actions-slot).
+    &-actions._mode-active &-slot:not(._active) {
+        display: none;
+    }
+
+    // Each action is wrapped in a slot div. The slot itself is a flex row so
+    // the input + cancel button inside an active search slot sit side by side.
+    &-slot {
+        display: flex;
+        flex-direction: row;
         align-items: center;
         gap: 4px;
     }
 
     &-action {
         display: flex;
+        flex-direction: row;
         align-items: center;
         gap: 4px;
         padding: 4px 8px;
@@ -43,12 +62,14 @@
         font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
         text-decoration: none;
         cursor: pointer;
+        white-space: nowrap;
 
         &:hover {
             background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, #e8e8e8));
         }
 
         svg {
+            flex: none;
             width: 16px;
             height: 16px;
 

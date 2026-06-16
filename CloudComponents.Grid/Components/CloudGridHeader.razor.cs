@@ -47,6 +47,12 @@ public partial class CloudGridHeader
     private ElementReference _searchInput;
     private CancellationTokenSource? _searchDebounceCts;
 
+    /// <summary>
+    /// True when any exclusive mode (search, reorder, …) is active.
+    /// Used to hide all non-active slots so the toolbar stays flat.
+    /// </summary>
+    private bool AnyModeActive => _isSearchOpen;
+
     private void OpenSearch()
     {
         _isSearchOpen = true;

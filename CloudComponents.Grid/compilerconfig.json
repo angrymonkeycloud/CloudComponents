@@ -4,6 +4,14 @@
     "inputFile": "Components/CloudGrid.razor.less"
   },
   {
+    "outputFile": "Components/CloudGridBody.razor.css",
+    "inputFile": "Components/CloudGridBody.razor.less"
+  },
+  {
+    "outputFile": "Components/CloudGridFooter.razor.css",
+    "inputFile": "Components/CloudGridFooter.razor.less"
+  },
+  {
     "outputFile": "Components/CloudGridHeader.razor.css",
     "inputFile": "Components/CloudGridHeader.razor.less"
   }

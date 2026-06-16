@@ -8,6 +8,11 @@
     block `.cloudgridheader`, children `.cloudgridheader-*`, adjectives `._*`.
     The title is an <h2>, styled directly per the convention.
 
+    Each action is wrapped in a `.cloudgridheader-slot` div.
+    When any mode is active (search open, etc.) the actions container gets
+    `._mode-active`: all slots without `._active` are hidden, keeping the
+    toolbar flat and uncluttered. Only the active slot's content is shown.
+
     All behavior lives in CloudGridHeader.razor.cs; styles in CloudGridHeader.razor.less.
 *@
 
@@ -15,67 +20,82 @@
 
     <h2>@Label</h2>
 
-    <div class="cloudgridheader-actions">
+    <div class="cloudgridheader-actions @(AnyModeActive ? "_mode-active" : "")">
 
+        @* ── New button ───────────────────────────────────────────────────── *@
         @if (!string.IsNullOrEmpty(NewUrl))
         {
-            <a class="cloudgridheader-action _new" href="@NewUrl">
-                <svg viewBox="0 0 24 24" fill="none">
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-                <span>@NewButtonText</span>
-            </a>
+            <div class="cloudgridheader-slot">
+                <a class="cloudgridheader-action _new" href="@NewUrl">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    <span>@NewButtonText</span>
+                </a>
+            </div>
         }
 
+        @* ── Extra actions (consumer-supplied) ───────────────────────────── *@
 
+        
         @if (ExtraActions != null)
         {
-            @ExtraActions
+            <div class="cloudgridheader-slot">
+                @ExtraActions
+            </div>
         }
+
+        @* ── View link ───────────────────────────────────────────────────── *@
 
 
         @if (AllowSearch)
         {
-            if (_isSearchOpen)
-            {
-                <button type="button" class="cloudgridheader-action _cancel" @onclick="ClearSearchAsync">cancel</button>
+            <div class="cloudgridheader-slot @(_isSearchOpen ? "_active" : "")">
+                @if (_isSearchOpen)
+                {
+                    <input @ref="_searchInput"
+                           type="search"
+                           class="cloudgridheader-search"
+                           value="@_searchQuery"
+                           placeholder="Search..."
+                           @oninput="OnSearchInputAsync"
+                           @onblur="OnSearchBlurAsync"
+                           @onkeydown="OnSearchKeyDownAsync" />
 
-                <input @ref="_searchInput"
-                       type="search"
-                       class="cloudgridheader-search"
-                       value="@_searchQuery"
-                       placeholder="Search..."
-                       @oninput="OnSearchInputAsync"
-                       @onblur="OnSearchBlurAsync"
-                       @onkeydown="OnSearchKeyDownAsync" />
-            }
-            else
-            {
-                <button type="button" class="cloudgridheader-action _search" title="Search" @onclick="OpenSearch">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <circle cx="11" cy="11" r="8" />
-                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                    </svg>
-                </button>
-            }
+                    <button type="button" class="cloudgridheader-action _cancel" @onclick="ClearSearchAsync">cancel</button>
+                }
+                else
+                {
+                    <button type="button" class="cloudgridheader-action _search" title="Search" @onclick="OpenSearch">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                    </button>
+                }
+            </div>
         }
 
 
         @if (!string.IsNullOrEmpty(ViewUrl))
         {
-            <a class="cloudgridheader-action _view" href="@ViewUrl" title="Open view">
-                <svg viewBox="0 0 20 20" fill="none">
-                    <path d="M5.707 15.707a1 1 0 0 1-1.414-1.414l4-4a1 1 0 1 1 1.414 1.414z" />
-                    <path d="M5 16a1 1 0 1 1 0-2h4a1 1 0 1 1 0 2z" />
-                    <path d="M6 15a1 1 0 1 1-2 0v-4a1 1 0 1 1 2 0zm5.707-5.293a1 1 0 0 1-1.414-1.414l4-4a1 1 0 1 1 1.414 1.414z" />
-                    <path d="M16 9a1 1 0 1 1-2 0V5a1 1 0 1 1 2 0z" />
-                    <path d="M11 6a1 1 0 1 1 0-2h4a1 1 0 1 1 0 2z" />
-                </svg>
-            </a>
+            <div class="cloudgridheader-slot">
+                <a class="cloudgridheader-action _view" href="@ViewUrl" title="Open view">
+                    <svg viewBox="0 0 20 20" fill="none">
+                        <path d="M5.707 15.707a1 1 0 0 1-1.414-1.414l4-4a1 1 0 1 1 1.414 1.414z" />
+                        <path d="M5 16a1 1 0 1 1 0-2h4a1 1 0 1 1 0 2z" />
+                        <path d="M6 15a1 1 0 1 1-2 0v-4a1 1 0 1 1 2 0zm5.707-5.293a1 1 0 0 1-1.414-1.414l4-4a1 1 0 1 1 1.414 1.414z" />
+                        <path d="M16 9a1 1 0 1 1-2 0V5a1 1 0 1 1 2 0z" />
+                        <path d="M11 6a1 1 0 1 1 0-2h4a1 1 0 1 1 0 2z" />
+                    </svg>
+                </a>
+            </div>
         }
 
+        @* ── Search slot ─────────────────────────────────────────────────── *@
 
     </div>
 
 </div>
+
