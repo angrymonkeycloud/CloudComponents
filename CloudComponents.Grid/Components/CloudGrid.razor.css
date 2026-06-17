@@ -3,7 +3,6 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
-  background-color: var(--cloudgrid-background, #fff);
   color: var(--cloudgrid-color, #505050);
   font-size: var(--cloudgrid-font-size, 14px);
   --cloudgrid-row-height: 43px;

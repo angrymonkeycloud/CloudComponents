@@ -2,10 +2,14 @@
   flex: 1;
   min-height: 0;
   overflow: auto;
+  background-color: var(--cloudgrid-body-background, #fff);
+  scrollbar-color: #505050 #fff;
+  /* thumb track */
 }
 .cloudgrid-table._fixed {
   flex: none;
   overflow-y: hidden;
+  overflow-x: scroll;
 }
 .cloudgrid-table._scroll {
   overflow-y: auto;

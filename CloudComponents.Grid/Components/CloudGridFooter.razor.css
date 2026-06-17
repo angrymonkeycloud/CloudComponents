@@ -4,8 +4,6 @@
   flex: none;
   height: 30px;
   font-size: 12px;
-  border-top: 1px solid var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15));
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   background-color: rgba(0, 0, 0, 0.04);
 }
 .cloudgrid-info {

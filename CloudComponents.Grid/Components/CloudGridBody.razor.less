@@ -10,13 +10,15 @@
     flex: 1;
     min-height: 0;
     overflow: auto;
+    background-color: var(--cloudgrid-body-background, #fff);
+    scrollbar-color: #505050 #fff; /* thumb track */
 
     // Fixed height (RowsPerPage set): exactly header + N body rows.
     &._fixed {
         flex: none;
         overflow-y: hidden;
+        overflow-x: scroll;
     }
-
     // Accumulating modes (load more / infinite scroll) scroll inside the viewport.
     &._scroll {
         overflow-y: auto;
@@ -170,7 +172,6 @@
         position: relative;
         z-index: 2;
     }
-
     // Virtualize placeholder while the next page is loading (infinite scroll).
     &._placeholder {
         opacity: 0.4;
