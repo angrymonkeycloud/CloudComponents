@@ -7,7 +7,7 @@
     Naming: block `.cloudgridheader`, children `.cloudgridheader-*`, adjectives `._*`.
 
     Layout:
-      [bulk actions] [h2 label]                       [right actions →]
+      [h2 label] [bulk actions]                       [right actions →]
 
     All actions — built-in (New, Search, View) and consumer-supplied — share the same
     CloudGridAction shape and are rendered by a single unified loop.
@@ -20,7 +20,9 @@
 
 <div class="cloudgridheader">
 
-    @* ── Bulk actions (left, visible only while rows are selected) ────────── *@
+    <h2>@Label</h2>
+
+    @* ── Bulk actions (after title, visible only while rows are selected) ─── *@
     @if (HasVisibleBulkActions)
     {
         <div class="cloudgridheader-bulkactions">
@@ -37,8 +39,6 @@
             }
         </div>
     }
-
-    <h2>@Label</h2>
 
     @* ── Right-side action slots ─────────────────────────────────────────── *@
     <div class="cloudgridheader-actions @(AnyModeActive ? "_mode-active" : "")">

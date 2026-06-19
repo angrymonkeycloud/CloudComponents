@@ -44,6 +44,12 @@ public partial class CloudGridHeader
     /// <summary>Raised when the debounced search query changes. Null = cleared.</summary>
     [Parameter] public EventCallback<string?> OnSearchChanged { get; set; }
 
+    /// <summary>Adds the built-in Refresh button when true.</summary>
+    [Parameter] public bool AllowRefresh { get; set; } = true;
+
+    /// <summary>Raised when the built-in Refresh button is clicked.</summary>
+    [Parameter] public EventCallback OnRefresh { get; set; }
+
     /// <summary>
     /// Optional extra content rendered at the end of the right-side action slot row.
     /// Use for custom buttons that don't fit the <see cref="CloudGridAction"/> model.
@@ -116,7 +122,10 @@ public partial class CloudGridHeader
         if (string.IsNullOrEmpty(_searchQuery))
             await CancelActiveAsync();
         else
+        {
             _searchQuery = string.Empty;
+            await NotifySearchChangedAsync();
+        }
     }
 
     private async Task OnSearchBlurAsync(FocusEventArgs _)
@@ -138,6 +147,7 @@ public partial class CloudGridHeader
         bool hadQuery = !string.IsNullOrEmpty(_searchQuery);
         _searchQuery = string.Empty;
         _activeKey = null;
+        await InvokeAsync(StateHasChanged);
 
         if (hadQuery)
             await NotifySearchChangedAsync();
@@ -160,6 +170,7 @@ public partial class CloudGridHeader
 
     // ── Built-in action keys ─────────────────────────────────────────────────
     private const string KeySearch = "__search";
+    private const string KeyRefresh = "__refresh";
 
     /// <summary>
     /// Full ordered action list: consumer-supplied actions first, then the
@@ -171,6 +182,16 @@ public partial class CloudGridHeader
         {
             foreach (CloudGridAction action in Actions.Where(a => a.ShowOnHeader))
                 yield return action;
+
+            if (AllowRefresh)
+                yield return new CloudGridAction
+                {
+                    Key = KeyRefresh,
+                    Type = CloudGridActionType.Button,
+                    Tooltip = "Refresh",
+                    Icon = builder => { builder.OpenComponent<RefreshIcon>(0); builder.CloseComponent(); },
+                    ShowOnHeader = true
+                };
 
             if (AllowSearch)
                 yield return new CloudGridAction
@@ -196,12 +217,20 @@ public partial class CloudGridHeader
 
     #region Action interaction
 
-    private async Task FireActionClickedAsync(CloudGridAction action, List<Guid>? recordIds = null) =>
+    private async Task FireActionClickedAsync(CloudGridAction action, List<Guid>? recordIds = null)
+    {
+        if (action.Key == KeyRefresh)
+        {
+            await OnRefresh.InvokeAsync();
+            return;
+        }
+
         await OnActionClicked.InvokeAsync(new CloudGridActionEventArgs
         {
             Action = action,
             RecordIds = recordIds ?? []
         });
+    }
 
     private async Task HandleActivateAsync(CloudGridAction action)
     {

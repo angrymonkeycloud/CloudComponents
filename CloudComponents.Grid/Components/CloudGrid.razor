@@ -20,16 +20,18 @@
 <div class="cloudgrid @RootClass" style="@RootStyle" @attributes="AdditionalAttributes">
 
     @* ── Header (optional) ──────────────────────────────────────────────── *@
-    @if (Header != null)
+    @if (ActiveHeader != null)
     {
-        <CloudGridHeader Label="@Header.Label"
-                         Actions="@Header.Actions"
-                         OnActionClicked="@Header.OnActionClicked"
+        <CloudGridHeader Label="@ActiveHeader.Label"
+                         Actions="@ActiveHeader.Actions"
+                         OnActionClicked="@ActiveHeader.OnActionClicked"
                          SelectedRecords="@HeaderSelectedRecords"
-                         AllowSearch="@Header.AllowSearch"
-                         SearchDebounceMilliseconds="@Header.SearchDebounceMilliseconds"
-                         OnSearchChanged="@Header.OnSearchChanged"
-                         ExtraActions="@Header.ExtraActions" />
+                         AllowSearch="@ActiveHeader.AllowSearch"
+                         SearchDebounceMilliseconds="@ActiveHeader.SearchDebounceMilliseconds"
+                         OnSearchChanged="@ActiveHeader.OnSearchChanged"
+                         AllowRefresh="@ActiveHeader.AllowRefresh"
+                         OnRefresh="@ActiveHeader.OnRefresh"
+                         ExtraActions="@ActiveHeader.ExtraActions" />
     }
 
     @* ── Bulk selection hidden field ────────────────────────────────────── *@
@@ -40,10 +42,10 @@
 
     @* ── Body (table head + rows + shields) ─────────────────────────────── *@
     <CloudGridBody Columns="@Columns"
-                   Data="@Data"
-                   IsLoading="@IsLoading"
-                   IsSearching="@IsSearching"
-                   Message="@Message"
+                   Data="@_data"
+                   IsLoading="@_loading"
+                   IsSearching="@_searching"
+                   Message="@DataMessage"
                    AllowSelection="@AllowSelection"
                    SelectedRecords="@_selectedRecords"
                    SelectedRecordsChanged="@OnBodySelectionChanged"
@@ -66,7 +68,7 @@
                    OnDraggingChanged="@OnBodyDraggingChanged" />
 
     @* ── Footer (range info + pager) ────────────────────────────────────── *@
-    <CloudGridFooter Data="@Data"
+    <CloudGridFooter Data="@_data"
                      PagingMode="@PagingMode"
                      RangeStart="@FooterRangeStart"
                      RangeEnd="@FooterRangeEnd"

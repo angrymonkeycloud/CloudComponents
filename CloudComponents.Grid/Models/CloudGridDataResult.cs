@@ -18,4 +18,10 @@ public class CloudGridDataResult
     /// Total number of records across all pages.
     /// </summary>
     public int Total { get; set; }
+
+    /// <summary>
+    /// Optional human-readable error or status message returned by the data provider.
+    /// When non-null CloudGrid displays this instead of rows (unless IsLoading is true).
+    /// </summary>
+    public string? ErrorMessage { get; set; }
 }

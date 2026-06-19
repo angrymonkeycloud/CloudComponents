@@ -39,6 +39,12 @@ public class CloudGridHeaderOptions
     /// <summary>Raised when the debounced search query changes. Null = cleared.</summary>
     public EventCallback<string?> OnSearchChanged { get; set; }
 
+    /// <summary>Adds the built-in Refresh button when true. Defaults to <c>true</c>.</summary>
+    public bool AllowRefresh { get; set; } = true;
+
+    /// <summary>Raised when the built-in Refresh button is clicked.</summary>
+    public EventCallback OnRefresh { get; set; }
+
     /// <summary>
     /// Optional extra content rendered at the end of the right-side action slot row.
     /// Use for custom buttons (e.g. reorder save/cancel) that don't fit the
