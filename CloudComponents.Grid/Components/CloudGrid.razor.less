@@ -36,21 +36,4 @@
     &._rowdragging ::deep .cloudgrid-draghandle {
         cursor: grabbing;
     }
-
-    // Bulk bar — rendered directly inside CloudGrid, no ::deep needed.
-    &-bulkbar {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex: none;
-        box-sizing: border-box;
-        padding: 6px 8px;
-        background-color: var(--cloudgrid-head-background, #f8f8f8);
-        border-top: 1px solid var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15));
-    }
-
-    &-bulkinfo {
-        font-size: 12px;
-        opacity: 0.7;
-    }
 }

@@ -9,29 +9,41 @@ namespace CloudComponents.Grid.Models;
 /// </summary>
 public class CloudGridHeaderOptions
 {
-    /// <summary>Title displayed on the left.</summary>
+    /// <summary>Title displayed on the left of the header.</summary>
     public string? Label { get; set; }
 
-    /// <summary>Optional link to open the full view. Hidden when null or empty.</summary>
-    public string? ViewUrl { get; set; }
-
-    /// <summary>Optional link for the "new" button. Hidden when null or empty.</summary>
-    public string? NewUrl { get; set; }
-
-    /// <summary>Text displayed on the "new" button.</summary>
-    public string NewButtonText { get; set; } = "new";
-
-    /// <summary>Whether to render the search button/box.</summary>
-    public bool AllowSearch { get; set; } = true;
-
-    /// <summary>Delay applied while typing before <see cref="OnSearchChanged"/> is raised.</summary>
-    public int SearchDebounceMilliseconds { get; set; } = 300;
+    /// <summary>
+    /// All header actions in display order.
+    /// <list type="bullet">
+    ///   <item>Actions with <see cref="CloudGridAction.ShowOnHeader"/> appear on the right.</item>
+    ///   <item>Actions with <see cref="CloudGridAction.ShowOnBulkHeader"/> appear on the left
+    ///     (next to the label) only while rows are selected.</item>
+    /// </list>
+    /// </summary>
+    public List<CloudGridAction> Actions { get; set; } = [];
 
     /// <summary>
-    /// Raised when the (debounced) search query changes. Null means the search was cleared.
+    /// Raised when any <see cref="CloudGridAction"/> of type <see cref="CloudGridActionType.Button"/>
+    /// is clicked. The event args carry the action and any relevant record ids.
     /// </summary>
+    public EventCallback<CloudGridActionEventArgs> OnActionClicked { get; set; }
+
+    // ── Built-in helper shortcuts ────────────────────────────────────────────
+
+    /// <summary>Adds the built-in Search element action when true.</summary>
+    public bool AllowSearch { get; set; }
+
+    /// <summary>Debounce delay in ms before <see cref="OnSearchChanged"/> fires.</summary>
+    public int SearchDebounceMilliseconds { get; set; } = 300;
+
+    /// <summary>Raised when the debounced search query changes. Null = cleared.</summary>
     public EventCallback<string?> OnSearchChanged { get; set; }
 
-    /// <summary>Optional extra action buttons rendered after the built-in search button.</summary>
+    /// <summary>
+    /// Optional extra content rendered at the end of the right-side action slot row.
+    /// Use for custom buttons (e.g. reorder save/cancel) that don't fit the
+    /// <see cref="CloudGridAction"/> model.
+    /// </summary>
     public RenderFragment? ExtraActions { get; set; }
 }
+

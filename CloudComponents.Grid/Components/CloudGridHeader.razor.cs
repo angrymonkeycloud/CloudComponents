@@ -1,63 +1,98 @@
+using CloudComponents.Grid.Models;
+using CloudIcons.Icons;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace CloudComponents.Grid.Components;
 
 /// <summary>
-/// Toolbar usually placed above a <see cref="CloudGrid"/>: title, optional
-/// "open view" / "new record" links and a debounced search box.
-/// Search is implemented entirely in C# (no JavaScript interop).
+/// Toolbar rendered above a <see cref="CloudGrid"/>: label, and a unified list of
+/// <see cref="CloudGridAction"/> items covering every interactive element (links, buttons,
+/// element toggles, and bulk operations).
+///
+/// Built-in actions (New, View, Search) are synthesised from the corresponding parameters
+/// so that the markup iterates a single <see cref="AllHeaderActions"/> list without
+/// any special-case branching.
 /// </summary>
 public partial class CloudGridHeader
 {
+
     #region Parameters
 
-    /// <summary>Title displayed on the left.</summary>
+    /// <summary>Title displayed on the left of the toolbar.</summary>
     [Parameter] public string? Label { get; set; }
 
-    /// <summary>Optional link to open the full view. Hidden when null or empty.</summary>
-    [Parameter] public string? ViewUrl { get; set; }
+    /// <summary>
+    /// All header actions in display order (consumer-supplied + built-in synthesised actions).
+    /// </summary>
+    [Parameter] public List<CloudGridAction> Actions { get; set; } = [];
 
-    /// <summary>Optional link for the "new" button. Hidden when null or empty.</summary>
-    [Parameter] public string? NewUrl { get; set; }
+    /// <summary>Raised when a <see cref="CloudGridActionType.Button"/> action is activated.</summary>
+    [Parameter] public EventCallback<CloudGridActionEventArgs> OnActionClicked { get; set; }
 
-    [Parameter] public string NewButtonText { get; set; } = "new";
+    /// <summary>Ids of the currently selected rows — governs bulk action visibility.</summary>
+    [Parameter] public List<Guid> SelectedRecords { get; set; } = [];
 
-    /// <summary>Whether to render the search button/box.</summary>
-    [Parameter] public bool AllowSearch { get; set; } = true;
+    // ── Built-in helpers (synthesised into Actions) ───────────────────────────
 
-    /// <summary>Delay applied while typing before <see cref="OnSearchChanged"/> is raised.</summary>
+    /// <summary>Adds the built-in Search element action when true.</summary>
+    [Parameter] public bool AllowSearch { get; set; }
+
+    /// <summary>Debounce delay in ms before <see cref="OnSearchChanged"/> fires.</summary>
     [Parameter] public int SearchDebounceMilliseconds { get; set; } = 300;
 
-    /// <summary>
-    /// Raised when the (debounced) search query changes. Null means the search was cleared.
-    /// </summary>
+    /// <summary>Raised when the debounced search query changes. Null = cleared.</summary>
     [Parameter] public EventCallback<string?> OnSearchChanged { get; set; }
 
-    /// <summary>Optional extra action buttons rendered after the built-in search button.</summary>
+    /// <summary>
+    /// Optional extra content rendered at the end of the right-side action slot row.
+    /// Use for custom buttons that don't fit the <see cref="CloudGridAction"/> model.
+    /// </summary>
     [Parameter] public RenderFragment? ExtraActions { get; set; }
 
     #endregion
 
-    #region Search
+    #region Active-element state
 
-    private bool _isSearchOpen;
+    /// <summary>Key of the currently expanded Element action (null = none active).</summary>
+    private string? _activeKey;
+
+    private bool AnyModeActive => _activeKey != null;
+
+    private async Task ActivateAsync(CloudGridAction action)
+    {
+        if (_activeKey == action.Key)
+            return;
+
+        await DeactivateCurrentAsync();
+        _activeKey = action.Key;
+    }
+
+    private async Task DeactivateCurrentAsync()
+    {
+        if (_activeKey == null)
+            return;
+
+        CloudGridAction? current = AllHeaderActions.FirstOrDefault(a => a.Key == _activeKey);
+        _activeKey = null;
+
+        if (current?.OnDeactivated != null)
+            await current.OnDeactivated();
+    }
+
+    private async Task CancelActiveAsync()
+    {
+        await DeactivateCurrentAsync();
+    }
+
+    #endregion
+
+    #region Search state (backing for synthesised Search action's ChildContent)
+
     private string _searchQuery = string.Empty;
     private bool _focusSearchInput;
     private ElementReference _searchInput;
     private CancellationTokenSource? _searchDebounceCts;
-
-    /// <summary>
-    /// True when any exclusive mode (search, reorder, …) is active.
-    /// Used to hide all non-active slots so the toolbar stays flat.
-    /// </summary>
-    private bool AnyModeActive => _isSearchOpen;
-
-    private void OpenSearch()
-    {
-        _isSearchOpen = true;
-        _focusSearchInput = true;
-    }
 
     private async Task OnSearchInputAsync(ChangeEventArgs e)
     {
@@ -67,53 +102,45 @@ public partial class CloudGridHeader
         _searchDebounceCts = new CancellationTokenSource();
         CancellationToken token = _searchDebounceCts.Token;
 
-        try
-        {
-            await Task.Delay(SearchDebounceMilliseconds, token);
-        }
-        catch (TaskCanceledException)
-        {
-            return;
-        }
+        try { await Task.Delay(SearchDebounceMilliseconds, token); }
+        catch (TaskCanceledException) { return; }
 
         await NotifySearchChangedAsync();
     }
 
     private async Task OnSearchKeyDownAsync(KeyboardEventArgs e)
     {
-        if (e.Key == "Escape")
-        {
-            if (string.IsNullOrEmpty(_searchQuery))
-                await ClearSearchAsync();
-            else
-                _searchQuery = string.Empty;
-        }
+        if (e.Key != "Escape")
+            return;
+
+        if (string.IsNullOrEmpty(_searchQuery))
+            await CancelActiveAsync();
+        else
+            _searchQuery = string.Empty;
     }
 
-    private async Task OnSearchBlurAsync(FocusEventArgs e)
+    private async Task OnSearchBlurAsync(FocusEventArgs _)
     {
         if (!string.IsNullOrEmpty(_searchQuery))
             return;
 
-        await ClearSearchAsync();
-    }
-
-    private async Task ClearSearchAsync()
-    {
-        _isSearchOpen = false;
-
-        bool searchWasCleared = !string.IsNullOrEmpty(_searchQuery);
-
-        _searchQuery = string.Empty;
-
-        if (searchWasCleared)
-            await NotifySearchChangedAsync();
+        await CancelActiveAsync();
     }
 
     private Task NotifySearchChangedAsync()
     {
         string? query = string.IsNullOrWhiteSpace(_searchQuery) ? null : _searchQuery.Trim();
         return OnSearchChanged.InvokeAsync(query);
+    }
+
+    private async Task ClearSearchAndDeactivateAsync()
+    {
+        bool hadQuery = !string.IsNullOrEmpty(_searchQuery);
+        _searchQuery = string.Empty;
+        _activeKey = null;
+
+        if (hadQuery)
+            await NotifySearchChangedAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -123,15 +150,73 @@ public partial class CloudGridHeader
 
         _focusSearchInput = false;
 
-        try
+        try { await _searchInput.FocusAsync(); }
+        catch { /* element not yet available */ }
+    }
+
+    #endregion
+
+    #region Built-in action synthesis
+
+    // ── Built-in action keys ─────────────────────────────────────────────────
+    private const string KeySearch = "__search";
+
+    /// <summary>
+    /// Full ordered action list: consumer-supplied actions first, then the
+    /// built-in Search action (when <see cref="AllowSearch"/> is true).
+    /// </summary>
+    private IEnumerable<CloudGridAction> AllHeaderActions
+    {
+        get
         {
-            await _searchInput.FocusAsync();
+            foreach (CloudGridAction action in Actions.Where(a => a.ShowOnHeader))
+                yield return action;
+
+            if (AllowSearch)
+                yield return new CloudGridAction
+                {
+                    Key = KeySearch,
+                    Type = CloudGridActionType.Element,
+                    Tooltip = "Search",
+                    Icon = builder => { builder.OpenComponent<SearchIcon>(0); builder.CloseComponent(); },
+                    ChildContent = SearchContent,
+                    OnDeactivated = ClearSearchAndDeactivateAsync,
+                    ShowOnHeader = true
+                };
         }
-        catch
+    }
+
+    private IEnumerable<CloudGridAction> BulkHeaderActions =>
+        Actions.Where(a => a.ShowOnBulkHeader);
+
+    private bool HasVisibleBulkActions =>
+        SelectedRecords.Count > 0 && BulkHeaderActions.Any();
+
+    #endregion
+
+    #region Action interaction
+
+    private async Task FireActionClickedAsync(CloudGridAction action, List<Guid>? recordIds = null) =>
+        await OnActionClicked.InvokeAsync(new CloudGridActionEventArgs
         {
-            // Element may not be available yet; ignore.
+            Action = action,
+            RecordIds = recordIds ?? []
+        });
+
+    private async Task HandleActivateAsync(CloudGridAction action)
+    {
+        if (_activeKey == action.Key)
+        {
+            await CancelActiveAsync();
+        }
+        else
+        {
+            _activeKey = action.Key;
+            if (action.Key == KeySearch)
+                _focusSearchInput = true;
         }
     }
 
     #endregion
 }
+

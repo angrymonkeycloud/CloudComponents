@@ -1,101 +1,146 @@
 @namespace CloudComponents.Grid.Components
+@using CloudComponents.Grid.Models
 
 @*
-    CloudGridHeader — toolbar usually placed above a CloudGrid:
-    title, optional "open view" / "new record" links and a debounced search box.
+    CloudGridHeader — toolbar rendered above a CloudGrid.
 
-    Markup follows the Angry Monkey CSS naming convention:
-    block `.cloudgridheader`, children `.cloudgridheader-*`, adjectives `._*`.
-    The title is an <h2>, styled directly per the convention.
+    Naming: block `.cloudgridheader`, children `.cloudgridheader-*`, adjectives `._*`.
 
-    Each action is wrapped in a `.cloudgridheader-slot` div.
-    When any mode is active (search open, etc.) the actions container gets
-    `._mode-active`: all slots without `._active` are hidden, keeping the
-    toolbar flat and uncluttered. Only the active slot's content is shown.
+    Layout:
+      [bulk actions] [h2 label]                       [right actions →]
+
+    All actions — built-in (New, Search, View) and consumer-supplied — share the same
+    CloudGridAction shape and are rendered by a single unified loop.
+
+    When an Element action is active (._mode-active on the actions container) every
+    inactive slot is hidden; the active slot expands to fill the row.
 
     All behavior lives in CloudGridHeader.razor.cs; styles in CloudGridHeader.razor.less.
 *@
 
 <div class="cloudgridheader">
 
+    @* ── Bulk actions (left, visible only while rows are selected) ────────── *@
+    @if (HasVisibleBulkActions)
+    {
+        <div class="cloudgridheader-bulkactions">
+            @foreach (CloudGridAction action in BulkHeaderActions)
+            {
+                <button type="button"
+                        class="cloudgridheader-action _bulk @action.CssClass"
+                        title="@(action.Tooltip ?? action.Text)"
+                        @onclick="() => FireActionClickedAsync(action, [..SelectedRecords])"
+                        @onclick:stopPropagation
+                        @onclick:preventDefault>
+                    @ActionIconAndText(action)
+                </button>
+            }
+        </div>
+    }
+
     <h2>@Label</h2>
 
+    @* ── Right-side action slots ─────────────────────────────────────────── *@
     <div class="cloudgridheader-actions @(AnyModeActive ? "_mode-active" : "")">
 
-        @* ── New button ───────────────────────────────────────────────────── *@
-        @if (!string.IsNullOrEmpty(NewUrl))
+        @foreach (CloudGridAction action in AllHeaderActions)
         {
-            <div class="cloudgridheader-slot">
-                <a class="cloudgridheader-action _new" href="@NewUrl">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <line x1="12" y1="5" x2="12" y2="19" />
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                    </svg>
-                    <span>@NewButtonText</span>
-                </a>
-            </div>
+            bool isActive = _activeKey == action.Key;
+
+            @if (action.Type == CloudGridActionType.Link)
+            {
+                <div class="cloudgridheader-slot">
+                    <a class="cloudgridheader-action @action.CssClass"
+                       href="@action.Href"
+                       target="@action.Target"
+                       title="@(action.Tooltip ?? action.Text)">
+                        @ActionIconAndText(action)
+                    </a>
+                </div>
+            }
+            else if (action.Type == CloudGridActionType.Button)
+            {
+                <div class="cloudgridheader-slot">
+                    <button type="button"
+                            class="cloudgridheader-action @action.CssClass"
+                            title="@(action.Tooltip ?? action.Text)"
+                            @onclick="() => FireActionClickedAsync(action)"
+                            @onclick:stopPropagation
+                            @onclick:preventDefault>
+                        @ActionIconAndText(action)
+                    </button>
+                </div>
+            }
+            else if (action.Type == CloudGridActionType.Element)
+            {
+                <div class="cloudgridheader-slot @(isActive ? "_active" : "")">
+                    @if (isActive && action.ChildContent != null)
+                    {
+                        @action.ChildContent
+                        <button type="button"
+                                class="cloudgridheader-action _cancel"
+                                @onclick="CancelActiveAsync"
+                                @onclick:stopPropagation
+                                @onclick:preventDefault>
+                            cancel
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button"
+                                class="cloudgridheader-action @action.CssClass"
+                                title="@(action.Tooltip ?? action.Text)"
+                                @onclick="() => HandleActivateAsync(action)"
+                                @onclick:stopPropagation
+                                @onclick:preventDefault>
+                            @ActionIconAndText(action)
+                        </button>
+                    }
+                </div>
+            }
         }
 
-        @* ── Extra actions (consumer-supplied) ───────────────────────────── *@
-
-        
         @if (ExtraActions != null)
         {
-            <div class="cloudgridheader-slot">
-                @ExtraActions
-            </div>
+            @ExtraActions
         }
-
-        @* ── View link ───────────────────────────────────────────────────── *@
-
-
-        @if (AllowSearch)
-        {
-            <div class="cloudgridheader-slot @(_isSearchOpen ? "_active" : "")">
-                @if (_isSearchOpen)
-                {
-                    <input @ref="_searchInput"
-                           type="search"
-                           class="cloudgridheader-search"
-                           value="@_searchQuery"
-                           placeholder="Search..."
-                           @oninput="OnSearchInputAsync"
-                           @onblur="OnSearchBlurAsync"
-                           @onkeydown="OnSearchKeyDownAsync" />
-
-                    <button type="button" class="cloudgridheader-action _cancel" @onclick="ClearSearchAsync">cancel</button>
-                }
-                else
-                {
-                    <button type="button" class="cloudgridheader-action _search" title="Search" @onclick="OpenSearch">
-                        <svg viewBox="0 0 24 24" fill="none">
-                            <circle cx="11" cy="11" r="8" />
-                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                        </svg>
-                    </button>
-                }
-            </div>
-        }
-
-
-        @if (!string.IsNullOrEmpty(ViewUrl))
-        {
-            <div class="cloudgridheader-slot">
-                <a class="cloudgridheader-action _view" href="@ViewUrl" title="Open view">
-                    <svg viewBox="0 0 20 20" fill="none">
-                        <path d="M5.707 15.707a1 1 0 0 1-1.414-1.414l4-4a1 1 0 1 1 1.414 1.414z" />
-                        <path d="M5 16a1 1 0 1 1 0-2h4a1 1 0 1 1 0 2z" />
-                        <path d="M6 15a1 1 0 1 1-2 0v-4a1 1 0 1 1 2 0zm5.707-5.293a1 1 0 0 1-1.414-1.414l4-4a1 1 0 1 1 1.414 1.414z" />
-                        <path d="M16 9a1 1 0 1 1-2 0V5a1 1 0 1 1 2 0z" />
-                        <path d="M11 6a1 1 0 1 1 0-2h4a1 1 0 1 1 0 2z" />
-                    </svg>
-                </a>
-            </div>
-        }
-
-        @* ── Search slot ─────────────────────────────────────────────────── *@
 
     </div>
 
 </div>
+
+@code {
+    /// <summary>
+    /// Shared helper: renders the icon SVG (if any) and text span (if any) for any action type.
+    /// </summary>
+    private RenderFragment ActionIconAndText(CloudGridAction action) => @<text>
+        @if (action.Icon != null)
+        {
+            @action.Icon
+        }
+        else if (!string.IsNullOrEmpty(action.IconSvg))
+        {
+            @((MarkupString)action.IconSvg)
+        }
+        @if (!string.IsNullOrEmpty(action.Text))
+        {
+            <span>@action.Text</span>
+        }
+    </text>;
+
+    /// <summary>
+    /// RenderFragment assigned as the ChildContent of the built-in Search action.
+    /// Defined here so it can reference @ref and event handlers declared in the partial class.
+    /// </summary>
+    private RenderFragment SearchContent => @<text>
+        <input @ref="_searchInput"
+               type="search"
+               class="cloudgridheader-search"
+               value="@_searchQuery"
+               placeholder="Search..."
+               @oninput="OnSearchInputAsync"
+               @onblur="OnSearchBlurAsync"
+               @onkeydown="OnSearchKeyDownAsync" />
+    </text>;
+}
 

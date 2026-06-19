@@ -48,14 +48,14 @@ public partial class CloudGridBody
     /// <summary>Raised after the user drops a dragged row at a new position.</summary>
     [Parameter] public EventCallback<CloudGridRowReorder> OnRowsReordered { get; set; }
 
-    /// <summary>Custom action buttons rendered on each row.</summary>
-    [Parameter] public List<CloudGridRowButton> RowButtons { get; set; } = [];
+    /// <summary>Actions rendered on each row (those with <see cref="CloudGridAction.ShowOnRow"/> = true).</summary>
+    [Parameter] public List<CloudGridAction> RowActions { get; set; } = [];
 
-    /// <summary>Optional per-row filter deciding whether a button is rendered on a given row.</summary>
-    [Parameter] public Func<CloudGridRow, CloudGridRowButton, bool>? RowButtonFilter { get; set; }
+    /// <summary>Optional per-row filter; return false to hide an action on a specific row.</summary>
+    [Parameter] public Func<CloudGridRow, CloudGridAction, bool>? ActionFilter { get; set; }
 
-    /// <summary>Raised when a custom row button is clicked.</summary>
-    [Parameter] public EventCallback<CloudGridRowButtonEventArgs> OnRowButtonClicked { get; set; }
+    /// <summary>Raised when a row <see cref="CloudGridActionType.Button"/> action is clicked.</summary>
+    [Parameter] public EventCallback<CloudGridActionEventArgs> OnActionClicked { get; set; }
 
     /// <summary>Target of row links (<c>_parent</c> by default).</summary>
     [Parameter] public string LinkTarget { get; set; } = "_parent";
@@ -211,28 +211,57 @@ public partial class CloudGridBody
 
     #endregion
 
-    #region Row buttons
+    #region Row actions
 
-    private IEnumerable<CloudGridRowButton> RowVisibleButtons(CloudGridRow row) =>
-        RowButtons.Where(b => b.ShowOnRow
-            && (!b.VisibleOnSelectionOnly || IsRowSelected(row))
-            && (RowButtonFilter?.Invoke(row, b) ?? true));
+    /// <summary>Key of the currently expanded Element action per row (rowId, actionKey).</summary>
+    private (Guid RowId, string ActionKey)? _activeRowElement;
 
-    private Task RowButtonClickAsync(CloudGridRowButton button, CloudGridRow row) =>
-        OnRowButtonClicked.InvokeAsync(new CloudGridRowButtonEventArgs
+    private IEnumerable<CloudGridAction> RowVisibleActions(CloudGridRow row) =>
+        RowActions.Where(a => a.ShowOnRow
+            && (!a.VisibleOnSelectionOnly || IsRowSelected(row))
+            && (ActionFilter?.Invoke(row, a) ?? true));
+
+    private bool IsRowElementActive(CloudGridRow row, CloudGridAction action) =>
+        _activeRowElement is { } state && state.RowId == row.Id && state.ActionKey == action.Key;
+
+    private async Task ToggleRowElementAsync(CloudGridRow row, CloudGridAction action)
+    {
+        if (_activeRowElement is { } state && state.RowId == row.Id && state.ActionKey == action.Key)
         {
-            Button = button,
+            _activeRowElement = null;
+            if (action.OnDeactivated != null)
+                await action.OnDeactivated();
+        }
+        else
+        {
+            if (_activeRowElement is { } prev)
+            {
+                CloudGridAction? prevAction = RowActions.FirstOrDefault(a => a.Key == prev.ActionKey);
+                if (prevAction?.OnDeactivated != null)
+                    await prevAction.OnDeactivated();
+            }
+            _activeRowElement = (row.Id, action.Key);
+        }
+    }
+
+    private async Task CancelRowElementAsync()
+    {
+        if (_activeRowElement is not { } state)
+            return;
+
+        CloudGridAction? action = RowActions.FirstOrDefault(a => a.Key == state.ActionKey);
+        _activeRowElement = null;
+
+        if (action?.OnDeactivated != null)
+            await action.OnDeactivated();
+    }
+
+    private Task RowActionClickAsync(CloudGridAction action, CloudGridRow row) =>
+        OnActionClicked.InvokeAsync(new CloudGridActionEventArgs
+        {
+            Action = action,
             RecordIds = [row.Id]
         });
-
-    private Task BulkButtonClickAsync(CloudGridRowButton button) =>
-        SelectedRecords.Count == 0
-            ? Task.CompletedTask
-            : OnRowButtonClicked.InvokeAsync(new CloudGridRowButtonEventArgs
-            {
-                Button = button,
-                RecordIds = [.. SelectedRecords]
-            });
 
     #endregion
 

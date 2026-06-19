@@ -5,7 +5,8 @@
     CloudGrid — single entry point for the full grid experience.
 
     Composes CloudGridHeader (optional), CloudGridBody and CloudGridFooter internally.
-    Developers use only this component and pass options for each inner section.
+    Developers use only this component and configure each section via Header options
+    and the shared Actions list.
 
     Markup follows the Angry Monkey CSS naming convention
     (https://github.com/angrymonkeydocs/css-naming-convention):
@@ -22,31 +23,19 @@
     @if (Header != null)
     {
         <CloudGridHeader Label="@Header.Label"
-                         ViewUrl="@Header.ViewUrl"
-                         NewUrl="@Header.NewUrl"
-                         NewButtonText="@Header.NewButtonText"
+                         Actions="@Header.Actions"
+                         OnActionClicked="@Header.OnActionClicked"
+                         SelectedRecords="@HeaderSelectedRecords"
                          AllowSearch="@Header.AllowSearch"
                          SearchDebounceMilliseconds="@Header.SearchDebounceMilliseconds"
                          OnSearchChanged="@Header.OnSearchChanged"
                          ExtraActions="@Header.ExtraActions" />
     }
 
-    @* ── Bulk selection bar ─────────────────────────────────────────────── *@
+    @* ── Bulk selection hidden field ────────────────────────────────────── *@
     @if (AllowSelection)
     {
         <input type="hidden" id="SelectedRecords" value="@string.Join(",", _selectedRecords)" />
-    }
-
-    @if (ShowBulkBar)
-    {
-        <div class="cloudgrid-bulkbar">
-            <span class="cloudgrid-bulkinfo">@_selectedRecords.Count selected</span>
-
-            @foreach (CloudGridRowButton button in BulkButtons)
-            {
-                @RenderBulkButton(button)
-            }
-        </div>
     }
 
     @* ── Body (table head + rows + shields) ─────────────────────────────── *@
@@ -60,9 +49,9 @@
                    SelectedRecordsChanged="@OnBodySelectionChanged"
                    AllowReordering="@AllowReordering"
                    OnRowsReordered="@OnRowsReordered"
-                   RowButtons="@RowButtons"
-                   RowButtonFilter="@RowButtonFilter"
-                   OnRowButtonClicked="@OnRowButtonClicked"
+                   RowActions="@AllRowActions"
+                   ActionFilter="@ActionFilter"
+                   OnActionClicked="@OnActionClicked"
                    LinkTarget="@LinkTarget"
                    LoadingText="@LoadingText"
                    SearchingText="@SearchingText"
@@ -87,23 +76,3 @@
 
 </div>
 
-@code {
-    /// <summary>Renders a bulk-action button inside the selection toolbar.</summary>
-    private RenderFragment<CloudGridRowButton> RenderBulkButton => button => @<text>
-        <button type="button"
-                class="cloudgrid-action @button.CssClass"
-                title="@(button.Tooltip ?? button.Text)"
-                @onclick="() => BulkButtonClickAsync(button)"
-                @onclick:stopPropagation
-                @onclick:preventDefault>
-            @if (!string.IsNullOrEmpty(button.IconSvg))
-            {
-                @((MarkupString)button.IconSvg)
-            }
-            @if (!string.IsNullOrEmpty(button.Text))
-            {
-                <span>@button.Text</span>
-            }
-        </button>
-    </text>;
-}

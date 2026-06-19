@@ -41,7 +41,7 @@
 
                 @if (_sortIndex == columnIndex)
                 {
-                    <svg viewBox="0 0 10 6"><path d="M1 5 5 1 9 5" /></svg>
+                    <SortIcon />
                 }
 
                 @if (column.Resizable)
@@ -158,41 +158,85 @@
             }
 
             @{
-                List<CloudGridRowButton> rowButtons = [.. RowVisibleButtons(row)];
+                List<CloudGridAction> rowActions = [.. RowVisibleActions(row)];
             }
 
-            @if (rowButtons.Count > 0)
+            @if (rowActions.Count > 0)
             {
                 <div class="cloudgrid-rowactions" @onclick:stopPropagation @onclick:preventDefault>
-                    @foreach (CloudGridRowButton button in rowButtons)
+                    @foreach (CloudGridAction action in rowActions)
                     {
-                        @RenderButton((button, row))
+                        @RenderRowAction((action, row))
                     }
                 </div>
             }
         </div>
     </text>;
 
-    /// <summary>
-    /// Renders a custom action button. A null row means the button was rendered
-    /// in the selection toolbar and applies to every selected row.
-    /// </summary>
-    private RenderFragment<(CloudGridRowButton Button, CloudGridRow? Row)> RenderButton => ctx => @<text>
-        <button type="button"
-                class="cloudgrid-action @ctx.Button.CssClass"
-                title="@(ctx.Button.Tooltip ?? ctx.Button.Text)"
-                @onclick="() => ctx.Row == null ? BulkButtonClickAsync(ctx.Button) : RowButtonClickAsync(ctx.Button, ctx.Row)"
-                @onclick:stopPropagation
-                @onclick:preventDefault>
-            @if (!string.IsNullOrEmpty(ctx.Button.IconSvg))
+    /// <summary>Renders a single action inside a row's action cell.</summary>
+    private RenderFragment<(CloudGridAction Action, CloudGridRow Row)> RenderRowAction => ctx => @<text>
+        @if (ctx.Action.Type == CloudGridActionType.Link)
+        {
+            <a class="cloudgrid-action @ctx.Action.CssClass"
+               href="@ctx.Action.Href"
+               target="@ctx.Action.Target"
+               title="@(ctx.Action.Tooltip ?? ctx.Action.Text)">
+                @RowActionIconAndText(ctx.Action)
+            </a>
+        }
+        else if (ctx.Action.Type == CloudGridActionType.Button)
+        {
+            <button type="button"
+                    class="cloudgrid-action @ctx.Action.CssClass"
+                    title="@(ctx.Action.Tooltip ?? ctx.Action.Text)"
+                    @onclick="() => RowActionClickAsync(ctx.Action, ctx.Row)"
+                    @onclick:stopPropagation
+                    @onclick:preventDefault>
+                @RowActionIconAndText(ctx.Action)
+            </button>
+        }
+        else if (ctx.Action.Type == CloudGridActionType.Element)
+        {
+            bool isActive = IsRowElementActive(ctx.Row, ctx.Action);
+
+            @if (isActive && ctx.Action.ChildContent != null)
             {
-                @((MarkupString)ctx.Button.IconSvg)
+                @ctx.Action.ChildContent
+                <button type="button"
+                        class="cloudgrid-action _cancel"
+                        @onclick="CancelRowElementAsync"
+                        @onclick:stopPropagation
+                        @onclick:preventDefault>
+                    cancel
+                </button>
             }
-            @if (!string.IsNullOrEmpty(ctx.Button.Text))
+            else
             {
-                <span>@ctx.Button.Text</span>
+                <button type="button"
+                        class="cloudgrid-action @ctx.Action.CssClass"
+                        title="@(ctx.Action.Tooltip ?? ctx.Action.Text)"
+                        @onclick="() => ToggleRowElementAsync(ctx.Row, ctx.Action)"
+                        @onclick:stopPropagation
+                        @onclick:preventDefault>
+                    @RowActionIconAndText(ctx.Action)
+                </button>
             }
-        </button>
+        }
+    </text>;
+
+    private RenderFragment RowActionIconAndText(CloudGridAction action) => @<text>
+        @if (action.Icon != null)
+        {
+            @action.Icon
+        }
+        else if (!string.IsNullOrEmpty(action.IconSvg))
+        {
+            @((MarkupString)action.IconSvg)
+        }
+        @if (!string.IsNullOrEmpty(action.Text))
+        {
+            <span>@action.Text</span>
+        }
     </text>;
 
     private RenderFragment<CloudGridRow> RowCells => row => @<text>

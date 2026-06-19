@@ -24,6 +24,14 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
+    // ── Bulk actions (left side, visible only when rows are selected) ──────
+    &-bulkactions {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
+        flex: none;
+    }
 
     &-actions {
         display: flex;
@@ -31,17 +39,15 @@
         align-items: center;
         gap: 4px;
     }
-
-    // When a mode is active (search open, reorder mode, …) hide every slot
-    // that isn't marked ._active, so the active slot owns the full row.
-    // Written at the .cloudgridheader level so &-slot resolves to
-    // .cloudgridheader-slot (not .cloudgridheader-actions-slot).
-    &-actions._mode-active &-slot:not(._active) {
-        display: none;
-    }
-
+        // When a mode is active (search open, expand panel open, …) hide every slot
+        // that isn't marked ._active, so the active slot owns the full row.
+        // Written at the .cloudgridheader level so &-slot resolves to
+        // .cloudgridheader-slot (not .cloudgridheader-actions-slot).
+        &-actions._mode-active &-slot:not(._active) {
+            display: none;
+        }
     // Each action is wrapped in a slot div. The slot itself is a flex row so
-    // the input + cancel button inside an active search slot sit side by side.
+    // the input + cancel button inside an active search/expand slot sit side by side.
     &-slot {
         display: flex;
         flex-direction: row;
@@ -68,7 +74,7 @@
             background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, #e8e8e8));
         }
 
-        svg {
+        ::deep svg {
             flex: none;
             width: 16px;
             height: 16px;
@@ -101,24 +107,40 @@
         &._reorder-start {
             opacity: 0.7;
 
-            &:hover { opacity: 1; }
+            &:hover {
+                opacity: 1;
+            }
         }
 
         &._reorder-save {
             color: #2a7d2e;
             font-weight: 600;
 
-            svg line, svg polyline { stroke: #2a7d2e; }
+            svg line, svg polyline {
+                stroke: #2a7d2e;
+            }
 
-            &:hover { background-color: #e6f4e7; }
+            &:hover {
+                background-color: #e6f4e7;
+            }
         }
 
         &._reorder-cancel {
             color: #b33;
 
-            svg line { stroke: #b33; }
+            svg line {
+                stroke: #b33;
+            }
 
-            &:hover { background-color: #fdecea; }
+            &:hover {
+                background-color: #fdecea;
+            }
+        }
+        // Bulk action: slightly stronger visual weight so it stands out on the left.
+        &._bulk {
+            border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
+            background-color: var(--cloudgrid-background, #fff);
+            font-size: 12px;
         }
     }
 

@@ -11,7 +11,7 @@ namespace CloudComponents.Grid.Components;
 /// and <see cref="CloudGridFooter"/> internally. Developers only use this component
 /// and configure each section through the corresponding parameters.
 ///
-/// Owns: selection state, bulk action bar, root CSS adjectives, footer range maths.
+/// Owns: selection state, root CSS adjectives, footer range maths.
 /// All table / row / sorting / paging behavior lives in <see cref="CloudGridBody"/>.
 /// </summary>
 public partial class CloudGrid
@@ -19,8 +19,7 @@ public partial class CloudGrid
     #region Parameters
 
     /// <summary>
-    /// When set, renders a <see cref="CloudGridHeader"/> above the table with the
-    /// provided options (title, search, new/view links, extra actions).
+    /// When set, renders a <see cref="CloudGridHeader"/> above the table.
     /// Leave null to hide the header entirely.
     /// </summary>
     [Parameter] public CloudGridHeaderOptions? Header { get; set; }
@@ -59,19 +58,24 @@ public partial class CloudGrid
     [Parameter] public EventCallback<CloudGridRowReorder> OnRowsReordered { get; set; }
 
     /// <summary>
-    /// Custom action buttons rendered on each row and/or in the selection toolbar.
-    /// See <see cref="CloudGridRowButton"/> for per-button options.
+    /// Raised when any <see cref="CloudGridActionType.Button"/> action is activated
+    /// (row action or header action).
     /// </summary>
-    [Parameter] public List<CloudGridRowButton> RowButtons { get; set; } = [];
+    [Parameter] public EventCallback<CloudGridActionEventArgs> OnActionClicked { get; set; }
 
     /// <summary>
-    /// Optional per-row filter deciding whether a button is rendered on a given row.
-    /// Returning true keeps the button visible.
+    /// Explicit row actions list. When provided, these are merged with any row actions
+    /// derived from <see cref="Header"/>. When null the grid derives row actions
+    /// automatically from <see cref="Header"/>.<see cref="CloudGridHeaderOptions.Actions"/>
+    /// where <see cref="CloudGridAction.ShowOnRow"/> is true.
     /// </summary>
-    [Parameter] public Func<CloudGridRow, CloudGridRowButton, bool>? RowButtonFilter { get; set; }
+    [Parameter] public List<CloudGridAction>? RowActions { get; set; }
 
-    /// <summary>Raised when a custom row/bulk button is clicked.</summary>
-    [Parameter] public EventCallback<CloudGridRowButtonEventArgs> OnRowButtonClicked { get; set; }
+    /// <summary>
+    /// Optional per-row filter; return false to hide an action on a specific row.
+    /// Only meaningful when row actions are present.
+    /// </summary>
+    [Parameter] public Func<CloudGridRow, CloudGridAction, bool>? ActionFilter { get; set; }
 
     /// <summary>Additional CSS class(es) appended to the root element.</summary>
     [Parameter] public string? CssClass { get; set; }
@@ -137,21 +141,27 @@ public partial class CloudGrid
 
     #endregion
 
-    #region Bulk bar
+    #region Action routing
 
-    /// <summary>The selection toolbar shows when bulk buttons exist and rows are selected.</summary>
-    private bool ShowBulkBar => AllowSelection && _selectedRecords.Count > 0 && RowButtons.Any(b => b.AllowMultiple);
+    /// <summary>
+    /// Actions that show on each row — merges the explicit <see cref="RowActions"/> parameter
+    /// with any actions derived from <see cref="Header"/> that have <see cref="CloudGridAction.ShowOnRow"/>.
+    /// </summary>
+    private List<CloudGridAction> AllRowActions
+    {
+        get
+        {
+            IEnumerable<CloudGridAction> fromHeader = Header?.Actions.Where(a => a.ShowOnRow) ?? [];
+            IEnumerable<CloudGridAction> explicit_ = RowActions ?? [];
+            return [.. fromHeader, .. explicit_.Where(a => !fromHeader.Any(h => h.Key == a.Key))];
+        }
+    }
 
-    private IEnumerable<CloudGridRowButton> BulkButtons => RowButtons.Where(b => b.AllowMultiple);
-
-    private Task BulkButtonClickAsync(CloudGridRowButton button) =>
-        _selectedRecords.Count == 0
-            ? Task.CompletedTask
-            : OnRowButtonClicked.InvokeAsync(new CloudGridRowButtonEventArgs
-            {
-                Button = button,
-                RecordIds = [.. _selectedRecords]
-            });
+    /// <summary>
+    /// Passes the current selection to <see cref="CloudGridHeader"/> so bulk actions
+    /// know which records are selected.
+    /// </summary>
+    private List<Guid> HeaderSelectedRecords => AllowSelection ? _selectedRecords : [];
 
     #endregion
 

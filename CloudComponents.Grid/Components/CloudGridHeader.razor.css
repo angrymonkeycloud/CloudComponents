@@ -13,6 +13,13 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.cloudgridheader-bulkactions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
 .cloudgridheader-actions {
   display: flex;
   flex-direction: row;
@@ -46,25 +53,25 @@
 .cloudgridheader-action:hover {
   background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, #e8e8e8));
 }
-.cloudgridheader-action svg {
+.cloudgridheader-action ::deep svg {
   flex: none;
   width: 16px;
   height: 16px;
 }
-.cloudgridheader-action svg path {
+.cloudgridheader-action ::deep svg path {
   fill: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
 }
-.cloudgridheader-action svg line {
+.cloudgridheader-action ::deep svg line {
   stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
   stroke-width: 2px;
   stroke-linecap: round;
 }
-.cloudgridheader-action svg circle {
+.cloudgridheader-action ::deep svg circle {
   fill: none;
   stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
   stroke-width: 2px;
 }
-.cloudgridheader-action svg polyline {
+.cloudgridheader-action ::deep svg polyline {
   fill: none;
   stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
   stroke-width: 2px;
@@ -96,6 +103,11 @@
 }
 .cloudgridheader-action._reorder-cancel:hover {
   background-color: #fdecea;
+}
+.cloudgridheader-action._bulk {
+  border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
+  background-color: var(--cloudgrid-background, #fff);
+  font-size: 12px;
 }
 .cloudgridheader-search {
   width: 180px;
