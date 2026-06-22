@@ -6,8 +6,11 @@
   color: var(--cloudgrid-color, #505050);
   font-size: var(--cloudgrid-font-size, 14px);
   --cloudgrid-row-height: 43px;
+  --cloudgrid-header-height: 40px;
+  --cloudgrid-footer-height: 30px;
 }
-.cloudgrid._busy ::deep .cloudgrid-head {
+.cloudgrid._busy ::deep .cloudgrid-head,
+.cloudgrid._busy ::deep .cloudgridheader {
   opacity: 0.5;
   pointer-events: none;
 }

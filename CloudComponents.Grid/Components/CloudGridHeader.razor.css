@@ -2,53 +2,71 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  box-sizing: border-box;
+  height: var(--cloudgrid-header-height, 40px);
+  min-height: var(--cloudgrid-header-height, 40px);
   padding: 4px 8px;
 }
 .cloudgridheader h2 {
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 0;
   margin: 0;
   font-size: 16px;
   font-weight: 600;
+  line-height: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.cloudgridheader-bulkactions {
+.cloudgridheader-bulkactions,
+.cloudgridheader-actions {
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  align-items: stretch;
   gap: 4px;
+  height: 100%;
+  min-height: 0;
+}
+.cloudgridheader-bulkactions {
   flex: none;
 }
 .cloudgridheader-actions {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 4px;
+  flex: none;
+  margin-left: auto;
 }
 .cloudgridheader-actions._mode-active .cloudgridheader-slot:not(._active) {
   display: none;
 }
 .cloudgridheader-slot {
   display: flex;
-  flex-direction: row;
   align-items: center;
   gap: 4px;
+  height: 100%;
+}
+.cloudgridheader-slot._active {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 .cloudgridheader-action {
-  display: flex;
-  flex-direction: row;
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
+  justify-content: center;
+  gap: 6px;
+  box-sizing: border-box;
+  height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+  min-height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+  padding: 0 10px;
   border: none;
   border-radius: 3px;
   background: none;
   color: var(--cloudgridheader-color, var(--cloudgrid-color, #505050));
   font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
+  line-height: 1;
   text-decoration: none;
   cursor: pointer;
   white-space: nowrap;
+}
+.cloudgridheader-action span {
+  line-height: 1;
 }
 .cloudgridheader-action:hover {
   background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, #e8e8e8));
@@ -58,7 +76,8 @@
   width: 16px;
   height: 16px;
 }
-.cloudgridheader-action ::deep svg path {
+.cloudgridheader-action ::deep svg path,
+.cloudgridheader-action ::deep svg .amc-svg-fill {
   fill: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
 }
 .cloudgridheader-action ::deep svg line {
@@ -78,6 +97,11 @@
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+.cloudgridheader-action._bulk {
+  border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
+  background-color: var(--cloudgrid-background, #fff);
+  font-size: 12px;
+}
 .cloudgridheader-action._reorder-start {
   opacity: 0.7;
 }
@@ -88,8 +112,8 @@
   color: #2a7d2e;
   font-weight: 600;
 }
-.cloudgridheader-action._reorder-save svg line,
-.cloudgridheader-action._reorder-save svg polyline {
+.cloudgridheader-action._reorder-save ::deep svg line,
+.cloudgridheader-action._reorder-save ::deep svg polyline {
   stroke: #2a7d2e;
 }
 .cloudgridheader-action._reorder-save:hover {
@@ -98,20 +122,20 @@
 .cloudgridheader-action._reorder-cancel {
   color: #b33;
 }
-.cloudgridheader-action._reorder-cancel svg line {
+.cloudgridheader-action._reorder-cancel ::deep svg line,
+.cloudgridheader-action._reorder-cancel ::deep svg polyline {
   stroke: #b33;
 }
 .cloudgridheader-action._reorder-cancel:hover {
   background-color: #fdecea;
 }
-.cloudgridheader-action._bulk {
-  border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
-  background-color: var(--cloudgrid-background, #fff);
-  font-size: 12px;
-}
 .cloudgridheader-search {
+  box-sizing: border-box;
   width: 180px;
-  padding: 4px 8px;
+  max-width: 100%;
+  height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+  min-height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+  padding: 0 8px;
   border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
   border-radius: 3px;
   font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));

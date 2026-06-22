@@ -4,15 +4,11 @@
   overflow: auto;
   background-color: var(--cloudgrid-body-background, #fff);
   scrollbar-color: #505050 #fff;
-  /* thumb track */
 }
 .cloudgrid-table._fixed {
   flex: none;
+  overflow-x: auto;
   overflow-y: hidden;
-  overflow-x: scroll;
-}
-.cloudgrid-table._scroll {
-  overflow-y: auto;
 }
 .cloudgrid-head {
   position: sticky;
@@ -20,7 +16,7 @@
   z-index: 1;
   display: flex;
   box-sizing: border-box;
-  height: 2.5em;
+  height: var(--cloudgrid-row-height);
   min-width: max-content;
   background-color: var(--cloudgrid-head-background, #f8f8f8);
   border-top: 1px solid var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15));
@@ -44,12 +40,13 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.cloudgrid-headcell svg {
+.cloudgrid-headcell ::deep svg {
   flex: none;
   width: 10px;
   height: 6px;
 }
-.cloudgrid-headcell svg path {
+.cloudgrid-headcell ::deep svg path,
+.cloudgrid-headcell ::deep svg .amc-svg-fill {
   fill: none;
   stroke: var(--cloudgrid-accent-color, #000);
   stroke-width: 1.5px;
@@ -61,9 +58,6 @@
 }
 .cloudgrid-headcell._sortable:hover {
   background-color: var(--cloudgrid-hover-background, #e8e8e8);
-}
-.cloudgrid-headcell._sorted-descending svg {
-  transform: rotate(180deg);
 }
 .cloudgrid-resizer {
   position: absolute;
@@ -99,20 +93,30 @@
   cursor: grab;
   touch-action: none;
 }
-.cloudgrid-draghandle svg {
+.cloudgrid-draghandle ::deep svg {
   width: 16px;
   height: 16px;
 }
-.cloudgrid-draghandle svg .amc-svg-fill {
+.cloudgrid-draghandle ::deep .amc-svg-fill,
+.cloudgrid-draghandle ::deep svg circle {
   fill: var(--cloudgrid-border-color, rgba(0, 0, 0, 0.25));
 }
-.cloudgrid-draghandle svg circle {
-  fill: var(--cloudgrid-border-color, rgba(0, 0, 0, 0.25));
-}
-.cloudgrid-draghandle:hover svg .amc-svg-fill {
+.cloudgrid-draghandle:hover ::deep .amc-svg-fill,
+.cloudgrid-draghandle:hover ::deep svg circle {
   fill: var(--cloudgrid-accent-color, #000);
 }
 .cloudgrid-body {
+  min-width: max-content;
+}
+.cloudgrid-body._fixed {
+  min-height: 0;
+}
+.cloudgrid-body._scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.cloudgrid-body._virtualized ::deep .cloudgrid-row {
   min-width: max-content;
 }
 .cloudgrid-row {
@@ -134,11 +138,11 @@
   background-color: var(--cloudgrid-selected-background, #f8f8f8);
 }
 .cloudgrid-row._dragging {
+  position: relative;
+  z-index: 2;
   background-color: var(--cloudgrid-selected-background, #f8f8f8);
   opacity: 0.85;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  position: relative;
-  z-index: 2;
 }
 .cloudgrid-row._placeholder {
   opacity: 0.4;
@@ -160,8 +164,8 @@
   text-overflow: ellipsis;
 }
 .cloudgrid-cell img {
-  height: calc(var(--cloudgrid-row-height) - 1px);
   align-self: flex-start;
+  height: calc(var(--cloudgrid-row-height) - 1px);
   max-width: 100%;
   object-fit: cover;
 }
@@ -197,19 +201,25 @@
   height: 100%;
 }
 .cloudgrid-action {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 4px;
+  box-sizing: border-box;
+  min-height: 26px;
   padding: 4px 8px;
   border: 1px solid var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15));
   border-radius: 3px;
   background-color: var(--cloudgrid-background, #fff);
   color: var(--cloudgrid-color, #505050);
   font-size: 12px;
+  line-height: 1;
   cursor: pointer;
   white-space: nowrap;
 }
-.cloudgrid-action svg {
+.cloudgrid-action span {
+  line-height: 1;
+}
+.cloudgrid-action ::deep svg {
   width: 14px;
   height: 14px;
 }

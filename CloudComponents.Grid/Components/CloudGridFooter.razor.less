@@ -1,58 +1,73 @@
 // CloudGridFooter styles.
 // Naming follows https://github.com/angrymonkeydocs/css-naming-convention:
-// block `.cloudgrid`, children `.cloudgrid-*`, adjectives `._name`.
-//
-// These rules are scoped to elements rendered by CloudGridFooter — no ::deep
-// is needed because Blazor CSS isolation scopes them automatically.
+// block `.cloudgridfooter`, children `&-*`, adjectives `._name`.
 
-footer {
+.cloudgridfooter {
     display: flex;
     align-items: center;
+    gap: 12px;
     flex: none;
-    height: 30px;
+    box-sizing: border-box;
+    height: var(--cloudgrid-footer-height, 30px);
+    min-height: var(--cloudgrid-footer-height, 30px);
+    padding: 0 8px;
     font-size: 12px;
-    background-color: rgba(0, 0, 0, .04);
-}
+    background-color: rgba(0, 0, 0, 0.04);
 
-.cloudgrid-info {
-    flex: 1;
-    padding-left: 8px;
-    opacity: 0.7;
-}
-
-.cloudgrid-pager {
-    display: flex;
-    align-items: center;
-
-    span {
+    &-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-left: auto;
         opacity: 0.7;
     }
 
-    button {
-        padding: 3px 12px;
-        border: none;
-        background: none;
-        cursor: pointer;
+    &-selected {
+        font-weight: 600;
+        opacity: 1;
+    }
 
-        svg {
-            width: 12px;
-            height: 12px;
+    &-pager {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        min-width: 122px;
 
-            polyline {
-                fill: none;
-                stroke: var(--cloudgrid-accent-color, #000);
-                stroke-width: 4px;
-                stroke-miterlimit: 10;
+        &._hidden {
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        span {
+            opacity: 0.7;
+        }
+
+        button {
+            padding: 3px 12px;
+            border: none;
+            background: none;
+            cursor: pointer;
+
+            svg {
+                width: 12px;
+                height: 12px;
+
+                polyline {
+                    fill: none;
+                    stroke: var(--cloudgrid-accent-color, #000);
+                    stroke-width: 4px;
+                    stroke-miterlimit: 10;
+                }
             }
-        }
 
-        &:hover:enabled svg polyline {
-            stroke-width: 6px;
-        }
+            &:hover:enabled svg polyline {
+                stroke-width: 6px;
+            }
 
-        &:disabled {
-            opacity: 0.25;
-            cursor: default;
+            &:disabled {
+                opacity: 0.25;
+                cursor: default;
+            }
         }
     }
 }

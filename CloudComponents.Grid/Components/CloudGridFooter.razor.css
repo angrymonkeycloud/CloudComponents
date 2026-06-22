@@ -1,43 +1,59 @@
-﻿footer {
+﻿.cloudgridfooter {
   display: flex;
   align-items: center;
+  gap: 12px;
   flex: none;
-  height: 30px;
+  box-sizing: border-box;
+  height: var(--cloudgrid-footer-height, 30px);
+  min-height: var(--cloudgrid-footer-height, 30px);
+  padding: 0 8px;
   font-size: 12px;
   background-color: rgba(0, 0, 0, 0.04);
 }
-.cloudgrid-info {
-  flex: 1;
-  padding-left: 8px;
-  opacity: 0.7;
-}
-.cloudgrid-pager {
+.cloudgridfooter-info {
   display: flex;
   align-items: center;
-}
-.cloudgrid-pager span {
+  gap: 10px;
+  margin-left: auto;
   opacity: 0.7;
 }
-.cloudgrid-pager button {
+.cloudgridfooter-selected {
+  font-weight: 600;
+  opacity: 1;
+}
+.cloudgridfooter-pager {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 122px;
+}
+.cloudgridfooter-pager._hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+.cloudgridfooter-pager span {
+  opacity: 0.7;
+}
+.cloudgridfooter-pager button {
   padding: 3px 12px;
   border: none;
   background: none;
   cursor: pointer;
 }
-.cloudgrid-pager button svg {
+.cloudgridfooter-pager button svg {
   width: 12px;
   height: 12px;
 }
-.cloudgrid-pager button svg polyline {
+.cloudgridfooter-pager button svg polyline {
   fill: none;
   stroke: var(--cloudgrid-accent-color, #000);
   stroke-width: 4px;
   stroke-miterlimit: 10;
 }
-.cloudgrid-pager button:hover:enabled svg polyline {
+.cloudgridfooter-pager button:hover:enabled svg polyline {
   stroke-width: 6px;
 }
-.cloudgrid-pager button:disabled {
+.cloudgridfooter-pager button:disabled {
   opacity: 0.25;
   cursor: default;
 }

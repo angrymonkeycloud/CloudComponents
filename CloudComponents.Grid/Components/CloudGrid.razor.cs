@@ -123,7 +123,7 @@ public partial class CloudGrid
     private async Task ExecuteAsync(int page, bool isAppend, bool isSearch = false)
     {
         _searching = isSearch;
-        _loading = !isSearch;
+        _loading = !isSearch && !isAppend;
         await InvokeAsync(StateHasChanged);
 
         CloudGridDataRequest request = new()
@@ -298,12 +298,13 @@ public partial class CloudGrid
 
     private bool FooterHasPreviousPage => _data != null && FooterRangeStart > 1;
     private bool FooterHasNextPage => _data != null && FooterRangeEnd < _data.Total;
+    private int FooterSelectedCount => AllowSelection ? _selectedRecords.Count : 0;
 
     #endregion
 
     #region CSS
 
-    private string RootClass
+    private string RootClasses
     {
         get
         {

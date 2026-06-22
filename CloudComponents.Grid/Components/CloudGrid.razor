@@ -17,7 +17,7 @@
     All behavior lives in CloudGrid.razor.cs; styles in CloudGrid.razor.less.
 *@
 
-<div class="cloudgrid @RootClass" style="@RootStyle" @attributes="AdditionalAttributes">
+<div class="cloudgrid @RootClasses" style="@RootStyle" @attributes="AdditionalAttributes">
 
     @* ── Header (optional) ──────────────────────────────────────────────── *@
     @if (ActiveHeader != null)
@@ -74,6 +74,7 @@
                      RangeEnd="@FooterRangeEnd"
                      HasPreviousPage="@FooterHasPreviousPage"
                      HasNextPage="@FooterHasNextPage"
+                     SelectedCount="@FooterSelectedCount"
                      OnPageChanged="@OnPageChanged" />
 
 </div>

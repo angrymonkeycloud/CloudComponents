@@ -11,26 +11,25 @@
     as parameters from the parent CloudGrid.
 *@
 
-@if (Data is { Rows.Count: > 0 })
-{
-    <footer>
-        <div class="cloudgrid-info">
-            @RangeStart - @RangeEnd out of @Data.Total
-        </div>
+<footer class="cloudgridfooter">
+    <nav class="cloudgridfooter-pager @(ShowPager ? string.Empty : "_hidden")">
+        <button type="button" title="Previous page" disabled="@(!CanGoPrevious)" @onclick="PreviousPageAsync">
+            <svg viewBox="0 0 50 50"><polyline points="36.8,1.5 13.3,24.8 36.8,48" /></svg>
+        </button>
 
-        @if (PagingMode == CloudGridPagingMode.Pages)
+        <span>@PageLabel</span>
+
+        <button type="button" title="Next page" disabled="@(!CanGoNext)" @onclick="NextPageAsync">
+            <svg viewBox="0 0 50 50"><polyline points="13.3,48.1 36.8,24.8 13.3,1.5" /></svg>
+        </button>
+    </nav>
+
+    <div class="cloudgridfooter-info">
+        <span>@RangeLabel</span>
+
+        @if (SelectedCount > 0)
         {
-            <nav class="cloudgrid-pager">
-                <button type="button" title="Previous page" disabled="@(!HasPreviousPage)" @onclick="PreviousPageAsync">
-                    <svg viewBox="0 0 50 50"><polyline points="36.8,1.5 13.3,24.8 36.8,48" /></svg>
-                </button>
-
-                <span>Page @Data.Page</span>
-
-                <button type="button" title="Next page" disabled="@(!HasNextPage)" @onclick="NextPageAsync">
-                    <svg viewBox="0 0 50 50"><polyline points="13.3,48.1 36.8,24.8 13.3,1.5" /></svg>
-                </button>
-            </nav>
+            <span class="cloudgridfooter-selected">@SelectedCount selected</span>
         }
-    </footer>
-}
+    </div>
+</footer>

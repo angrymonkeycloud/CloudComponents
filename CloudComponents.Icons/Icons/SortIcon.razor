@@ -1,5 +1,16 @@
 @namespace CloudIcons.Icons
 
-<svg viewBox="0 0 10 6">
-    <path class="amc-svg-fill" d="M1 5 5 1 9 5" />
+<svg viewBox="0 0 10 6" class="@(Down ? "_down" : "_up")">
+    @if (Down)
+    {
+        <path class="amc-svg-fill" d="M1 1 5 5 9 1" />
+    }
+    else
+    {
+        <path class="amc-svg-fill" d="M1 5 5 1 9 5" />
+    }
 </svg>
+
+@code {
+    [Parameter] public bool Down { get; set; }
+}

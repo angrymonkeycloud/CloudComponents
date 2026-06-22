@@ -215,6 +215,27 @@ public partial class CloudGridHeader
 
     #endregion
 
+    #region CSS helpers
+
+    private string ActionsClasses => AnyModeActive ? "_mode-active" : string.Empty;
+
+    private static string SlotClasses(bool isActive) => isActive ? "_active" : string.Empty;
+
+    private static string HeaderActionClasses(CloudGridAction action, bool isBulk = false)
+    {
+        List<string> classes = [];
+
+        if (isBulk)
+            classes.Add("_bulk");
+
+        if (!string.IsNullOrWhiteSpace(action.CssClass))
+            classes.Add(action.CssClass);
+
+        return string.Join(' ', classes);
+    }
+
+    #endregion
+
     #region Action interaction
 
     private async Task FireActionClickedAsync(CloudGridAction action, List<Guid>? recordIds = null)

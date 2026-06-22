@@ -3,12 +3,7 @@
 // block `.cloudgrid`, children `.cloudgrid-*`, adjectives `._name`.
 //
 // Only rules for elements rendered directly by CloudGrid.razor live here.
-// Body-owned styles → CloudGridBody.razor.less
-// Footer-owned styles → CloudGridFooter.razor.less
-// Header-owned styles → CloudGridHeader.razor.less
-//
-// Cross-component adjective rules use ::deep so that adjective classes placed
-// on the root .cloudgrid element reach elements rendered by child components.
+// Child-component DOM is targeted through ::deep because of Blazor CSS isolation.
 
 .cloudgrid {
     display: flex;
@@ -18,22 +13,25 @@
     color: var(--cloudgrid-color, #505050);
     font-size: var(--cloudgrid-font-size, 14px);
     --cloudgrid-row-height: 43px;
+    --cloudgrid-header-height: 40px;
+    --cloudgrid-footer-height: 30px;
 
-    // ._busy is set on the root when IsLoading/IsSearching; dims the head
-    // which is rendered inside CloudGridBody.
-    &._busy ::deep .cloudgrid-head {
-        opacity: 0.5;
-        pointer-events: none;
+    &._busy {
+        ::deep .cloudgrid-head,
+        ::deep .cloudgridheader {
+            opacity: 0.5;
+            pointer-events: none;
+        }
     }
 
-    // ._resizing is toggled on the root by CloudGridBody callbacks.
     &._resizing {
         cursor: col-resize;
         user-select: none;
     }
 
-    // ._rowdragging is toggled on the root by CloudGridBody callbacks.
-    &._rowdragging ::deep .cloudgrid-draghandle {
-        cursor: grabbing;
+    &._rowdragging {
+        ::deep .cloudgrid-draghandle {
+            cursor: grabbing;
+        }
     }
 }

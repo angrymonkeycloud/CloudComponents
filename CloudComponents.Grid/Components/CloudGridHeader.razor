@@ -29,7 +29,7 @@
             @foreach (CloudGridAction action in BulkHeaderActions)
             {
                 <button type="button"
-                        class="cloudgridheader-action _bulk @action.CssClass"
+                        class="cloudgridheader-action @HeaderActionClasses(action, isBulk: true)"
                         title="@(action.Tooltip ?? action.Text)"
                         @onclick="() => FireActionClickedAsync(action, [..SelectedRecords])"
                         @onclick:stopPropagation
@@ -41,7 +41,7 @@
     }
 
     @* ── Right-side action slots ─────────────────────────────────────────── *@
-    <div class="cloudgridheader-actions @(AnyModeActive ? "_mode-active" : "")">
+    <div class="cloudgridheader-actions @ActionsClasses">
 
         @foreach (CloudGridAction action in AllHeaderActions)
         {
@@ -50,7 +50,7 @@
             @if (action.Type == CloudGridActionType.Link)
             {
                 <div class="cloudgridheader-slot">
-                    <a class="cloudgridheader-action @action.CssClass"
+                    <a class="cloudgridheader-action @HeaderActionClasses(action)"
                        href="@action.Href"
                        target="@action.Target"
                        title="@(action.Tooltip ?? action.Text)">
@@ -62,7 +62,7 @@
             {
                 <div class="cloudgridheader-slot">
                     <button type="button"
-                            class="cloudgridheader-action @action.CssClass"
+                            class="cloudgridheader-action @HeaderActionClasses(action)"
                             title="@(action.Tooltip ?? action.Text)"
                             @onclick="() => FireActionClickedAsync(action)"
                             @onclick:stopPropagation
@@ -73,7 +73,7 @@
             }
             else if (action.Type == CloudGridActionType.Element)
             {
-                <div class="cloudgridheader-slot @(isActive ? "_active" : "")">
+                <div class="cloudgridheader-slot @SlotClasses(isActive)">
                     @if (isActive && action.ChildContent != null)
                     {
                         @action.ChildContent
@@ -88,7 +88,7 @@
                     else
                     {
                         <button type="button"
-                                class="cloudgridheader-action @action.CssClass"
+                                class="cloudgridheader-action @HeaderActionClasses(action)"
                                 title="@(action.Tooltip ?? action.Text)"
                                 @onclick="() => HandleActivateAsync(action)"
                                 @onclick:stopPropagation
@@ -114,6 +114,9 @@
     /// Shared helper: renders the icon SVG (if any) and text span (if any) for any action type.
     /// </summary>
     private RenderFragment ActionIconAndText(CloudGridAction action) => @<text>
+        @{
+            string? text = string.IsNullOrWhiteSpace(action.Text) ? action.Tooltip : action.Text;
+        }
         @if (action.Icon != null)
         {
             @action.Icon
@@ -122,9 +125,9 @@
         {
             @((MarkupString)action.IconSvg)
         }
-        @if (!string.IsNullOrEmpty(action.Text))
+        @if (!string.IsNullOrWhiteSpace(text))
         {
-            <span>@action.Text</span>
+            <span>@text</span>
         }
     </text>;
 

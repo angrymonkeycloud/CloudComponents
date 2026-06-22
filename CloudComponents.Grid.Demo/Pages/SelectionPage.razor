@@ -1,5 +1,6 @@
 @page "/selection"
 @inject SampleDataService Data
+@inject IJSRuntime JS
 
 <PageTitle>CloudGrid — Selection &amp; Actions</PageTitle>
 
@@ -8,9 +9,11 @@
     <p>
         Tick the checkboxes (or the header's select-all) to select rows — the selection is two-way
         bound, so the live count below updates instantly. A <strong>bulk</strong> action appears next
-        to the title only while rows are selected. Each row exposes <strong>Edit</strong> and
-        <strong>Delete</strong> actions; an <code>ActionFilter</code> hides Delete on active employees.
-        Every action click is recorded in the event log.
+        to the title only while rows are selected. The <strong>Export</strong> header action opens a
+        dropdown that exports the current page, all matching rows, or the selection as
+        <code>.csv</code> by default. Each row exposes <strong>Edit</strong> and <strong>Delete</strong>
+        actions; an <code>ActionFilter</code> hides Delete on active employees. Every action click is
+        recorded in the event log.
     </p>
 </div>
 
@@ -53,8 +56,13 @@
 </div>
 
 @code {
+    private const string DefaultExportFormat = "csv";
+
     private List<Guid> _selected = [];
+    private List<Person> _currentPagePeople = [];
+    private CloudGridDataRequest? _lastRequest;
     private readonly List<(string Time, string Message)> _log = [];
+    private readonly string _exportFormat = DefaultExportFormat;
 
     private readonly CloudGridHeaderOptions _header = new()
     {
@@ -91,8 +99,10 @@
             {
                 Key = "export",
                 Text = "Export",
-                Tooltip = "Export all",
+                Tooltip = "Export",
                 Icon = builder => { builder.OpenComponent<AddIcon>(0); builder.CloseComponent(); },
+                Type = CloudGridActionType.Element,
+                ChildContent = ExportMenu,
                 ShowOnHeader = true
             }
         ];
@@ -123,7 +133,19 @@
     }
 
     private async Task<CloudGridDataResult?> LoadAsync(CloudGridDataRequest request)
-        => await Data.QueryAsync(request, ToRow);
+    {
+        _lastRequest = request;
+        List<Person> currentPage = [];
+
+        CloudGridDataResult result = await Data.QueryAsync(request, person =>
+        {
+            currentPage.Add(person);
+            return ToRow(person);
+        });
+
+        _currentPagePeople = currentPage;
+        return result;
+    }
 
     private static CloudGridRow ToRow(Person p) => new()
     {
@@ -159,6 +181,79 @@
 
         AddLog($"Action '{args.Action.Key}' → {ids}");
     }
+
+    private async Task ExportCurrentPageAsync()
+    {
+        await DownloadCsvAsync(_currentPagePeople, "current-page");
+    }
+
+    private async Task ExportAllAsync()
+    {
+        if (_lastRequest == null)
+            return;
+
+        List<Person> all = [];
+
+        await Data.QueryAsync(new CloudGridDataRequest
+        {
+            Page = 1,
+            PageSize = Data.Count,
+            Search = _lastRequest.Search,
+            Sort = _lastRequest.Sort,
+            IsAppend = false,
+            Total = _lastRequest.Total
+        }, person =>
+        {
+            all.Add(person);
+            return ToRow(person);
+        }, simulatedDelayMs: 0);
+
+        await DownloadCsvAsync(all, "all-records");
+    }
+
+    private async Task ExportSelectionAsync()
+    {
+        await DownloadCsvAsync(Data.GetByIds(_selected), "selection");
+    }
+
+    private async Task DownloadCsvAsync(IEnumerable<Person> people, string scope)
+    {
+        List<Person> records = people.ToList();
+        string csv = BuildCsv(records);
+        string fileName = $"cloudgrid-{scope}-{DateTime.Now:yyyyMMdd-HHmmss}.{_exportFormat}";
+
+        await JS.InvokeVoidAsync("cloudGridDemo.downloadTextFile", fileName, csv, "text/csv;charset=utf-8");
+        AddLog($"Exported {records.Count} row(s) as {_exportFormat} ({scope})");
+    }
+
+    private static string BuildCsv(IEnumerable<Person> people)
+    {
+        static string Csv(string? value) => $"\"{(value ?? string.Empty).Replace("\"", "\"\"")}\"";
+
+        List<string> lines =
+        [
+            "Name,Email,Department,Country,Status"
+        ];
+
+        lines.AddRange(people.Select(p => string.Join(",",
+            Csv(p.FullName),
+            Csv(p.Email),
+            Csv(p.Department),
+            Csv(p.Country),
+            Csv(p.IsActive ? "Active" : "Inactive"))));
+
+        return string.Join(Environment.NewLine, lines);
+    }
+
+    private RenderFragment ExportMenu => @<div class="export-menu">
+        <div class="export-menu-note">Default format: .@_exportFormat</div>
+        <button type="button" class="btn" @onclick="ExportCurrentPageAsync">Export current page</button>
+        <button type="button" class="btn" @onclick="ExportAllAsync">Export all</button>
+        @if (_selected.Count > 0)
+        {
+            <button type="button" class="btn" @onclick="ExportSelectionAsync">Export selection (@_selected.Count)</button>
+        }
+    </div>;
 
     private void ClearSelection()
     {

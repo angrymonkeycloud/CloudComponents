@@ -1,74 +1,86 @@
 // CloudGridHeader styles.
 // Naming follows https://github.com/angrymonkeydocs/css-naming-convention:
 // block `.cloudgridheader`, children `&-name`, adjectives `._name`.
-// The title is an <h2>, styled directly per the convention.
-//
-// Theming uses CSS custom properties; each falls back to the matching
-// `--cloudgrid-*` variable so one override themes the whole grid family:
-//   --cloudgridheader-color, --cloudgridheader-accent-color,
-//   --cloudgridheader-border-color, --cloudgridheader-hover-background,
-//   --cloudgridheader-font-size
 
 .cloudgridheader {
     display: flex;
     align-items: center;
     gap: 8px;
+    box-sizing: border-box;
+    height: var(--cloudgrid-header-height, 40px);
+    min-height: var(--cloudgrid-header-height, 40px);
     padding: 4px 8px;
 
     h2 {
-        flex: 1;
+        flex: 1 1 auto;
+        min-width: 0;
         margin: 0;
         font-size: 16px;
         font-weight: 600;
+        line-height: 1;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
-    // ── Bulk actions (left side, visible only when rows are selected) ──────
-    &-bulkactions {
+
+    &-bulkactions,
+    &-actions {
         display: flex;
-        flex-direction: row;
-        align-items: center;
+        align-items: stretch;
         gap: 4px;
+        height: 100%;
+        min-height: 0;
+    }
+
+    &-bulkactions {
         flex: none;
     }
 
     &-actions {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 4px;
-    }
-        // When a mode is active (search open, expand panel open, …) hide every slot
-        // that isn't marked ._active, so the active slot owns the full row.
-        // Written at the .cloudgridheader level so &-slot resolves to
-        // .cloudgridheader-slot (not .cloudgridheader-actions-slot).
-        &-actions._mode-active &-slot:not(._active) {
-            display: none;
+        flex: none;
+        margin-left: auto;
+
+        &._mode-active {
+            .cloudgridheader-slot:not(._active) {
+                display: none;
+            }
         }
-    // Each action is wrapped in a slot div. The slot itself is a flex row so
-    // the input + cancel button inside an active search/expand slot sit side by side.
+    }
+
     &-slot {
         display: flex;
-        flex-direction: row;
         align-items: center;
         gap: 4px;
+        height: 100%;
+
+        &._active {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
     }
 
     &-action {
-        display: flex;
-        flex-direction: row;
+        display: inline-flex;
         align-items: center;
-        gap: 4px;
-        padding: 4px 8px;
+        justify-content: center;
+        gap: 6px;
+        box-sizing: border-box;
+        height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+        min-height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+        padding: 0 10px;
         border: none;
         border-radius: 3px;
         background: none;
         color: var(--cloudgridheader-color, var(--cloudgrid-color, #505050));
         font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
+        line-height: 1;
         text-decoration: none;
         cursor: pointer;
         white-space: nowrap;
+
+        span {
+            line-height: 1;
+        }
 
         &:hover {
             background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, #e8e8e8));
@@ -79,7 +91,8 @@
             width: 16px;
             height: 16px;
 
-            path {
+            path,
+            .amc-svg-fill {
                 fill: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
             }
 
@@ -104,6 +117,12 @@
             }
         }
 
+        &._bulk {
+            border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
+            background-color: var(--cloudgrid-background, #fff);
+            font-size: 12px;
+        }
+
         &._reorder-start {
             opacity: 0.7;
 
@@ -116,7 +135,8 @@
             color: #2a7d2e;
             font-weight: 600;
 
-            svg line, svg polyline {
+            ::deep svg line,
+            ::deep svg polyline {
                 stroke: #2a7d2e;
             }
 
@@ -128,7 +148,8 @@
         &._reorder-cancel {
             color: #b33;
 
-            svg line {
+            ::deep svg line,
+            ::deep svg polyline {
                 stroke: #b33;
             }
 
@@ -136,17 +157,15 @@
                 background-color: #fdecea;
             }
         }
-        // Bulk action: slightly stronger visual weight so it stands out on the left.
-        &._bulk {
-            border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
-            background-color: var(--cloudgrid-background, #fff);
-            font-size: 12px;
-        }
     }
 
     &-search {
+        box-sizing: border-box;
         width: 180px;
-        padding: 4px 8px;
+        max-width: 100%;
+        height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+        min-height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+        padding: 0 8px;
         border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
         border-radius: 3px;
         font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));

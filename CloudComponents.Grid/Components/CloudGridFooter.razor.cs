@@ -31,8 +31,18 @@ public partial class CloudGridFooter
     /// <summary>Whether a next page exists.</summary>
     [Parameter] public bool HasNextPage { get; set; }
 
+    /// <summary>How many rows are currently selected.</summary>
+    [Parameter] public int SelectedCount { get; set; }
+
     /// <summary>Raised when the user clicks the previous or next page button.</summary>
     [Parameter] public EventCallback<CloudGridPaginationType> OnPageChanged { get; set; }
+
+    private bool HasData => Data is { Rows.Count: > 0 };
+    private bool ShowPager => HasData && PagingMode == CloudGridPagingMode.Pages;
+    private bool CanGoPrevious => HasData && HasPreviousPage;
+    private bool CanGoNext => HasData && HasNextPage;
+    private string PageLabel => HasData ? $"Page {Data!.Page}" : "\u00A0";
+    private string RangeLabel => HasData ? $"{RangeStart} - {RangeEnd} out of {Data!.Total}" : "\u00A0";
 
     private Task PreviousPageAsync() => OnPageChanged.InvokeAsync(CloudGridPaginationType.LeftArrow);
     private Task NextPageAsync() => OnPageChanged.InvokeAsync(CloudGridPaginationType.RightArrow);

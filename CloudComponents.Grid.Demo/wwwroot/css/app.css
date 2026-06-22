@@ -274,6 +274,21 @@ select.input {
     background: #fee4e2;
 }
 
+.export-menu {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+}
+
+.export-menu-note {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.5rem;
+    font-size: 0.8rem;
+    color: var(--demo-muted);
+    white-space: nowrap;
+}
+
 /* ── Theming demo: scoped overrides applied to a single grid wrapper ────── */
 .themed-grid {
     --cloudgrid-accent-color: #7c3aed;

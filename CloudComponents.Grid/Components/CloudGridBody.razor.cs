@@ -437,8 +437,14 @@ public partial class CloudGridBody
     /// </summary>
     private async ValueTask<ItemsProviderResult<CloudGridRow>> ProvideRowsAsync(ItemsProviderRequest request)
     {
-        if (request.StartIndex + request.Count > LoadedRows.Count && HasMoreRows)
+        while (request.StartIndex + request.Count > LoadedRows.Count && HasMoreRows)
+        {
+            int rowsBefore = LoadedRows.Count;
             await LoadMoreAsync();
+
+            if (LoadedRows.Count == rowsBefore)
+                break;
+        }
 
         List<CloudGridRow> rows = [.. DisplayRows];
         int total = HasMoreRows ? Math.Max(Data?.Total ?? 0, rows.Count) : rows.Count;
@@ -464,9 +470,9 @@ public partial class CloudGridBody
 
     #region CSS helpers
 
-    private string HeadCellClass(int columnIndex)
+    private string HeadCellClasses(int columnIndex)
     {
-        List<string> classes = ["cloudgrid-headcell"];
+        List<string> classes = [];
 
         if (Columns[columnIndex].Sortable)
             classes.Add("_sortable");
@@ -477,9 +483,9 @@ public partial class CloudGridBody
         return string.Join(' ', classes);
     }
 
-    private string RowClass(CloudGridRow row)
+    private string RowClasses(CloudGridRow row)
     {
-        List<string> classes = ["cloudgrid-row"];
+        List<string> classes = [];
 
         if (IsRowSelected(row))
             classes.Add("_selected");
@@ -490,7 +496,7 @@ public partial class CloudGridBody
         return string.Join(' ', classes);
     }
 
-    private string TableClass
+    private string TableClasses
     {
         get
         {
@@ -499,9 +505,24 @@ public partial class CloudGridBody
             if (RowsPerPage.HasValue)
                 classes.Add("_fixed");
 
-            // Accumulating modes need a vertical scrollbar inside the fixed viewport.
+            return string.Join(' ', classes);
+        }
+    }
+
+    private string BodyClasses
+    {
+        get
+        {
+            List<string> classes = [];
+
+            if (RowsPerPage.HasValue)
+                classes.Add("_fixed");
+
             if (RowsPerPage.HasValue && PagingMode != CloudGridPagingMode.Pages)
                 classes.Add("_scroll");
+
+            if (PagingMode == CloudGridPagingMode.InfiniteScroll)
+                classes.Add("_virtualized");
 
             return string.Join(' ', classes);
         }

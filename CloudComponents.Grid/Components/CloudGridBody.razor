@@ -12,7 +12,7 @@
     All behavior lives in CloudGridBody.razor.cs.
 *@
 
-<div class="cloudgrid-table @TableClass">
+<div class="cloudgrid-table @TableClasses">
 
     <div class="cloudgrid-head">
 
@@ -33,7 +33,7 @@
             int columnIndex = i;
             CloudGridColumn column = Columns[columnIndex];
 
-            <div class="@HeadCellClass(columnIndex)"
+            <div class="cloudgrid-headcell @HeadCellClasses(columnIndex)"
                  style="width: @Px(GetColumnWidth(columnIndex))"
                  @onclick="() => SortByAsync(columnIndex)">
 
@@ -41,7 +41,7 @@
 
                 @if (_sortIndex == columnIndex)
                 {
-                    <SortIcon />
+                    <SortIcon Down="@(_sortDirection == CloudGridSortDirection.Descending)" />
                 }
 
                 @if (column.Resizable)
@@ -56,7 +56,7 @@
         }
     </div>
 
-    <div class="cloudgrid-body" style="@BodyStyle">
+    <div class="cloudgrid-body @BodyClasses" style="@BodyStyle">
 
         @if (IsLoading)
         {
@@ -128,7 +128,7 @@
     // Markup-only helpers stay in the .razor file; all behavior lives in CloudGridBody.razor.cs.
 
     private RenderFragment<CloudGridRow> RenderRow => row => @<text>
-        <div class="@RowClass(row)" data-id="@row.Id" @attributes="row.Attributes">
+        <div class="cloudgrid-row @RowClasses(row)" data-id="@row.Id" @attributes="row.Attributes">
 
             @if (AllowReordering)
             {
@@ -225,6 +225,9 @@
     </text>;
 
     private RenderFragment RowActionIconAndText(CloudGridAction action) => @<text>
+        @{
+            string? text = string.IsNullOrWhiteSpace(action.Text) ? action.Tooltip : action.Text;
+        }
         @if (action.Icon != null)
         {
             @action.Icon
@@ -233,9 +236,9 @@
         {
             @((MarkupString)action.IconSvg)
         }
-        @if (!string.IsNullOrEmpty(action.Text))
+        @if (!string.IsNullOrWhiteSpace(text))
         {
-            <span>@action.Text</span>
+            <span>@text</span>
         }
     </text>;
 
