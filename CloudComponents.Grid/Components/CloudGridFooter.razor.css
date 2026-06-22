@@ -1,0 +1,43 @@
+﻿footer {
+  display: flex;
+  align-items: center;
+  flex: none;
+  height: 30px;
+  font-size: 12px;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+.cloudgrid-info {
+  flex: 1;
+  padding-left: 8px;
+  opacity: 0.7;
+}
+.cloudgrid-pager {
+  display: flex;
+  align-items: center;
+}
+.cloudgrid-pager span {
+  opacity: 0.7;
+}
+.cloudgrid-pager button {
+  padding: 3px 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.cloudgrid-pager button svg {
+  width: 12px;
+  height: 12px;
+}
+.cloudgrid-pager button svg polyline {
+  fill: none;
+  stroke: var(--cloudgrid-accent-color, #000);
+  stroke-width: 4px;
+  stroke-miterlimit: 10;
+}
+.cloudgrid-pager button:hover:enabled svg polyline {
+  stroke-width: 6px;
+}
+.cloudgrid-pager button:disabled {
+  opacity: 0.25;
+  cursor: default;
+}

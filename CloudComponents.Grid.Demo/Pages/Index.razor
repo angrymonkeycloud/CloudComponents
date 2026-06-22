@@ -1,0 +1,40 @@
+@page "/"
+@inject SampleDataService Data
+
+<PageTitle>CloudGrid Harness — Overview</PageTitle>
+
+<div class="page-header">
+    <h1>CloudGrid Test Harness</h1>
+    <p>
+        A focused playground for <code>CloudGrid</code>. Each page isolates a group of features
+        so you can quickly confirm the component behaves correctly. All pages share one
+        in-memory <code>SampleDataService</code> (@Data.Count records) that emulates a server by
+        applying search, sorting and paging — including a short artificial delay so loading and
+        searching states are visible.
+    </p>
+</div>
+
+<div class="card">
+    <h2 class="card-title">What you can verify here</h2>
+    <p class="card-subtitle">Use the navigation on the left. Every interaction is wired to real data.</p>
+    <ul class="checklist">
+        <li><strong>Basic &amp; Sorting</strong> — columns, image column, sort, resize, search, refresh, row links, exact sizing</li>
+        <li><strong>Selection &amp; Actions</strong> — checkbox selection, bulk header actions, per-row actions, action filter</li>
+        <li><strong>Paging Modes</strong> — Pages, Load more, and Infinite scroll</li>
+        <li><strong>Row Reordering</strong> — drag-and-drop with a persisted order</li>
+        <li><strong>States &amp; Theming</strong> — loading, empty, error states, custom texts, CSS variable theming</li>
+    </ul>
+</div>
+
+<div class="card">
+    <h2 class="card-title">How the data provider is wired</h2>
+    <p class="card-subtitle">
+        Every grid sets a single <code>DataProvider</code> callback. The grid calls it on first load,
+        and on every search, sort and page change, passing a <code>CloudGridDataRequest</code>. The
+        callback returns one page of rows as a <code>CloudGridDataResult</code>.
+    </p>
+    <pre class="log"><span class="log-line">DataProvider="@@LoadAsync"
+
+private async Task&lt;CloudGridDataResult?&gt; LoadAsync(CloudGridDataRequest request)
+    =&gt; await Data.QueryAsync(request, ToRow);</span></pre>
+</div>

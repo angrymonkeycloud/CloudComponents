@@ -1,0 +1,83 @@
+@page "/basic"
+@inject SampleDataService Data
+
+<PageTitle>CloudGrid — Basic &amp; Sorting</PageTitle>
+
+<div class="page-header">
+    <h1>Basic &amp; Sorting</h1>
+    <p>
+        A standard read-only grid with a header toolbar. Click a sortable column header to sort
+        (click again to flip direction), drag a column's right edge to resize it, type in the
+        search box to filter, and use the refresh button to reload. Each row links to a detail
+        anchor. The grid is sized to show exactly @RowsPerPage rows per page with no scrollbar.
+    </p>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Employees</h2>
+    <p class="card-subtitle">
+        Columns: an <strong>image</strong> avatar (non-sortable), text, numeric and date columns —
+        each sorted server-side through the data provider. The <em>Notes</em> column is non-sortable
+        and non-resizable to show those flags.
+    </p>
+
+    <div class="grid-host">
+        <CloudGrid Header="_header"
+                   Columns="_columns"
+                   DataProvider="LoadAsync"
+                   RowHeight="40"
+                   RowsPerPage="10"
+                   LinkTarget="_self" />
+    </div>
+
+    <div class="toolbar" style="margin-top:1rem;">
+        <span class="badge">Sortable: Name, Email, Department, Country, Age, Salary, Hire date</span>
+        <span class="badge">Resizable: all except Notes</span>
+        <span class="badge">Image column: Photo</span>
+    </div>
+</div>
+
+@code {
+    private const int RowsPerPage = 10;
+
+    private readonly CloudGridHeaderOptions _header = new()
+    {
+        Label = "Employees",
+        AllowSearch = true,
+        AllowRefresh = true
+    };
+
+    private readonly List<CloudGridColumn> _columns =
+    [
+        new() { Label = "Photo", IsImage = true, Sortable = false, Resizable = false, Width = 56 },
+        new() { Label = "Name", Key = "name", Width = 180 },
+        new() { Label = "Email", Key = "email", Width = 240 },
+        new() { Label = "Department", Key = "department", Width = 140 },
+        new() { Label = "Country", Key = "country", Width = 120 },
+        new() { Label = "Age", Key = "age", Width = 80 },
+        new() { Label = "Salary", Key = "salary", Width = 110 },
+        new() { Label = "Hire date", Key = "hiredate", Width = 120 },
+        new() { Label = "Notes", Sortable = false, Resizable = false, Width = 140 }
+    ];
+
+    private async Task<CloudGridDataResult?> LoadAsync(CloudGridDataRequest request)
+        => await Data.QueryAsync(request, ToRow);
+
+    private static CloudGridRow ToRow(Person p) => new()
+    {
+        Id = p.Id,
+        Link = $"#person-{p.Id}",
+        Cells =
+        [
+            p.AvatarUrl,
+            p.FullName,
+            p.Email,
+            p.Department,
+            p.Country,
+            p.Age,
+            p.Salary.ToString("C0"),
+            p.HireDate.ToString("yyyy-MM-dd"),
+            p.IsActive ? "Active" : "Inactive"
+        ]
+    };
+}

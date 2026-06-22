@@ -1,0 +1,36 @@
+@namespace CloudComponents.Grid.Components
+@using CloudComponents.Grid.Models
+
+@*
+    CloudGridFooter — range info and page navigation bar rendered below a CloudGrid table.
+
+    Markup follows the Angry Monkey CSS naming convention; styles live inside
+    CloudGridFooter.razor.less / CloudGridFooter.razor.css.
+
+    This component is purely presentational: all state and callbacks are supplied
+    as parameters from the parent CloudGrid.
+*@
+
+@if (Data is { Rows.Count: > 0 })
+{
+    <footer>
+        <div class="cloudgrid-info">
+            @RangeStart - @RangeEnd out of @Data.Total
+        </div>
+
+        @if (PagingMode == CloudGridPagingMode.Pages)
+        {
+            <nav class="cloudgrid-pager">
+                <button type="button" title="Previous page" disabled="@(!HasPreviousPage)" @onclick="PreviousPageAsync">
+                    <svg viewBox="0 0 50 50"><polyline points="36.8,1.5 13.3,24.8 36.8,48" /></svg>
+                </button>
+
+                <span>Page @Data.Page</span>
+
+                <button type="button" title="Next page" disabled="@(!HasNextPage)" @onclick="NextPageAsync">
+                    <svg viewBox="0 0 50 50"><polyline points="13.3,48.1 36.8,24.8 13.3,1.5" /></svg>
+                </button>
+            </nav>
+        }
+    </footer>
+}
