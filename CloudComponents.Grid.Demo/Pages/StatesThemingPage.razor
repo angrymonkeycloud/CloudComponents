@@ -1,0 +1,121 @@
+@page "/states"
+@inject SampleDataService Data
+
+<PageTitle>CloudGrid — States &amp; Theming</PageTitle>
+
+<div class="page-header">
+    <h1>States &amp; Theming</h1>
+    <p>
+        The grid surfaces three non-row states for you: a <strong>loading</strong> message while the
+        provider runs, an <strong>empty</strong> message when there are no rows, and a soft
+        <strong>error</strong> message when the provider returns <code>ErrorMessage</code> (or throws).
+        Use the buttons to force each scenario. The second grid is themed entirely with CSS variables.
+    </p>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Data states</h2>
+    <div class="toolbar">
+        <label>Scenario:</label>
+        <div class="segmented">
+            <button class="@(_scenario == Scenario.Normal ? "active" : "")"
+                    @onclick="() => SetScenario(Scenario.Normal)">Normal</button>
+            <button class="@(_scenario == Scenario.Empty ? "active" : "")"
+                    @onclick="() => SetScenario(Scenario.Empty)">Empty</button>
+            <button class="@(_scenario == Scenario.Error ? "active" : "")"
+                    @onclick="() => SetScenario(Scenario.Error)">Error</button>
+            <button class="@(_scenario == Scenario.Slow ? "active" : "")"
+                    @onclick="() => SetScenario(Scenario.Slow)">Slow (2s)</button>
+        </div>
+        <span class="badge">Custom loading &amp; empty texts</span>
+    </div>
+
+    <div class="grid-host">
+        <CloudGrid @key="_gridKey"
+                   Columns="_columns"
+                   DataProvider="LoadAsync"
+                   LoadingText="Fetching employees, please wait…"
+                   EmptyCellText="—"
+                   RowHeight="40"
+                   RowsPerPage="8" />
+    </div>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Theming with CSS variables</h2>
+    <p class="card-subtitle">
+        This grid is wrapped in a <code>.themed-grid</code> element that overrides
+        <code>--cloudgrid-accent-color</code>, <code>--cloudgrid-row-height</code>,
+        <code>--cloudgrid-head-background</code> and more — no recompilation, no component changes.
+    </p>
+
+    <div class="grid-host themed-grid">
+        <CloudGrid Header="_themedHeader"
+                   Columns="_columns"
+                   DataProvider="LoadThemedAsync"
+                   AllowSelection="true"
+                   @bind-SelectedRecords="_themedSelection"
+                   RowsPerPage="6" />
+    </div>
+</div>
+
+@code {
+    private enum Scenario { Normal, Empty, Error, Slow }
+
+    private Scenario _scenario = Scenario.Normal;
+    private int _gridKey;
+    private List<Guid> _themedSelection = [];
+
+    private readonly CloudGridHeaderOptions _themedHeader = new()
+    {
+        Label = "Themed grid",
+        AllowSearch = true,
+        AllowRefresh = true
+    };
+
+    private readonly List<CloudGridColumn> _columns =
+    [
+        new() { Label = "Name", Key = "name", Width = 200 },
+        new() { Label = "Department", Key = "department", Width = 160 },
+        new() { Label = "Country", Key = "country", Width = 140 },
+        new() { Label = "Age", Key = "age", Width = 90 }
+    ];
+
+    private void SetScenario(Scenario scenario)
+    {
+        if (_scenario == scenario)
+            return;
+
+        _scenario = scenario;
+        _gridKey++;
+    }
+
+    private async Task<CloudGridDataResult?> LoadAsync(CloudGridDataRequest request)
+    {
+        switch (_scenario)
+        {
+            case Scenario.Empty:
+                await Task.Delay(250);
+                return new CloudGridDataResult { Page = 1, PageSize = request.PageSize, Total = 0 };
+
+            case Scenario.Error:
+                await Task.Delay(250);
+                return new CloudGridDataResult { ErrorMessage = "Could not reach the server. Please try again." };
+
+            case Scenario.Slow:
+                return await Data.QueryAsync(request, ToRow, simulatedDelayMs: 2000);
+
+            default:
+                return await Data.QueryAsync(request, ToRow);
+        }
+    }
+
+    private async Task<CloudGridDataResult?> LoadThemedAsync(CloudGridDataRequest request)
+        => await Data.QueryAsync(request, ToRow);
+
+    private static CloudGridRow ToRow(Person p) => new()
+    {
+        Id = p.Id,
+        Cells = [p.FullName, p.Department, p.Country, p.Age]
+    };
+}
