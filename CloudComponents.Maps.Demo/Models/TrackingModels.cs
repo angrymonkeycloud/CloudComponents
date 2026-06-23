@@ -1,3 +1,4 @@
+using AngryMonkey.Cloud.Geography;
 using CloudComponents.Maps.Models;
 
 namespace CloudComponents.Maps.Demo.Models;
@@ -121,12 +122,17 @@ public sealed class TrackingSession
 public sealed class AddressInfo
 {
     public string? Street { get; set; }
+    public string? Neighborhood { get; set; }
+    public string? PostalCode { get; set; }
     public string? City { get; set; }
+    public string? County { get; set; }
     public string? District { get; set; }
     public string? CountryRegion { get; set; }
     public string? CountryCode { get; set; }
     public string? Subdivision { get; set; }
     public string? SubdivisionCode { get; set; }
+    public string? CountryTertiarySubdivision { get; set; }
+    public string? CountrySecondarySubdivision { get; set; }
     public double Latitude { get; set; }
     public double Longitude { get; set; }
     public DateTime ResolvedAt { get; set; }
@@ -149,4 +155,16 @@ public sealed class AddressInfo
             return string.Join(", ", parts.Where(p => !string.IsNullOrEmpty(p)));
         }
     }
+}
+
+/// <summary>
+/// Holds a single subdivision level from Azure Maps alongside the Cloud Geography match result.
+/// </summary>
+public sealed class SubdivisionEntry
+{
+    public string Label { get; init; } = string.Empty;      // e.g. "State", "County", "District"
+    public string AzureName { get; init; } = string.Empty;  // raw name from Azure Maps
+    public string? AzureCode { get; init; }                 // raw code from Azure Maps (may be null)
+    public Subdivision? GeoMatch { get; init; }             // Cloud Geography match (null = no match)
+    public List<Subdivision>? Children { get; init; }       // children of matched subdivision
 }

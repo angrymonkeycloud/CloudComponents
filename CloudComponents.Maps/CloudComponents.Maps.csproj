@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AngryMonkey.Cloud.Geography" Version="2.7.2" />
+    <PackageReference Include="AngryMonkey.Cloud.Geography" Version="2.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.8" />
   </ItemGroup>
 
