@@ -48,6 +48,12 @@ public class CloudGridAction
     /// <summary>Additional CSS class(es) appended to the rendered element.</summary>
     public string? CssClass { get; set; }
 
+    /// <summary>
+    /// When <c>true</c> the action renders only its icon and never a text label,
+    /// regardless of <see cref="Text"/> / <see cref="Tooltip"/>. Defaults to <c>false</c>.
+    /// </summary>
+    public bool IconOnly { get; set; }
+
     // ── Placement ────────────────────────────────────────────────────────────
 
     /// <summary>
@@ -55,6 +61,14 @@ public class CloudGridAction
     /// Defaults to <c>true</c>; set to <c>false</c> to hide from the header.
     /// </summary>
     public bool ShowOnHeader { get; set; } = true;
+
+    /// <summary>
+    /// When <c>true</c> the action is placed inside the More (⋯) dropdown menu
+    /// instead of being rendered as a direct icon button in the header toolbar.
+    /// Implies <see cref="ShowOnHeader"/> is effectively ignored for direct rendering.
+    /// Defaults to <c>false</c>.
+    /// </summary>
+    public bool ShowInMore { get; set; }
 
     /// <summary>
     /// Renders this action on the left side of the header (next to the label) as a bulk operation.
@@ -102,6 +116,15 @@ public class CloudGridAction
     /// (e.g. clearing a search query and notifying the parent).
     /// </summary>
     public Func<Task>? OnDeactivated { get; set; }
+
+    /// <summary>
+    /// Called by the header when an <see cref="CloudGridActionType.Element"/> action is activated.
+    /// The argument is a <c>Func&lt;Task&gt;</c> that, when invoked, programmatically closes
+    /// the focus panel (equivalent to the user clicking cancel).
+    /// Use this to give child content a handle to self-close — e.g. an export button that
+    /// closes the panel after triggering a download.
+    /// </summary>
+    public Action<Func<Task>>? OnActivated { get; set; }
 
     // ── Events ────────────────────────────────────────────────────────────────
 

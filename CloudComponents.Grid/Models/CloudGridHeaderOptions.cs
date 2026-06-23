@@ -46,6 +46,14 @@ public class CloudGridHeaderOptions
     public EventCallback OnRefresh { get; set; }
 
     /// <summary>
+    /// Adds the built-in Export action (behind the More ⋯ menu) when true.
+    /// Clicking it opens an inline focus panel with Export current page / Export all /
+    /// Export selection options and downloads a <c>.csv</c> file.
+    /// Defaults to <c>true</c>.
+    /// </summary>
+    public bool AllowExport { get; set; } = true;
+
+    /// <summary>
     /// Optional extra content rendered at the end of the right-side action slot row.
     /// Use for custom buttons (e.g. reorder save/cancel) that don't fit the
     /// <see cref="CloudGridAction"/> model.

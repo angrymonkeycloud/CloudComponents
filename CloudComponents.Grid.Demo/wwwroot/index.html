@@ -21,21 +21,6 @@
         <a class="dismiss">🗙</a>
     </div>
 
-    <script>
-        window.cloudGridDemo = {
-            downloadTextFile: function (fileName, content, contentType) {
-                const blob = new Blob([content], { type: contentType || 'text/plain;charset=utf-8' });
-                const url = URL.createObjectURL(blob);
-                const anchor = document.createElement('a');
-                anchor.href = url;
-                anchor.download = fileName;
-                document.body.appendChild(anchor);
-                anchor.click();
-                anchor.remove();
-                URL.revokeObjectURL(url);
-            }
-        };
-    </script>
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
 

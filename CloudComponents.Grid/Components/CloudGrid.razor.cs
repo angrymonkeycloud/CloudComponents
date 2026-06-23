@@ -1,5 +1,7 @@
 using CloudComponents.Grid.Models;
+using CloudIcons.Icons;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using System.Globalization;
 
 namespace CloudComponents.Grid.Components;
@@ -12,12 +14,14 @@ namespace CloudComponents.Grid.Components;
 /// Owns all data-fetching state (loading, searching, pagination, sort, error/empty
 /// messages) via the required <see cref="DataProvider"/> callback.
 /// </summary>
-public partial class CloudGrid
+public partial class CloudGrid : IAsyncDisposable
 {
     #region Parameters
 
     /// <summary>When set, renders a <see cref="CloudGridHeader"/> above the table.</summary>
     [Parameter] public CloudGridHeaderOptions? Header { get; set; }
+
+    [Inject] private IJSRuntime JS { get; set; } = default!;
 
     /// <summary>Column definitions, in display order.</summary>
     [Parameter] public List<CloudGridColumn> Columns { get; set; } = [];
@@ -108,8 +112,11 @@ public partial class CloudGrid
         }
     }
 
-    protected override Task OnInitializedAsync() =>
-        ExecuteAsync(page: 1, isAppend: false);
+    protected override Task OnInitializedAsync()
+    {
+        InitExportContent();
+        return ExecuteAsync(page: 1, isAppend: false);
+    }
 
     /// <summary>Reloads from page 1, clearing any active search and sort.</summary>
     public Task ReloadAsync()
@@ -199,6 +206,122 @@ public partial class CloudGrid
 
     #endregion
 
+    #region Export
+
+    private const string KeyExport = "__export";
+
+    // Lazy-loaded JS module reference.
+    private IJSObjectReference? _jsModule;
+
+    private async Task<IJSObjectReference> GetJsModuleAsync()
+    {
+        _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import",
+            "./_content/AngryMonkey.CloudComponents.Grid/cloudgrid.js");
+        return _jsModule;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule != null)
+            await _jsModule.DisposeAsync();
+    }
+
+    private async Task ExportCurrentPageAsync()
+    {
+        if (_closeExportPanel != null) await _closeExportPanel();
+        if (_data == null) return;
+        await DownloadCsvAsync(_data.Rows, "current-page");
+    }
+
+    private async Task ExportAllAsync()
+    {
+        if (_closeExportPanel != null) await _closeExportPanel();
+
+        // Fetch every record with the current search+sort but no paging limit.
+        CloudGridDataResult? allData = null;
+
+        try
+        {
+            allData = await DataProvider(new CloudGridDataRequest
+            {
+                Page = 1,
+                PageSize = _data?.Total > 0 ? _data.Total : int.MaxValue,
+                Search = _search,
+                Sort = _sort,
+                IsAppend = false,
+                Total = _data?.Total ?? 0
+            });
+        }
+        catch { /* swallow — export will be empty */ }
+
+        if (allData != null)
+            await DownloadCsvAsync(allData.Rows, "all-records");
+    }
+
+    private async Task ExportSelectionAsync()
+    {
+        if (_closeExportPanel != null) await _closeExportPanel();
+        IEnumerable<CloudGridRow> rows = _data?.Rows.Where(r => _selectedRecords.Contains(r.Id)) ?? [];
+        await DownloadCsvAsync(rows, "selection");
+    }
+
+    private async Task DownloadCsvAsync(IEnumerable<CloudGridRow> rows, string scope)
+    {
+        string csv = BuildCsv(rows);
+        string fileName = $"cloudgrid-export-{scope}-{DateTime.Now:yyyyMMdd-HHmmss}.csv";
+        IJSObjectReference module = await GetJsModuleAsync();
+        await module.InvokeVoidAsync("downloadTextFile", fileName, csv, "text/csv;charset=utf-8");
+    }
+
+    private string BuildCsv(IEnumerable<CloudGridRow> rows)
+    {
+        // Use char variable to avoid escaped-quote literals confusing the parser.
+        char q = '"';
+
+        string QuoteCsv(object? value)
+        {
+            string text = (value?.ToString() ?? string.Empty).Replace(q.ToString(), q.ToString() + q);
+            return q + text + q;
+        }
+
+        // Header row from column labels (skip image columns).
+        IEnumerable<string> header = Columns
+            .Where(c => !c.IsImage)
+            .Select(c => QuoteCsv(c.Label));
+
+        // Data rows — skip image columns by index.
+        int[] skipIndexes = Columns
+            .Select((c, i) => (c, i))
+            .Where(t => t.c.IsImage)
+            .Select(t => t.i)
+            .ToArray();
+
+        IEnumerable<string> dataLines = rows.Select(row =>
+            string.Join(',', row.Cells
+                .Select((cell, i) => (cell, i))
+                .Where(t => !skipIndexes.Contains(t.i))
+                .Select(t => QuoteCsv(t.cell))));
+
+        return string.Join(Environment.NewLine,
+            [string.Join(',', header), .. dataLines]);
+    }
+
+    /// <summary>
+    /// Supplied to the built-in Export <see cref="CloudGridAction"/> as its ChildContent.
+    /// Defined as a property so it can reference instance methods.
+    /// Assigned in CloudGrid.razor @code block.
+    /// </summary>
+    private RenderFragment? _exportContent;
+
+    /// <summary>
+    /// Callback that closes the export focus panel. Set as the Export action's
+    /// <see cref="CloudGridAction.OnDeactivated"/> so the header can trigger it,
+    /// and also called directly after each export button click.
+    /// </summary>
+    private Func<Task>? _closeExportPanel;
+
+    #endregion
+
     #region Header
 
     /// <summary>
@@ -211,10 +334,34 @@ public partial class CloudGrid
         {
             if (Header == null) return null;
 
+            // Inject the built-in Export action when AllowExport is set.
+            List<CloudGridAction> actions = [.. Header.Actions];
+
+            if (Header.AllowExport && _exportContent != null)
+            {
+                // Only add if not already present (avoid duplicates on re-renders).
+                if (!actions.Any(a => a.Key == KeyExport))
+                {
+                    actions.Add(new CloudGridAction
+                    {
+                        Key = KeyExport,
+                        Text = "Export",
+                        Tooltip = "Export",
+                        Type = CloudGridActionType.Element,
+                        ChildContent = _exportContent,
+                        ShowInMore = true,
+                        ShowOnHeader = true,
+                        // Capture the header's cancel handle so export buttons can self-close.
+                        OnActivated = cancelFn => { _closeExportPanel = cancelFn; },
+                        OnDeactivated = () => { _closeExportPanel = null; return Task.CompletedTask; }
+                    });
+                }
+            }
+
             return new CloudGridHeaderOptions
             {
                 Label = Header.Label,
-                Actions = Header.Actions,
+                Actions = actions,
                 OnActionClicked = Header.OnActionClicked,
                 AllowSearch = Header.AllowSearch,
                 SearchDebounceMilliseconds = Header.SearchDebounceMilliseconds,

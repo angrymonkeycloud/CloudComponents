@@ -63,7 +63,23 @@ public partial class CloudGridHeader
     /// <summary>Key of the currently expanded Element action (null = none active).</summary>
     private string? _activeKey;
 
+    /// <summary>Whether the More (⋯) dropdown is currently open.</summary>
+    private bool _moreOpen;
+
+    /// <summary>
+    /// True only while an Element action is expanded into its focus panel. Opening the
+    /// More dropdown does NOT count as a mode — it must not hide the other actions.
+    /// </summary>
     private bool AnyModeActive => _activeKey != null;
+
+    /// <summary>
+    /// The currently active Element action, searched across both direct header actions
+    /// and More-menu actions (null when nothing is active).
+    /// </summary>
+    private CloudGridAction? ActiveAction =>
+        _activeKey == null
+            ? null
+            : DirectHeaderActions.Concat(MoreMenuActions).FirstOrDefault(a => a.Key == _activeKey);
 
     private async Task ActivateAsync(CloudGridAction action)
     {
@@ -79,7 +95,7 @@ public partial class CloudGridHeader
         if (_activeKey == null)
             return;
 
-        CloudGridAction? current = AllHeaderActions.FirstOrDefault(a => a.Key == _activeKey);
+        CloudGridAction? current = ActiveAction;
         _activeKey = null;
 
         if (current?.OnDeactivated != null)
@@ -89,6 +105,16 @@ public partial class CloudGridHeader
     private async Task CancelActiveAsync()
     {
         await DeactivateCurrentAsync();
+    }
+
+    private void ToggleMoreMenu()
+    {
+        _moreOpen = !_moreOpen;
+    }
+
+    private void CloseMoreMenu()
+    {
+        _moreOpen = false;
     }
 
     #endregion
@@ -171,16 +197,17 @@ public partial class CloudGridHeader
     // ── Built-in action keys ─────────────────────────────────────────────────
     private const string KeySearch = "__search";
     private const string KeyRefresh = "__refresh";
+    private const string KeyMore = "__more";
 
     /// <summary>
-    /// Full ordered action list: consumer-supplied actions first, then the
-    /// built-in Search action (when <see cref="AllowSearch"/> is true).
+    /// Consumer-supplied and built-in actions rendered as direct icon buttons
+    /// (i.e. <see cref="CloudGridAction.ShowInMore"/> is false).
     /// </summary>
-    private IEnumerable<CloudGridAction> AllHeaderActions
+    private IEnumerable<CloudGridAction> DirectHeaderActions
     {
         get
         {
-            foreach (CloudGridAction action in Actions.Where(a => a.ShowOnHeader))
+            foreach (CloudGridAction action in Actions.Where(a => a.ShowOnHeader && !a.ShowInMore))
                 yield return action;
 
             if (AllowRefresh)
@@ -189,6 +216,7 @@ public partial class CloudGridHeader
                     Key = KeyRefresh,
                     Type = CloudGridActionType.Button,
                     Tooltip = "Refresh",
+                    IconOnly = true,
                     Icon = builder => { builder.OpenComponent<RefreshIcon>(0); builder.CloseComponent(); },
                     ShowOnHeader = true
                 };
@@ -199,6 +227,7 @@ public partial class CloudGridHeader
                     Key = KeySearch,
                     Type = CloudGridActionType.Element,
                     Tooltip = "Search",
+                    IconOnly = true,
                     Icon = builder => { builder.OpenComponent<SearchIcon>(0); builder.CloseComponent(); },
                     ChildContent = SearchContent,
                     OnDeactivated = ClearSearchAndDeactivateAsync,
@@ -207,19 +236,26 @@ public partial class CloudGridHeader
         }
     }
 
+    /// <summary>
+    /// Actions that appear inside the More (⋯) dropdown menu
+    /// (i.e. <see cref="CloudGridAction.ShowInMore"/> is true).
+    /// </summary>
+    private IEnumerable<CloudGridAction> MoreMenuActions =>
+        Actions.Where(a => a.ShowInMore);
+
+    private bool HasMoreMenuItems => MoreMenuActions.Any();
+
     private IEnumerable<CloudGridAction> BulkHeaderActions =>
         Actions.Where(a => a.ShowOnBulkHeader);
 
     private bool HasVisibleBulkActions =>
-        SelectedRecords.Count > 0 && BulkHeaderActions.Any();
+        !AnyModeActive && SelectedRecords.Count > 0 && BulkHeaderActions.Any();
 
     #endregion
 
     #region CSS helpers
 
     private string ActionsClasses => AnyModeActive ? "_mode-active" : string.Empty;
-
-    private static string SlotClasses(bool isActive) => isActive ? "_active" : string.Empty;
 
     private static string HeaderActionClasses(CloudGridAction action, bool isBulk = false)
     {
@@ -253,6 +289,21 @@ public partial class CloudGridHeader
         });
     }
 
+    private async Task FireMoreMenuActionAsync(CloudGridAction action)
+    {
+        CloseMoreMenu();
+
+        // Element actions hosted in the More menu open their inline focus panel
+        // (e.g. Export options) instead of firing a one-shot click.
+        if (action.Type == CloudGridActionType.Element)
+        {
+            await HandleActivateAsync(action);
+            return;
+        }
+
+        await FireActionClickedAsync(action);
+    }
+
     private async Task HandleActivateAsync(CloudGridAction action)
     {
         if (_activeKey == action.Key)
@@ -261,9 +312,15 @@ public partial class CloudGridHeader
         }
         else
         {
+            _moreOpen = false;
+            await DeactivateCurrentAsync();
             _activeKey = action.Key;
+
             if (action.Key == KeySearch)
                 _focusSearchInput = true;
+
+            // Give the action's ChildContent a handle to programmatically close the panel.
+            action.OnActivated?.Invoke(CancelActiveAsync);
         }
     }
 

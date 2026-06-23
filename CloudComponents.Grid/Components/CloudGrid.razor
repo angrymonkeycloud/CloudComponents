@@ -79,3 +79,20 @@
 
 </div>
 
+@code {
+    /// <summary>
+    /// Builds the inline Export focus panel RenderFragment.
+    /// Called from OnInitializedAsync in the partial class.
+    /// </summary>
+    private void InitExportContent()
+    {
+        _exportContent = @<div class="cloudgrid-export-panel">
+            <button type="button" class="cloudgrid-export-btn" @onclick="ExportCurrentPageAsync">Current page</button>
+            <button type="button" class="cloudgrid-export-btn" @onclick="ExportAllAsync">All records</button>
+            @if (_selectedRecords.Count > 0)
+            {
+                <button type="button" class="cloudgrid-export-btn" @onclick="ExportSelectionAsync">Selection (@_selectedRecords.Count)</button>
+            }
+        </div>;
+    }
+}

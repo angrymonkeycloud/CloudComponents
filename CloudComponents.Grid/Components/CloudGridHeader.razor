@@ -7,13 +7,15 @@
     Naming: block `.cloudgridheader`, children `.cloudgridheader-*`, adjectives `._*`.
 
     Layout:
-      [h2 label] [bulk actions]                       [right actions →]
+      [h2 label] [bulk actions]                       [direct actions →] [more ⋯]
 
-    All actions — built-in (New, Search, View) and consumer-supplied — share the same
-    CloudGridAction shape and are rendered by a single unified loop.
+    Direct actions (ShowInMore = false) are rendered as icon buttons.
+    Actions with ShowInMore = true appear inside the More (⋯) dropdown menu.
+    Built-in Refresh and Search are icon-only by default.
 
-    When an Element action is active (._mode-active on the actions container) every
-    inactive slot is hidden; the active slot expands to fill the row.
+    When any mode is active (element action expanded OR more menu open):
+      - All inactive action slots are hidden.
+      - Bulk actions are hidden.
 
     All behavior lives in CloudGridHeader.razor.cs; styles in CloudGridHeader.razor.less.
 *@
@@ -22,7 +24,7 @@
 
     <h2>@Label</h2>
 
-    @* ── Bulk actions (after title, visible only while rows are selected) ─── *@
+    @* ── Bulk actions (visible only while rows are selected and no mode is active) ─── *@
     @if (HasVisibleBulkActions)
     {
         <div class="cloudgridheader-bulkactions">
@@ -43,50 +45,52 @@
     @* ── Right-side action slots ─────────────────────────────────────────── *@
     <div class="cloudgridheader-actions @ActionsClasses">
 
-        @foreach (CloudGridAction action in AllHeaderActions)
+        @if (AnyModeActive && ActiveAction?.ChildContent != null)
         {
-            bool isActive = _activeKey == action.Key;
-
-            @if (action.Type == CloudGridActionType.Link)
+            @* An Element action is expanded — its focus panel takes over the row,
+               hiding every other action (direct buttons, bulk actions, More menu). *@
+            <div class="cloudgridheader-slot _active">
+                @ActiveAction.ChildContent
+                <button type="button"
+                        class="cloudgridheader-action _cancel"
+                        @onclick="CancelActiveAsync"
+                        @onclick:stopPropagation
+                        @onclick:preventDefault>
+                    cancel
+                </button>
+            </div>
+        }
+        else
+        {
+            @foreach (CloudGridAction action in DirectHeaderActions)
             {
-                <div class="cloudgridheader-slot">
-                    <a class="cloudgridheader-action @HeaderActionClasses(action)"
-                       href="@action.Href"
-                       target="@action.Target"
-                       title="@(action.Tooltip ?? action.Text)">
-                        @ActionIconAndText(action)
-                    </a>
-                </div>
-            }
-            else if (action.Type == CloudGridActionType.Button)
-            {
-                <div class="cloudgridheader-slot">
-                    <button type="button"
-                            class="cloudgridheader-action @HeaderActionClasses(action)"
-                            title="@(action.Tooltip ?? action.Text)"
-                            @onclick="() => FireActionClickedAsync(action)"
-                            @onclick:stopPropagation
-                            @onclick:preventDefault>
-                        @ActionIconAndText(action)
-                    </button>
-                </div>
-            }
-            else if (action.Type == CloudGridActionType.Element)
-            {
-                <div class="cloudgridheader-slot @SlotClasses(isActive)">
-                    @if (isActive && action.ChildContent != null)
-                    {
-                        @action.ChildContent
+                @if (action.Type == CloudGridActionType.Link)
+                {
+                    <div class="cloudgridheader-slot">
+                        <a class="cloudgridheader-action @HeaderActionClasses(action)"
+                           href="@action.Href"
+                           target="@action.Target"
+                           title="@(action.Tooltip ?? action.Text)">
+                            @ActionIconAndText(action)
+                        </a>
+                    </div>
+                }
+                else if (action.Type == CloudGridActionType.Button)
+                {
+                    <div class="cloudgridheader-slot">
                         <button type="button"
-                                class="cloudgridheader-action _cancel"
-                                @onclick="CancelActiveAsync"
+                                class="cloudgridheader-action @HeaderActionClasses(action)"
+                                title="@(action.Tooltip ?? action.Text)"
+                                @onclick="() => FireActionClickedAsync(action)"
                                 @onclick:stopPropagation
                                 @onclick:preventDefault>
-                            cancel
+                            @ActionIconAndText(action)
                         </button>
-                    }
-                    else
-                    {
+                    </div>
+                }
+                else if (action.Type == CloudGridActionType.Element)
+                {
+                    <div class="cloudgridheader-slot">
                         <button type="button"
                                 class="cloudgridheader-action @HeaderActionClasses(action)"
                                 title="@(action.Tooltip ?? action.Text)"
@@ -95,14 +99,61 @@
                                 @onclick:preventDefault>
                             @ActionIconAndText(action)
                         </button>
+                    </div>
+                }
+            }
+
+            @* ── More (⋯) menu ────────────────────────────────────────────────── *@
+            @if (HasMoreMenuItems)
+            {
+                <div class="cloudgridheader-slot cloudgridheader-more @(_moreOpen ? "_active" : string.Empty)">
+                    <button type="button"
+                            class="cloudgridheader-action @(_moreOpen ? "_more-open" : string.Empty)"
+                            title="More"
+                            @onclick="ToggleMoreMenu"
+                            @onclick:stopPropagation
+                            @onclick:preventDefault>
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <circle cx="5" cy="12" r="1.5" class="amc-svg-fill" />
+                            <circle cx="12" cy="12" r="1.5" class="amc-svg-fill" />
+                            <circle cx="19" cy="12" r="1.5" class="amc-svg-fill" />
+                        </svg>
+                    </button>
+                    @if (_moreOpen)
+                    {
+                        <div class="cloudgridheader-more-dropdown" @onclick:stopPropagation>
+                            @foreach (CloudGridAction action in MoreMenuActions)
+                            {
+                                @if (action.Type == CloudGridActionType.Link)
+                                {
+                                    <a class="cloudgridheader-more-item @action.CssClass"
+                                       href="@action.Href"
+                                       target="@action.Target"
+                                       title="@(action.Tooltip ?? action.Text)">
+                                        @ActionIconAndText(action)
+                                    </a>
+                                }
+                                else
+                                {
+                                    <button type="button"
+                                            class="cloudgridheader-more-item @action.CssClass"
+                                            title="@(action.Tooltip ?? action.Text)"
+                                            @onclick="() => FireMoreMenuActionAsync(action)"
+                                            @onclick:stopPropagation
+                                            @onclick:preventDefault>
+                                        @ActionIconAndText(action)
+                                    </button>
+                                }
+                            }
+                        </div>
                     }
                 </div>
             }
-        }
 
-        @if (ExtraActions != null)
-        {
-            @ExtraActions
+            @if (ExtraActions != null)
+            {
+                @ExtraActions
+            }
         }
 
     </div>
@@ -111,11 +162,12 @@
 
 @code {
     /// <summary>
-    /// Shared helper: renders the icon SVG (if any) and text span (if any) for any action type.
+    /// Renders the icon and/or text for an action. The text label is suppressed when the
+    /// action sets <see cref="CloudGridAction.IconOnly"/> (e.g. built-in Refresh/Search).
     /// </summary>
     private RenderFragment ActionIconAndText(CloudGridAction action) => @<text>
         @{
-            string? text = string.IsNullOrWhiteSpace(action.Text) ? action.Tooltip : action.Text;
+            string? text = action.IconOnly ? null : action.Text;
         }
         @if (action.Icon != null)
         {
