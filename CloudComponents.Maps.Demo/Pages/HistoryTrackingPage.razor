@@ -1,0 +1,297 @@
+@page "/history-tracking"
+@inject IOptions<AzureMapsOptions> Options
+@inject AzureMapsConfigurationService ConfigService
+@inject SampleTrackingService TrackingService
+@implements IAsyncDisposable
+
+<PageTitle>CloudMaps — History Replay</PageTitle>
+
+<div class="page-header">
+    <h1>GPS History Replay</h1>
+    <p>
+        Load a historical GPS trace and replay it with adjustable speed. Perfect for reviewing
+        past routes, analyzing travel patterns, and sharing journey details.
+    </p>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Replay Controls</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+        <div>
+            <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Select Route:</label>
+            <select @onchange="HandleTraceSelected" style="width: 100%;">
+                <option value="0">Sample Route 1</option>
+                <option value="1">Sample Route 2</option>
+            </select>
+        </div>
+        <div>
+            <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Speed Multiplier:</label>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <input type="range" @bind="_speedMultiplier" min="0.5" max="10" step="0.5" style="flex: 1;" />
+                <span style="font-weight: 600; min-width: 40px;">@_speedMultiplier.ToString("F1")x</span>
+            </div>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: flex-end;">
+            <button class="primary" @onclick="StartReplay" disabled="@(_isReplaying || _currentTrace == null)" style="flex: 1;">
+                @(_isReplaying ? "Playing..." : "Play")
+            </button>
+            <button @onclick="PauseReplay" disabled="@(!_isReplaying)" style="flex: 1;">Pause</button>
+            <button @onclick="ResetReplay" style="flex: 1;">Reset</button>
+        </div>
+    </div>
+
+    <div style="margin-bottom: 12px;">
+        <label style="font-size: 12px; color: #666;">Progress:</label>
+        <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+            <input type="range" @bind="_playbackProgress" min="0" max="100" step="0.1" style="flex: 1;" />
+            <span style="font-size: 12px; color: #666; min-width: 50px;">@_playbackProgress.ToString("F1")%</span>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2 class="card-title">📍 Replay Map</h2>
+    <div class="grid-host" style="height: 500px;">
+        <AzureMap Height="500px"
+                  Width="100%"
+                  SubscriptionKey="@GetSubscriptionKey()"
+                  InitialView="@_initialView"
+                  Style="MapStyle.Road"
+                  ShowCurrentLocationButton="false"
+                  Markers="@_replayMarkers"
+                  OnMapReady="HandleMapReady"
+                  @ref="_map" />
+    </div>
+</div>
+
+<div class="card">
+    <h2 class="card-title">📊 Trace Information</h2>
+    @if (_currentTrace != null)
+    {
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px;">
+            <div style="background: #e3f2fd; border-left: 3px solid #0078d4; padding: 12px; border-radius: 4px;">
+                <div style="font-size: 12px; color: #666;">Route Name</div>
+                <div style="font-weight: 600; color: #0078d4; font-size: 14px;">@_currentTrace.Name</div>
+            </div>
+            <div style="background: #e3f2fd; border-left: 3px solid #0078d4; padding: 12px; border-radius: 4px;">
+                <div style="font-size: 12px; color: #666;">Total Points</div>
+                <div style="font-weight: 600; color: #0078d4; font-size: 14px;">@_currentTrace.Points.Count</div>
+            </div>
+            <div style="background: #e3f2fd; border-left: 3px solid #0078d4; padding: 12px; border-radius: 4px;">
+                <div style="font-size: 12px; color: #666;">Distance</div>
+                <div style="font-weight: 600; color: #0078d4; font-size: 14px;">@_currentTrace.TotalDistanceKm km</div>
+            </div>
+            <div style="background: #e3f2fd; border-left: 3px solid #0078d4; padding: 12px; border-radius: 4px;">
+                <div style="font-size: 12px; color: #666;">Duration</div>
+                <div style="font-weight: 600; color: #0078d4; font-size: 14px;">@_currentTrace.Duration.TotalHours.ToString("F1") h</div>
+            </div>
+        </div>
+
+        <div style="background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px; font-size: 12px;">
+            <h3 style="margin: 0 0 12px 0; font-size: 13px; font-weight: 600;">Current Playback</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div>
+                    <strong>Point Index:</strong> @_currentPointIndex / @_currentTrace.Points.Count
+                </div>
+                <div>
+                    <strong>Current Time:</strong> @(_currentTrace.Points.Count > _currentPointIndex ? _currentTrace.Points[_currentPointIndex].Timestamp.ToString("HH:mm:ss") : "N/A")
+                </div>
+                @if (_currentPointIndex < _currentTrace.Points.Count)
+                {
+                    var pt = _currentTrace.Points[_currentPointIndex];
+                    <div>
+                        <strong>Latitude:</strong> @pt.Latitude.ToString("F5")
+                    </div>
+                    <div>
+                        <strong>Longitude:</strong> @pt.Longitude.ToString("F5")
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <p style="color: #999; font-size: 13px;">Select a route and click Play to start replay.</p>
+    }
+</div>
+
+@code {
+    private AzureMap? _map;
+    private readonly InitialMapView _initialView = new(35.8617, -120.5783, 5);
+
+    private List<TrackSession> _traces = new();
+    private TrackSession? _currentTrace;
+    private int _selectedTraceIndex = 0;
+    private double _speedMultiplier = 2.0;
+    private bool _isReplaying;
+    private int _currentPointIndex;
+    private double _playbackProgress;
+    private List<MapMarker> _replayMarkers = new();
+    private CancellationTokenSource? _replayCts;
+    private Task? _replayTask;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        // Load sample traces
+        _traces = TrackingService.GetMultipleSampleTraces();
+        if (_traces.Count > 0)
+        {
+            _currentTrace = _traces[0];
+        }
+    }
+
+    private async Task HandleMapReady()
+    {
+        // Map is ready - could draw the full trace here
+        if (_currentTrace != null && _map != null)
+        {
+            var bounds = GetTraceBounds(_currentTrace.Points);
+            if (bounds.south != 0 || bounds.west != 0)
+            {
+                await _map.SetBoundsAsync(bounds.south, bounds.west, bounds.north, bounds.east, 40);
+            }
+        }
+    }
+
+    private async Task HandleTraceSelected(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var index) && index >= 0 && index < _traces.Count)
+        {
+            await PauseReplay();
+            _selectedTraceIndex = index;
+            _currentTrace = _traces[index];
+            _currentPointIndex = 0;
+            _playbackProgress = 0;
+            _replayMarkers.Clear();
+
+            if (_map != null)
+            {
+                await _map.ClearMarkersAsync();
+                var bounds = GetTraceBounds(_currentTrace.Points);
+                if (bounds.south != 0 || bounds.west != 0)
+                {
+                    await _map.SetBoundsAsync(bounds.south, bounds.west, bounds.north, bounds.east, 40);
+                }
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task StartReplay()
+    {
+        if (_currentTrace == null || _isReplaying) return;
+
+        _isReplaying = true;
+        _replayCts = new CancellationTokenSource();
+        _replayTask = ReplayLoop(_replayCts.Token);
+    }
+
+    private async Task ReplayLoop(CancellationToken ct)
+    {
+        if (_currentTrace == null || _map == null) return;
+
+        _currentPointIndex = 0;
+
+        while (_currentPointIndex < _currentTrace.Points.Count && !ct.IsCancellationRequested)
+        {
+            try
+            {
+                var point = _currentTrace.Points[_currentPointIndex];
+
+                // Update marker
+                _replayMarkers.Clear();
+                var marker = point.ToMarker(_currentTrace.Id);
+                marker = marker with { Color = _currentTrace.Color };
+                _replayMarkers.Add(marker);
+
+                await _map.ClearMarkersAsync();
+                await _map.AddMarkersAsync(_replayMarkers);
+
+                // Update progress
+                _playbackProgress = ((double)_currentPointIndex / _currentTrace.Points.Count) * 100;
+                await InvokeAsync(StateHasChanged);
+
+                // Calculate delay based on actual time difference and speed multiplier
+                int delay = 50; // Default 50ms between points
+                if (_currentPointIndex < _currentTrace.Points.Count - 1)
+                {
+                    var timeDiff = (_currentTrace.Points[_currentPointIndex + 1].Timestamp - point.Timestamp).TotalMilliseconds;
+                    delay = Math.Max(10, (int)(timeDiff / _speedMultiplier));
+                }
+
+                await Task.Delay(delay, ct);
+                _currentPointIndex++;
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
+            catch
+            {
+                _currentPointIndex++;
+            }
+        }
+
+        _isReplaying = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task PauseReplay()
+    {
+        _isReplaying = false;
+        _replayCts?.Cancel();
+        if (_replayTask != null)
+        {
+            try
+            {
+                await _replayTask;
+            }
+            catch (OperationCanceledException) { }
+        }
+        StateHasChanged();
+    }
+
+    private async Task ResetReplay()
+    {
+        await PauseReplay();
+        _currentPointIndex = 0;
+        _playbackProgress = 0;
+        _replayMarkers.Clear();
+        if (_map != null)
+        {
+            await _map.ClearMarkersAsync();
+        }
+        StateHasChanged();
+    }
+
+    private (double south, double west, double north, double east) GetTraceBounds(List<TrackPoint> points)
+    {
+        if (points.Count == 0)
+            return (0, 0, 0, 0);
+
+        double minLat = points.Min(p => p.Latitude);
+        double maxLat = points.Max(p => p.Latitude);
+        double minLng = points.Min(p => p.Longitude);
+        double maxLng = points.Max(p => p.Longitude);
+
+        return (minLat, minLng, maxLat, maxLng);
+    }
+
+    private string GetSubscriptionKey()
+    {
+        var configured = ConfigService.GetSubscriptionKey();
+        if (!string.IsNullOrEmpty(configured))
+            return configured;
+
+        return Options?.Value?.SubscriptionKey ?? string.Empty;
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        await PauseReplay();
+        _replayCts?.Dispose();
+    }
+}

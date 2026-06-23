@@ -1,0 +1,57 @@
+<nav class="nav">
+    <div class="nav-brand">
+        <span class="nav-brand-mark">🗺️</span>
+        <span>CloudMaps Harness</span>
+    </div>
+
+    <div class="nav-links">
+        <NavLink class="nav-link" href="" Match="NavLinkMatch.All">Overview</NavLink>
+        <NavLink class="nav-link" href="basic-markers">Basic Markers</NavLink>
+        <NavLink class="nav-link" href="reverse-geocode">Reverse Geocode</NavLink>
+        <NavLink class="nav-link" href="regions">Regions &amp; Zones</NavLink>
+        <NavLink class="nav-link" href="live-tracking">Live Tracking</NavLink>
+        <NavLink class="nav-link" href="history-tracking">History Replay</NavLink>
+        <NavLink class="nav-link" href="controls-styles">Controls &amp; Styles</NavLink>
+    </div>
+
+    <div class="nav-settings">
+        <button class="settings-button" @onclick="OnSettingsClick" title="Configure Azure Maps Key">
+            ⚙️ Settings
+        </button>
+    </div>
+</nav>
+
+@code {
+    [Parameter]
+    public EventCallback OnSettingsClick { get; set; }
+}
+
+<style>
+    :global(.nav-settings) {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+    }
+
+    :global(.settings-button) {
+        background: #f0f0f0;
+        border: 1px solid #d0d0d0;
+        color: #111;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        margin-right: 12px;
+    }
+
+    :global(.settings-button:hover) {
+        background: #e0e0e0;
+        border-color: #999;
+    }
+
+    :global(.settings-button:active) {
+        background: #d0d0d0;
+    }
+</style>

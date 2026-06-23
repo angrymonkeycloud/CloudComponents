@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.Icons", "Cl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.Grid.Demo", "CloudComponents.Grid.Demo\CloudComponents.Grid.Demo.csproj", "{A4F5784A-1607-BABB-CAF4-8EAB217A9C87}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.Maps.Demo", "CloudComponents.Maps.Demo\CloudComponents.Maps.Demo.csproj", "{CF2DC545-D0E3-A396-ED05-CF2DEA797709}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -322,6 +324,24 @@ Global
 		{A4F5784A-1607-BABB-CAF4-8EAB217A9C87}.Release|x64.Build.0 = Release|Any CPU
 		{A4F5784A-1607-BABB-CAF4-8EAB217A9C87}.Release|x86.ActiveCfg = Release|Any CPU
 		{A4F5784A-1607-BABB-CAF4-8EAB217A9C87}.Release|x86.Build.0 = Release|Any CPU
+		{CF2DC545-D0E3-A396-ED05-CF2DEA797709}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF2DC545-D0E3-A396-ED05-CF2DEA797709}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF2DC545-D0E3-A396-ED05-CF2DEA797709}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CF2DC545-D0E3-A396-ED05-CF2DEA797709}.Debug|x64.Build.0 = Debug|Any CPU
+		{CF2DC545-D0E3-A396-ED05-CF2DEA797709}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CF2DC545-D0E3-A396-ED05-CF2DEA797709}.Debug|x86.Build.0 = Debug|Any CPU
+		{CF2DC545-D0E3-A396-ED05-CF2DEA797709}.Release_Server|Any CPU.ActiveCfg = Release_Server|Any CPU
+		{CF2DC545-D0E3-A396-ED05-CF2DEA797709}.Release_Server|Any CPU.Build.0 = Release_Server|Any CPU
+		{CF2DC545-D0E3-A396-ED05-CF2DEA797709}.Release_Server|x64.ActiveCfg = Release_Server|Any CPU
+		{CF2DC545-D0E3-A396-ED05-CF2DEA797709}.Release_Server|x64.Build.0 = Release_Server|Any CPU
+		{CF2DC545-D0E3-A396-ED05-CF2DEA797709}.Release_Server|x86.ActiveCfg = Release_Server|Any CPU
+		{CF2DC545-D0E3-A396-ED05-CF2DEA797709}.Release_Server|x86.Build.0 = Release_Server|Any CPU
+		{CF2DC545-D0E3-A396-ED05-CF2DEA797709}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF2DC545-D0E3-A396-ED05-CF2DEA797709}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF2DC545-D0E3-A396-ED05-CF2DEA797709}.Release|x64.ActiveCfg = Release|Any CPU
+		{CF2DC545-D0E3-A396-ED05-CF2DEA797709}.Release|x64.Build.0 = Release|Any CPU
+		{CF2DC545-D0E3-A396-ED05-CF2DEA797709}.Release|x86.ActiveCfg = Release|Any CPU
+		{CF2DC545-D0E3-A396-ED05-CF2DEA797709}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -339,6 +359,7 @@ Global
 		{A25CC2A0-E130-76EE-C8E0-9F1A5F3B64FC} = {185FF486-A759-4A7E-BEF7-BBF8AC541F4E}
 		{8678A961-0FA5-4301-8963-BDDC98FE595B} = {727CC0E9-930E-463C-B4B4-A20EA0881236}
 		{A4F5784A-1607-BABB-CAF4-8EAB217A9C87} = {727CC0E9-930E-463C-B4B4-A20EA0881236}
+		{CF2DC545-D0E3-A396-ED05-CF2DEA797709} = {185FF486-A759-4A7E-BEF7-BBF8AC541F4E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0E2B2251-4D4B-4031-8703-54146C8A2312}

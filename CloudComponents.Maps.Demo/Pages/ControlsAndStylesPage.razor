@@ -1,0 +1,233 @@
+@page "/controls-styles"
+@inject IOptions<AzureMapsOptions> Options
+@inject AzureMapsConfigurationService ConfigService
+
+<PageTitle>CloudMaps — Controls & Styles</PageTitle>
+
+<div class="page-header">
+    <h1>Map Controls & Styles</h1>
+    <p>
+        Explore all available map controls and visual styles. Toggle individual controls to see how they
+        affect the map interface. Switch between different map styles including satellite, grayscale, and night modes.
+    </p>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Map Style</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px;">
+        @foreach (var style in _availableStyles)
+        {
+            <button style="@(_selectedStyle == style.Key ? "background: #0078d4; color: white; border-color: #0078d4;" : "")"
+                    @onclick="() => ChangeStyle(style.Key)">
+                @style.Value
+            </button>
+        }
+    </div>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Map Controls</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _showZoomControl = (bool)e.Value!; ApplyControls(e); })" />
+            <span>Zoom Control</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _showCompassControl = (bool)e.Value!; ApplyControls(e); })" />
+            <span>Compass Control</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _showPitchControl = (bool)e.Value!; ApplyControls(e); })" />
+            <span>Pitch Control</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _showStyleControl = (bool)e.Value!; ApplyControls(e); })" />
+            <span>Style Control</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _showFullscreenControl = (bool)e.Value!; ApplyControls(e); })" />
+            <span>Fullscreen Control</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _showScaleControl = (bool)e.Value!; ApplyControls(e); })" />
+            <span>Scale Control</span>
+        </label>
+    </div>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Interaction Modes</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _dragPan = (bool)e.Value!; ApplyInteractions(e); })" />
+            <span>Drag Pan</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _dragRotate = (bool)e.Value!; ApplyInteractions(e); })" />
+            <span>Drag Rotate</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _scrollZoom = (bool)e.Value!; ApplyInteractions(e); })" />
+            <span>Scroll Zoom</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _dblClickZoom = (bool)e.Value!; ApplyInteractions(e); })" />
+            <span>Double-Click Zoom</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _boxZoom = (bool)e.Value!; ApplyInteractions(e); })" />
+            <span>Box Zoom</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _keyboard = (bool)e.Value!; ApplyInteractions(e); })" />
+            <span>Keyboard Navigation</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _touchInteraction = (bool)e.Value!; ApplyInteractions(e); })" />
+            <span>Touch Interaction</span>
+        </label>
+    </div>
+</div>
+
+<div class="card">
+    <h2 class="card-title">📍 Interactive Map</h2>
+    <div class="grid-host" style="height: 500px;">
+        <AzureMap Height="500px"
+                  Width="100%"
+                  SubscriptionKey="@GetSubscriptionKey()"
+                  InitialView="@_initialView"
+                  Style="@_selectedStyle"
+                  ZoomControl="@(new MapControlOption(_showZoomControl))"
+                  CompassControl="@(new MapControlOption(_showCompassControl))"
+                  PitchControl="@(new MapControlOption(_showPitchControl))"
+                  StyleControl="@(new MapControlOption(_showStyleControl))"
+                  FullscreenControl="@(new MapControlOption(_showFullscreenControl))"
+                  ScaleControl="@(new MapControlOption(_showScaleControl))"
+                  DragPanInteraction="@_dragPan"
+                  DragRotateInteraction="@_dragRotate"
+                  ScrollZoomInteraction="@_scrollZoom"
+                  DblClickZoomInteraction="@_dblClickZoom"
+                  BoxZoomInteraction="@_boxZoom"
+                  KeyboardInteraction="@_keyboard"
+                  TouchInteraction="@_touchInteraction"
+                  ShowTrafficFlow="@_showTraffic"
+                  OnMapReady="HandleMapReady"
+                  @ref="_map" />
+    </div>
+
+    <div class="toolbar" style="margin-top: 1rem;">
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _showTraffic = (bool)e.Value!; ApplyTraffic(e); })" />
+            <span>Show Traffic Flow</span>
+        </label>
+    </div>
+</div>
+
+<div class="card">
+    <h2 class="card-title">📚 Control Information</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;">
+        <div style="background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px; font-size: 12px;">
+            <div style="font-weight: 600; margin-bottom: 8px; color: #0078d4;">Zoom Control</div>
+            <p style="margin: 0; color: #666; line-height: 1.5;">Provides + and - buttons to zoom in and out. Essential for detailed navigation.</p>
+        </div>
+        <div style="background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px; font-size: 12px;">
+            <div style="font-weight: 600; margin-bottom: 8px; color: #0078d4;">Compass Control</div>
+            <p style="margin: 0; color: #666; line-height: 1.5;">Shows map orientation and allows rotation. Click to reset to north.</p>
+        </div>
+        <div style="background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px; font-size: 12px;">
+            <div style="font-weight: 600; margin-bottom: 8px; color: #0078d4;">Pitch Control</div>
+            <p style="margin: 0; color: #666; line-height: 1.5;">Adjusts map viewing angle for 3D perspective. Useful for terrain visualization.</p>
+        </div>
+        <div style="background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px; font-size: 12px;">
+            <div style="font-weight: 600; margin-bottom: 8px; color: #0078d4;">Style Control</div>
+            <p style="margin: 0; color: #666; line-height: 1.5;">Allows users to switch between different map styles without app intervention.</p>
+        </div>
+        <div style="background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px; font-size: 12px;">
+            <div style="font-weight: 600; margin-bottom: 8px; color: #0078d4;">Fullscreen Control</div>
+            <p style="margin: 0; color: #666; line-height: 1.5;">Expands map to fill the entire screen for better immersion and interaction.</p>
+        </div>
+        <div style="background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px; font-size: 12px;">
+            <div style="font-weight: 600; margin-bottom: 8px; color: #0078d4;">Scale Control</div>
+            <p style="margin: 0; color: #666; line-height: 1.5;">Displays distance scale relative to current zoom level for reference.</p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private AzureMap? _map;
+    private readonly InitialMapView _initialView = new(37.7749, -122.4194, 13);
+
+    private MapStyle _selectedStyle = MapStyle.Road;
+
+    // Controls
+    private bool _showZoomControl = true;
+    private bool _showCompassControl = false;
+    private bool _showPitchControl = false;
+    private bool _showStyleControl = false;
+    private bool _showFullscreenControl = false;
+    private bool _showScaleControl = false;
+    private bool _showTraffic = false;
+
+    // Interactions
+    private bool _dragPan = true;
+    private bool _dragRotate = true;
+    private bool _scrollZoom = true;
+    private bool _dblClickZoom = false;
+    private bool _boxZoom = true;
+    private bool _keyboard = true;
+    private bool _touchInteraction = true;
+
+    private readonly Dictionary<MapStyle, string> _availableStyles = new()
+    {
+        { MapStyle.Road, "Road" },
+        { MapStyle.Satellite, "Satellite" },
+        { MapStyle.SatelliteRoadLabels, "Satellite + Roads" },
+        { MapStyle.GrayscaleLight, "Grayscale Light" },
+        { MapStyle.GrayscaleDark, "Grayscale Dark" },
+        { MapStyle.Night, "Night" },
+        { MapStyle.RoadShadedRelief, "Road + Terrain" },
+        { MapStyle.HighContrastLight, "High Contrast Light" },
+        { MapStyle.HighContrastDark, "High Contrast Dark" }
+    };
+
+    private async Task HandleMapReady()
+    {
+        // Map is ready
+    }
+
+    private async Task ChangeStyle(MapStyle style)
+    {
+        _selectedStyle = style;
+        if (_map != null)
+        {
+            await _map.SetStyleAsync(style);
+        }
+    }
+
+    private async Task ApplyControls(ChangeEventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private async Task ApplyInteractions(ChangeEventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private async Task ApplyTraffic(ChangeEventArgs e)
+    {
+        if (_map != null)
+        {
+            await _map.SetTrafficAsync(_showTraffic, false);
+        }
+    }
+
+    private string GetSubscriptionKey()
+    {
+        var configured = ConfigService.GetSubscriptionKey();
+        if (!string.IsNullOrEmpty(configured))
+            return configured;
+
+        return Options?.Value?.SubscriptionKey ?? string.Empty;
+    }
+}
