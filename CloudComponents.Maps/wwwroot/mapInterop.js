@@ -181,15 +181,51 @@ class AzureMapController {
             this._dotNetRef?.invokeMethodAsync('NotifyMapAddMarkerAsync', lat, lng);
         });
 
-        // Center-pin mode → broadcast the camera-center coordinate as the map moves.
+        // Center-pin mode → broadcast the camera-center coordinate only when the
+        // user pans the map (drag), not on zoom. Zooming is always anchored to the
+        // map center (pin position) regardless of cursor location.
         if (this._addTrigger === 'center') {
-            const fire = () => {
+            let _isZooming = false;
+
+            const firePan = () => {
+                if (_isZooming) return;
                 const c = this._map.getCamera().center;   // [lng, lat]
                 if (c) this._dotNetRef?.invokeMethodAsync('NotifyCenterPinChangedAsync', c[1], c[0]);
             };
-            this._map.events.add('move', fire);
-            this._map.events.add('moveend', fire);
-            fire(); // emit initial position
+
+            // Track zoom start/end so we can suppress pan events during zoom
+            this._map.events.add('zoomstart', () => { _isZooming = true; });
+            this._map.events.add('zoomend', () => { _isZooming = false; });
+
+            // Intercept wheel events at the DOM capture phase, BEFORE Azure Maps
+            // processes them. This lets us stop the default cursor-based zoom and
+            // replace it with a center-anchored zoom so the pin never drifts.
+            const mapCanvas = this._map.getCanvas();
+            mapCanvas.addEventListener('wheel', (e) => {
+                // Stop Azure Maps from receiving this event (it runs in bubble phase)
+                e.stopImmediatePropagation();
+                e.preventDefault();
+
+                const cam = this._map.getCamera();
+                if (!cam?.center) return;
+
+                // Normalise delta across browsers/devices
+                const rawDelta = e.deltaY ?? e.wheelDelta ?? 0;
+                const direction = rawDelta > 0 ? -1 : 1;          // scroll down = zoom out
+                const step = e.ctrlKey ? 0.25 : 1;                // pinch-to-zoom is finer
+                const newZoom = Math.max(0, Math.min(24, (cam.zoom ?? 10) + direction * step));
+
+                this._map.setCamera({
+                    zoom: newZoom,
+                    center: cam.center,   // keep the pin center fixed
+                    type: 'ease',
+                    duration: 150
+                });
+            }, { capture: true, passive: false });
+
+            // Only notify .NET when a pan drag ends (not during zoom)
+            this._map.events.add('dragend', firePan);
+            firePan(); // emit initial position
         }
 
         if (this._options.latitude !== 0 || this._options.longitude !== 0)

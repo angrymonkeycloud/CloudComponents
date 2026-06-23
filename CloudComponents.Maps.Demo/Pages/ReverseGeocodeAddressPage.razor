@@ -8,8 +8,8 @@
 <div class="page-header">
     <h1>Reverse Geocoding with Address Lookup</h1>
     <p>
-        Drag the center pin on the map to select a location. The app will perform reverse geocoding
-        using Azure Maps and retrieve the address, country, and administrative subdivisions via Cloud Geography.
+        Pan the map to position the center pin over a location, then click <strong>Get Address</strong>
+        to perform reverse geocoding and retrieve the address, country, and administrative subdivisions via Cloud Geography.
     </p>
 </div>
 
@@ -168,7 +168,7 @@ else
 {
     <div class="card">
         <div style="text-align: center; padding: 40px; color: #999;">
-            Drag the center pin on the map to load address information.
+            Pan the map to position the center pin, then click <strong>Get Address</strong>.
         </div>
     </div>
 }
@@ -184,50 +184,16 @@ else
     private string? _errorMessage;
     private MapCoordinate? _lastRequestedCoord;
 
-    // Debouncing fields
-    private CancellationTokenSource? _debounceCts;
-    private const int DebounceDelayMs = 1000; // 1 second
-
     private async Task HandleMapReady()
     {
         // Map is ready
     }
 
-    private async Task HandleCenterPinChanged(MapCoordinate coord)
+    private Task HandleCenterPinChanged(MapCoordinate coord)
     {
-        // Cancel any pending geocode request
-        _debounceCts?.Cancel();
-        _debounceCts = new CancellationTokenSource();
-        var token = _debounceCts.Token;
-
-        try
-        {
-            // Wait for 1 second before making the request (debounce)
-            await Task.Delay(DebounceDelayMs, token);
-
-            // If cancelled, exit early (user moved map again)
-            if (token.IsCancellationRequested)
-                return;
-
-            // Avoid duplicate requests for the same coordinates
-            if (_lastRequestedCoord.HasValue && 
-                Math.Abs(_lastRequestedCoord.Value.Latitude - coord.Latitude) < 0.00001 &&
-                Math.Abs(_lastRequestedCoord.Value.Longitude - coord.Longitude) < 0.00001)
-                return;
-
-            _lastRequestedCoord = coord;
-            await FetchAddressAsync(coord, token);
-        }
-        catch (OperationCanceledException)
-        {
-            // Expected when user continues dragging
-        }
-        catch (Exception ex)
-        {
-            _errorMessage = $"Unexpected error: {ex.Message}";
-            _status = "Error";
-            StateHasChanged();
-        }
+        // Just record the latest coordinate — address is only fetched when the user clicks the button
+        _lastRequestedCoord = coord;
+        return Task.CompletedTask;
     }
 
     private async Task FetchAddressAsync(MapCoordinate coord, CancellationToken cancellationToken = default)
@@ -382,11 +348,7 @@ else
         // Get current map center
         if (_lastRequestedCoord.HasValue)
         {
-            // Cancel any pending debounce
-            _debounceCts?.Cancel();
-            _debounceCts = new CancellationTokenSource();
-
-            await FetchAddressAsync(_lastRequestedCoord.Value, _debounceCts.Token);
+            await FetchAddressAsync(_lastRequestedCoord.Value);
         }
         else
         {
