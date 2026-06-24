@@ -1,15 +1,78 @@
 # CloudComponents.Grid
 
-Generic Blazor data grid components (`CloudGrid`, `CloudGridHeader`) — purely presentational, with paging, column sorting, column resizing, row selection and debounced search. All interactions are implemented in C#/Blazor; **no JavaScript interop**.
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
+[![Blazor](https://img.shields.io/badge/UI-Blazor-5C2D91?logo=blazor)](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor)
+[![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.Grid?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.Grid)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/AngryMonkey.CloudComponents.Grid?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.Grid)
 
-Available as a project reference or as the `AngryMonkey.CloudComponents.Grid` NuGet package.
+Production-ready Blazor data grid for .NET 10 with strongly typed models, server-driven data loading, paging modes, sorting, selection, row actions, reordering, export, and theme-friendly CSS variables.
 
-## Components
+> `CloudGrid` is the single entry point. It composes header, body, and footer internally and is driven by one required `DataProvider` callback.
 
-| Component | Purpose |
-|---|---|
-| `CloudGrid` | The grid itself: column headers (sort + resize), rows, status messages and a paging footer. |
-| `CloudGridHeader` | Optional toolbar placed above a grid: title, "open view" link, "new record" link and a debounced search box. |
+---
+
+## Table of contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Quick start](#quick-start)
+- [Data flow (`DataProvider`)](#data-flow-dataprovider)
+- [Component API](#component-api)
+  - [`CloudGrid` parameters](#cloudgrid-parameters)
+  - [`CloudGridHeaderOptions`](#cloudgridheaderoptions)
+- [Models reference](#models-reference)
+- [Paging modes](#paging-modes)
+- [Sorting behavior](#sorting-behavior)
+- [Actions (header, row, bulk, more)](#actions-header-row-bulk-more)
+- [Selection](#selection)
+- [Row reordering](#row-reordering)
+- [Export](#export)
+- [Styling and theming](#styling-and-theming)
+- [Troubleshooting](#troubleshooting)
+
+---
+
+## Features
+
+- Pure Blazor interaction model for grid UX (sorting, resizing, selection, reordering)
+- Required async `DataProvider` pattern for consistent load/search/sort/page orchestration
+- Optional toolbar (`CloudGridHeaderOptions`) with built-in Search, Refresh, Export
+- Header actions + row actions + bulk actions + more-menu actions
+- Paging modes:
+  - `Pages`
+  - `LoadMore`
+  - `InfiniteScroll` (via built-in Blazor virtualization)
+- Runtime CSV export for:
+  - current page
+  - all records (respecting active search/sort)
+  - selected records
+- Row link support + row-level arbitrary HTML attributes
+- CSS-variable theming + predictable class naming
+
+---
+
+## Installation
+
+### NuGet
+
+```powershell
+dotnet add package AngryMonkey.CloudComponents.Grid
+```
+
+### Project reference
+
+Reference `CloudComponents.Grid` from your Blazor app.
+
+### Namespace import
+
+Add where needed:
+
+```razor
+@using CloudComponents.Grid.Components
+@using CloudComponents.Grid.Models
+```
+
+---
 
 ## Quick start
 
@@ -17,161 +80,310 @@ Available as a project reference or as the `AngryMonkey.CloudComponents.Grid` Nu
 @using CloudComponents.Grid.Components
 @using CloudComponents.Grid.Models
 
-<CloudGridHeader Label="Contacts"
-                 NewUrl="/contacts/new"
-                 OnSearchChanged="query => ReloadAsync(query)" />
-
 <CloudGrid Columns="_columns"
-           Data="_data"
-           IsLoading="_loading"
-           OnPageChanged="OnPageChangedAsync"
-           OnSortChanged="OnSortChangedAsync" />
+           DataProvider="LoadAsync"
+           Header="_header"
+           AllowSelection="true"
+           @bind-SelectedRecords="_selected"
+           RowsPerPage="25"
+           PagingMode="CloudGridPagingMode.Pages" />
 
 @code {
+    private readonly List<Guid> _selected = [];
+
     private readonly List<CloudGridColumn> _columns =
     [
-        new() { Label = "Photo", IsImage = true, Sortable = false, Width = 80 },
+        new() { Label = "Photo", Key = "photo", IsImage = true, Sortable = false, Width = 84 },
         new() { Label = "Name", Key = "name", Width = 220 },
-        new() { Label = "Email", Key = "email", Width = 260 },
-        new() { Label = "Notes", Sortable = false }
+        new() { Label = "Email", Key = "email", Width = 280 },
+        new() { Label = "Status", Key = "status", Width = 120 }
     ];
 
-    private CloudGridDataResult? _data;
-    private bool _loading = true;
+    private readonly CloudGridHeaderOptions _header = new()
+    {
+        Label = "Contacts",
+        AllowSearch = true,
+        AllowRefresh = true,
+        AllowExport = true
+    };
+
+    private async Task<CloudGridDataResult?> LoadAsync(CloudGridDataRequest request)
+    {
+        // Query your backend with request.Page, request.PageSize, request.Search, request.Sort
+        await Task.Delay(100);
+
+        return new CloudGridDataResult
+        {
+            Page = request.Page,
+            PageSize = request.PageSize,
+            Total = 2,
+            Rows =
+            [
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Link = "/contacts/1",
+                    Cells = ["/images/p1.jpg", "Mia Carter", "mia@domain.com", "Active"]
+                },
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Link = "/contacts/2",
+                    Cells = ["/images/p2.jpg", "Noah Brooks", "noah@domain.com", "Inactive"]
+                }
+            ]
+        };
+    }
 }
 ```
 
-`CloudGridDataResult` carries one page of data:
+---
+
+## Data flow (`DataProvider`)
+
+`CloudGrid` always calls a required callback:
 
 ```csharp
-_data = new CloudGridDataResult
-{
-    Page = 1,
-    PageSize = 25,
-    Total = 134,
-    Rows = records.Select(r => new CloudGridRow
-    {
-        Id = r.Id,
-        Link = $"/contacts/{r.Id}",                   // optional: makes the row a link
-        Cells = [r.PhotoUrl, r.Name, r.Email, r.Notes] // one value per column; null renders as "--"
-    }).ToList()
-};
+Func<CloudGridDataRequest, Task<CloudGridDataResult?>> DataProvider
 ```
 
-## CloudGrid parameters
+Called on:
+- initial load
+- search query changes
+- sort changes
+- page changes
+- reload/refresh
+
+`CloudGridDataRequest` includes:
+- `Page`
+- `PageSize`
+- `Search`
+- `Sort`
+- `IsAppend`
+- `Total`
+
+Return a `CloudGridDataResult` with `Rows`, `Page`, `PageSize`, `Total`, and optional `ErrorMessage`.
+
+---
+
+## Component API
+
+### `CloudGrid` parameters
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
-| `Columns` | `List<CloudGridColumn>` | `[]` | Column definitions, in display order. |
-| `Data` | `CloudGridDataResult?` | `null` | Current page of data. |
-| `IsLoading` / `IsSearching` | `bool` | `false` | Show the loading / searching status instead of rows. |
-| `Message` | `string?` | `null` | Message displayed instead of rows (e.g. "No records."). |
-| `AllowSelection` | `bool` | `false` | Renders a checkbox column (incl. select-all). |
-| `SelectedRecords` | `List<Guid>?` | `null` | Selected row ids. Supports `@bind-SelectedRecords`. |
-| `CssClass` | `string?` | `null` | Extra class(es) on the root element. |
-| `LinkTarget` | `string` | `_parent` | Target of row links. |
-| `LoadingText` / `SearchingText` | `string` | — | Status texts. |
-| `EmptyCellText` | `string` | `--` | Placeholder for null cells. |
-| `RowHeight` | `double?` | `null` | Fixed row height in pixels; overrides `--cloudgrid-row-height` (default 32). |
-| `RowsPerPage` | `int?` | `null` | Sizes the table to exactly header + N rows — no vertical scrollbar, no leftover pixels. |
-| `PagingMode` | `CloudGridPagingMode` | `Pages` | `Pages`, `LoadMore` or `InfiniteScroll` (see below). |
-| `LoadMoreText` | `string` | `load more` | Text of the load-more button. |
-| `OnPageChanged` | `EventCallback<CloudGridPaginationType>` | — | Page navigation (footer arrows, load-more click, or infinite-scroll trigger). |
-| `OnSortChanged` | `EventCallback<CloudGridSort>` | — | User sorted a column (reload sorted data server side). |
+| `Header` | `CloudGridHeaderOptions?` | `null` | Shows toolbar when provided. |
+| `Columns` | `List<CloudGridColumn>` | `[]` | Column definitions in render order. |
+| `DataProvider` | `Func<CloudGridDataRequest, Task<CloudGridDataResult?>>` | **required** | Data source callback for all grid state transitions. |
+| `AllowSelection` | `bool` | `false` | Enables checkbox column + select-all behavior. |
+| `SelectedRecords` | `List<Guid>?` | `null` | Selected row IDs (supports `@bind-SelectedRecords`). |
+| `SelectedRecordsChanged` | `EventCallback<List<Guid>>` | — | Raised on selection updates. |
+| `AllowReordering` | `bool` | `false` | Enables row drag handle and drop reordering. |
+| `OnRowsReordered` | `EventCallback<CloudGridRowReorder>` | — | Fired after a row is dropped in a new position. |
+| `OnActionClicked` | `EventCallback<CloudGridActionEventArgs>` | — | Fired for button actions (row/header/bulk). |
+| `RowActions` | `List<CloudGridAction>?` | `null` | Explicit row actions (merged with `Header.Actions` that set `ShowOnRow`). |
+| `ActionFilter` | `Func<CloudGridRow, CloudGridAction, bool>?` | `null` | Per-row action visibility filter. |
+| `CssClass` | `string?` | `null` | Additional classes appended to `.cloudgrid`. |
+| `LinkTarget` | `string` | `_parent` | Target for row links (`CloudGridRow.Link`). |
+| `LoadingText` | `string` | `retrieving data...` | Loading status text. |
+| `SearchingText` | `string` | `searching...` | Searching status text. |
+| `EmptyCellText` | `string` | `--` | Placeholder for null/empty cells. |
+| `RowHeight` | `double?` | `null` | Overrides `--cloudgrid-row-height` in px. |
+| `RowsPerPage` | `int?` | `null` | Desired body rows in viewport and page size sent to provider. |
+| `PagingMode` | `CloudGridPagingMode` | `Pages` | `Pages`, `LoadMore`, or `InfiniteScroll`. |
+| `LoadMoreText` | `string` | `load more` | Label for load-more button mode. |
+| `AdditionalAttributes` | `Dictionary<string, object>?` | `null` | Captures unmatched attributes on root element. |
 
-Unmatched attributes (e.g. `data-*`) are rendered on the root element. Rows render their own `CloudGridRow.Attributes` too.
+### `CloudGridHeaderOptions`
 
-### Exact sizing
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `Label` | `string?` | `null` | Header title. |
+| `Actions` | `List<CloudGridAction>` | `[]` | Unified action list for header/bulk/row/more menu placement. |
+| `OnActionClicked` | `EventCallback<CloudGridActionEventArgs>` | — | Callback for button action clicks. |
+| `AllowSearch` | `bool` | `false` | Enables built-in search element action. |
+| `SearchDebounceMilliseconds` | `int` | `300` | Debounce delay for search callback. |
+| `OnSearchChanged` | `EventCallback<string?>` | — | Debounced search query callback. |
+| `AllowRefresh` | `bool` | `true` | Enables built-in refresh button action. |
+| `OnRefresh` | `EventCallback` | — | Callback for built-in refresh click. |
+| `AllowExport` | `bool` | `true` | Injects built-in export action in More menu. |
+| `ExtraActions` | `RenderFragment?` | `null` | Optional custom trailing content in header action area. |
 
-Set `RowHeight` (C#) to fix the row height — it is emitted as the `--cloudgrid-row-height` CSS variable on the root, so header, rows and image thumbnails all follow it. Set `RowsPerPage` to give the table an exact height of `(RowsPerPage + 1) × row height` (header + N body rows, all border-box) so a full page fits with no vertical scrollbar and no extra pixels:
+---
+
+## Models reference
+
+### Core data models
+
+- `CloudGridColumn`
+  - `Label`, `Key`, `Width`, `MinWidth`, `Sortable`, `Resizable`, `IsImage`
+- `CloudGridRow`
+  - `Id`, `Link`, `Cells`, `Attributes`
+- `CloudGridDataRequest`
+  - `Page`, `PageSize`, `Search`, `Sort`, `IsAppend`, `Total`
+- `CloudGridDataResult`
+  - `Rows`, `Page`, `PageSize`, `Total`, `ErrorMessage`
+- `CloudGridSort`
+  - `Column`, `ColumnIndex`, `Direction`, `Key`
+
+### Action models
+
+- `CloudGridAction`
+  - Supports `Link`, `Button`, `Element` modes via `CloudGridActionType`
+  - Placement flags: `ShowOnHeader`, `ShowInMore`, `ShowOnBulkHeader`, `ShowOnRow`
+  - Optional icon/text/tooltips and deactivation hooks for element actions
+- `CloudGridActionEventArgs`
+  - `Action`, `RecordIds`
+
+### Enums
+
+- `CloudGridPagingMode`: `Pages`, `LoadMore`, `InfiniteScroll`
+- `CloudGridPaginationType`: `LeftArrow`, `RightArrow`
+- `CloudGridSortDirection`: `Ascending`, `Descending`
+- `CloudGridActionType`: `Link`, `Button`, `Element`
+
+---
+
+## Paging modes
+
+### `Pages` (default)
+
+- Footer shows previous/next paging controls
+- New page replaces current rows
+- Best for classic server paging
+
+### `LoadMore`
+
+- Renders a load-more button at list end
+- Emits next-page request and expects rows to be appended
+
+### `InfiniteScroll`
+
+- Uses Blazor virtualization to fetch next page near list end
+- Also expects append behavior
+
+In append modes, ensure your `DataProvider` returns incremented `Page` and updated `Total`.
+
+---
+
+## Sorting behavior
+
+If `OnSortChanged` is handled:
+- grid updates visual sort indicator
+- consumer reloads data server-side using `CloudGridSort.Key` + `Direction`
+
+If no handler is attached:
+- grid sorts currently loaded rows locally
+- nulls are pushed last
+- mixed values are compared as case-insensitive text
+
+---
+
+## Actions (header, row, bulk, more)
+
+You can define one `CloudGridAction` list and control placement using flags.
+
+```csharp
+new CloudGridAction
+{
+    Key = "delete-selected",
+    Text = "Delete",
+    Type = CloudGridActionType.Button,
+    ShowOnBulkHeader = true,
+    ShowOnHeader = false
+}
+```
+
+Placement guidance:
+- `ShowOnHeader = true`: direct header action area
+- `ShowInMore = true`: appears in More (⋯) menu
+- `ShowOnBulkHeader = true`: appears only when rows are selected
+- `ShowOnRow = true`: appears per row
+
+`Element` actions can expand inline content and are cancellable.
+
+---
+
+## Selection
+
+Enable row selection:
 
 ```razor
-<CloudGrid Columns="_columns" Data="_data" RowHeight="36" RowsPerPage="10" />
+<CloudGrid ... AllowSelection="true" @bind-SelectedRecords="_selected" />
 ```
 
-### Paging modes
+Details:
+- select-all operates on currently loaded rows
+- selected IDs are exposed through two-way binding
+- hidden input `#SelectedRecords` is rendered for legacy integrations
 
-- **`Pages`** (default) — footer pager with previous/next arrows; each page replaces the rows. With `RowsPerPage` set, the page fits exactly.
-- **`LoadMore`** — a "load more" button after the last row raises `OnPageChanged(RightArrow)`; append the next page's rows to `Data.Rows` (and keep `Data.Total` accurate). With `RowsPerPage` set, rows scroll inside the fixed viewport.
-- **`InfiniteScroll`** — rows are virtualized (built-in Blazor `Virtualize`, no JavaScript); when the user scrolls near the end of the loaded rows the grid raises `OnPageChanged(RightArrow)` automatically. Append rows exactly like `LoadMore`.
+---
 
-In the accumulating modes the grid stops requesting when a callback completes without adding rows, so a misbehaving source can't cause a request loop.
+## Row reordering
 
-```csharp
-private async Task OnPageChangedAsync(CloudGridPaginationType type)
-{
-    CloudGridDataResult next = await LoadPageAsync(_data!.Page + 1);
+Enable and listen:
 
-    _data = new CloudGridDataResult
-    {
-        Page = next.Page,
-        PageSize = next.PageSize,
-        Total = next.Total,
-        Rows = [.. _data.Rows, .. next.Rows] // append for LoadMore / InfiniteScroll
-    };
-}
+```razor
+<CloudGrid ... AllowReordering="true" OnRowsReordered="HandleReorder" />
 ```
 
-### Sorting
+`CloudGridRowReorder` provides:
+- moved `RecordId`
+- `OldIndex`, `NewIndex`
+- full `OrderedRecordIds` after drop
 
-Click a sortable column header to sort ascending; click again to flip direction.
+---
 
-- **With** an `OnSortChanged` handler the grid only renders the indicator — reload `Data` yourself using `CloudGridSort.Key` and `Direction`. Sort the *entire* record set (re-query or re-fetch everything), not just the loaded page, so the result is correct across pages.
-- **Without** a handler the grid sorts the rows it was given locally: same-typed values natively (numbers, dates), everything else as case-insensitive text, nulls last. This is only correct when `Data` contains the full record set.
+## Export
 
-Disable per column with `Sortable = false`.
+When `Header.AllowExport = true` (default), grid injects an export action in the More menu.
 
-### Image columns
+Built-in export options:
+- Current page
+- All records (using current search/sort)
+- Selection (only shown when rows are selected)
 
-Set `CloudGridColumn.IsImage = true` to render that column's cell values as image thumbnails. Cell values must be image URLs (strings); null or empty values fall back to `EmptyCellText`. Thumbnails are sized to the row height (`--cloudgrid-row-height`) and lazy-loaded by the browser.
+Files are downloaded as CSV using the package JS module.
 
-```csharp
-new CloudGridColumn { Label = "Photo", IsImage = true, Sortable = false, Width = 80 }
-```
+---
 
-### Column resizing
+## Styling and theming
 
-Drag the right edge of a column header. Implemented with Blazor pointer events plus a transparent capture overlay — no JavaScript. `CloudGridColumn.MinWidth` limits shrinking; disable per column with `Resizable = false`.
+The component uses scoped styles authored in `*.razor.less` and compiled to `*.razor.css`.
 
-### Selection
+### Core classes
 
-Set `AllowSelection="true"`; bind with `@bind-SelectedRecords`. A hidden `#SelectedRecords` input with the comma-joined ids is rendered for legacy integrations.
+- `.cloudgrid`
+- `.cloudgrid-head`, `.cloudgrid-headcell`
+- `.cloudgrid-row`, `.cloudgrid-cell`
+- `.cloudgrid-status`
+- `.cloudgridheader`, `.cloudgridheader-action`
 
-## CloudGridHeader parameters
+### State classes
 
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `Label` | `string?` | `null` | Title text. |
-| `ViewUrl` | `string?` | `null` | "Open view" link; hidden when empty. |
-| `NewUrl` | `string?` | `null` | "New record" link; hidden when empty. |
-| `NewButtonText` | `string` | `new` | Text of the new button. |
-| `AllowSearch` | `bool` | `true` | Show the search button/box. |
-| `SearchDebounceMilliseconds` | `int` | `300` | Typing debounce before the callback fires. |
-| `OnSearchChanged` | `EventCallback<string?>` | — | Debounced query; `null` when cleared. |
+- `._busy`
+- `._resizing`
+- `._rowdragging`
+- `._selectable`
+- sorted state adjectives on head cells
 
-## Styling
+### CSS variables
 
-CSS classes follow the [Angry Monkey CSS naming convention](https://github.com/angrymonkeydocs/css-naming-convention): one block class per component (`.cloudgrid`, `.cloudgridheader`), dash-prefixed children (`.cloudgrid-row`, `.cloudgrid-cell`), underscore adjectives (`._busy`, `._sorted-ascending`, `._selected`).
+| Variable | Default |
+|---|---|
+| `--cloudgrid-font-size` | `14px` |
+| `--cloudgrid-row-height` | `32px` |
+| `--cloudgrid-color` | `#505050` |
+| `--cloudgrid-background` | `#fff` |
+| `--cloudgrid-accent-color` | `#000` |
+| `--cloudgrid-border-color` | `rgba(0,0,0,0.15)` |
+| `--cloudgrid-head-background` | `#f8f8f8` |
+| `--cloudgrid-hover-background` | `#e8e8e8` |
+| `--cloudgrid-selected-background` | `#f8f8f8` |
 
-Styles are authored in `*.razor.less` (compiled to scoped `*.razor.css` by Web Compiler — never edit the `.css` directly).
+Header-specific variables (`--cloudgridheader-*`) fall back to matching `--cloudgrid-*` values.
 
-### Theming with CSS custom properties
-
-All design tokens are modern CSS variables with built-in fallback defaults. Override them from any ancestor (e.g. `:root`) — no recompilation needed:
-
-| Variable | Default | Used for |
-|---|---|---|
-| `--cloudgrid-font-size` | `14px` | Base font size. |
-| `--cloudgrid-row-height` | `32px` | Header/body row height and thumbnail size. |
-| `--cloudgrid-color` | `#505050` | Text color. |
-| `--cloudgrid-background` | `#fff` | Grid background. |
-| `--cloudgrid-accent-color` | `#000` | Sort chevron, pager arrows, resize handle, icons. |
-| `--cloudgrid-border-color` | `rgba(0,0,0,0.15)` | Header/footer borders, search box border. |
-| `--cloudgrid-head-background` | `#f8f8f8` | Sticky header background. |
-| `--cloudgrid-hover-background` | `#e8e8e8` | Row/header/action hover. |
-| `--cloudgrid-selected-background` | `#f8f8f8` | Selected row background. |
-
-`CloudGridHeader` reads `--cloudgridheader-*` equivalents (`-color`, `-accent-color`, `-border-color`, `-hover-background`, `-font-size`), each falling back to the matching `--cloudgrid-*` variable — so a single `--cloudgrid-*` override themes the whole family, while `--cloudgridheader-*` allows targeting the header alone.
+Example:
 
 ```css
 :root {
@@ -180,9 +392,25 @@ All design tokens are modern CSS variables with built-in fallback defaults. Over
 }
 ```
 
-Key hooks for consumers (use `::deep` from a parent scoped stylesheet):
+---
 
-- `.cloudgrid` — root; `._busy`, `._resizing`, `._selectable` state adjectives.
-- `.cloudgrid-head` / `.cloudgrid-headcell` — sticky header row; `._sortable`, `._sorted-ascending`, `._sorted-descending`.
-- `.cloudgrid-row` — `._selected` when checked.
-- `.cloudgrid-status` — `._loading`, `._searching`, `._message`.
+## Troubleshooting
+
+### “Grid never loads data”
+- Confirm `DataProvider` is assigned.
+- Verify callback returns non-null `CloudGridDataResult`.
+
+### “Sorting doesn’t affect backend data”
+- Implement `OnSortChanged` and apply `request.Sort` in your server query.
+
+### “LoadMore/InfiniteScroll keeps requesting”
+- In append mode, stop adding rows once end is reached; keep `Total` accurate.
+
+### “No export action visible”
+- Ensure `Header` is set and `AllowExport` is true.
+
+---
+
+## License
+
+See repository licensing terms.
