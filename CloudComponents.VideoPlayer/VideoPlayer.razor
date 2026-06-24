@@ -1,0 +1,238 @@
+@namespace CloudComponents.VideoPlayer
+
+<div class="amc-videoplayer @ClassAttributes" @ref="ComponentElement" @onmousemove="MainMouseMove" @onfullscreenchange="OnFullScreenChange" @onmousewheel="OnMouseWheel" @onclick="OnComponentClick">
+
+    <div class="amc-videoplayer-video">
+        <video src="@_videoUrl" poster="@_Poster" onchange="@(EventCallback.Factory.Create<ChangeEventArgs>(this, OnVideoChange))" playsinline x-webkit-airplay="deny"></video>
+    </div>
+
+    @if (Metadata.VideoState != VideoStates.Error)
+    {
+        @if (Metadata.IsCasting || Metadata.CastingInitialized)
+        {
+            <VideoPlayerCast @ref="VideoPlayerCast" Player="this" Metadata="Metadata" />
+        }
+
+        @if (ShowContent)
+        {
+            <div class="amc-videoplayer-content">
+
+                @if (!ShowSideBar && ChildContent != null)
+                {
+                    <div class="amc-videoplayer-header">
+                        @ChildContent
+                    </div>
+                }
+
+                @if (Metadata.EnableControls)
+                {
+
+                    <div class="amc-videoplayer-top">
+
+                        <div class="amc-videoplayer-empty" @onclick="OnEmptyClick" @ontouchstart="OnEmptyTouch">
+                            @if (ShowSideBar)
+                            {
+                                <div class="amc-videoplayer-close">
+                                    <span>
+                                        @if (ShowSideBarMenu)
+                                        {
+                                            <CloudIcons.Icons.CloseIcon />
+                                        }
+                                        else
+                                        {
+                                            <CloudIcons.Icons.ChevronIcon />
+                                        }
+                                    </span>
+                                </div>
+                            }
+                        </div>
+
+                        @if (ShowSideBar)
+                        {
+                            <div class="amc-videoplayer-sidebar">
+                                @if (ShowSideBarMenu)
+                                {
+                                    <div class="amc-videoplayer-sidebar-menu">
+                                        <button class="amc-videoplayer-menu-info" @onclick="ShowVideoInfo">
+                                            Video Info
+                                            <div class="amc-videoplayer-settings-subvalue">@Metadata.PlayingState</div>
+                                        </button>
+                                        <button class="amc-videoplayer-menu-playbackspeed" @onclick="ShowVideoPlaybackSpeedOptions">
+                                            Playback speed
+                                            <div class="amc-videoplayer-settings-subvalue">@DisplayPlaybackSpeed</div>
+                                        </button>
+
+                                        @if (Metadata.EnableLoop)
+                                        {
+                                            <button class="amc-videoplayer-menu-loop" @onclick="ShowVideoLoop">
+                                                Loop
+                                                <div class="amc-videoplayer-settings-subvalue">@DisplayLoop</div>
+                                            </button>
+                                        }
+
+                                        <a href="https://angrymonkeycloud.com/" target="_blank" class="amc-videoplayer-settings-angrymonkeycloud">
+
+                                            <AngryMonkey.Cloud.Components.Icons.AngryMonkeyCloudLogo />
+
+                                        </a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    @if (ShowSideBarInfo)
+                                    {
+                                        <div class="amc-videoplayer-sidebar-section">
+                                            @foreach (var info in Metadata.VideoSettingsInfo)
+                                            {
+                                                <label>@info.Key</label>
+                                                <div class="amc-videoplayer-value">@info.Value</div>
+                                            }
+                                        </div>
+                                    }
+
+                                    @if (ShowSideBarPlaybackSpeed)
+                                    {
+                                        <div class="amc-videoplayer-sidebar-section amc-videoplayer-sidebar-playbackspeed">
+                                            @foreach (var speedOption in PlaybackSpeedOptions)
+                                            {
+                                                <button class="@(speedOption.Key == PlaybackSpeed? "_selected": string.Empty)" @onclick="@(async() => await ChangePlaybackSpeed(speedOption.Key))">@speedOption.Value</button>
+                                            }
+                                        </div>
+                                    }
+
+                                    @if (ShowSideBarLoop)
+                                    {
+                                        <div class="amc-videoplayer-sidebar-section">
+                                            <button @onclick="ChangeLoop">@DisplayLoop</button>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    @if (ShowBottomSections)
+                    {
+                        <div class="amc-videoplayer-seekinfo">
+                            <div class="amc-videoplayer-seekinfo-container">
+                                @*
+                <div class="amc-videoplayer-seekinfo-canvas">
+                <canvas />
+                </div>*@
+
+                                <div class="amc-videoplayer-seekinfo-duration">
+                                    @Metadata.DisplaySeekInfoTime
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="amc-videoplayer-controls">
+                            <div class="amc-videoplayer-controls-left">
+                                @if (Metadata.ShowDuration)
+                                {
+                                    @* Current Time / Duration *@
+                                    <div class="amc-videoplayer-timeduration">
+                                        @Metadata.DisplayTimeDuration
+                                    </div>
+                                }
+
+                                @* Stop *@
+                                @if (Metadata.ShowStopButton)
+                                {
+                                    <div class="amc-videoplayer-stop">
+                                        <button @onclick="StopVideo">
+                                            <CloudIcons.Icons.StopIcon />
+                                        </button>
+                                    </div>
+                                }
+
+                                @if (Metadata.VolumeType != VolumeType.None)
+                                {
+                                    @* Volume *@
+                                    <div class="amc-videoplayer-volume @(Metadata.DoShowVolumeControls? "_extended": string.Empty)" @onclick="OnVolumeButtonClick">
+                                        <AngryMonkey.Cloud.Components.VolumeBar Value="@Metadata.Volume" IsMuted="Metadata.IsMuted" Extended="Metadata.DoShowVolumeControls" OnChanging="OnVolumeChanging"></AngryMonkey.Cloud.Components.VolumeBar>
+                                    </div>
+                                }
+
+                                @* Status *@
+                                <div class="amc-videoplayer-status">
+                                    @if (Metadata.PlayingState == PlayingStates.Buffering)
+                                    {
+                                        <AngryMonkey.Cloud.Components.Icons.Loading />
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="amc-videoplayer-controls-middle">
+                                @* Play *@
+                                <div class="amc-videoplayer-play">
+                                    <button @onclick="PlayVideo">
+                                        <AngryMonkey.Cloud.Components.Icons.PlayButton />
+                                    </button>
+                                </div>
+
+                                @* Pause *@
+                                <div class="amc-videoplayer-pause">
+                                    <button @onclick="PauseVideo">
+                                        <AngryMonkey.Cloud.Components.Icons.PauseButton />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="amc-videoplayer-controls-right">
+
+                                @if (Metadata.ShowSettings)
+                                {
+                                    <div class="amc-videoplayer-more">
+                                        <button @onclick="MoreButtonInfo">
+                                            <CloudIcons.Icons.SettingsIcon />
+                                        </button>
+                                    </div>
+                                }
+
+                                @* Cast *@
+                                <div class="amc-videoplayer-castbutton">
+                                    <button @onclick="Cast">
+                                        <AngryMonkey.Cloud.Components.Icons.Cast />
+                                    </button>
+                                </div>
+
+                                <div class="amc-videoplayer-fullscreen">
+                                    @if (!Metadata.IsFullScreen)
+                                    {
+                                        <button class="amc-videoplayer-enterfullscreen" @onclick="EnterFullScreen">
+                                            <CloudIcons.Icons.FullscreenIcon />
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="amc-videoplayer-exitfullscreen" @onclick="ExitFullScreen">
+                                            <CloudIcons.Icons.ExitFullscreenIcon />
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (Metadata.ShowProgressBarElement)
+                        {
+                            <div class="amc-videoplayer-progress"
+                            @onmousedown="OnProgressMouseDown"
+                            @ontouchstart="OnProgressTouchStart"
+                            @onmousemove="OnProgressMouseMove"
+                            @onmouseout="OnProgressMouseOut">
+                                <AngryMonkey.Cloud.Components.ProgressBar Value="Metadata.CurrentTime" Total="Metadata.CurrentVideoInfo?.Duration ?? 0" Style="ProgressBarStyle" OnChanged="OnProgressChanged" OnChanging="OnProgressChanging" />
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <div class="amc-videoplayer-error">
+            Error
+        </div>
+    }
+</div>

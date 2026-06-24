@@ -1,0 +1,175 @@
+:root {
+    --demo-bg: #0e0e10;
+    --demo-surface: #1a1a1e;
+    --demo-border: #2e2e35;
+    --demo-text: #e8e8ee;
+    --demo-muted: #8888a0;
+    --demo-accent: #4c9aff;
+    --demo-nav-width: 220px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    color: var(--demo-text);
+    background: var(--demo-bg);
+}
+
+.app-loading {
+    padding: 2rem;
+    font-size: 1rem;
+    color: var(--demo-muted);
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.layout-main {
+    flex: 1;
+    min-width: 0;
+    padding: 2rem 2.5rem;
+}
+
+.layout-content {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+/* ── Navigation ─────────────────────────────────────────────────────────── */
+.nav {
+    width: var(--demo-nav-width);
+    flex-shrink: 0;
+    background: #11111a;
+    color: #cdd3df;
+    padding: 1.5rem 1rem;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    height: 100vh;
+    border-right: 1px solid var(--demo-border);
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #fff;
+    padding: 0 0.5rem 1.25rem;
+}
+
+.nav-brand-mark {
+    font-size: 1.4rem;
+    color: var(--demo-accent);
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.nav-link {
+    display: block;
+    padding: 0.55rem 0.75rem;
+    border-radius: 7px;
+    color: #cdd3df;
+    text-decoration: none;
+    font-size: 0.92rem;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: #fff;
+}
+
+.nav-link.active {
+    background: var(--demo-accent);
+    color: #fff;
+}
+
+/* ── Page scaffolding ───────────────────────────────────────────────────── */
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    margin: 0 0 0.5rem;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.page-header p {
+    margin: 0;
+    color: var(--demo-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* ── Cards ──────────────────────────────────────────────────────────────── */
+.card {
+    background: var(--demo-surface);
+    border: 1px solid var(--demo-border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.card-title {
+    margin: 0 0 0.4rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.card-subtitle {
+    margin: 0 0 1rem;
+    color: var(--demo-muted);
+    font-size: 0.88rem;
+}
+
+/* ── Player wrapper ─────────────────────────────────────────────────────── */
+.player-wrapper {
+    border-radius: 8px;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background: #000;
+}
+
+/* ── Code snippets ──────────────────────────────────────────────────────── */
+code {
+    background: rgba(255,255,255,0.07);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-size: 0.88em;
+}
+
+/* ── Blazor error UI ────────────────────────────────────────────────────── */
+#blazor-error-ui {
+    background: #ffd700;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    color: #000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}

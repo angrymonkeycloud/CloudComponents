@@ -38,6 +38,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="VideoPlayer\**" />
+    <Content Remove="VideoPlayer\**" />
+    <EmbeddedResource Remove="VideoPlayer\**" />
+    <None Remove="VideoPlayer\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove=".mateconfig.json" />
     <Content Remove="compilerconfig.json" />
     <Content Remove="tsconfig.json" />

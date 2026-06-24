@@ -1,0 +1,296 @@
+class VideoInfo {
+    constructor() {
+        this.Duration = 0;
+        this.Width = 0;
+        this.Height = 0;
+    }
+}
+
+window.amcVideoPlayerInit = (component) => {
+
+    const video = component.querySelector('video');
+
+    const event = new Event('load', { bubbles: true, cancelable: true });
+    video.dispatchEvent(event);
+}
+
+window.amcVideoPlayerGetVideoInfo = (component) => {
+
+    const video = component.querySelector('video');
+
+    const videoInfo = new VideoInfo();
+
+    try { videoInfo.Duration = video.duration; } catch { }
+    videoInfo.Width = video.videoWidth;
+    videoInfo.Height = video.videoHeight;
+
+    return videoInfo;
+}
+
+window.amcVideoPlayerRemovePoster = (component) => {
+
+    const video = component.querySelector('video');
+    video.setAttribute("poster", "");
+}
+
+window.amcVideoPlayerSetVideoPlaybackSpeed = (component, value) => {
+
+    const video = component.querySelector('video');
+
+    video.playbackRate = value;
+}
+
+window.amcVideoPlayerMuteVolume = (component, mute) => {
+
+    const video = component.querySelector('video');
+
+    video.muted = mute;
+}
+
+window.amcVideoPlayerChangeVolume = (component, newVolume) => {
+
+    const video = component.querySelector('video');
+
+    video.volume = newVolume;
+}
+
+window.amcVideoPlayerChangeCurrentTime = (component, newCurrentTime) => {
+
+    const video = component.querySelector('video');
+
+    video.currentTime = newCurrentTime;
+}
+
+window.amcVideoPlayerPlay = (component) => {
+
+    const video = component.querySelector('video');
+
+    video.play();
+
+}
+
+window.amcVideoPlayerPause = (component) => {
+
+    const video = component.querySelector('video');
+
+    video.pause();
+}
+
+window.amcVideoPlayerStop = (component) => {
+
+    pause(component);
+
+    const video = component.querySelector('video');
+    video.currentTime = 0;
+
+}
+
+window.amcVideoPlayerEnterFullScreen = (component) => {
+
+    component.requestFullscreen({
+        navigationUI: "hide"
+    });
+}
+
+window.amcVideoPlayerSeeking = (component, value, total) => {
+
+    // Seek Info Position
+
+    const seekInfo = component.querySelector('.amc-videoplayer-seekinfo');
+    const container = component.querySelector('.amc-videoplayer-seekinfo-container');
+
+    const seekInfoWidth = seekInfo.clientWidth;
+    const seekInfoInnetWidth = Number(window.getComputedStyle(seekInfo, null).width.replace('px', ''));
+    const containerWidth = container.clientWidth;
+
+    if (!total) {
+
+        const video = component.querySelector('video');
+        total = video.duration;
+
+        const progressBar = component.querySelector('.amc-videoplayer-progress');
+
+        value = value - component.getBoundingClientRect().left;
+        value = total * value / progressBar.clientWidth;
+    }
+
+    let position = (value * seekInfoWidth / total) - (containerWidth / 2);
+
+    if (position < 0)
+        position = 0;
+    else if (position + containerWidth > seekInfoInnetWidth)
+        position = seekInfoInnetWidth - containerWidth;
+
+    container.style.setProperty('margin-left', position + 'px');
+
+    return value;
+}
+
+window.amcVideoPlayerExitFullScreen = (component) => {
+
+    document.exitFullscreen();
+}
+
+window.amcVideoPlayerRegisterCustomEventHandler = (component, eventName, payload) => {
+
+    const videoElement = component.querySelector('video');
+
+    if (!(videoElement && eventName))
+        return false
+
+    if (!videoElement.hasOwnProperty('customEvent')) {
+        videoElement['customEvent'] = function (eventName, payload) {
+
+            this['value'] = getJSON(this, eventName, payload)
+
+            var event
+            if (typeof (Event) === 'function')
+                event = new Event('change')
+            else {
+                event = document.createEvent('Event')
+                event.initEvent('change', true, true)
+            }
+
+            this.dispatchEvent(event)
+        }
+    }
+
+    videoElement.addEventListener(eventName, function () { videoElement.customEvent(eventName, payload) });
+
+    // Craft a bespoke json string to serve as a payload for the event
+    function getJSON(videoElement, eventName, payload) {
+
+        if (payload && payload.length > 0) {
+            // this syntax copies just the properties we request from the source element
+            // IE 11 compatible
+            let data = {};
+            for (const obj in payload) {
+                const item = payload[obj];
+
+                if (videoElement[item])
+                    data[item] = videoElement[item]
+            }
+
+            // this stringify overload eliminates undefined/null/empty values
+            return JSON.stringify(
+                { name: eventName, state: data }
+                , function (k, v) { return (v === undefined || v == null || v.length === 0) ? undefined : v }
+            )
+        } else {
+            return JSON.stringify(
+                { name: eventName }
+            )
+        }
+    }
+}
+
+window.amcVideoPlayerAddReserveAspectRatioListener = (component, width, height) => {
+
+    const listener = function () {
+
+        const newHeight = component.clientWidth * height / width;
+
+        component.style.setProperty('height', newHeight + 'px');
+    };
+
+    listener.call(this);
+
+    window.addEventListener('resize', listener);
+
+    return listener;
+}
+
+window.amcVideoPlayerRemoveReserveAspectRatioListener = (component, listener) => {
+
+    window.removeEventListener('resize', listener);
+}
+
+// Hls.Events and Hls.ErrorTypes are provided by hls.js at runtime.
+
+//declare class Hls {
+//	loadSource(source);
+//	attachMedia(element);
+//	startLoad();
+//	stopLoad();
+//	destroy();
+//	on(event, callback);
+//	off(event, callback);
+//	getCurrentTime();
+//	getDuration();
+//	isDynamic();
+//	isSeekable();
+//	isPaused();
+//	getBufferedRanges();
+//	pause();
+//	play();
+//	recoverMediaError();
+//	seekTo(time);
+//	setMaxBufferSize(size);
+//	setMaxBufferLength(length);
+//	setMaxBufferHole(hole);
+//	static IsSupported();
+//	static get Events();
+//	static get ErrorTypes();
+//	get levels();
+//}
+
+let hls;
+let hlsHasInitialized = false;
+
+window.amcVideoPlayerIsStreamingPlayableNatively = (component) => {
+
+    const video = component.querySelector('video');
+
+    if (video.canPlayType('application/vnd.apple.mpegurl'))
+        return true;
+
+    return false;
+}
+
+window.amcVideoPlayerInitializeStreamingUrl = (component, url) => {
+
+    return new Promise((resolve, reject) => {
+
+        if (hlsHasInitialized)
+            return;
+
+        hls = new Hls();
+        hlsHasInitialized = true;
+
+        const video = component.querySelector('video');
+
+        hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+
+            if (data.levels.length === 0) {
+
+                disposeStreaming();
+                reject('Error: ' + data.type);
+            }
+
+            hls.on(Hls.Events.MEDIA_ATTACHED, function (event, data) {
+                resolve(data.media.currentSrc);
+            });
+
+            hls.attachMedia(video);
+        });
+
+        hls.on(Hls.Events.ERROR, function (event, data) {
+
+            disposeStreaming();
+            reject('Error: ' + data.type);
+        });
+
+        hls.loadSource(url);
+    });
+}
+
+window.amcVideoPlayerDisposeStreaming = () => {
+
+    hlsHasInitialized = false;
+
+    try {
+        hls.destroy();
+    } catch { }
+
+    hls = null;
+}

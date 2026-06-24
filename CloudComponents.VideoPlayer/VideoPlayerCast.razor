@@ -1,0 +1,67 @@
+@namespace CloudComponents.VideoPlayer
+@inject IJSRuntime JS
+
+<div @ref="ComponentElement" class="amc-videoplayer-cast">
+
+    <div class="amc-videoplayer-cast-info">
+        <div class="amc-videoplayer-cast-icon">
+            <CloudComponents.Icons.Cast />
+        </div>
+        <div class="amc-videoplayer-cast-title">@Metadata.Title</div>
+        <div class="amc-videoplayer-cast-status">@InfoStatus</div>
+    </div>
+
+    <div class="amc-videoplayer-controls">
+        <div class="amc-videoplayer-controls-left">
+            @if (Metadata.ShowDuration)
+            {
+                @* Current Time / Duration *@
+                <div class="amc-videoplayer-timeduration">
+                    @Metadata.DisplayTimeDuration
+                </div>
+            }
+
+            @* Stop *@
+            @if (Metadata.ShowStopButton)
+            {
+                <div class="amc-videoplayer-stop">
+                    <button @onclick="StopCast">
+                        <CloudIcons.Icons.StopIcon />
+                    </button>
+                </div>
+            }
+
+            @* Status *@
+            <div class="amc-videoplayer-status">
+                @if (Metadata.CastStatus != VideoPlayerMetadata.CastStatuses.Casting || Metadata.PlayingState == PlayingStates.Buffering)
+                {
+                    <CloudComponents.Icons.Loading />
+                }
+            </div>
+        </div>
+
+        <div class="amc-videoplayer-controls-middle">
+            @* Play *@
+            <div class="amc-videoplayer-play">
+                <button @onclick="PlayCast">
+                    <CloudComponents.Icons.PlayButton />
+                </button>
+            </div>
+
+            @* Pause *@
+            <div class="amc-videoplayer-pause">
+                <button @onclick="PauseCast">
+                    <CloudComponents.Icons.PauseButton />
+                </button>
+            </div>
+        </div>
+
+        <div class="amc-videoplayer-controls-right">
+            <div class="amc-videoplayer-castbutton">
+                <button @onclick="StopCast">
+                    <CloudComponents.Icons.Close />
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

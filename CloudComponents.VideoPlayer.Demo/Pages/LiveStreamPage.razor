@@ -1,0 +1,30 @@
+@page "/live"
+
+<PageTitle>CloudVideoPlayer Demo — Live Stream</PageTitle>
+
+<div class="page-header">
+    <h1>Live Stream</h1>
+    <p>HLS live-stream playback using the built-in HLS.js integration.</p>
+</div>
+
+<div class="card">
+    <h2 class="card-title">HLS Test Stream</h2>
+    <p class="card-subtitle">
+        Public HLS test stream — <code>@Metadata.VideoUrl</code>
+    </p>
+    <div class="player-wrapper">
+        <VideoPlayer Metadata="Metadata" />
+    </div>
+</div>
+
+@code {
+    private VideoPlayerMetadata Metadata = new()
+    {
+        Title = "HLS Live Stream",
+        VideoUrl = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+        IsLive = true,
+        EnableControls = true,
+        ShowSettings = false,
+        Volume = 0.8
+    };
+}
