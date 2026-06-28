@@ -1,0 +1,286 @@
+:root {
+    --demo-bg: #f4f5f7;
+    --demo-surface: #ffffff;
+    --demo-border: #e2e4e9;
+    --demo-text: #1f2430;
+    --demo-muted: #6b7280;
+    --demo-accent: #0a5dc2;
+    --demo-nav-width: 220px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    color: var(--demo-text);
+    background: var(--demo-bg);
+}
+
+.app-loading {
+    padding: 2rem;
+    font-size: 1rem;
+    color: var(--demo-muted);
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.layout-main {
+    flex: 1;
+    min-width: 0;
+    padding: 2rem 2.5rem;
+}
+
+.layout-content {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* ── Navigation ─────────────────────────────────────────────────────────── */
+.nav {
+    width: var(--demo-nav-width);
+    flex-shrink: 0;
+    background: #11151c;
+    color: #cdd3df;
+    padding: 1.5rem 1rem;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #fff;
+    padding: 0 0.5rem 1.25rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 0.75rem;
+}
+
+.nav-brand-mark {
+    font-size: 1.3rem;
+    color: #4c9aff;
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.nav-link {
+    display: block;
+    padding: 0.55rem 0.75rem;
+    border-radius: 7px;
+    color: #cdd3df;
+    text-decoration: none;
+    font-size: 0.92rem;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: #fff;
+}
+
+.nav-link.active {
+    background: var(--demo-accent);
+    color: #fff;
+}
+
+/* ── Page scaffolding ───────────────────────────────────────────────────── */
+.page-header {
+    margin-bottom: 1.75rem;
+}
+
+.page-header h1 {
+    margin: 0 0 0.35rem;
+    font-size: 1.6rem;
+}
+
+.page-header p {
+    margin: 0;
+    color: var(--demo-muted);
+    max-width: 70ch;
+    line-height: 1.5;
+}
+
+/* ── Cards ──────────────────────────────────────────────────────────────── */
+.card {
+    background: var(--demo-surface);
+    border: 1px solid var(--demo-border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.card-title {
+    margin: 0 0 0.25rem;
+    font-size: 1.05rem;
+}
+
+.card-subtitle {
+    margin: 0 0 1rem;
+    color: var(--demo-muted);
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+/* ── Demo stage (centered preview area inside a card) ───────────────────── */
+.demo-stage {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0 0.5rem;
+}
+
+.demo-stage-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* ── Toolbar / controls ─────────────────────────────────────────────────── */
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.toolbar label {
+    font-size: 0.88rem;
+    color: var(--demo-muted);
+}
+
+.btn {
+    border: 1px solid var(--demo-border);
+    background: #fff;
+    color: var(--demo-text);
+    border-radius: 7px;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn:hover {
+    background: #f0f2f5;
+}
+
+.btn-primary {
+    background: var(--demo-accent);
+    border-color: var(--demo-accent);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: #094ea3;
+    border-color: #094ea3;
+}
+
+select.input {
+    border: 1px solid var(--demo-border);
+    border-radius: 7px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.88rem;
+    background: #fff;
+    cursor: pointer;
+}
+
+/* ── Event log ──────────────────────────────────────────────────────────── */
+.log {
+    background: #0f1722;
+    color: #d6e2f0;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    max-height: 180px;
+    overflow: auto;
+}
+
+.log-empty {
+    color: #6f7d90;
+}
+
+.log-line {
+    white-space: pre-wrap;
+}
+
+.log-line .log-time {
+    color: #5fb0ff;
+    margin-right: 0.5rem;
+}
+
+/* ── Overview checklist ─────────────────────────────────────────────────── */
+.checklist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem 1.5rem;
+}
+
+.checklist li {
+    position: relative;
+    padding-left: 1.5rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--demo-text);
+}
+
+.checklist li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #1a9d5a;
+    font-weight: 700;
+}
+
+/* ── Badge ──────────────────────────────────────────────────────────────── */
+.badge {
+    display: inline-block;
+    background: #eef2f7;
+    color: var(--demo-muted);
+    border-radius: 999px;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.78rem;
+}
+
+/* ── Blazor error UI ────────────────────────────────────────────────────── */
+#blazor-error-ui {
+    background: #ffe9c9;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}

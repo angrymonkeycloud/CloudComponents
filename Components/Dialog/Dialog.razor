@@ -1,49 +1,27 @@
 ﻿@namespace AngryMonkey.Cloud.Components
 
-@implements IAsyncDisposable
-
 @inject IJSRuntime _js
-@inject NavigationManager _navigation
 
-@* <div @ref="ComponentElement">
-	@if (IsOpened)
-	{
-		<aside class="amc-dialog">
-			<div class="amc-dialog-content">
-				<div class="amc-dialog-title">@Title</div>
-				<div class="amc-dialog-message">@ChildContent</div>
-				@if (Buttons != null && Buttons.Any())
+<PopupComp @ref="_popup"
+		   Title="@Title"
+		   PreventCloseOnClick="true"
+		   HeaderClose="false"
+		   Size="_small">
+	<ChildContent>
+		@if (ChildContent != null)
+		{
+			<div class="amc-dialog-message">@ChildContent</div>
+		}
+	</ChildContent>
+	<Footer>
+		@if (Buttons != null && Buttons.Any())
+		{
+			<div class="amc-dialog-buttons">
+				@foreach (DialogButton button in Buttons)
 				{
-					<div class="amc-dialog-buttons">
-						@foreach (DialogButton button in Buttons)
-						{
-							<button @onclick="async () => { await ButtonClicked(button);}">@button.Text</button>
-						}
-					</div>
+					<button @onclick="async () => { await ButtonClicked(button); }">@button.Text</button>
 				}
 			</div>
-		</aside>
-	}
-</div> *@
-
-<dialog @ref="ComponentElement" class="amc-dialog" @oncancel="Close">
-    @if (IsOpened)
-    {
-        <div class="amc-dialog-title">@Title</div>
-
-        @if (ChildContent != null)
-        {
-            <div class="amc-dialog-message">@ChildContent</div>
-        }
-		 
-        @if (Buttons != null && Buttons.Any())
-        {
-            <div class="amc-dialog-buttons">
-                @foreach (DialogButton button in Buttons)
-                {
-                    <button @onclick="async () => { await ButtonClicked(button);}">@button.Text</button>
-                }
-            </div>
-        }
-    }
-</dialog>
+		}
+	</Footer>
+</PopupComp>

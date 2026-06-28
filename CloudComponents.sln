@@ -47,6 +47,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.VideoPlayer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.VideoPlayer.Demo", "CloudComponents.VideoPlayer.Demo\CloudComponents.VideoPlayer.Demo.csproj", "{988651A8-4B36-F06F-7D96-2357ECC4D738}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Components.Demo", "Components.Demo\Components.Demo.csproj", "{87686246-725E-2015-ADA2-C54999C555D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -384,6 +386,24 @@ Global
 		{988651A8-4B36-F06F-7D96-2357ECC4D738}.Release|x64.Build.0 = Release|Any CPU
 		{988651A8-4B36-F06F-7D96-2357ECC4D738}.Release|x86.ActiveCfg = Release|Any CPU
 		{988651A8-4B36-F06F-7D96-2357ECC4D738}.Release|x86.Build.0 = Release|Any CPU
+		{87686246-725E-2015-ADA2-C54999C555D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87686246-725E-2015-ADA2-C54999C555D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87686246-725E-2015-ADA2-C54999C555D3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{87686246-725E-2015-ADA2-C54999C555D3}.Debug|x64.Build.0 = Debug|Any CPU
+		{87686246-725E-2015-ADA2-C54999C555D3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{87686246-725E-2015-ADA2-C54999C555D3}.Debug|x86.Build.0 = Debug|Any CPU
+		{87686246-725E-2015-ADA2-C54999C555D3}.Release_Server|Any CPU.ActiveCfg = Release|Any CPU
+		{87686246-725E-2015-ADA2-C54999C555D3}.Release_Server|Any CPU.Build.0 = Release|Any CPU
+		{87686246-725E-2015-ADA2-C54999C555D3}.Release_Server|x64.ActiveCfg = Release|Any CPU
+		{87686246-725E-2015-ADA2-C54999C555D3}.Release_Server|x64.Build.0 = Release|Any CPU
+		{87686246-725E-2015-ADA2-C54999C555D3}.Release_Server|x86.ActiveCfg = Release|Any CPU
+		{87686246-725E-2015-ADA2-C54999C555D3}.Release_Server|x86.Build.0 = Release|Any CPU
+		{87686246-725E-2015-ADA2-C54999C555D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87686246-725E-2015-ADA2-C54999C555D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87686246-725E-2015-ADA2-C54999C555D3}.Release|x64.ActiveCfg = Release|Any CPU
+		{87686246-725E-2015-ADA2-C54999C555D3}.Release|x64.Build.0 = Release|Any CPU
+		{87686246-725E-2015-ADA2-C54999C555D3}.Release|x86.ActiveCfg = Release|Any CPU
+		{87686246-725E-2015-ADA2-C54999C555D3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

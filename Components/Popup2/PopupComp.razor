@@ -37,7 +37,7 @@
                             @Footer
                         }
 
-                        @if (!HeaderClose)
+                        @if (!HeaderClose && Footer is null)
                         {
                             <button type="button" class="close" @onclick="Close" aria-label="Close">
                                 <svg viewBox="0 0 16 16">

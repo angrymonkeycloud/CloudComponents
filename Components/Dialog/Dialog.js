@@ -1,9 +1,9 @@
 ﻿
-function selectDialogPreviousButton(component) {
-    let selected = component.querySelector(".amc-dialog-buttons button:focus");
+function selectDialogPreviousButton() {
+    let selected = document.querySelector(".amc-dialog-buttons button:focus");
 
     if (!selected) {
-        component.querySelector(".buttons .button").focus()
+        document.querySelector(".amc-dialog-buttons button")?.focus();
         return;
     }
 
@@ -12,11 +12,11 @@ function selectDialogPreviousButton(component) {
     if (previous) previous.focus();
 }
 
-function selectDialogNextButton(component) {
-    let selected = component.querySelector(".amc-dialog-buttons button:focus");
+function selectDialogNextButton() {
+    let selected = document.querySelector(".amc-dialog-buttons button:focus");
 
     if (!selected) {
-        Dialog.FocusDefault(component);
+        Dialog.FocusDefault();
         return;
     }
 
@@ -27,34 +27,24 @@ function selectDialogNextButton(component) {
 
 window.Dialog = {
 
-    FocusDefault = (component) => {
-
-        component.querySelector(".amc-dialog-buttons button").focus()
+    FocusDefault: () => {
+        document.querySelector(".amc-dialog-buttons button")?.focus();
     },
 
-    Open = (component) => {
-
-        component.showModal();
-        window.history.pushState(null, null, null);
-
+    InitKeyboard: () => {
         document.addEventListener('keydown', function (e) {
             switch (e.key) {
                 case 'ArrowLeft':
-                    selectDialogPreviousButton(component);
+                    selectDialogPreviousButton();
                     break;
 
                 case 'ArrowRight':
-                    selectDialogNextButton(component);
+                    selectDialogNextButton();
                     break;
 
                 default:
                     break;
             }
         });
-    },
-
-    Close = (component) => {
-
-        component.close();
     }
 };

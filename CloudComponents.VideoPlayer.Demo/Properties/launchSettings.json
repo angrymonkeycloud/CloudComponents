@@ -1,12 +1,20 @@
 {
   "profiles": {
-    "CloudComponents.VideoPlayer.Demo": {
+    "https": {
       "commandName": "Project",
       "launchBrowser": true,
+      "hotReloadEnabled": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
+      "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:51492;http://localhost:51493"
+    },
+    "Watch": {
+      "commandName": "Executable",
+      "workingDirectory": "$(ProjectDir)",
+      "executablePath": "dotnet",
+      "commandLineArgs": "watch run debug --launch-profile https"
     }
   }
 }

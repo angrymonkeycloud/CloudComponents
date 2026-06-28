@@ -85,12 +85,7 @@ window.amcVideoPlayerStop = (component) => {
 
 }
 
-window.amcVideoPlayerEnterFullScreen = (component) => {
-
-    component.requestFullscreen({
-        navigationUI: "hide"
-    });
-}
+window.amcVideoPlayerEnterFullScreen = (component) => { component.requestFullscreen({ navigationUI: "hide" }); }
 
 window.amcVideoPlayerSeeking = (component, value, total) => {
 

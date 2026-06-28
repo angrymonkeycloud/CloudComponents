@@ -1,0 +1,98 @@
+@page "/switch"
+
+<PageTitle>Switch — Cloud Components Demo</PageTitle>
+
+<div class="page-header">
+    <h1>Switch</h1>
+    <p>
+        A tri-state boolean toggle. When <code>AllowNone</code> is enabled the switch cycles
+        through <em>true → false → null</em>. Label text is fully customizable.
+    </p>
+</div>
+
+<!-- ── Basic on/off ────────────────────────────────────────────────────────── -->
+<div class="card">
+    <h2 class="card-title">Basic on / off</h2>
+    <p class="card-subtitle">Default switch: two states, display text enabled.</p>
+
+    <div class="demo-stage">
+        <Switch Value="@_switch1" ValueChanged="OnSwitch1Changed" DisplayText="true" />
+    </div>
+    <p class="badge">Value: @(_switch1.HasValue ? _switch1.Value.ToString() : "null")</p>
+</div>
+
+<!-- ── Tri-state ──────────────────────────────────────────────────────────── -->
+<div class="card">
+    <h2 class="card-title">Tri-state (AllowNone)</h2>
+    <p class="card-subtitle">
+        With <code>AllowNone="true"</code> the switch can also be in an indeterminate state.
+        Custom label text is set via <code>TrueDefaultText</code>, <code>FalseDefaultText</code>,
+        and <code>NoneDefaultText</code>.
+    </p>
+
+    <div class="demo-stage">
+        <Switch Value="@_switch2"
+                ValueChanged="OnSwitch2Changed"
+                AllowNone="true"
+                DisplayText="true"
+                TrueDefaultText="Yes"
+                FalseDefaultText="No"
+                NoneDefaultText="Maybe" />
+    </div>
+    <p class="badge">Value: @(_switch2.HasValue ? _switch2.Value.ToString() : "null")</p>
+</div>
+
+<!-- ── No display text ────────────────────────────────────────────────────── -->
+<div class="card">
+    <h2 class="card-title">No display text</h2>
+    <p class="card-subtitle"><code>DisplayText="false"</code> hides the label, leaving only the toggle.</p>
+
+    <div class="demo-stage">
+        <Switch Value="@_switch3" ValueChanged="OnSwitch3Changed" DisplayText="false" />
+    </div>
+    <p class="badge">Value: @(_switch3.HasValue ? _switch3.Value.ToString() : "null")</p>
+</div>
+
+<!-- ── Event log ──────────────────────────────────────────────────────────── -->
+<div class="card">
+    <h2 class="card-title">Event log</h2>
+    <div class="log">
+        @if (_log.Count == 0)
+        {
+            <span class="log-empty">No events yet — toggle a switch above.</span>
+        }
+        @foreach (var entry in _log)
+        {
+            <div class="log-line"><span class="log-time">@entry.Time</span>@entry.Message</div>
+        }
+    </div>
+</div>
+
+@code {
+    private bool? _switch1 = false;
+    private bool? _switch2 = null;
+    private bool? _switch3 = true;
+
+    private List<LogEntry> _log = new();
+
+    private void OnSwitch1Changed(bool? v)
+    {
+        _switch1 = v;
+        Log($"Switch 1 → {(v.HasValue ? v.Value.ToString() : "null")}");
+    }
+
+    private void OnSwitch2Changed(bool? v)
+    {
+        _switch2 = v;
+        Log($"Switch 2 → {(v.HasValue ? v.Value.ToString() : "null")}");
+    }
+
+    private void OnSwitch3Changed(bool? v)
+    {
+        _switch3 = v;
+        Log($"Switch 3 → {(v.HasValue ? v.Value.ToString() : "null")}");
+    }
+
+    private void Log(string msg) =>
+        _log.Insert(0, new LogEntry(DateTime.Now.ToString("HH:mm:ss.fff"), msg));
+}

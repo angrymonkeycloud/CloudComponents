@@ -1,0 +1,137 @@
+@page "/tabs"
+
+<PageTitle>Tabs — Cloud Components Demo</PageTitle>
+
+<div class="page-header">
+    <h1>Tabs</h1>
+    <p>
+        <code>Tabs</code> renders a tab strip driven by a <code>List&lt;TabItem&gt;</code>.
+        Each <code>TabItem</code> carries either a plain string label or a component type.
+        An <code>OnActivated</code> callback fires when a tab is selected.
+    </p>
+</div>
+
+<!-- ── String labels ──────────────────────────────────────────────────────── -->
+<div class="card">
+    <h2 class="card-title">String labels</h2>
+    <p class="card-subtitle">Three text tabs — the first is active on load.</p>
+
+    <Tabs TabsList="@_stringTabs" />
+
+    <p style="margin-top:1rem;">
+        Active tab: <span class="badge">@_activeString</span>
+    </p>
+</div>
+
+<!-- ── Dynamic add / remove ───────────────────────────────────────────────── -->
+<div class="card">
+    <h2 class="card-title">Dynamic tabs</h2>
+    <p class="card-subtitle">
+        Tabs are built from a runtime list. Use the buttons to add or remove the last tab.
+    </p>
+
+    <div class="toolbar">
+        <button class="btn btn-primary" @onclick="AddTab">Add tab</button>
+        <button class="btn" @onclick="RemoveTab" disabled="@(_dynamicTabs.Count <= 1)">Remove last</button>
+    </div>
+
+    <Tabs TabsList="@_dynamicTabs" />
+
+    <p style="margin-top:1rem;">
+        Active tab: <span class="badge">@_activeDynamic</span>
+    </p>
+</div>
+
+<!-- ── Event log ──────────────────────────────────────────────────────────── -->
+<div class="card">
+    <h2 class="card-title">Event log</h2>
+    <div class="log">
+        @if (_log.Count == 0)
+        {
+            <span class="log-empty">No events yet — click a tab above.</span>
+        }
+        @foreach (var entry in _log)
+        {
+            <div class="log-line"><span class="log-time">@entry.Time</span>@entry.Message</div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<LogEntry> _log = new();
+
+    // ── String tabs ────────────────────────────────────────────────────────
+    private string _activeString = "Home";
+    private List<TabItem> _stringTabs = new();
+
+    // ── Dynamic tabs ───────────────────────────────────────────────────────
+    private string _activeDynamic = "Tab 1";
+    private List<TabItem> _dynamicTabs = new();
+    private int _tabCounter = 3;
+
+    protected override void OnInitialized()
+    {
+        _stringTabs = BuildStringTabs();
+        _dynamicTabs = BuildDynamicTabs();
+    }
+
+    private List<TabItem> BuildStringTabs()
+    {
+        var tabs = new List<TabItem>();
+
+        foreach (var label in new[] { "Home", "Profile", "Settings" })
+        {
+            var localLabel = label;
+            var item = new TabItem(localLabel);
+            item.OnActivated = EventCallback.Factory.Create(this, () =>
+            {
+                _activeString = localLabel;
+                Log($"String tab activated: {localLabel}");
+            });
+            tabs.Add(item);
+        }
+
+        return tabs;
+    }
+
+    private List<TabItem> BuildDynamicTabs()
+    {
+        var tabs = new List<TabItem>();
+
+        for (int i = 1; i <= _tabCounter; i++)
+        {
+            var localIndex = i;
+            var item = new TabItem($"Tab {localIndex}");
+            item.OnActivated = EventCallback.Factory.Create(this, () =>
+            {
+                _activeDynamic = $"Tab {localIndex}";
+                Log($"Dynamic tab activated: Tab {localIndex}");
+            });
+            tabs.Add(item);
+        }
+
+        return tabs;
+    }
+
+    private void AddTab()
+    {
+        _tabCounter++;
+        var label = $"Tab {_tabCounter}";
+        var item = new TabItem(label);
+        item.OnActivated = EventCallback.Factory.Create(this, () =>
+        {
+            _activeDynamic = label;
+            Log($"Dynamic tab activated: {label}");
+        });
+        _dynamicTabs.Add(item);
+    }
+
+    private void RemoveTab()
+    {
+        if (_dynamicTabs.Count > 1)
+            _dynamicTabs.RemoveAt(_dynamicTabs.Count - 1);
+    }
+
+    private void Log(string msg) =>
+        _log.Insert(0, new(DateTime.Now.ToString("HH:mm:ss.fff"), msg));
+}
