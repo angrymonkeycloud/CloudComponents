@@ -450,7 +450,8 @@ class AzureMapController {
         if (!query) return null;
         try {
             const key = this._options.subscriptionKey;
-            const url = `https://atlas.microsoft.com/search/address/json?api-version=1.0&subscription-key=${encodeURIComponent(key)}&query=${encodeURIComponent(query)}&limit=1&entityType=Municipality,CountrySubdivision,CountrySecondarySubdivision,CountryTertiarySubdivision`;
+            // Use fuzzy search so free-text addresses, streets, and landmarks all resolve.
+            const url = `https://atlas.microsoft.com/search/fuzzy/json?api-version=1.0&subscription-key=${encodeURIComponent(key)}&query=${encodeURIComponent(query)}&limit=1`;
             const resp = await fetch(url);
             if (!resp.ok) return null;
             const data = await resp.json();
@@ -466,6 +467,44 @@ class AzureMapController {
                 east: vp?.btmRightPoint?.lon ?? r.position.lon,
                 west: vp?.topLeftPoint?.lon ?? r.position.lon,
                 geometryId: geoId
+            };
+        } catch {
+            return null;
+        }
+    }
+
+    /// Get the browser's current geolocation without showing any custom prompt.
+    /// Returns { latitude, longitude } or null if unavailable / denied.
+    async getBrowserLocation() {
+        return new Promise((resolve) => {
+            if (!navigator?.geolocation) { resolve(null); return; }
+            navigator.geolocation.getCurrentPosition(
+                (pos) => resolve({ latitude: pos.coords.latitude, longitude: pos.coords.longitude }),
+                () => resolve(null),
+                { timeout: 10000, maximumAge: 60000 }
+            );
+        });
+    }
+
+    /// Reverse geocode a lat/lon pair using the Azure Maps Reverse Search API.
+    /// Returns { countryCode, countrySubdivisionCode, countrySecondarySubdivision, municipality } or null.
+    async reverseGeocode(latitude, longitude) {
+        if (latitude == null || longitude == null) return null;
+        try {
+            const key = this._options.subscriptionKey;
+            const url = `https://atlas.microsoft.com/search/address/reverse/json?api-version=1.0&subscription-key=${encodeURIComponent(key)}&query=${encodeURIComponent(latitude)},${encodeURIComponent(longitude)}&language=en-US`;
+            const resp = await fetch(url);
+            if (!resp.ok) return null;
+            const data = await resp.json();
+            const addr = data?.addresses?.[0]?.address;
+            if (!addr) return null;
+            return {
+                countryCode: addr.countryCode ?? null,
+                countrySubdivisionCode: addr.countrySubdivisionCode ?? null,
+                countrySecondarySubdivision: addr.countrySecondarySubdivision ?? null,
+                municipality: addr.municipality ?? null,
+                municipalitySubdivision: addr.municipalitySubdivision ?? null,
+                postalCode: addr.postalCode ?? null
             };
         } catch {
             return null;

@@ -388,6 +388,26 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
+    /// Reverse geocode a lat/lon pair using the Azure Maps Reverse Search API.
+    /// Returns address components (country code, state code, county, city, postal code), or <c>null</c>.
+    /// </summary>
+    public async Task<ReverseGeocodeResult?> ReverseGeocodeAsync(double latitude, double longitude)
+    {
+        var c = EnsureController();
+        return await c.InvokeAsync<ReverseGeocodeResult?>("reverseGeocode", latitude, longitude);
+    }
+
+    /// <summary>
+    /// Asks the browser for the current geolocation without showing a custom consent prompt.
+    /// Returns the coordinates or <c>null</c> when geolocation is unavailable or denied.
+    /// </summary>
+    public async Task<MapCoordinate?> GetBrowserLocationAsync()
+    {
+        var c = EnsureController();
+        return await c.InvokeAsync<MapCoordinate?>("getBrowserLocation");
+    }
+
+    /// <summary>
     /// Fetch the actual administrative boundary polygon for a geometry ID.
     /// Returns GeoJSON coordinate rings, or <c>null</c> when not available.
     /// </summary>
