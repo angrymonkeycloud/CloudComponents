@@ -27,65 +27,148 @@
 
 <div class="card">
     <h2 class="card-title">Map Controls</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _showZoomControl = (bool)e.Value!; ApplyControls(e); })" />
-            <span>Zoom Control</span>
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _showCompassControl = (bool)e.Value!; ApplyControls(e); })" />
-            <span>Compass Control</span>
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _showPitchControl = (bool)e.Value!; ApplyControls(e); })" />
-            <span>Pitch Control</span>
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _showStyleControl = (bool)e.Value!; ApplyControls(e); })" />
-            <span>Style Control</span>
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _showFullscreenControl = (bool)e.Value!; ApplyControls(e); })" />
-            <span>Fullscreen Control</span>
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _showScaleControl = (bool)e.Value!; ApplyControls(e); })" />
-            <span>Scale Control</span>
-        </label>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+        <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked="@_showZoomControl" @onchange="@((ChangeEventArgs e) => { _showZoomControl = (bool)e.Value!; ApplyControls(e); })" />
+                <span>Zoom Control</span>
+            </label>
+            <small style="display:block;color:#666;margin:2px 0 0 26px;">+ / − buttons for precise zooming.</small>
+        </div>
+        <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked="@_showCompassControl" @onchange="@((ChangeEventArgs e) => { _showCompassControl = (bool)e.Value!; ApplyControls(e); })" />
+                <span>Compass Control</span>
+            </label>
+            <small style="display:block;color:#666;margin:2px 0 0 26px;">Shows bearing; click to reset the map to north.</small>
+        </div>
+        <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked="@_showPitchControl" @onchange="@((ChangeEventArgs e) => { _showPitchControl = (bool)e.Value!; ApplyControls(e); })" />
+                <span>Pitch Control</span>
+            </label>
+            <small style="display:block;color:#666;margin:2px 0 0 26px;">Slider to tilt the camera for a 3D perspective.</small>
+        </div>
+        <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked="@_showStyleControl" @onchange="@((ChangeEventArgs e) => { _showStyleControl = (bool)e.Value!; ApplyControls(e); })" />
+                <span>Style Control</span>
+            </label>
+            <small style="display:block;color:#666;margin:2px 0 0 26px;">Lets users switch base map style directly on the map.</small>
+        </div>
+        <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked="@_showFullscreenControl" @onchange="@((ChangeEventArgs e) => { _showFullscreenControl = (bool)e.Value!; ApplyControls(e); })" />
+                <span>Fullscreen Control</span>
+            </label>
+            <small style="display:block;color:#666;margin:2px 0 0 26px;">Button to expand the map to fill the screen.</small>
+        </div>
+        <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked="@_showScaleControl" @onchange="@((ChangeEventArgs e) => { _showScaleControl = (bool)e.Value!; ApplyControls(e); })" />
+                <span>Scale Control</span>
+            </label>
+            <small style="display:block;color:#666;margin:2px 0 0 26px;">Displays a distance scale bar for the current zoom.</small>
+        </div>
     </div>
 </div>
 
 <div class="card">
     <h2 class="card-title">Interaction Modes</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _dragPan = (bool)e.Value!; ApplyInteractions(e); })" />
-            <span>Drag Pan</span>
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _dragRotate = (bool)e.Value!; ApplyInteractions(e); })" />
-            <span>Drag Rotate</span>
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _scrollZoom = (bool)e.Value!; ApplyInteractions(e); })" />
-            <span>Scroll Zoom</span>
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _dblClickZoom = (bool)e.Value!; ApplyInteractions(e); })" />
-            <span>Double-Click Zoom</span>
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _boxZoom = (bool)e.Value!; ApplyInteractions(e); })" />
-            <span>Box Zoom</span>
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _keyboard = (bool)e.Value!; ApplyInteractions(e); })" />
-            <span>Keyboard Navigation</span>
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _touchInteraction = (bool)e.Value!; ApplyInteractions(e); })" />
-            <span>Touch Interaction</span>
-        </label>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+        <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked="@_dragPan" @onchange="@((ChangeEventArgs e) => { _dragPan = (bool)e.Value!; ApplyInteractions(e); })" />
+                <span>Drag Pan</span>
+            </label>
+            <small style="display:block;color:#666;margin:2px 0 0 26px;">Move the map by dragging with the mouse/touch.</small>
+        </div>
+        <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked="@_dragRotate" @onchange="@((ChangeEventArgs e) => { _dragRotate = (bool)e.Value!; ApplyInteractions(e); })" />
+                <span>Drag Rotate</span>
+            </label>
+            <small style="display:block;color:#666;margin:2px 0 0 26px;">Right-click (or two-finger) drag to rotate bearing.</small>
+        </div>
+        <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked="@_scrollZoom" @onchange="@((ChangeEventArgs e) => { _scrollZoom = (bool)e.Value!; ApplyInteractions(e); })" />
+                <span>Scroll Zoom</span>
+            </label>
+            <small style="display:block;color:#666;margin:2px 0 0 26px;">
+                Zoom with the mouse wheel / trackpad. When <strong>disabled</strong>, a plain scroll
+                instead scrolls the page — hold <strong>Ctrl</strong> (⌘ on Mac) or <strong>Shift</strong>
+                while scrolling to zoom the map anyway.
+            </small>
+        </div>
+        <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked="@_dblClickZoom" @onchange="@((ChangeEventArgs e) => { _dblClickZoom = (bool)e.Value!; ApplyInteractions(e); })" />
+                <span>Double-Click Zoom</span>
+            </label>
+            <small style="display:block;color:#666;margin:2px 0 0 26px;">Double-click the map to zoom in one level.</small>
+        </div>
+        <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked="@_boxZoom" @onchange="@((ChangeEventArgs e) => { _boxZoom = (bool)e.Value!; ApplyInteractions(e); })" />
+                <span>Box Zoom</span>
+            </label>
+            <small style="display:block;color:#666;margin:2px 0 0 26px;">Shift+drag a rectangle to zoom to that area.</small>
+        </div>
+        <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked="@_keyboard" @onchange="@((ChangeEventArgs e) => { _keyboard = (bool)e.Value!; ApplyInteractions(e); })" />
+                <span>Keyboard Navigation</span>
+            </label>
+            <small style="display:block;color:#666;margin:2px 0 0 26px;">Arrow keys pan, +/− keys zoom, when the map has focus.</small>
+        </div>
+        <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked="@_touchInteraction" @onchange="@((ChangeEventArgs e) => { _touchInteraction = (bool)e.Value!; ApplyInteractions(e); })" />
+                <span>Touch Interaction</span>
+            </label>
+            <small style="display:block;color:#666;margin:2px 0 0 26px;">Pan/pinch-zoom/rotate via touch gestures on mobile.</small>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Functionality</h2>
+    <p style="font-size: 13px; color: #666; margin-top: 0;">
+        Every interactive feature the map component offers, all togglable so you can see how each one behaves.
+    </p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+        <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked="@_showSearchBox" @onchange="@((ChangeEventArgs e) => { _showSearchBox = (bool)e.Value!; })" />
+                <span>Search Box</span>
+            </label>
+            <small style="display:block;color:#666;margin:2px 0 0 26px;">Built-in place search (Azure Maps fuzzy search) with a results dropdown. Opt-in, off by default.</small>
+        </div>
+        <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked="@_showCurrentLocationButton" @onchange="@((ChangeEventArgs e) => { _showCurrentLocationButton = (bool)e.Value!; })" />
+                <span>Pin My Location Button</span>
+            </label>
+            <small style="display:block;color:#666;margin:2px 0 0 26px;">Shows the built-in "locate me" button, which requests the device's current location and recenters the map.</small>
+        </div>
+        <div>
+            <label style="display: block; font-size: 14px; margin-bottom: 4px;">Marker Add Trigger</label>
+            <select @bind="_addMarkerTrigger" @bind:after="ApplyFunctionality" style="width:100%;">
+                <option value="@MarkerAddTrigger.Disabled">Disabled — no marker interaction</option>
+                <option value="@MarkerAddTrigger.SingleClick">Single Click — click to drop a marker</option>
+                <option value="@MarkerAddTrigger.DoubleClick">Double Click — double-click to drop a marker</option>
+                <option value="@MarkerAddTrigger.CenterPin">Center Pin — fixed pin follows the map center</option>
+            </select>
+            <small style="display:block;color:#666;margin-top:2px;">Controls how users add markers by interacting with the map. Opt-in; defaults to Disabled.</small>
+        </div>
+        <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked="@_allowMarkerRemoval" @onchange="@((ChangeEventArgs e) => { _allowMarkerRemoval = (bool)e.Value!; })" />
+                <span>Allow Marker Removal</span>
+            </label>
+            <small style="display:block;color:#666;margin:2px 0 0 26px;">Double-click a marker to remove it (only applies to markers added via a click trigger above).</small>
+        </div>
     </div>
 </div>
 
@@ -111,15 +194,28 @@
                   KeyboardInteraction="@_keyboard"
                   TouchInteraction="@_touchInteraction"
                   ShowTrafficFlow="@_showTraffic"
+                  ShowSearchBox="@_showSearchBox"
+                  ShowCurrentLocationButton="@_showCurrentLocationButton"
+                  AddMarkerTrigger="@_addMarkerTrigger"
+                  AllowMarkerRemoval="@_allowMarkerRemoval"
                   OnMapReady="HandleMapReady"
+                  OnSearchResultSelected="HandleSearchResultSelected"
+                  OnMyLocationFound="HandleMyLocationFound"
+                  OnMarkerAdded="HandleMarkerAdded"
+                  OnMarkerRemoved="HandleMarkerRemoved"
+                  OnCenterPinChanged="HandleCenterPinChanged"
                   @ref="_map" />
     </div>
 
     <div class="toolbar" style="margin-top: 1rem;">
         <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" @onchange="@((ChangeEventArgs e) => { _showTraffic = (bool)e.Value!; ApplyTraffic(e); })" />
+            <input type="checkbox" checked="@_showTraffic" @onchange="@((ChangeEventArgs e) => { _showTraffic = (bool)e.Value!; ApplyTraffic(e); })" />
             <span>Show Traffic Flow</span>
         </label>
+        @if (!string.IsNullOrEmpty(_functionalityStatus))
+        {
+            <span class="badge">@_functionalityStatus</span>
+        }
     </div>
 </div>
 
@@ -168,14 +264,22 @@
     private bool _showScaleControl = false;
     private bool _showTraffic = false;
 
-    // Interactions
+    // Interactions — mirror AzureMap's own opt-in defaults so this playground
+    // starts in sync with what a consumer gets without setting any parameter.
     private bool _dragPan = true;
     private bool _dragRotate = true;
-    private bool _scrollZoom = true;
-    private bool _dblClickZoom = false;
+    private bool _scrollZoom = false;
+    private bool _dblClickZoom = true;
     private bool _boxZoom = true;
     private bool _keyboard = true;
     private bool _touchInteraction = true;
+
+    // Functionality
+    private bool _showSearchBox = false;
+    private bool _showCurrentLocationButton = true;
+    private MarkerAddTrigger _addMarkerTrigger = MarkerAddTrigger.Disabled;
+    private bool _allowMarkerRemoval = false;
+    private string _functionalityStatus = "";
 
     private readonly Dictionary<MapStyle, string> _availableStyles = new()
     {
@@ -204,15 +308,16 @@
         }
     }
 
-    private async Task ApplyControls(ChangeEventArgs e)
-    {
-        StateHasChanged();
-    }
+    // Controls/interactions are regular [Parameter]s on <AzureMap>: re-rendering this
+    // component with new field values is enough for Blazor to push them down, and
+    // AzureMap.OnParametersSetAsync now diffs and forwards changes to the JS map
+    // instance at runtime (setControls / setInteractions), so a StateHasChanged()
+    // here is all that's needed to make a toggle actually take effect.
+    private void ApplyControls(ChangeEventArgs e) => StateHasChanged();
 
-    private async Task ApplyInteractions(ChangeEventArgs e)
-    {
-        StateHasChanged();
-    }
+    private void ApplyInteractions(ChangeEventArgs e) => StateHasChanged();
+
+    private void ApplyFunctionality() => StateHasChanged();
 
     private async Task ApplyTraffic(ChangeEventArgs e)
     {
@@ -220,6 +325,41 @@
         {
             await _map.SetTrafficAsync(_showTraffic, false);
         }
+    }
+
+    private Task HandleSearchResultSelected(MapSearchResult result)
+    {
+        _functionalityStatus = $"Search selected: {result.Address}";
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleMyLocationFound(MapCoordinate coordinate)
+    {
+        _functionalityStatus = $"Located you at {coordinate.Latitude:F4}, {coordinate.Longitude:F4}";
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleMarkerAdded(MapMarker marker)
+    {
+        _functionalityStatus = $"Marker added at {marker.Latitude:F4}, {marker.Longitude:F4}";
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleMarkerRemoved(MapMarker marker)
+    {
+        _functionalityStatus = "Marker removed";
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleCenterPinChanged(MapCoordinate coordinate)
+    {
+        _functionalityStatus = $"Center pin at {coordinate.Latitude:F4}, {coordinate.Longitude:F4}";
+        StateHasChanged();
+        return Task.CompletedTask;
     }
 
     private string GetSubscriptionKey()

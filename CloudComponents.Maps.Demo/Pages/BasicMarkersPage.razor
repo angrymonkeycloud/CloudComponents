@@ -63,10 +63,41 @@
     }
 </div>
 
+<div class="card">
+    <h2 class="card-title">How to implement in your app</h2>
+    <p style="font-size: 13px; color: #666; margin-top: 0;">
+        Marker add/remove is opt-in. Enable the interaction mode explicitly and handle callbacks.
+    </p>
+    <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+</div>
+
 @code {
     private AzureMap? _map;
     private readonly List<MapMarker> _markers = new();
     private readonly InitialMapView _initialView = new(37.7749, -122.4194, 13);
+    private readonly string _usageSnippet = """
+<AzureMap AddMarkerTrigger=\"MarkerAddTrigger.DoubleClick\"
+          AllowMarkerRemoval=\"true\"
+          OnMarkerAdded=\"HandleMarkerAdded\"
+          OnMarkerRemoved=\"HandleMarkerRemoved\"
+          @ref=\"_map\" />
+
+@code {
+    private readonly List<MapMarker> _markers = new();
+
+    private Task HandleMarkerAdded(MapMarker marker)
+    {
+        _markers.Add(marker);
+        return Task.CompletedTask;
+    }
+
+    private Task HandleMarkerRemoved(MapMarker marker)
+    {
+        _markers.Remove(marker);
+        return Task.CompletedTask;
+    }
+}
+""";
 
     private async Task HandleMapReady()
     {

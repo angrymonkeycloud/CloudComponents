@@ -62,6 +62,139 @@
   color: #333;
   white-space: nowrap;
 }
+.map-search {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 6;
+  width: min(320px, calc(100% - 24px));
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+.map-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  height: 42px;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 21px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  backdrop-filter: blur(6px);
+  transition: box-shadow 0.12s ease;
+}
+.map-search-box._busy {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(0, 120, 212, 0.25);
+}
+.map-search-icon {
+  width: 18px;
+  height: 18px;
+  color: #666;
+  flex-shrink: 0;
+}
+.map-search-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: #222;
+}
+.map-search-input::placeholder {
+  color: #888;
+}
+.map-search-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #888;
+  cursor: pointer;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.map-search-clear:hover {
+  background: #f0f0f0;
+  color: #444;
+}
+.map-search-clear svg {
+  width: 12px;
+  height: 12px;
+}
+.map-search-spinner {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 120, 212, 0.25);
+  border-top-color: #0078d4;
+  animation: pin 0.8s linear infinite;
+}
+.map-search-results {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 6px;
+  max-height: 280px;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  backdrop-filter: blur(6px);
+}
+.map-search-result {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.map-search-result._active,
+.map-search-result:hover {
+  background: #eef6fd;
+}
+.map-search-result-address {
+  font-size: 13px;
+  font-weight: 500;
+  color: #222;
+}
+.map-search-result-description {
+  font-size: 11.5px;
+  color: #777;
+}
+.map-lock-toast {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 7;
+  padding: 10px 16px;
+  background: rgba(32, 32, 32, 0.92);
+  color: #fff;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  max-width: min(360px, calc(100% - 24px));
+  text-align: center;
+  animation: lockToastIn 0.18s ease both;
+}
+@keyframes lockToastIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -6px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
 .map-permission-message {
   margin: 0;
   font-size: 13px;

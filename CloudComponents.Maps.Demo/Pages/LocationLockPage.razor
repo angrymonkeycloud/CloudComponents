@@ -1,0 +1,263 @@
+@page "/location-lock"
+@inject IOptions<AzureMapsOptions> Options
+@inject AzureMapsConfigurationService ConfigService
+
+<PageTitle>CloudMaps — Location Lock</PageTitle>
+
+<div class="page-header">
+    <h1>Location Lock</h1>
+    <p>
+        Restrict marker placement, center-pin dragging, "pin my location", and search-result selection to
+        one or more countries and/or subdivisions. The resolved boundary is rendered as an overlay, and
+        interactions outside the allowed area are rejected with a brief on-map message.
+    </p>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Settings</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+        <div>
+            <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Lock to country:</label>
+            <select @bind="_selectedCountryCode" @bind:after="ApplyLock" style="width: 100%;">
+                <option value="">-- No lock (unrestricted) --</option>
+                <option value="US">United States</option>
+                <option value="CA">Canada</option>
+                <option value="GB">United Kingdom</option>
+                <option value="DE">Germany</option>
+                <option value="FR">France</option>
+                <option value="AU">Australia</option>
+            </select>
+        </div>
+        <div>
+            <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Subdivision (optional):</label>
+            <input type="text"
+                   placeholder="e.g. US-CA (leave blank for whole country)"
+                   @bind="_subdivisionCode"
+                   @bind:after="ApplyLock"
+                   style="width: 100%; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px;" />
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <button @onclick="ClearLock" disabled="@(_currentLock is null)">Clear Lock</button>
+        <span class="badge">@(_currentLock is null ? "Unrestricted" : $"Locked: {_selectedCountryCode}{(_subdivisionCode is { Length: > 0 } sd ? $" ({sd})" : "")}")</span>
+        @if (_map?.IsResolvingLocationLock == true)
+        {
+            <span class="badge" style="opacity:.7;">Resolving boundary…</span>
+        }
+        @if (!string.IsNullOrEmpty(_rejectionMessage))
+        {
+            <span class="badge" style="background:#fde7e9;color:#a80000;">@_rejectionMessage</span>
+        }
+    </div>
+</div>
+
+<div class="card">
+    <h2 class="card-title">📍 Map</h2>
+
+    <div class="toolbar" style="margin-bottom: 12px;">
+        <span style="font-size: 13px; font-weight: 600;">Selection mode:</span>
+        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <input type="radio" name="selectionMode" checked="@(_selectionMode == MarkerAddTrigger.SingleClick)" @onchange="@(() => SetSelectionModeAsync(MarkerAddTrigger.SingleClick))" />
+            <span>Click to place a pin</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <input type="radio" name="selectionMode" checked="@(_selectionMode == MarkerAddTrigger.CenterPin)" @onchange="@(() => SetSelectionModeAsync(MarkerAddTrigger.CenterPin))" />
+            <span>Center pin (pan the map)</span>
+        </label>
+    </div>
+
+    <div class="grid-host" style="height: 500px;">
+        <AzureMap Height="500px"
+                  Width="100%"
+                  SubscriptionKey="@GetSubscriptionKey()"
+                  InitialView="@_initialView"
+                  Style="MapStyle.Road"
+                  AddMarkerTrigger="@_selectionMode"
+                  ShowSearchBox="true"
+                  ShowCurrentLocationButton="true"
+                  LocationLock="@_currentLock"
+                  OnMapReady="HandleMapReady"
+                  OnMarkerAdded="HandleMarkerAdded"
+                  OnCenterPinChanged="HandleCenterPinChanged"
+                  OnLocationLockRejected="HandleLockRejected"
+                  @ref="_map" />
+    </div>
+
+    <div class="toolbar" style="margin-top: 1rem;">
+        <button class="primary" @onclick="CheckSelectedLocation" disabled="@(!_checkCoordinate.HasValue || _isChecking)">
+            @(_isChecking ? "Checking…" : "Check Location")
+        </button>
+        @if (_checkCoordinate is { } toCheck)
+        {
+            <span class="badge">@toCheck.Latitude.ToString("F4"), @toCheck.Longitude.ToString("F4")</span>
+        }
+        @if (_checkResult is { } approved)
+        {
+            <span class="badge" style="@(approved ? "background:#dff6dd;color:#107c10;" : "background:#fde7e9;color:#a80000;")">
+                @(approved ? "✅ Approved" : "❌ Rejected")
+            </span>
+        }
+    </div>
+</div>
+
+<div class="card">
+    <h2 class="card-title">How it works</h2>
+    <ul>
+        <li>Pick a country (optionally narrowed to a subdivision code such as <code>US-CA</code>) to build a <code>LocationLockOptions</code> instance and assign it to the map's <code>LocationLock</code> parameter.</li>
+        <li>The component resolves the boundary once via Cloud Geography + Azure Maps geocode/polygon lookup, then enforces it client-side for every subsequent interaction — no repeated network calls.</li>
+        <li>Try clicking outside the highlighted area, or searching for a place outside it: the interaction is rejected and <code>OnLocationLockRejected</code> fires.</li>
+        <li>Switch to <strong>Center pin</strong> mode to drag an always-visible pin instead of clicking, then press <strong>Check Location</strong> to explicitly verify a coordinate via <code>IsPointAllowedByLocationLockAsync</code> — the result is shown as ✅ Approved or ❌ Rejected without needing to move the pin outside the area first.</li>
+        <li>Assign <code>null</code> (or use <strong>Clear Lock</strong>) to remove the restriction at runtime.</li>
+    </ul>
+
+    <h3 style="margin-top: 12px;">Usage snippet</h3>
+    <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+</div>
+
+@code {
+    private AzureMap? _map;
+    private readonly InitialMapView _initialView = new(39.8283, -98.5795, 4);
+    private readonly string _usageSnippet = """
+<AzureMap ShowSearchBox=\"true\"
+          ShowCurrentLocationButton=\"true\"
+          AddMarkerTrigger=\"MarkerAddTrigger.CenterPin\"
+          LocationLock=\"@_currentLock\"
+          OnCenterPinChanged=\"HandleCenterPinChanged\"
+          OnLocationLockRejected=\"HandleLockRejected\" />
+
+@code {
+    private LocationLockOptions? _currentLock = new(new[]
+    {
+        new LocationLockArea(\"US\", new[] { \"US-CA\" })
+    });
+    private MapCoordinate? _pinCoordinate;
+
+    private Task HandleCenterPinChanged(MapCoordinate point)
+    {
+        _pinCoordinate = point;
+        return Task.CompletedTask;
+    }
+
+    // Explicit check — doesn't require moving the pin outside the area first.
+    private async Task CheckLocationAsync()
+    {
+        if (_pinCoordinate is not { } p || _map is null) return;
+        bool approved = await _map.IsPointAllowedByLocationLockAsync(p.Latitude, p.Longitude);
+    }
+}
+""";
+
+    private string _selectedCountryCode = "";
+    private string _subdivisionCode = "";
+    private LocationLockOptions? _currentLock;
+    private string _rejectionMessage = "";
+    private MarkerAddTrigger _selectionMode = MarkerAddTrigger.SingleClick;
+    private MapCoordinate? _checkCoordinate;
+    private bool? _checkResult;
+    private bool _isChecking;
+
+    private Task HandleMapReady() => Task.CompletedTask;
+
+    private Task HandleMarkerAdded(MapMarker marker)
+    {
+        _rejectionMessage = "";
+        _checkCoordinate = new MapCoordinate(marker.Latitude, marker.Longitude);
+        _checkResult = null;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    /// <summary>Tracks the always-visible center pin's coordinate while in Center Pin selection mode.</summary>
+    private Task HandleCenterPinChanged(MapCoordinate coordinate)
+    {
+        _checkCoordinate = coordinate;
+        _checkResult = null;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleLockRejected(MapCoordinate coordinate)
+    {
+        _rejectionMessage = $"Rejected {coordinate.Latitude:F3}, {coordinate.Longitude:F3} — outside the locked area.";
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private async Task SetSelectionModeAsync(MarkerAddTrigger mode)
+    {
+        if (_selectionMode == mode) return;
+
+        _selectionMode = mode;
+        _checkCoordinate = null;
+        _checkResult = null;
+        _rejectionMessage = "";
+
+        if (mode == MarkerAddTrigger.SingleClick && _map is not null)
+            await _map.ClearMarkersAsync();
+    }
+
+    /// <summary>
+    /// Explicitly verifies the currently selected/pinned coordinate against the active
+    /// <see cref="LocationLockOptions"/> and shows an Approved/Rejected result, independent
+    /// of the automatic rejection that fires when dragging the pin outside the area.
+    /// </summary>
+    private async Task CheckSelectedLocation()
+    {
+        if (_checkCoordinate is not { } coordinate || _map is null || _isChecking)
+            return;
+
+        _isChecking = true;
+        _checkResult = null;
+        StateHasChanged();
+
+        try
+        {
+            _checkResult = await _map.IsPointAllowedByLocationLockAsync(coordinate.Latitude, coordinate.Longitude);
+        }
+        finally
+        {
+            _isChecking = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ApplyLock()
+    {
+        _rejectionMessage = "";
+        _checkResult = null;
+
+        if (string.IsNullOrWhiteSpace(_selectedCountryCode))
+        {
+            _currentLock = null;
+            return;
+        }
+
+        var subdivisionCodes = string.IsNullOrWhiteSpace(_subdivisionCode)
+            ? null
+            : new[] { _subdivisionCode.Trim() };
+
+        _currentLock = new LocationLockOptions(new[]
+        {
+            new LocationLockArea(_selectedCountryCode, subdivisionCodes)
+        });
+    }
+
+    private void ClearLock()
+    {
+        _selectedCountryCode = "";
+        _subdivisionCode = "";
+        _currentLock = null;
+        _rejectionMessage = "";
+        _checkResult = null;
+    }
+
+    private string GetSubscriptionKey()
+    {
+        var configured = ConfigService.GetSubscriptionKey();
+        if (!string.IsNullOrEmpty(configured))
+            return configured;
+
+        return Options?.Value?.SubscriptionKey ?? string.Empty;
+    }
+}

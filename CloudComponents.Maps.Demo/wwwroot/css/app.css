@@ -263,6 +263,22 @@ input:focus, select:focus, textarea:focus {
     }
 }
 
-.modal-container {
+ .modal-container {
     animation: slideUp 0.3s ease-out;
+}
+
+.code-snippet {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 12px;
+    line-height: 1.45;
+    margin: 8px 0 0 0;
+}
+
+.code-snippet code {
+    font-family: Consolas, 'Courier New', monospace;
+    white-space: pre;
 }

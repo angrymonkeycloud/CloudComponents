@@ -19,7 +19,7 @@
     <ul>
         <li><strong>Azure Maps Subscription Key:</strong> Set it in the application configuration or appsettings.json</li>
         <li><strong>Browser Location Permission:</strong> The "Locate Me" button and auto-locate features require geolocation access</li>
-        <li><strong>Map Interaction:</strong> Double-click to add markers, drag markers to update coordinates, double-click markers to remove</li>
+        <li><strong>New defaults:</strong> Search is opt-in, scroll-wheel zoom is off by default, and marker add/remove interactions are opt-in</li>
     </ul>
 </div>
 
@@ -51,6 +51,33 @@
                 and visual distinction. Legend shows all displayed regions.
             </p>
             <NavLink href="regions" class="feature-link">Explore →</NavLink>
+        </div>
+
+        <div class="feature-card">
+            <h3>🔎 Search &amp; Pin Location</h3>
+            <p>
+                Find a place with the built-in debounced search box, or pin the map to your current
+                location. The same API works on web (browser geolocation) and mobile (native MAUI geolocation).
+            </p>
+            <NavLink href="search-and-locate" class="feature-link">Explore →</NavLink>
+        </div>
+
+        <div class="feature-card">
+            <h3>💾 Save Location</h3>
+            <p>
+                Click the map to select a point, save it to browser storage, and restore it later.
+                Includes copyable component usage so developers can implement the same pattern quickly.
+            </p>
+            <NavLink href="save-location" class="feature-link">Explore →</NavLink>
+        </div>
+
+        <div class="feature-card">
+            <h3>🔒 Location Lock</h3>
+            <p>
+                Restrict marker placement, center-pin dragging, and search selection to specific countries
+                or subdivisions. Shows a boundary overlay and rejects out-of-bounds interactions.
+            </p>
+            <NavLink href="location-lock" class="feature-link">Explore →</NavLink>
         </div>
 
         <div class="feature-card">

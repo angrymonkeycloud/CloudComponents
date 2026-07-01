@@ -25,9 +25,12 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     private MapStyle _appliedStyle;
     private bool _appliedTrafficFlow;
     private bool _appliedTrafficIncidents;
+    private (bool DragPan, bool DragRotate, bool ScrollZoom, bool DblClickZoom, bool BoxZoom, bool Keyboard, bool Touch) _appliedInteractions;
+    private (MapControlOption Zoom, MapControlOption Compass, MapControlOption Pitch, MapControlOption Style, MapControlOption Fullscreen, MapControlOption Scale) _appliedControls = default!;
+    private MarkerAddTrigger _appliedAddMarkerTrigger;
 
-    private readonly Dictionary<string, MapMarker> _markersById = new();
-    private readonly List<RegionLegendItem> _regionLegendEntries = new();
+    private readonly Dictionary<string, MapMarker> _markersById = [];
+    private readonly List<RegionLegendItem> _regionLegendEntries = [];
 
     private sealed record RegionLegendItem(string Label, string Fill, string Stroke);
 
@@ -78,8 +81,13 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     [Parameter] public bool Interactive { get; set; } = true;
     [Parameter] public bool DragPanInteraction { get; set; } = true;
     [Parameter] public bool DragRotateInteraction { get; set; } = true;
-    [Parameter] public bool ScrollZoomInteraction { get; set; } = true;
-    [Parameter] public bool DblClickZoomInteraction { get; set; } = false;
+
+    /// <summary>
+    /// Enables zoom via mouse wheel / trackpad scroll. Defaults to <c>false</c> so an embedded
+    /// map doesn't hijack page scrolling; set to <c>true</c> for a full-page/dedicated map view.
+    /// </summary>
+    [Parameter] public bool ScrollZoomInteraction { get; set; } = false;
+    [Parameter] public bool DblClickZoomInteraction { get; set; } = true;
     [Parameter] public bool BoxZoomInteraction { get; set; } = true;
     [Parameter] public bool KeyboardInteraction { get; set; } = true;
     [Parameter] public bool TouchInteraction { get; set; } = true;
@@ -89,11 +97,14 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     /// <summary>Optional region overlays rendered on the map as colored bounding-box rectangles.</summary>
     [Parameter] public IReadOnlyList<MapRegion>? Regions { get; set; }
 
-    /// <summary>How users add markers by interacting with the map. Default: <see cref="MarkerAddTrigger.DoubleClick"/>.</summary>
-    [Parameter] public MarkerAddTrigger AddMarkerTrigger { get; set; } = MarkerAddTrigger.DoubleClick;
+    /// <summary>
+    /// How users add markers by interacting with the map. Opt-in: defaults to
+    /// <see cref="MarkerAddTrigger.Disabled"/> so the map doesn't create markers unless you ask it to.
+    /// </summary>
+    [Parameter] public MarkerAddTrigger AddMarkerTrigger { get; set; } = MarkerAddTrigger.Disabled;
 
-    /// <summary>If true, double-clicking a marker removes it.</summary>
-    [Parameter] public bool AllowMarkerRemoval { get; set; } = true;
+    /// <summary>If true, double-clicking a marker removes it. Defaults to <c>false</c> (opt-in).</summary>
+    [Parameter] public bool AllowMarkerRemoval { get; set; } = false;
 
     [Parameter] public bool ShowCurrentLocationButton { get; set; } = true;
     [Parameter] public bool LocateOnOpen { get; set; } = false;
@@ -115,6 +126,9 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     [Parameter] public EventCallback<MapMarker> OnMarkerRemoved { get; set; }
     [Parameter] public EventCallback<MapCoordinate> OnCenterPinChanged { get; set; }
     [Parameter] public EventCallback<string> OnMapError { get; set; }
+
+    /// <summary>Raised after "pin my location" (button or <see cref="PinMyLocationAsync"/>) successfully recenters the map.</summary>
+    [Parameter] public EventCallback<MapCoordinate> OnMyLocationFound { get; set; }
 
     public bool IsReady { get; private set; }
     public IReadOnlyDictionary<string, MapMarker> CurrentMarkers => _markersById;
@@ -146,8 +160,14 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
         _appliedStyle = Style;
         _appliedTrafficFlow = ShowTrafficFlow;
         _appliedTrafficIncidents = ShowTrafficIncidents;
+        _appliedControls = (ZoomControl, CompassControl, PitchControl, StyleControl, FullscreenControl, ScaleControl);
+        _appliedInteractions = (DragPanInteraction, DragRotateInteraction, ScrollZoomInteraction, DblClickZoomInteraction, BoxZoomInteraction, KeyboardInteraction, TouchInteraction);
+        _appliedAddMarkerTrigger = AddMarkerTrigger;
         _isInitializing = false;
         StateHasChanged();
+
+        if (LocationLock is not null)
+            _ = SyncLocationLockAsync();
 
         // Start the consent + locate flow only when the caller did not give
         // us an explicit initial view.
@@ -178,9 +198,7 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
         StateHasChanged();
         try
         {
-            var loc = await Locator.GetCurrentLocationAsync();
-            if (loc is { } p && _controller is not null)
-                await _controller.InvokeVoidAsync("showCurrentLocation", p.Lat, p.Lng);
+            await RecenterOnCurrentLocationAsync();
         }
         finally
         {
@@ -238,6 +256,47 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
             _appliedTrafficIncidents = ShowTrafficIncidents;
             await _controller.InvokeVoidAsync("setTraffic", ShowTrafficFlow, ShowTrafficIncidents);
         }
+
+        var currentControls = (ZoomControl, CompassControl, PitchControl, StyleControl, FullscreenControl, ScaleControl);
+        if (_appliedControls != currentControls)
+        {
+            _appliedControls = currentControls;
+            await _controller.InvokeVoidAsync("setControls", new
+            {
+                zoom = ControlToJs(ZoomControl),
+                compass = ControlToJs(CompassControl),
+                pitch = ControlToJs(PitchControl),
+                style = ControlToJs(StyleControl),
+                fullscreen = ControlToJs(FullscreenControl),
+                scale = ControlToJs(ScaleControl)
+            });
+        }
+
+        var currentInteractions = (DragPanInteraction, DragRotateInteraction, ScrollZoomInteraction, DblClickZoomInteraction, BoxZoomInteraction, KeyboardInteraction, TouchInteraction);
+        if (_appliedInteractions != currentInteractions)
+        {
+            _appliedInteractions = currentInteractions;
+            await _controller.InvokeVoidAsync("setInteractions", new
+            {
+                dragPan = DragPanInteraction,
+                dragRotate = DragRotateInteraction,
+                scrollZoom = ScrollZoomInteraction,
+                dblClickZoom = DblClickZoomInteraction,
+                boxZoom = BoxZoomInteraction,
+                keyboard = KeyboardInteraction,
+                touch = TouchInteraction
+            });
+        }
+
+        // Lets callers switch selection UX at runtime (e.g. a demo toggling between
+        // click-to-place and an always-visible center pin) without recreating the map.
+        if (_appliedAddMarkerTrigger != AddMarkerTrigger)
+        {
+            _appliedAddMarkerTrigger = AddMarkerTrigger;
+            await _controller.InvokeVoidAsync("setAddMarkerTrigger", TriggerToString(AddMarkerTrigger));
+        }
+
+        await SyncLocationLockAsync();
     }
 
     private object BuildMapOptions(InitialMapView view) => new
@@ -453,21 +512,54 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
         await c.InvokeVoidAsync("showCurrentLocation", latitude, longitude);
     }
 
-    private async Task LocateMeAsync()
+    /// <summary>
+    /// Requests the device's current location (prompting for permission via the OS/browser
+    /// dialog if needed, through the registered <see cref="ILocationService"/>) and recenters
+    /// the map on it — the same flow triggered by the built-in "locate me" button. Honors
+    /// <see cref="LocationLock"/>: when the resolved location falls outside the locked area,
+    /// the map is not recentered and <see cref="OnLocationLockRejected"/> fires instead.
+    /// Returns <c>true</c> when the map was recentered.
+    /// </summary>
+    public async Task<bool> PinMyLocationAsync()
     {
-        if (Locator is null || _isLocating) return;
+        if (Locator is null || _isLocating) return false;
 
         _isLocating = true;
+        StateHasChanged();
         try
         {
-            var loc = await Locator.GetCurrentLocationAsync();
-            if (loc is { } p)
-                await ShowCurrentLocationAsync(p.Lat, p.Lng);
+            return await RecenterOnCurrentLocationAsync();
         }
         finally
         {
             _isLocating = false;
+            StateHasChanged();
         }
+    }
+
+    private Task LocateMeAsync() => PinMyLocationAsync();
+
+    /// <summary>
+    /// Fetches the current device location and recenters the map, provided the coordinate is
+    /// allowed by <see cref="LocationLock"/> (when active). Returns <c>true</c> on success.
+    /// Caller is responsible for the <see cref="_isLocating"/> flag and <see cref="StateHasChanged"/>.
+    /// </summary>
+    private async Task<bool> RecenterOnCurrentLocationAsync()
+    {
+        if (Locator is null) return false;
+
+        var loc = await Locator.GetCurrentLocationAsync();
+        if (loc is not { } p) return false;
+
+        if (!await IsPointAllowedByLocationLockAsync(p.Lat, p.Lng))
+        {
+            await RaiseLocationLockRejectedAsync(p.Lat, p.Lng);
+            return false;
+        }
+
+        await ShowCurrentLocationAsync(p.Lat, p.Lng);
+        await OnMyLocationFound.InvokeAsync(new MapCoordinate(p.Lat, p.Lng));
+        return true;
     }
 
     // ?? JS callbacks ????????????????????????????????????????????????????????
@@ -554,6 +646,9 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        CancelSearchDebounce();
+        CancelLocationLockWork();
+
         try
         {
             if (_controller is not null)
