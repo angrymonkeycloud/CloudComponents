@@ -10,12 +10,12 @@
         overflow: auto;
         background-color: var(--cloudgrid-body-background, #fff);
         scrollbar-color: #505050 #fff;
-
-        &._fixed {
+        max-height: 70vh;
+        /*  &._fixed {
             flex: none;
             overflow-x: auto;
             overflow-y: hidden;
-        }
+        }*/
     }
 
     &-head {
@@ -139,7 +139,7 @@
 
         &._scroll {
             overflow-y: auto;
-            overscroll-behavior: contain;
+            /*overscroll-behavior: contain;*/
             scrollbar-gutter: stable;
         }
 

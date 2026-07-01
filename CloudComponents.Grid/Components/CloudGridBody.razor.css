@@ -4,11 +4,12 @@
   overflow: auto;
   background-color: var(--cloudgrid-body-background, #fff);
   scrollbar-color: #505050 #fff;
-}
-.cloudgrid-table._fixed {
-  flex: none;
-  overflow-x: auto;
-  overflow-y: hidden;
+  max-height: 70vh;
+  /*  &._fixed {
+            flex: none;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }*/
 }
 .cloudgrid-head {
   position: sticky;
@@ -113,7 +114,7 @@
 }
 .cloudgrid-body._scroll {
   overflow-y: auto;
-  overscroll-behavior: contain;
+  /*overscroll-behavior: contain;*/
   scrollbar-gutter: stable;
 }
 .cloudgrid-body._virtualized ::deep .cloudgrid-row {
