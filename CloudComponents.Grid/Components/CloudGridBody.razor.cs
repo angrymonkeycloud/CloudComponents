@@ -533,7 +533,7 @@ public partial class CloudGridBody
     /// </summary>
     private string? BodyStyle =>
         RowsPerPage.HasValue
-            ? $"height: calc(var(--cloudgrid-row-height) * {RowsPerPage.Value})"
+            ? RowsPerPage==30 ? "height:auto" : $"height: calc(var(--cloudgrid-row-height) * {RowsPerPage.Value})"
             : null;
 
     private static string Px(double value) => value.ToString(CultureInfo.InvariantCulture) + "px";
