@@ -1,5 +1,13 @@
 # Copilot Instructions
 
+## General AI-Assisted Development
+
+For general AI-assisted development guidance, C# style, static assets, and documentation standards that apply to this repository, see:
+
+- [AI Instructions](https://github.com/angrymonkeycloud/CloudDocs/blob/main/docs/ai/instructions.md)
+
+**Note**: Project-specific instructions below take precedence when conflicts exist.
+
 ## Architecture
 
 Multi-project Blazor Razor Class Library solution targeting **net10.0**. Each component is a standalone NuGet package (`AngryMonkey.CloudComponents.*`) with a paired demo app.
@@ -21,15 +29,6 @@ See per-project READMEs for API details: [Grid](../CloudComponents.Grid/README.m
 - **LESS compilation**: Handled by Visual Studio's `compilerconfig.json` — do not run manually. The `.css` and `.min.css` files are generated artifacts.
 
 ## Code Style
-
-### CSS/LESS
-
-- **Edit `.less` source files only** — never modify generated `.css`/`.min.css` files.
-- Nested BEM-like class structure: `.cloudgrid { &-headcell { ... } &-body { ... } }`
-- State modifiers as adjective classes: `._busy`, `._loading`, `._selected`, `._resizing`
-- Use `::deep` for styles targeting child component content under Blazor CSS isolation.
-- Theme via CSS variables: `--cloudgrid-row-height`, `--cloudgrid-color`, etc.
-- Main class hard-coded in markup; additional runtime classes appended via C# methods.
 
 ### Component Structure
 
