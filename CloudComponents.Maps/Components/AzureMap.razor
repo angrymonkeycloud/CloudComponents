@@ -22,7 +22,12 @@
                        @onfocus="HandleSearchFocus"
                        @onblur="HandleSearchBlurAsync"
                        aria-label="Search for a place"
-                       autocomplete="off" />
+                       autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       spellcheck="false"
+                       name="@($"{MapId}-search")"
+                       readonly="@_searchInputReadOnly" />
                 @if (_isSearching)
                 {
                     <span class="map-search-spinner" aria-hidden="true"></span>

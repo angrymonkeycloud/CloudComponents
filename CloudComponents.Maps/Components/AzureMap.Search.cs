@@ -17,6 +17,7 @@ public partial class AzureMap
     private bool _isSearching;
     private int _searchHighlightIndex = -1;
     private string _searchQuery = string.Empty;
+    private bool _searchInputReadOnly = true;
 
     /// <summary>Shows the built-in search box (top-left). Opt-in: defaults to <c>false</c>.</summary>
     [Parameter] public bool ShowSearchBox { get; set; }
@@ -167,6 +168,8 @@ public partial class AzureMap
 
     private async Task HandleSearchBlurAsync()
     {
+        _searchInputReadOnly = true;
+
         // Delay so a pointer-down on a dropdown item registers before it unmounts.
         await Task.Delay(150);
         _searchDropdownOpen = false;
@@ -175,6 +178,8 @@ public partial class AzureMap
 
     private void HandleSearchFocus()
     {
+        _searchInputReadOnly = false;
+
         if (_searchResults.Count > 0)
             _searchDropdownOpen = true;
     }
