@@ -111,7 +111,9 @@ public partial class AzureMap
 
             if (area.SubdivisionCodes is not { Count: > 0 })
             {
-                var polygon = await ResolveBoundaryPolygonAsync(country.Name, cancellationToken);
+                // entityType=Country ensures a query like "Lebanon" resolves to the country
+                // itself, never a same-named city/POI elsewhere (e.g. Lebanon, PA/OH/NH in the US).
+                var polygon = await ResolveBoundaryPolygonAsync(country.Name, cancellationToken, entityType: "Country");
                 if (polygon is not null)
                     polygons.Add(polygon);
                 continue;
@@ -123,7 +125,10 @@ public partial class AzureMap
 
                 var subdivision = geoClient.Subdivisions.Get(country.Code, subdivisionCode);
                 var name = subdivision?.Name ?? subdivisionCode;
-                var polygon = await ResolveBoundaryPolygonAsync($"{name}, {country.Name}", cancellationToken);
+                // entityType=CountrySubdivision + countrySet pins the match to the right
+                // administrative level inside the right country (avoids cross-country name clashes).
+                var polygon = await ResolveBoundaryPolygonAsync($"{name}, {country.Name}", cancellationToken,
+                    entityType: "CountrySubdivision", countrySet: country.Code);
                 if (polygon is not null)
                     polygons.Add(polygon);
             }
@@ -132,9 +137,10 @@ public partial class AzureMap
         return polygons;
     }
 
-    private async Task<double[][][]?> ResolveBoundaryPolygonAsync(string query, CancellationToken cancellationToken)
+    private async Task<double[][][]?> ResolveBoundaryPolygonAsync(
+        string query, CancellationToken cancellationToken, string? entityType = null, string? countrySet = null)
     {
-        var geocode = await GeocodeAsync(query);
+        var geocode = await GeocodeAsync(query, entityType, countrySet);
         cancellationToken.ThrowIfCancellationRequested();
 
         if (geocode?.GeometryId is not { Length: > 0 } geometryId)

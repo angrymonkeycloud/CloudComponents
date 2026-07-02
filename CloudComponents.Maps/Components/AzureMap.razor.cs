@@ -440,10 +440,18 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     /// Geocode a query string (city name, address, etc.) using the Azure Maps Search API.
     /// Returns the center point, viewport, and geometry ID, or <c>null</c> when nothing is found.
     /// </summary>
-    public async Task<GeocodeResult?> GeocodeAsync(string query)
+    /// <param name="query">Free-text place name/address to resolve.</param>
+    /// <param name="entityType">
+    /// Optional Azure Maps geography entity type filter (e.g. <c>"Country"</c>,
+    /// <c>"CountrySubdivision"</c>). Restricts matches to that administrative level only —
+    /// use this when resolving a known country/state so a same-named city or POI elsewhere
+    /// in the world can't outrank the actual boundary.
+    /// </param>
+    /// <param name="countrySet">Optional ISO 3166-1 alpha-2 country code(s) to further narrow results.</param>
+    public async Task<GeocodeResult?> GeocodeAsync(string query, string? entityType = null, string? countrySet = null)
     {
         var c = EnsureController();
-        return await c.InvokeAsync<GeocodeResult?>("geocode", query);
+        return await c.InvokeAsync<GeocodeResult?>("geocode", query, entityType, countrySet);
     }
 
     /// <summary>

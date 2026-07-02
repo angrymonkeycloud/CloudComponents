@@ -743,13 +743,22 @@ class AzureMapController {
     }
 
     /// Geocode a query string using the Azure Maps Search API.
+    /// When `entityType` is provided (e.g. "Country", "CountrySubdivision"), the search is
+    /// restricted to the Geo index and that entity type only, so a query like "Lebanon" always
+    /// resolves to the country itself instead of a same-named city/POI elsewhere in the world.
+    /// `countrySet` further narrows results to one or more ISO 3166-1 alpha-2 country codes.
     /// Returns { latitude, longitude, north, south, east, west, geometryId } or null.
-    async geocode(query) {
+    async geocode(query, entityType, countrySet) {
         if (!query) return null;
         try {
             const key = this._options.subscriptionKey;
             // Use fuzzy search so free-text addresses, streets, and landmarks all resolve.
-            const url = `https://atlas.microsoft.com/search/fuzzy/json?api-version=1.0&subscription-key=${encodeURIComponent(key)}&query=${encodeURIComponent(query)}&limit=1`;
+            let url = `https://atlas.microsoft.com/search/fuzzy/json?api-version=1.0&subscription-key=${encodeURIComponent(key)}&query=${encodeURIComponent(query)}&limit=1`;
+            if (entityType) {
+                // entityType is only honored by the API when idxSet includes Geo.
+                url += `&idxSet=Geo&entityType=${encodeURIComponent(entityType)}`;
+            }
+            if (countrySet) url += `&countrySet=${encodeURIComponent(countrySet)}`;
             const resp = await fetch(url);
             if (!resp.ok) return null;
             const data = await resp.json();
