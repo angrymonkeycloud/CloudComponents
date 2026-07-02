@@ -35,6 +35,7 @@ See per-project READMEs for API details: [Grid](../CloudComponents.Grid/README.m
 
 - **Grid pattern**: Parent component (`CloudGrid`) + child components (`CloudGridHeader`, `CloudGridBody`, `CloudGridFooter`), each with `.razor`, `.razor.cs`, `.razor.less`.
 - **VideoPlayer pattern**: Single Razor file + partial classes split by concern (`VideoPlayer.Playback.cs`, `VideoPlayer.Volume.cs`, `VideoPlayer.FullScreen.cs`, etc.).
+- **Maps pattern**: When adding substantial new feature areas to a Blazor component, split the logic into partial classes (e.g., `AzureMap.Search.cs`, `AzureMap.LocationLock.cs`) rather than growing the main component file.
 - Models in `Models/` folder, services in `Services/`, extensions in `Extensions/`.
 
 ### JavaScript Interop
@@ -50,7 +51,7 @@ See per-project READMEs for API details: [Grid](../CloudComponents.Grid/README.m
 
 ## Conventions
 
-- Data flow uses async callbacks — Grid's `DataProvider`: `Func<CloudGridDataRequest, Task<CloudGridDataResult?>>` returns paginated/filtered results.
+- Data flow uses async callbacks — Grid's `DataProvider`: `Func<CloudGridDataRequest, Task<CloudGridDataResult?>` returns paginated/filtered results.
 - Event callbacks follow the pattern: `OnActionClicked`, `OnSearchChanged`, `OnSelectionChanged`.
 - Demo pages are standalone Blazor WebAssembly or Server apps in separate projects — each page showcases one feature.
 - NuGet package IDs use prefix `AngryMonkey.CloudComponents.*`.

@@ -34,8 +34,23 @@ public sealed class MauiLocationService : ILocationService
         return status == PermissionStatus.Granted;
     }
 
-    public Task<LocationPermissionState> GetPermissionStateAsync()
+    public async Task<LocationPermissionState> GetPermissionStateAsync()
     {
-        throw new NotImplementedException();
+        try
+        {
+            var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+            return status switch
+            {
+                PermissionStatus.Granted => LocationPermissionState.Granted,
+                PermissionStatus.Denied => LocationPermissionState.Denied,
+                PermissionStatus.Restricted => LocationPermissionState.Denied,
+                PermissionStatus.Disabled => LocationPermissionState.Unsupported,
+                _ => LocationPermissionState.Prompt
+            };
+        }
+        catch
+        {
+            return LocationPermissionState.Prompt;
+        }
     }
 }

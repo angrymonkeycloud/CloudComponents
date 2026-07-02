@@ -5,6 +5,62 @@
 <div class="map-host" style="height:@Height; width:@Width;">
     <div id="@MapId" class="map-canvas"></div>
 
+    @if (ShowSearchBox)
+    {
+        <div class="map-search">
+            <div class="map-search-box @(_isSearching ? "_busy" : null)">
+                <svg class="map-search-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8" />
+                    <path d="M15.5 15.5L21 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+                <input type="text"
+                       class="map-search-input"
+                       placeholder="@SearchPlaceholder"
+                       @bind="SearchQuery"
+                       @bind:event="oninput"
+                       @onkeydown="HandleSearchKeyDown"
+                       @onfocus="HandleSearchFocus"
+                       @onblur="HandleSearchBlurAsync"
+                       aria-label="Search for a place"
+                       autocomplete="off" />
+                @if (_isSearching)
+                {
+                    <span class="map-search-spinner" aria-hidden="true"></span>
+                }
+                else if (!string.IsNullOrEmpty(_searchQuery))
+                {
+                    <button type="button" class="map-search-clear" @onclick="ClearSearch" aria-label="Clear search">
+                        <svg viewBox="0 0 16 16" aria-hidden="true">
+                            <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                        </svg>
+                    </button>
+                }
+            </div>
+
+            @if (_searchDropdownOpen && _searchResults.Count > 0)
+            {
+                <ul class="map-search-results" role="listbox">
+                    @for (var i = 0; i < _searchResults.Count; i++)
+                    {
+                        var index = i;
+                        var result = _searchResults[index];
+
+                        <li class="map-search-result @(index == _searchHighlightIndex ? "_active" : null)"
+                            role="option"
+                            aria-selected="@(index == _searchHighlightIndex)"
+                            @onmousedown="@(() => SelectSearchResultAsync(result))">
+                            <span class="map-search-result-address">@result.Address</span>
+                            @if (!string.IsNullOrEmpty(result.Description))
+                            {
+                                <span class="map-search-result-description">@result.Description</span>
+                            }
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    }
+
     @if (AddMarkerTrigger == MarkerAddTrigger.CenterPin)
     {
         <div class="map-pin @(_isLocating ? "_loading" : null)" aria-hidden="true">
@@ -42,6 +98,11 @@
                 <circle cx="12" cy="12" r="8" fill="none" />
             </svg>
         </button>
+    }
+
+    @if (_showLockRestrictionToast)
+    {
+        <div class="map-lock-toast" role="alert">@LockRestrictionMessage</div>
     }
 </div>
 
