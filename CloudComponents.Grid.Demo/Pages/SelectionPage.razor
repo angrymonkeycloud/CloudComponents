@@ -16,43 +16,59 @@
     </p>
 </div>
 
-<div class="card">
-    <div class="toolbar">
-        <span class="badge">Selected: @_selected.Count</span>
-        <button class="btn" @onclick="ClearSelection" disabled="@(_selected.Count == 0)">Clear selection</button>
-    </div>
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
+            <div class="toolbar">
+                <span class="badge">Selected: @_selected.Count</span>
+                <button class="btn" @onclick="ClearSelection" disabled="@(_selected.Count == 0)">Clear selection</button>
+            </div>
 
-    <div class="grid-host">
-        <CloudGrid Header="_header"
-                   Columns="_columns"
-                   DataProvider="LoadAsync"
-                   AllowSelection="true"
-                   @bind-SelectedRecords="_selected"
-                   RowActions="_rowActions"
-                   ActionFilter="FilterAction"
-                   OnActionClicked="OnAction"
-                   RowHeight="40"
-                   RowsPerPage="10" />
-    </div>
-</div>
+            <div class="grid-host">
+                <CloudGrid Header="_header"
+                           Columns="_columns"
+                           DataProvider="LoadAsync"
+                           AllowSelection="true"
+                           @bind-SelectedRecords="_selected"
+                           RowActions="_rowActions"
+                           ActionFilter="FilterAction"
+                           OnActionClicked="OnAction"
+                           RowHeight="40"
+                           RowsPerPage="10"
+                           HeightMode="CloudGridHeightMode.RowHeight" />
+            </div>
+        </div>
 
-<div class="card">
-    <h2 class="card-title">Event log</h2>
-    <p class="card-subtitle">Bulk actions report every selected id; row actions report the single row id.</p>
-    @if (_log.Count == 0)
-    {
-        <div class="log"><span class="log-empty">No actions yet — select rows and use the toolbar, or click a row action.</span></div>
-    }
-    else
-    {
-        <div class="log">
-            @foreach (var entry in _log)
+        <div class="card">
+            <h2 class="card-title">Event log</h2>
+            <p class="card-subtitle">Bulk actions report every selected id; row actions report the single row id.</p>
+            @if (_log.Count == 0)
             {
-                <div class="log-line"><span class="log-time">@entry.Time</span>@entry.Message</div>
+                <div class="log"><span class="log-empty">No actions yet — select rows and use the toolbar, or click a row action.</span></div>
+            }
+            else
+            {
+                <div class="log">
+                    @foreach (var entry in _log)
+                    {
+                        <div class="log-line"><span class="log-time">@entry.Time</span>@entry.Message</div>
+                    }
+                </div>
             }
         </div>
-    }
-</div>
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <p style="font-size: 13px; color: #666; margin-top: 0;">
+                Enable <code>AllowSelection</code>, bind <code>SelectedRecords</code>, and optionally
+                add bulk/row actions that respond to <code>OnActionClicked</code>.
+            </p>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
 
 @code {
     private List<Guid> _selected = [];
@@ -171,4 +187,51 @@
     }
 
     private static string ShortId(Guid id) => id.ToString()[..8];
+
+    private readonly string _usageSnippet = """
+<CloudGrid AllowSelection="true"
+           @bind-SelectedRecords="_selected"
+           RowActions="_rowActions"
+           ActionFilter="FilterAction"
+           OnActionClicked="OnAction"
+           Header="_header"
+           ... />
+
+@code {
+    private List<Guid> _selected = [];
+
+    private readonly CloudGridHeaderOptions _header = new()
+    {
+        Label = "Team",
+        AllowExport = true,
+        Actions = [
+            new CloudGridAction
+            {
+                Key = "bulk-deactivate",
+                Text = "Deactivate",
+                ShowOnBulkHeader = true  // Only when rows selected
+            }
+        ],
+        OnActionClicked = EventCallback.Factory.Create<...>(this, OnAction)
+    };
+
+    private List<CloudGridAction> _rowActions = [
+        new() { Key = "edit", Tooltip = "Edit", ShowOnRow = true },
+        new() { Key = "delete", Tooltip = "Delete", ShowOnRow = true }
+    ];
+
+    private bool FilterAction(CloudGridRow row, CloudGridAction action)
+    {
+        // Hide Delete on active employees
+        if (action.Key != "delete") return true;
+        Person? person = DataService.GetByIds([row.Id]).FirstOrDefault();
+        return person is null || !person.IsActive;
+    }
+
+    private void OnAction(CloudGridActionEventArgs args)
+    {
+        // args.Action.Key, args.RecordIds
+    }
+}
+""";
 }

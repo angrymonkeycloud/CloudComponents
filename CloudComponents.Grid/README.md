@@ -22,6 +22,7 @@ Production-ready Blazor data grid for .NET 10 with strongly typed models, server
   - [`CloudGridHeaderOptions`](#cloudgridheaderoptions)
 - [Models reference](#models-reference)
 - [Paging modes](#paging-modes)
+- [Body height modes](#body-height-modes)
 - [Sorting behavior](#sorting-behavior)
 - [Actions (header, row, bulk, more)](#actions-header-row-bulk-more)
 - [Selection](#selection)
@@ -190,6 +191,8 @@ Return a `CloudGridDataResult` with `Rows`, `Page`, `PageSize`, `Total`, and opt
 | `EmptyCellText` | `string` | `--` | Placeholder for null/empty cells. |
 | `RowHeight` | `double?` | `null` | Overrides `--cloudgrid-row-height` in px. |
 | `RowsPerPage` | `int?` | `null` | Desired body rows in viewport and page size sent to provider. |
+| `HeightMode` | `CloudGridHeightMode` | `FullHeight` | How the grid is sized vertically: `FullHeight` (default, fills parent), `RowHeight` (fixed to `RowsPerPage` rows), or `Auto` (grows with content, optionally capped by `MaxHeight`). |
+| `MaxHeight` | `double?` | `null` | Maximum height in pixels when `HeightMode` is `Auto`. Ignored for other modes. |
 | `PagingMode` | `CloudGridPagingMode` | `Pages` | `Pages`, `LoadMore`, or `InfiniteScroll`. |
 | `LoadMoreText` | `string` | `load more` | Label for load-more button mode. |
 | `AdditionalAttributes` | `Dictionary<string, object>?` | `null` | Captures unmatched attributes on root element. |
@@ -263,6 +266,45 @@ Return a `CloudGridDataResult` with `Rows`, `Page`, `PageSize`, `Total`, and opt
 - Also expects append behavior
 
 In append modes, ensure your `DataProvider` returns incremented `Page` and updated `Total`.
+
+---
+
+## Body height modes
+
+### `FullHeight` (default)
+
+- Grid fills the full height of its parent container
+- Header and footer stay fixed, only the row area between them scrolls
+- **Requires a parent with a definite height** (e.g., a fixed-height wrapper or a flex/grid item that stretches)
+- Best for admin dashboards, split-pane layouts, or full-page grids
+
+```razor
+<div style="height: 600px;">
+    <CloudGrid HeightMode="CloudGridHeightMode.FullHeight" ... />
+</div>
+```
+
+### `RowHeight`
+
+- Grid is exactly tall enough to show `RowsPerPage` rows (no more, no less)
+- Calculated as `RowsPerPage × var(--cloudgrid-row-height)`
+- The body scrolls internally if accumulating paging (`LoadMore`/`InfiniteScroll`) appends beyond that height
+- Best for embedding a grid in a content flow without forcing a container height
+
+```razor
+<CloudGrid HeightMode="CloudGridHeightMode.RowHeight" RowsPerPage="10" ... />
+```
+
+### `Auto`
+
+- Grid grows vertically to fit its content (all rows visible, no internal scroll by default)
+- Optional `MaxHeight` parameter caps the grid's height — once content exceeds the cap, it behaves like `FullHeight`
+- Best for small record sets or dynamic-height scenarios where you want to avoid an artificial viewport
+
+```razor
+<!-- No scroll until content grows past 500px -->
+<CloudGrid HeightMode="CloudGridHeightMode.Auto" MaxHeight="500" ... />
+```
 
 ---
 

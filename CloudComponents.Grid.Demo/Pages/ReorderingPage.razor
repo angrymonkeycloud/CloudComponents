@@ -13,40 +13,57 @@
     </p>
 </div>
 
-<div class="card">
-    <div class="toolbar">
-        <span class="badge">Drag the handle on the left of each row</span>
-        <button class="btn" @onclick="ReloadGrid">Reload grid</button>
-    </div>
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
+            <div class="toolbar">
+                <span class="badge">Drag the handle on the left of each row</span>
+                <button class="btn" @onclick="ReloadGrid">Reload grid</button>
+            </div>
 
-    <div class="grid-host">
-        <CloudGrid @key="_gridKey"
-                   Header="_header"
-                   Columns="_columns"
-                   DataProvider="LoadAsync"
-                   AllowReordering="true"
-                   OnRowsReordered="OnReordered"
-                   RowHeight="40"
-                   RowsPerPage="12" />
-    </div>
-</div>
+            <div class="grid-host">
+                <CloudGrid @key="_gridKey"
+                           Header="_header"
+                           Columns="_columns"
+                           DataProvider="LoadAsync"
+                           AllowReordering="true"
+                           OnRowsReordered="OnReordered"
+                           RowHeight="40"
+                           RowsPerPage="12"
+                           HeightMode="CloudGridHeightMode.RowHeight" />
+            </div>
+        </div>
 
-<div class="card">
-    <h2 class="card-title">Reorder log</h2>
-    @if (_log.Count == 0)
-    {
-        <div class="log"><span class="log-empty">No moves yet — drag a row to a new position.</span></div>
-    }
-    else
-    {
-        <div class="log">
-            @foreach (var entry in _log)
+        <div class="card">
+            <h2 class="card-title">Reorder log</h2>
+            @if (_log.Count == 0)
             {
-                <div class="log-line"><span class="log-time">@entry.Time</span>@entry.Message</div>
+                <div class="log"><span class="log-empty">No moves yet — drag a row to a new position.</span></div>
+            }
+            else
+            {
+                <div class="log">
+                    @foreach (var entry in _log)
+                    {
+                        <div class="log-line"><span class="log-time">@entry.Time</span>@entry.Message</div>
+                    }
+                </div>
             }
         </div>
-    }
-</div>
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <p style="font-size: 13px; color: #666; margin-top: 0;">
+                Enable <code>AllowReordering</code> and handle <code>OnRowsReordered</code> to persist
+                the new order. The event includes the moved record id, old/new indexes, and the full
+                ordered id list.
+            </p>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
 
 @code {
     private int _gridKey;
@@ -90,4 +107,23 @@
     }
 
     private void ReloadGrid() => _gridKey++;
+
+    private readonly string _usageSnippet = """
+<CloudGrid AllowReordering="true"
+           OnRowsReordered="OnReordered"
+           ... />
+
+@code {
+    private void OnReordered(CloudGridRowReorder reorder)
+    {
+        // reorder.RecordId: the moved row's id
+        // reorder.OldIndex, reorder.NewIndex: original and final positions
+        // reorder.OrderedRecordIds: full list of ids in new order
+
+        DataService.ApplyReorder(reorder);
+
+        // Optionally log or refresh
+    }
+}
+""";
 }

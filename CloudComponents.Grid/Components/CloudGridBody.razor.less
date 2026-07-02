@@ -5,23 +5,26 @@
 
 .cloudgrid {
     &-table {
+        // Flex child of .cloudgrid, stretches to fill available vertical space minus
+        // the header/footer, and provides the unified scroll viewport for both the
+        // sticky column head and the rows below it (so they stay horizontally aligned).
         flex: 1;
         min-height: 0;
+        display: flex;
+        flex-direction: column;
         overflow: auto;
         background-color: var(--cloudgrid-body-background, #fff);
         scrollbar-color: #505050 #fff;
-        max-height: 70vh;
-        /*  &._fixed {
-            flex: none;
-            overflow-x: auto;
-            overflow-y: hidden;
-        }*/
+        // No arbitrary max-height — Auto+MaxHeight is applied via inline style when needed.
     }
 
     &-head {
+        // Flex child of .cloudgrid-table, stays fixed-size at the top while .cloudgrid-body
+        // flows or scrolls below. Sticky positioning keeps it at the top of the scroll viewport.
         position: sticky;
         top: 0;
         z-index: 1;
+        flex: none;
         display: flex;
         box-sizing: border-box;
         height: var(--cloudgrid-row-height);
@@ -131,15 +134,17 @@
     }
 
     &-body {
+        // Flex child of .cloudgrid-table. In FullHeight/Auto modes this is content-sized
+        // (no explicit height, no own scroll) and the parent .cloudgrid-table scrolls when
+        // needed. In RowHeight mode this gets an explicit height via inline style (calc'd
+        // from RowsPerPage) and, if accumulating rows, its own nested scrollbar (._scroll).
+        flex: none;
         min-width: max-content;
 
-        &._fixed {
-            min-height: 0;
-        }
-
         &._scroll {
+            // Only applies in RowHeight mode with accumulating paging (LoadMore/InfiniteScroll).
+            // The body itself scrolls once appended rows exceed its fixed height.
             overflow-y: auto;
-            /*overscroll-behavior: contain;*/
             scrollbar-gutter: stable;
         }
 

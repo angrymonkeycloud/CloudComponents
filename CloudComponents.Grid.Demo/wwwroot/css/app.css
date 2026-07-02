@@ -263,6 +263,68 @@ select.input {
     font-size: 0.78rem;
 }
 
+/* ── Result / Code demo page tabs ───────────────────────────────────────── */
+.demo-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.demo-tabs-strip {
+    display: flex;
+    gap: 4px;
+    border-bottom: 2px solid var(--demo-border);
+}
+
+.demo-tab {
+    padding: 0.6rem 1.25rem;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    background: transparent;
+    color: var(--demo-muted);
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 0;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.demo-tab:hover {
+    background: transparent;
+    border-color: #ccc;
+    color: var(--demo-text);
+}
+
+.demo-tab:active {
+    background: transparent;
+}
+
+.demo-tab.active {
+    color: var(--demo-accent);
+    border-color: var(--demo-accent);
+}
+
+.demo-tabs-panel {
+    /* Content wrapper; no specific styles needed (visibility toggled inline) */
+}
+
+.code-snippet {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.code-snippet code {
+    font-family: "Cascadia Code", Consolas, "Courier New", monospace;
+    white-space: pre;
+}
+
 /* ── Grid sizing wrapper so feature pages stay tidy ─────────────────────── */
 .grid-host {
     max-width: 900px;

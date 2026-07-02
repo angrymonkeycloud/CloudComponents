@@ -13,51 +13,68 @@
     </p>
 </div>
 
-<div class="card">
-    <h2 class="card-title">Data states</h2>
-    <div class="toolbar">
-        <label>Scenario:</label>
-        <div class="segmented">
-            <button class="@(_scenario == Scenario.Normal ? "active" : "")"
-                    @onclick="() => SetScenario(Scenario.Normal)">Normal</button>
-            <button class="@(_scenario == Scenario.Empty ? "active" : "")"
-                    @onclick="() => SetScenario(Scenario.Empty)">Empty</button>
-            <button class="@(_scenario == Scenario.Error ? "active" : "")"
-                    @onclick="() => SetScenario(Scenario.Error)">Error</button>
-            <button class="@(_scenario == Scenario.Slow ? "active" : "")"
-                    @onclick="() => SetScenario(Scenario.Slow)">Slow (2s)</button>
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
+            <h2 class="card-title">Data states</h2>
+            <div class="toolbar">
+                <label>Scenario:</label>
+                <div class="segmented">
+                    <button class="@(_scenario == Scenario.Normal ? "active" : "")"
+                            @onclick="() => SetScenario(Scenario.Normal)">Normal</button>
+                    <button class="@(_scenario == Scenario.Empty ? "active" : "")"
+                            @onclick="() => SetScenario(Scenario.Empty)">Empty</button>
+                    <button class="@(_scenario == Scenario.Error ? "active" : "")"
+                            @onclick="() => SetScenario(Scenario.Error)">Error</button>
+                    <button class="@(_scenario == Scenario.Slow ? "active" : "")"
+                            @onclick="() => SetScenario(Scenario.Slow)">Slow (2s)</button>
+                </div>
+                <span class="badge">Custom loading &amp; empty texts</span>
+            </div>
+
+            <div class="grid-host">
+                <CloudGrid @key="_gridKey"
+                           Columns="_columns"
+                           DataProvider="LoadAsync"
+                           LoadingText="Fetching employees, please wait…"
+                           EmptyCellText="—"
+                           RowHeight="40"
+                           RowsPerPage="8"
+                           HeightMode="CloudGridHeightMode.RowHeight" />
+            </div>
         </div>
-        <span class="badge">Custom loading &amp; empty texts</span>
-    </div>
 
-    <div class="grid-host">
-        <CloudGrid @key="_gridKey"
-                   Columns="_columns"
-                   DataProvider="LoadAsync"
-                   LoadingText="Fetching employees, please wait…"
-                   EmptyCellText="—"
-                   RowHeight="40"
-                   RowsPerPage="8" />
-    </div>
-</div>
+        <div class="card">
+            <h2 class="card-title">Theming with CSS variables</h2>
+            <p class="card-subtitle">
+                This grid is wrapped in a <code>.themed-grid</code> element that overrides
+                <code>--cloudgrid-accent-color</code>, <code>--cloudgrid-row-height</code>,
+                <code>--cloudgrid-head-background</code> and more — no recompilation, no component changes.
+            </p>
 
-<div class="card">
-    <h2 class="card-title">Theming with CSS variables</h2>
-    <p class="card-subtitle">
-        This grid is wrapped in a <code>.themed-grid</code> element that overrides
-        <code>--cloudgrid-accent-color</code>, <code>--cloudgrid-row-height</code>,
-        <code>--cloudgrid-head-background</code> and more — no recompilation, no component changes.
-    </p>
+            <div class="grid-host themed-grid">
+                <CloudGrid Header="_themedHeader"
+                           Columns="_columns"
+                           DataProvider="LoadThemedAsync"
+                           AllowSelection="true"
+                           @bind-SelectedRecords="_themedSelection"
+                           RowsPerPage="6"
+                           HeightMode="CloudGridHeightMode.RowHeight" />
+            </div>
+        </div>
+    </ResultContent>
 
-    <div class="grid-host themed-grid">
-        <CloudGrid Header="_themedHeader"
-                   Columns="_columns"
-                   DataProvider="LoadThemedAsync"
-                   AllowSelection="true"
-                   @bind-SelectedRecords="_themedSelection"
-                   RowsPerPage="6" />
-    </div>
-</div>
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <p style="font-size: 13px; color: #666; margin-top: 0;">
+                Return <code>ErrorMessage</code> from your data provider to surface a soft error.
+                Override CSS variables in a wrapper class to theme the grid without touching the component.
+            </p>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
 
 @code {
     private enum Scenario { Normal, Empty, Error, Slow }
@@ -118,4 +135,38 @@
         Id = p.Id,
         Cells = [p.FullName, p.Department, p.Country, p.Age]
     };
+
+    private readonly string _usageSnippet = """
+<!-- Return ErrorMessage for soft errors (network issue, validation, etc.) -->
+private async Task<CloudGridDataResult?> LoadAsync(CloudGridDataRequest request)
+{
+    try
+    {
+        return await DataService.QueryAsync(request, ToRow);
+    }
+    catch (Exception ex)
+    {
+        return new CloudGridDataResult
+        {
+            ErrorMessage = "Could not reach the server. Please try again."
+        };
+    }
+}
+
+<!-- Theme via CSS variables (no component changes) -->
+<style>
+    .themed-grid {
+        --cloudgrid-accent-color: #7c3aed;
+        --cloudgrid-row-height: 44px;
+        --cloudgrid-head-background: #f5f3ff;
+        --cloudgrid-hover-background: #ede9fe;
+        --cloudgrid-selected-background: #f5f3ff;
+        --cloudgrid-border-color: #ddd6fe;
+    }
+</style>
+
+<div class="themed-grid">
+    <CloudGrid ... />
+</div>
+""";
 }

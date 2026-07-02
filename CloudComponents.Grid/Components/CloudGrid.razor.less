@@ -9,12 +9,17 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: 100%;
+    // Only FullHeight mode forces the root to fill its parent's height. Auto/RowHeight
+    // stay intrinsically sized (their content + optional MaxHeight cap controls height).
     color: var(--cloudgrid-color, #505050);
     font-size: var(--cloudgrid-font-size, 14px);
     --cloudgrid-row-height: 43px;
     --cloudgrid-header-height: 40px;
     --cloudgrid-footer-height: 30px;
+
+    &._full-height {
+        height: 100%;
+    }
 
     &._busy {
         ::deep .cloudgrid-head,

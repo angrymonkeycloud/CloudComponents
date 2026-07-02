@@ -2,12 +2,14 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
   color: var(--cloudgrid-color, #505050);
   font-size: var(--cloudgrid-font-size, 14px);
   --cloudgrid-row-height: 43px;
   --cloudgrid-header-height: 40px;
   --cloudgrid-footer-height: 30px;
+}
+.cloudgrid._full-height {
+  height: 100%;
 }
 .cloudgrid._busy ::deep .cloudgrid-head,
 .cloudgrid._busy ::deep .cloudgridheader {

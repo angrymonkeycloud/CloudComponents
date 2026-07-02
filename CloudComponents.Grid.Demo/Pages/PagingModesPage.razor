@@ -15,39 +15,56 @@
     </p>
 </div>
 
-<div class="card">
-    <div class="toolbar">
-        <label>Paging mode:</label>
-        <div class="segmented">
-            <button class="@(_mode == CloudGridPagingMode.Pages ? "active" : "")"
-                    @onclick="() => SetMode(CloudGridPagingMode.Pages)">Pages</button>
-            <button class="@(_mode == CloudGridPagingMode.LoadMore ? "active" : "")"
-                    @onclick="() => SetMode(CloudGridPagingMode.LoadMore)">Load more</button>
-            <button class="@(_mode == CloudGridPagingMode.InfiniteScroll ? "active" : "")"
-                    @onclick="() => SetMode(CloudGridPagingMode.InfiniteScroll)">Infinite scroll</button>
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
+            <div class="toolbar">
+                <label>Paging mode:</label>
+                <div class="segmented">
+                    <button class="@(_mode == CloudGridPagingMode.Pages ? "active" : "")"
+                            @onclick="() => SetMode(CloudGridPagingMode.Pages)">Pages</button>
+                    <button class="@(_mode == CloudGridPagingMode.LoadMore ? "active" : "")"
+                            @onclick="() => SetMode(CloudGridPagingMode.LoadMore)">Load more</button>
+                    <button class="@(_mode == CloudGridPagingMode.InfiniteScroll ? "active" : "")"
+                            @onclick="() => SetMode(CloudGridPagingMode.InfiniteScroll)">Infinite scroll</button>
+                </div>
+
+                <label style="margin-left:1rem;">Rows per page:</label>
+                <select class="input" @bind="_pageSize" @bind:after="ReloadGrid">
+                    <option value="5">5</option>
+                    <option value="8">8</option>
+                    <option value="12">12</option>
+                </select>
+
+                <span class="badge">@_mode</span>
+            </div>
+
+            <div class="grid-host">
+                @* @key forces a fresh grid (re-initialised from page 1) whenever the mode or page size changes. *@
+                <CloudGrid @key="_gridKey"
+                           Columns="_columns"
+                           DataProvider="LoadAsync"
+                           PagingMode="_mode"
+                           RowHeight="40"
+                           RowsPerPage="_pageSize"
+                           HeightMode="CloudGridHeightMode.RowHeight"
+                           LoadMoreText="Load more employees" />
+            </div>
         </div>
+    </ResultContent>
 
-        <label style="margin-left:1rem;">Rows per page:</label>
-        <select class="input" @bind="_pageSize" @bind:after="ReloadGrid">
-            <option value="5">5</option>
-            <option value="8">8</option>
-            <option value="12">12</option>
-        </select>
-
-        <span class="badge">@_mode</span>
-    </div>
-
-    <div class="grid-host">
-        @* @key forces a fresh grid (re-initialised from page 1) whenever the mode or page size changes. *@
-        <CloudGrid @key="_gridKey"
-                   Columns="_columns"
-                   DataProvider="LoadAsync"
-                   PagingMode="_mode"
-                   RowHeight="40"
-                   RowsPerPage="_pageSize"
-                   LoadMoreText="Load more employees" />
-    </div>
-</div>
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <p style="font-size: 13px; color: #666; margin-top: 0;">
+                Set <code>PagingMode</code> to <code>Pages</code>, <code>LoadMore</code>, or
+                <code>InfiniteScroll</code>. The grid calls your data provider with <code>IsAppend</code>
+                set to <code>true</code> in the latter two modes.
+            </p>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
 
 @code {
     private CloudGridPagingMode _mode = CloudGridPagingMode.Pages;
@@ -81,4 +98,31 @@
         Id = p.Id,
         Cells = [p.FullName, p.Email, p.Department, p.Country]
     };
+
+    private readonly string _usageSnippet = """
+<!-- Pages: footer shows prev/next arrows, each page replaces rows -->
+<CloudGrid PagingMode="CloudGridPagingMode.Pages"
+           RowsPerPage="10"
+           DataProvider="@LoadAsync" ... />
+
+<!-- LoadMore: button appends next page, grid auto-scrolls -->
+<CloudGrid PagingMode="CloudGridPagingMode.LoadMore"
+           RowsPerPage="10"
+           LoadMoreText="Load more employees"
+           DataProvider="@LoadAsync" ... />
+
+<!-- InfiniteScroll: auto-loads next page near scroll end (Blazor Virtualize) -->
+<CloudGrid PagingMode="CloudGridPagingMode.InfiniteScroll"
+           RowsPerPage="10"
+           DataProvider="@LoadAsync" ... />
+
+@code {
+    private async Task<CloudGridDataResult?> LoadAsync(CloudGridDataRequest request)
+    {
+        // request.IsAppend is true in LoadMore/InfiniteScroll modes
+        // Return the requested page; grid appends it when IsAppend=true
+        return await DataService.QueryAsync(request, ToRow);
+    }
+}
+""";
 }

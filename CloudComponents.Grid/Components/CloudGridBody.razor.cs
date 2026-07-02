@@ -73,11 +73,18 @@ public partial class CloudGridBody
     [Parameter] public int? RowsPerPage { get; set; }
 
     /// <summary>
-    /// How the body is sized vertically. <see cref="CloudGridHeightMode.RowHeight"/> (default)
-    /// fixes it to <see cref="RowsPerPage"/> rows, <see cref="CloudGridHeightMode.FullHeight"/>
-    /// fills the container (100%), and <see cref="CloudGridHeightMode.Auto"/> grows to fit content.
+    /// How the body is sized vertically. <see cref="CloudGridHeightMode.FullHeight"/> (default)
+    /// fills the parent container so only the row area scrolls, <see cref="CloudGridHeightMode.RowHeight"/>
+    /// fixes it to <see cref="RowsPerPage"/> rows, and <see cref="CloudGridHeightMode.Auto"/> grows to fit
+    /// content (optionally capped by <see cref="MaxHeight"/>).
     /// </summary>
     [Parameter] public CloudGridHeightMode HeightMode { get; set; } = CloudGridHeightMode.FullHeight;
+
+    /// <summary>
+    /// Maximum height in pixels applied when <see cref="HeightMode"/> is <see cref="CloudGridHeightMode.Auto"/>.
+    /// Ignored for the other height modes.
+    /// </summary>
+    [Parameter] public double? MaxHeight { get; set; }
 
     /// <summary>How the grid navigates between pages.</summary>
     [Parameter] public CloudGridPagingMode PagingMode { get; set; } = CloudGridPagingMode.Pages;
@@ -503,29 +510,18 @@ public partial class CloudGridBody
         return string.Join(' ', classes);
     }
 
-    private string TableClasses
-    {
-        get
-        {
-            List<string> classes = [];
-
-            if (RowsPerPage.HasValue)
-                classes.Add("_fixed");
-
-            return string.Join(' ', classes);
-        }
-    }
-
     private string BodyClasses
     {
         get
         {
             List<string> classes = [];
 
-            if (RowsPerPage.HasValue)
-                classes.Add("_fixed");
-
-            if (RowsPerPage.HasValue && PagingMode != CloudGridPagingMode.Pages)
+            // Only RowHeight gives the body its own explicit (fixed) height — see BodyStyle.
+            // In that mode, accumulating paging appends beyond that fixed viewport, so the
+            // body needs its own nested scrollbar. FullHeight/Auto share a single scroll
+            // viewport with the head via .cloudgrid-table (see TableStyle), so they never
+            // need this nested scroll.
+            if (HeightMode == CloudGridHeightMode.RowHeight && RowsPerPage.HasValue && PagingMode != CloudGridPagingMode.Pages)
                 classes.Add("_scroll");
 
             if (PagingMode == CloudGridPagingMode.InfiniteScroll)
@@ -536,18 +532,27 @@ public partial class CloudGridBody
     }
 
     /// <summary>
-    /// Body height driven by <see cref="HeightMode"/>: <see cref="CloudGridHeightMode.RowHeight"/>
-    /// sizes to <see cref="RowsPerPage"/> rows, <see cref="CloudGridHeightMode.FullHeight"/> fills
-    /// the container (100%), and <see cref="CloudGridHeightMode.Auto"/> grows to fit content.
+    /// Body height driven by <see cref="HeightMode"/>. Only <see cref="CloudGridHeightMode.RowHeight"/>
+    /// sets an explicit height (<see cref="RowsPerPage"/> rows tall); <see cref="CloudGridHeightMode.FullHeight"/>
+    /// and <see cref="CloudGridHeightMode.Auto"/> leave the body sized to its content — the surrounding
+    /// <c>.cloudgrid-table</c> owns the scrollable viewport (see <see cref="TableStyle"/>).
     /// </summary>
-    private string? BodyStyle => HeightMode switch
-    {
-        CloudGridHeightMode.FullHeight => "height: 100%;min-height: 65vh;",
-        CloudGridHeightMode.Auto => "height: auto",
-        _ => RowsPerPage.HasValue
+    private string? BodyStyle =>
+        HeightMode == CloudGridHeightMode.RowHeight && RowsPerPage.HasValue
             ? $"height: calc(var(--cloudgrid-row-height) * {RowsPerPage.Value})"
-            : "height: auto"
-    };
+            : null;
+
+    /// <summary>
+    /// Inline style for <c>.cloudgrid-table</c> — the element that owns both the sticky column
+    /// head and the scrollable row area. Only <see cref="CloudGridHeightMode.Auto"/> with
+    /// <see cref="MaxHeight"/> set needs an inline cap; <see cref="CloudGridHeightMode.FullHeight"/>
+    /// fills its flex parent (<c>flex: 1</c> in CSS) and <see cref="CloudGridHeightMode.RowHeight"/>
+    /// is bounded by the body's own explicit height (see <see cref="BodyStyle"/>).
+    /// </summary>
+    private string? TableStyle =>
+        HeightMode == CloudGridHeightMode.Auto && MaxHeight.HasValue
+            ? $"max-height: {Px(MaxHeight.Value)}"
+            : null;
 
     private static string Px(double value) => value.ToString(CultureInfo.InvariantCulture) + "px";
 

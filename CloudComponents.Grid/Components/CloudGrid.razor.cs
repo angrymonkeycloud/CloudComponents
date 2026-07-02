@@ -76,11 +76,19 @@ public partial class CloudGrid : IAsyncDisposable
     [Parameter] public int? RowsPerPage { get; set; }
 
     /// <summary>
-    /// How the body is sized vertically. <see cref="CloudGridHeightMode.RowHeight"/> (default)
-    /// fixes it to <see cref="RowsPerPage"/> rows, <see cref="CloudGridHeightMode.FullHeight"/>
-    /// fills the container (100%), and <see cref="CloudGridHeightMode.Auto"/> grows to fit content.
+    /// How the body is sized vertically. <see cref="CloudGridHeightMode.FullHeight"/> (default)
+    /// fills the parent container so only the row area scrolls, <see cref="CloudGridHeightMode.RowHeight"/>
+    /// fixes it to <see cref="RowsPerPage"/> rows, and <see cref="CloudGridHeightMode.Auto"/> grows to fit
+    /// content (optionally capped by <see cref="MaxHeight"/>).
     /// </summary>
-    [Parameter] public CloudGridHeightMode HeightMode { get; set; } = CloudGridHeightMode.RowHeight;
+    [Parameter] public CloudGridHeightMode HeightMode { get; set; } = CloudGridHeightMode.FullHeight;
+
+    /// <summary>
+    /// Maximum height in pixels applied when <see cref="HeightMode"/> is <see cref="CloudGridHeightMode.Auto"/>.
+    /// Once content grows past this height the grid scrolls internally, matching <see cref="CloudGridHeightMode.FullHeight"/>.
+    /// Ignored for the other height modes.
+    /// </summary>
+    [Parameter] public double? MaxHeight { get; set; }
 
     /// <summary>How the grid navigates between pages. Defaults to <see cref="CloudGridPagingMode.Pages"/>.</summary>
     [Parameter] public CloudGridPagingMode PagingMode { get; set; } = CloudGridPagingMode.Pages;
@@ -464,6 +472,9 @@ public partial class CloudGrid : IAsyncDisposable
         {
             List<string> classes = [];
 
+            // Only FullHeight stretches the root to fill its parent; RowHeight/Auto must stay
+            // intrinsically sized so they never get forced taller than their content demands.
+            if (HeightMode == CloudGridHeightMode.FullHeight) classes.Add("_full-height");
             if (AllowSelection) classes.Add("_selectable");
             if (AllowReordering) classes.Add("_reorderable");
             if (_loading || _searching) classes.Add("_busy");
