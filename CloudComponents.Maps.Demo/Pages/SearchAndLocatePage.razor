@@ -13,7 +13,9 @@
     </p>
 </div>
 
-<div class="card">
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
     <h2 class="card-title">📍 Map</h2>
     <div class="grid-host" style="height: 500px;">
         <AzureMap Height="500px"
@@ -36,9 +38,9 @@
         <button @onclick="ClearSearch">Clear Search</button>
         <span class="badge">@_status</span>
     </div>
-</div>
+        </div>
 
-<div class="card">
+        <div class="card">
     <h2 class="card-title">Last Result</h2>
     @if (_lastSearchResult is null && _lastCoordinate is null)
     {
@@ -73,19 +75,23 @@
         </div>
     }
 </div>
+    </ResultContent>
 
-<div class="card">
-    <h2 class="card-title">How it works</h2>
-    <ul>
-        <li><strong>Search:</strong> Debounced Azure Maps fuzzy search with a keyboard-navigable dropdown (Arrow keys + Enter/Escape). Selecting a result flies the camera to it.</li>
-        <li><strong>Pin my location (web):</strong> Uses <code>navigator.geolocation</code> through JS isolation (<code>CloudComponents.Maps.Web</code>'s <code>WebLocationService</code>), registered in <code>Program.cs</code>.</li>
-        <li><strong>Pin my location (mobile):</strong> A .NET MAUI Blazor Hybrid host would instead register <code>CloudComponents.Maps.Mobile</code>'s <code>MauiLocationService</code>, which uses native <code>Geolocation</code>/<code>Permissions</code> APIs — no component code changes required.</li>
-        <li><strong>Permission consent:</strong> The component shows its own confirmation popup before requesting the OS/browser permission prompt, keeping the UX consistent across platforms.</li>
-    </ul>
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <ul>
+                <li><strong>Search:</strong> Debounced Azure Maps fuzzy search with a keyboard-navigable dropdown (Arrow keys + Enter/Escape). Selecting a result flies the camera to it.</li>
+                <li><strong>Pin my location (web):</strong> Uses <code>navigator.geolocation</code> through JS isolation (<code>CloudComponents.Maps.Web</code>'s <code>WebLocationService</code>), registered in <code>Program.cs</code>.</li>
+                <li><strong>Pin my location (mobile):</strong> A .NET MAUI Blazor Hybrid host would instead register <code>CloudComponents.Maps.Mobile</code>'s <code>MauiLocationService</code>, which uses native <code>Geolocation</code>/<code>Permissions</code> APIs — no component code changes required.</li>
+                <li><strong>Permission consent:</strong> The component shows its own confirmation popup before requesting the OS/browser permission prompt, keeping the UX consistent across platforms.</li>
+            </ul>
 
-    <h3 style="margin-top: 12px;">Usage snippet</h3>
-    <pre class="code-snippet"><code>@_usageSnippet</code></pre>
-</div>
+            <h3 style="margin-top: 12px;">Usage snippet</h3>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
 
 @code {
     private AzureMap? _map;

@@ -13,7 +13,9 @@
     </p>
 </div>
 
-<div class="card">
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
     <h2 class="card-title">Settings</h2>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
         <div>
@@ -50,9 +52,9 @@
             <span class="badge" style="background:#fde7e9;color:#a80000;">@_rejectionMessage</span>
         }
     </div>
-</div>
+        </div>
 
-<div class="card">
+        <div class="card">
     <h2 class="card-title">📍 Map</h2>
 
     <div class="toolbar" style="margin-bottom: 12px;">
@@ -80,6 +82,7 @@
                   OnMapReady="HandleMapReady"
                   OnMarkerAdded="HandleMarkerAdded"
                   OnCenterPinChanged="HandleCenterPinChanged"
+                  OnSearchResultSelected="HandleSearchResultSelected"
                   OnLocationLockRejected="HandleLockRejected"
                   @ref="_map" />
     </div>
@@ -99,21 +102,46 @@
             </span>
         }
     </div>
-</div>
+        </div>
 
-<div class="card">
-    <h2 class="card-title">How it works</h2>
-    <ul>
-        <li>Pick a country (optionally narrowed to a subdivision code such as <code>US-CA</code>) to build a <code>LocationLockOptions</code> instance and assign it to the map's <code>LocationLock</code> parameter.</li>
-        <li>The component resolves the boundary once via Cloud Geography + Azure Maps geocode/polygon lookup, then enforces it client-side for every subsequent interaction — no repeated network calls.</li>
-        <li>Try clicking outside the highlighted area, or searching for a place outside it: the interaction is rejected and <code>OnLocationLockRejected</code> fires.</li>
-        <li>Switch to <strong>Center pin</strong> mode to drag an always-visible pin instead of clicking, then press <strong>Check Location</strong> to explicitly verify a coordinate via <code>IsPointAllowedByLocationLockAsync</code> — the result is shown as ✅ Approved or ❌ Rejected without needing to move the pin outside the area first.</li>
-        <li>Assign <code>null</code> (or use <strong>Clear Lock</strong>) to remove the restriction at runtime.</li>
-    </ul>
+        @if (_lastSearchResult is { } searchResult)
+        {
+            <div class="card">
+                <h2 class="card-title">🔎 Search Result</h2>
+                <div style="background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px; font-size: 12px; max-width: 420px;">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom: 8px;">
+                        <div style="font-weight: 600; color: #0078d4; flex:1;">@searchResult.Address</div>
+                        <span class="badge" style="background:#dff6dd;color:#107c10;">✅ Approved</span>
+                    </div>
+                    @if (!string.IsNullOrEmpty(searchResult.Description))
+                    {
+                        <div style="margin: 4px 0;"><strong>Description:</strong> @searchResult.Description</div>
+                    }
+                    <div style="margin: 4px 0;"><strong>Latitude:</strong> @searchResult.Latitude.ToString("F5")</div>
+                    <div style="margin: 4px 0;"><strong>Longitude:</strong> @searchResult.Longitude.ToString("F5")</div>
+                    <div style="margin-top: 6px; color: #666;">Only reachable here because the result already passed the location-lock check — searches outside the locked area are rejected before the camera moves.</div>
+                </div>
+            </div>
+        }
+    </ResultContent>
 
-    <h3 style="margin-top: 12px;">Usage snippet</h3>
-    <pre class="code-snippet"><code>@_usageSnippet</code></pre>
-</div>
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <ul>
+                <li>Pick a country (optionally narrowed to a subdivision code such as <code>US-CA</code>) to build a <code>LocationLockOptions</code> instance and assign it to the map's <code>LocationLock</code> parameter.</li>
+                <li>The component resolves the boundary once via Cloud Geography + Azure Maps geocode/polygon lookup, then enforces it client-side for every subsequent interaction — no repeated network calls.</li>
+                <li>Try clicking outside the highlighted area, or searching for a place outside it: the interaction is rejected and <code>OnLocationLockRejected</code> fires.</li>
+                <li><strong>Search results</strong> are validated the same way: <code>OnSearchResultSelected</code> only fires — and the camera only flies — when the chosen result is inside the locked area, so anything shown in the Search Result card is implicitly ✅ Approved. Searching for a place outside the lock instead rejects it and shows the same on-map message as clicking/dragging outside.</li>
+                <li>Switch to <strong>Center pin</strong> mode to drag an always-visible pin instead of clicking, then press <strong>Check Location</strong> to explicitly verify a coordinate via <code>IsPointAllowedByLocationLockAsync</code> — the result is shown as ✅ Approved or ❌ Rejected without needing to move the pin outside the area first.</li>
+                <li>Assign <code>null</code> (or use <strong>Clear Lock</strong>) to remove the restriction at runtime.</li>
+            </ul>
+
+            <h3 style="margin-top: 12px;">Usage snippet</h3>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
 
 @code {
     private AzureMap? _map;
@@ -124,6 +152,7 @@
           AddMarkerTrigger=\"MarkerAddTrigger.CenterPin\"
           LocationLock=\"@_currentLock\"
           OnCenterPinChanged=\"HandleCenterPinChanged\"
+          OnSearchResultSelected=\"HandleSearchResultSelected\"
           OnLocationLockRejected=\"HandleLockRejected\" />
 
 @code {
@@ -136,6 +165,14 @@
     private Task HandleCenterPinChanged(MapCoordinate point)
     {
         _pinCoordinate = point;
+        return Task.CompletedTask;
+    }
+
+    // Only fires for results INSIDE the locked area — out-of-lock searches are
+    // rejected internally (OnLocationLockRejected) before the camera moves.
+    private Task HandleSearchResultSelected(MapSearchResult result)
+    {
+        _pinCoordinate = new MapCoordinate(result.Latitude, result.Longitude);
         return Task.CompletedTask;
     }
 
@@ -156,6 +193,7 @@
     private MapCoordinate? _checkCoordinate;
     private bool? _checkResult;
     private bool _isChecking;
+    private MapSearchResult? _lastSearchResult;
 
     private Task HandleMapReady() => Task.CompletedTask;
 
@@ -184,6 +222,21 @@
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Only fires for search results already validated against <see cref="LocationLockOptions"/> —
+    /// see <c>AzureMap.Search.cs</c>'s <c>SelectSearchResultAsync</c>, which rejects out-of-lock
+    /// results (raising <see cref="HandleLockRejected"/> instead) before the camera ever moves.
+    /// </summary>
+    private Task HandleSearchResultSelected(MapSearchResult result)
+    {
+        _rejectionMessage = "";
+        _lastSearchResult = result;
+        _checkCoordinate = new MapCoordinate(result.Latitude, result.Longitude);
+        _checkResult = true;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
     private async Task SetSelectionModeAsync(MarkerAddTrigger mode)
     {
         if (_selectionMode == mode) return;
@@ -192,6 +245,7 @@
         _checkCoordinate = null;
         _checkResult = null;
         _rejectionMessage = "";
+        _lastSearchResult = null;
 
         if (mode == MarkerAddTrigger.SingleClick && _map is not null)
             await _map.ClearMarkersAsync();
@@ -226,6 +280,7 @@
     {
         _rejectionMessage = "";
         _checkResult = null;
+        _lastSearchResult = null;
 
         if (string.IsNullOrWhiteSpace(_selectedCountryCode))
         {
@@ -250,6 +305,7 @@
         _currentLock = null;
         _rejectionMessage = "";
         _checkResult = null;
+        _lastSearchResult = null;
     }
 
     private string GetSubscriptionKey()

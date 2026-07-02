@@ -14,7 +14,9 @@
     </p>
 </div>
 
-<div class="card">
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
     <h2 class="card-title">Tracking Controls</h2>
     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
         <div>
@@ -78,10 +80,48 @@
         </div>
     }
 </div>
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How to implement in your app</h2>
+            <p style="font-size: 13px; color: #666; margin-top: 0;">
+                Live tracking is just markers you keep moving. On a timer, recompute each tracked object's
+                coordinate, rebuild the marker list, and call <code>ClearMarkersAsync</code> +
+                <code>AddMarkersAsync</code> to push the new positions to the map.
+            </p>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
 
 @code {
     private AzureMap? _map;
     private readonly InitialMapView _initialView = new(37.7749, -122.4194, 13);
+
+    private readonly string _usageSnippet = """
+<AzureMap Markers="@_liveMarkers"
+          OnMapReady="HandleMapReady"
+          @ref="_map" />
+
+@code {
+    private AzureMap? _map;
+    private List<MapMarker> _liveMarkers = new();
+    private PeriodicTimer? _timer;
+
+    private async Task StartTrackingAsync()
+    {
+        _timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        while (await _timer.WaitForNextTickAsync())
+        {
+            // Recompute positions from your own GPS/telemetry source, then push them to the map
+            _liveMarkers = GetLatestMarkerPositions();
+            await _map!.ClearMarkersAsync();
+            await _map.AddMarkersAsync(_liveMarkers);
+        }
+    }
+}
+""";
 
     private List<LiveTracker> _trackers = new();
     private List<MapMarker> _liveMarkers = new();

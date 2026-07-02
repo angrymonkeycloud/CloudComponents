@@ -1,0 +1,44 @@
+@* 
+    Upper "Result" / "Code" tab switcher used by every CloudMaps demo page.
+    The Result pane (typically the live <AzureMap/> instance) stays mounted at all times —
+    only its visibility is toggled via CSS — so switching tabs never tears down/recreates
+    the map's JS interop instance.
+*@
+<div class="demo-tabs">
+    <div class="demo-tabs-strip">
+        <button type="button" class="demo-tab @(_activeTab == DemoTab.Result ? "active" : "")" @onclick="@(() => SetTab(DemoTab.Result))">
+            @ResultLabel
+        </button>
+        <button type="button" class="demo-tab @(_activeTab == DemoTab.Code ? "active" : "")" @onclick="@(() => SetTab(DemoTab.Code))">
+            @CodeLabel
+        </button>
+    </div>
+
+    <div class="demo-tabs-panel" style="@(_activeTab == DemoTab.Result ? "" : "display:none;")">
+        @ResultContent
+    </div>
+
+    <div class="demo-tabs-panel" style="@(_activeTab == DemoTab.Code ? "" : "display:none;")">
+        @CodeContent
+    </div>
+</div>
+
+@code {
+    private enum DemoTab { Result, Code }
+
+    private DemoTab _activeTab = DemoTab.Result;
+
+    /// <summary>Live/interactive content — map, controls, live result cards. Stays mounted while hidden.</summary>
+    [Parameter] public RenderFragment? ResultContent { get; set; }
+
+    /// <summary>"How it works" explanation and usage snippet(s).</summary>
+    [Parameter] public RenderFragment? CodeContent { get; set; }
+
+    /// <summary>Label for the first tab. Defaults to "Result".</summary>
+    [Parameter] public string ResultLabel { get; set; } = "Result";
+
+    /// <summary>Label for the second tab. Defaults to "Code".</summary>
+    [Parameter] public string CodeLabel { get; set; } = "Code";
+
+    private void SetTab(DemoTab tab) => _activeTab = tab;
+}

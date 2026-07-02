@@ -282,3 +282,40 @@ input:focus, select:focus, textarea:focus {
     font-family: Consolas, 'Courier New', monospace;
     white-space: pre;
 }
+
+/* Result / Code demo page tabs */
+.demo-tabs-strip {
+    display: flex;
+    gap: 4px;
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 16px;
+}
+
+.demo-tab {
+    padding: 10px 20px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    background: transparent;
+    color: #666;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 0;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.demo-tab:hover {
+    background: transparent;
+    border-color: #ccc;
+    color: #333;
+}
+
+.demo-tab:active {
+    background: transparent;
+}
+
+.demo-tab.active {
+    color: #0078d4;
+    border-color: #0078d4;
+}

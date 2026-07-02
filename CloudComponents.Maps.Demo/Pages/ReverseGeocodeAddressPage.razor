@@ -13,7 +13,9 @@
     </p>
 </div>
 
-<div class="card">
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
     <h2 class="card-title">Interactive Map</h2>
     <div class="grid-host" style="height: 500px;">
         <AzureMap Height="500px"
@@ -270,10 +272,48 @@ else
         </div>
     </div>
 }
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How to implement in your app</h2>
+            <p style="font-size: 13px; color: #666; margin-top: 0;">
+                Use <code>MarkerAddTrigger.CenterPin</code> to keep a pin fixed at the map center, read its
+                coordinate from <code>OnCenterPinChanged</code>, and call <code>ReverseGeocodeAsync</code> to resolve
+                an address. Combine the result's country/subdivision codes with <code>CloudGeographyClient</code> for
+                richer administrative data.
+            </p>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
 
 @code {
     private AzureMap? _map;
     private readonly InitialMapView _initialView = new(33.846544, 35.534194, 13);
+
+    private readonly string _usageSnippet = """
+<AzureMap AddMarkerTrigger="MarkerAddTrigger.CenterPin"
+          OnCenterPinChanged="HandleCenterPinChanged"
+          @ref="_map" />
+
+@code {
+    private AzureMap? _map;
+
+    private async Task HandleCenterPinChanged(Coordinate coordinate)
+    {
+        var address = await _map!.ReverseGeocodeAsync(coordinate.Latitude, coordinate.Longitude);
+        if (address is null)
+            return;
+
+        // Optionally cross-reference the country/subdivision codes with CloudGeographyClient
+        // for richer administrative data (name, capital, calling code, sub-regions, ...).
+        var geoClient = new CloudGeographyClient();
+        var country = geoClient.Countries.Get(address.CountryCode);
+    }
+}
+""";
+
     private AddressInfo? _currentAddress;
     private Country? _country;
     private List<SubdivisionEntry> _subdivisionEntries = [];

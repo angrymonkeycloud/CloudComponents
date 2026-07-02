@@ -12,7 +12,9 @@
     </p>
 </div>
 
-<div class="card">
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
     <h2 class="card-title">Map Style</h2>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px;">
         @foreach (var style in _availableStyles)
@@ -218,8 +220,10 @@
         }
     </div>
 </div>
+    </ResultContent>
 
-<div class="card">
+    <CodeContent>
+        <div class="card">
     <h2 class="card-title">📚 Control Information</h2>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;">
         <div style="background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px; font-size: 12px;">
@@ -247,13 +251,49 @@
             <p style="margin: 0; color: #666; line-height: 1.5;">Displays distance scale relative to current zoom level for reference.</p>
         </div>
     </div>
-</div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Usage snippet</h2>
+            <p style="font-size: 13px; color: #666; margin-top: 0;">
+                Controls, interaction modes, and functionality flags are all regular <code>[Parameter]</code>s —
+                changing them and re-rendering is enough for <code>AzureMap</code> to push the update to the live map.
+            </p>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
 
 @code {
     private AzureMap? _map;
     private readonly InitialMapView _initialView = new(37.7749, -122.4194, 13);
 
     private MapStyle _selectedStyle = MapStyle.Road;
+
+    private readonly string _usageSnippet = """
+<AzureMap Style="MapStyle.Road"
+          ZoomControl="new MapControlOption(true)"
+          CompassControl="new MapControlOption(false)"
+          DragPanInteraction="true"
+          ScrollZoomInteraction="false"
+          ShowSearchBox="false"
+          ShowCurrentLocationButton="true"
+          AddMarkerTrigger="MarkerAddTrigger.Disabled"
+          @ref="_map" />
+
+@code {
+    private AzureMap? _map;
+
+    // Every control/interaction/functionality flag above is a plain [Parameter] —
+    // re-rendering AzureMap with new values is enough; OnParametersSetAsync diffs
+    // and forwards the change to the live JS map instance (setControls / setInteractions).
+    private async Task ChangeStyleAsync(MapStyle style)
+    {
+        if (_map is not null)
+            await _map.SetStyleAsync(style);
+    }
+}
+""";
 
     // Controls
     private bool _showZoomControl = true;

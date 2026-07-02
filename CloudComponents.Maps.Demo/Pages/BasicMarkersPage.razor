@@ -12,7 +12,9 @@
     </p>
 </div>
 
-<div class="card">
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
     <h2 class="card-title">Map</h2>
     <div class="grid-host" style="height: 500px;">
         <AzureMap Height="500px"
@@ -37,9 +39,9 @@
         <button @onclick="AddSampleMarkers">Add Sample Markers</button>
         <span class="badge">Markers: @_markers.Count</span>
     </div>
-</div>
+        </div>
 
-<div class="card">
+        <div class="card">
     <h2 class="card-title">Marker Details</h2>
     @if (_markers.Count == 0)
     {
@@ -62,14 +64,18 @@
         </div>
     }
 </div>
+    </ResultContent>
 
-<div class="card">
-    <h2 class="card-title">How to implement in your app</h2>
-    <p style="font-size: 13px; color: #666; margin-top: 0;">
-        Marker add/remove is opt-in. Enable the interaction mode explicitly and handle callbacks.
-    </p>
-    <pre class="code-snippet"><code>@_usageSnippet</code></pre>
-</div>
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How to implement in your app</h2>
+            <p style="font-size: 13px; color: #666; margin-top: 0;">
+                Marker add/remove is opt-in. Enable the interaction mode explicitly and handle callbacks.
+            </p>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
 
 @code {
     private AzureMap? _map;

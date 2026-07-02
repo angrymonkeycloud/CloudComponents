@@ -14,7 +14,9 @@
     </p>
 </div>
 
-<div class="card">
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
     <h2 class="card-title">📍 Map</h2>
     <div class="grid-host" style="height: 500px;">
         <AzureMap Height="500px"
@@ -38,9 +40,9 @@
         <button @onclick="ClearSavedLocation" disabled="@(_savedLocation is null)">Clear Saved</button>
         <span class="badge" style="@(_statusIsError ? "background:#fde7e9;color:#a80000;" : "")">@_status</span>
     </div>
-</div>
+        </div>
 
-<div class="card">
+        <div class="card">
     <h2 class="card-title">Selection</h2>
     @if (_selectedCoordinate is { } selected)
     {
@@ -56,9 +58,9 @@
     {
         <p style="color: #999; font-size: 13px;">Pan the map to position the pin over a location.</p>
     }
-</div>
+        </div>
 
-<div class="card">
+        <div class="card">
     <h2 class="card-title">Saved Location</h2>
     @if (_savedLocation is { } saved)
     {
@@ -78,21 +80,25 @@
     {
         <p style="color: #999; font-size: 13px;">No location saved yet.</p>
     }
-</div>
+        </div>
+    </ResultContent>
 
-<div class="card">
-    <h2 class="card-title">How to implement in your app</h2>
-    <p style="font-size: 13px; color: #666; margin-top: 0;">
-        Register a persistence service, use <code>MarkerAddTrigger.CenterPin</code> for an always-visible
-        pin, handle <code>OnCenterPinChanged</code>, and save the coordinate.
-    </p>
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How to implement in your app</h2>
+            <p style="font-size: 13px; color: #666; margin-top: 0;">
+                Register a persistence service, use <code>MarkerAddTrigger.CenterPin</code> for an always-visible
+                pin, handle <code>OnCenterPinChanged</code>, and save the coordinate.
+            </p>
 
-    <h3 style="margin-top: 0;">1) Component usage</h3>
-    <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+            <h3 style="margin-top: 0;">1) Component usage</h3>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
 
-    <h3>2) Service registration (Program.cs)</h3>
-    <pre class="code-snippet"><code>builder.Services.AddScoped&lt;SavedLocationService&gt;();</code></pre>
-</div>
+            <h3>2) Service registration (Program.cs)</h3>
+            <pre class="code-snippet"><code>builder.Services.AddScoped&lt;SavedLocationService&gt;();</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
 
 @code {
     private AzureMap? _map;

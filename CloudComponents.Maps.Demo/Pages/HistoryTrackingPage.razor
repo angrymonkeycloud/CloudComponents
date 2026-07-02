@@ -14,7 +14,9 @@
     </p>
 </div>
 
-<div class="card">
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
     <h2 class="card-title">Replay Controls</h2>
     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px;">
         <div>
@@ -114,10 +116,53 @@
         <p style="color: #999; font-size: 13px;">Select a route and click Play to start replay.</p>
     }
 </div>
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How to implement in your app</h2>
+            <p style="font-size: 13px; color: #666; margin-top: 0;">
+                Replay is driven entirely from your own data: step through the recorded points on a timer, move a
+                single marker forward with <code>ClearMarkersAsync</code> + <code>AddMarkersAsync</code>, and use
+                <code>SetBoundsAsync</code> once to frame the whole route.
+            </p>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
 
 @code {
     private AzureMap? _map;
     private readonly InitialMapView _initialView = new(35.8617, -120.5783, 5);
+
+    private readonly string _usageSnippet = """
+<AzureMap Markers="@_replayMarkers"
+          OnMapReady="HandleMapReady"
+          @ref="_map" />
+
+@code {
+    private AzureMap? _map;
+    private List<MapMarker> _replayMarkers = new();
+
+    private async Task ReplayAsync(TrackSession trace, double speedMultiplier, CancellationToken ct)
+    {
+        for (var i = 0; i < trace.Points.Count && !ct.IsCancellationRequested; i++)
+        {
+            var point = trace.Points[i];
+            _replayMarkers = [point.ToMarker(trace.Id)];
+
+            await _map!.ClearMarkersAsync();
+            await _map.AddMarkersAsync(_replayMarkers);
+
+            var delay = i < trace.Points.Count - 1
+                ? (trace.Points[i + 1].Timestamp - point.Timestamp).TotalMilliseconds / speedMultiplier
+                : 0;
+            await Task.Delay(TimeSpan.FromMilliseconds(Math.Max(10, delay)), ct);
+        }
+    }
+}
+""";
+
 
     private List<TrackSession> _traces = new();
     private TrackSession? _currentTrace;

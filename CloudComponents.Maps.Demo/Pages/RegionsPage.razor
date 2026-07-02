@@ -12,7 +12,9 @@
     </p>
 </div>
 
-<div class="card">
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
     <h2 class="card-title">Settings</h2>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
         <div>
@@ -93,10 +95,44 @@
         </div>
     </div>
 }
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How to implement in your app</h2>
+            <p style="font-size: 13px; color: #666; margin-top: 0;">
+                Regions are plain data — build a list of <code>MapRegion</code> polygons and pass it to the
+                <code>Regions</code> parameter, or call <code>AddRegionsAsync</code> / <code>ClearRegionsAsync</code>
+                imperatively once the map is ready.
+            </p>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
 
 @code {
     private AzureMap? _map;
     private readonly InitialMapView _initialView = new(39.8283, -98.5795, 4);
+
+    private readonly string _usageSnippet = """
+<AzureMap Regions="@_regions"
+          OnMapReady="HandleMapReady"
+          @ref="_map" />
+
+@code {
+    private AzureMap? _map;
+    private List<MapRegion> _regions = new();
+
+    private async Task LoadRegionsAsync(string countryCode)
+    {
+        var polygon = await FetchPolygonAsync(countryCode); // your own polygon source
+        _regions.Add(new MapRegion(polygon, FillColor: "rgba(0,120,212,0.15)", StrokeColor: "#0078d4", StrokeWidth: 2));
+
+        // Either re-render with the updated Regions parameter, or push it immediately:
+        await _map!.AddRegionsAsync(_regions);
+    }
+}
+""";
 
     private string _selectedCountryCode = "";
     private string _regionFillColor = "rgba(0, 120, 212, 0.15)";
