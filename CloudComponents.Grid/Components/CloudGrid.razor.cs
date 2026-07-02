@@ -75,6 +75,13 @@ public partial class CloudGrid : IAsyncDisposable
     /// <summary>Number of body rows the grid is sized for (also the page size sent to <see cref="DataProvider"/>).</summary>
     [Parameter] public int? RowsPerPage { get; set; }
 
+    /// <summary>
+    /// How the body is sized vertically. <see cref="CloudGridHeightMode.RowHeight"/> (default)
+    /// fixes it to <see cref="RowsPerPage"/> rows, <see cref="CloudGridHeightMode.FullHeight"/>
+    /// fills the container (100%), and <see cref="CloudGridHeightMode.Auto"/> grows to fit content.
+    /// </summary>
+    [Parameter] public CloudGridHeightMode HeightMode { get; set; } = CloudGridHeightMode.RowHeight;
+
     /// <summary>How the grid navigates between pages. Defaults to <see cref="CloudGridPagingMode.Pages"/>.</summary>
     [Parameter] public CloudGridPagingMode PagingMode { get; set; } = CloudGridPagingMode.Pages;
 

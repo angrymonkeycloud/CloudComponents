@@ -72,6 +72,13 @@ public partial class CloudGridBody
     /// <summary>Number of body rows the grid is sized for.</summary>
     [Parameter] public int? RowsPerPage { get; set; }
 
+    /// <summary>
+    /// How the body is sized vertically. <see cref="CloudGridHeightMode.RowHeight"/> (default)
+    /// fixes it to <see cref="RowsPerPage"/> rows, <see cref="CloudGridHeightMode.FullHeight"/>
+    /// fills the container (100%), and <see cref="CloudGridHeightMode.Auto"/> grows to fit content.
+    /// </summary>
+    [Parameter] public CloudGridHeightMode HeightMode { get; set; } = CloudGridHeightMode.FullHeight;
+
     /// <summary>How the grid navigates between pages.</summary>
     [Parameter] public CloudGridPagingMode PagingMode { get; set; } = CloudGridPagingMode.Pages;
 
@@ -529,12 +536,18 @@ public partial class CloudGridBody
     }
 
     /// <summary>
-    /// Exact table height: <see cref="RowsPerPage"/> body rows.
+    /// Body height driven by <see cref="HeightMode"/>: <see cref="CloudGridHeightMode.RowHeight"/>
+    /// sizes to <see cref="RowsPerPage"/> rows, <see cref="CloudGridHeightMode.FullHeight"/> fills
+    /// the container (100%), and <see cref="CloudGridHeightMode.Auto"/> grows to fit content.
     /// </summary>
-    private string? BodyStyle =>
-        RowsPerPage.HasValue
-            ? RowsPerPage==30 ? "height:auto" : $"height: calc(var(--cloudgrid-row-height) * {RowsPerPage.Value})"
-            : null;
+    private string? BodyStyle => HeightMode switch
+    {
+        CloudGridHeightMode.FullHeight => "height: 100%;min-height: 65vh;",
+        CloudGridHeightMode.Auto => "height: auto",
+        _ => RowsPerPage.HasValue
+            ? $"height: calc(var(--cloudgrid-row-height) * {RowsPerPage.Value})"
+            : "height: auto"
+    };
 
     private static string Px(double value) => value.ToString(CultureInfo.InvariantCulture) + "px";
 
