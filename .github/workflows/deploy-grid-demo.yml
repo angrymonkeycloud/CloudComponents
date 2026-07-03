@@ -8,6 +8,7 @@ on:
       - 'CloudComponents.Grid.Demo/**'
       - 'CloudComponents.Grid/**'
       - 'CloudComponents.Icons/**'
+  workflow_dispatch:
 
 permissions:
   contents: read
