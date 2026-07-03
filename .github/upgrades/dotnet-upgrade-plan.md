@@ -137,3 +137,5 @@ NuGet packages changes:
 
 Other changes:
  - None
+
+- Grid demo GitHub Pages deployment is handled by `.github/workflows/deploy-grid-demo.yml`.
