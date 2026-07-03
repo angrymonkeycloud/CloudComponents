@@ -235,10 +235,14 @@ class AzureMapController {
             if (!c) return;
 
             if (!this._isPointAllowed(c[0], c[1])) {
-                // Snap the pin back to the last allowed center and tell .NET so it
-                // can surface a "restricted area" message.
-                const revertTo = this._lastAllowedCenter || c;
-                this._map.setCamera({ center: revertTo, type: 'ease', duration: 200 });
+                // Only snap back when the last known-good center is itself inside the
+                // locked area. If it is outside (e.g. the map loaded with the pin
+                // outside the lock), do NOT snap — the user must be able to drag the
+                // pin into the allowed area from its current position.
+                const revertTo = this._lastAllowedCenter;
+                if (revertTo && this._isPointAllowed(revertTo[0], revertTo[1])) {
+                    this._map.setCamera({ center: revertTo, type: 'ease', duration: 200 });
+                }
                 this._dotNetRef?.invokeMethodAsync('NotifyLocationLockRejectedAsync', c[1], c[0]);
                 return;
             }
