@@ -1,0 +1,149 @@
+@page "/logos"
+@inject IJSRuntime JS
+
+<PageTitle>CloudIcons Demo — Logos</PageTitle>
+
+<div class="page-header">
+    <h1>Logos</h1>
+    <p>Browse all 8 brand logos. Toggle between official brand colors and a custom color, then download as <code>.svg</code> or <code>.razor</code>.</p>
+</div>
+
+<div class="controls-bar">
+    <label>
+        Size
+        <input type="range" min="24" max="120" step="4" @bind="size" @bind:event="oninput" />
+        <span class="value-badge">@size px</span>
+    </label>
+    <label class="toggle-wrap">
+        <span class="toggle">
+            <input type="checkbox" @bind="useDefaultTheme" />
+            <span class="toggle-track"></span>
+            <span class="toggle-thumb"></span>
+        </span>
+        Brand colors
+    </label>
+    @if (!useDefaultTheme)
+    {
+        <label>
+            Color
+            <input type="color" @bind="color" @bind:event="oninput" />
+            <span class="value-badge">@color</span>
+        </label>
+    }
+</div>
+
+<div class="browser-layout">
+
+    <!-- Grid -->
+    <div>
+        <div class="icon-grid">
+            @foreach (var logo in AllLogos)
+            {
+                <div class="icon-tile @(selected == logo.Name ? "selected" : "")"
+                     @onclick="() => selected = logo.Name">
+                    <div class="icon-tile-svg" style="width:@TileSize(logo)px;height:@(size)px;color:@(useDefaultTheme ? "inherit" : color);">
+                        @logo.Render(useDefaultTheme)
+                    </div>
+                    <span class="icon-tile-label">@logo.Name</span>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Detail panel -->
+    <div class="detail-panel">
+        @if (SelectedLogo is { } sl)
+        {
+            <h3>@sl.Name</h3>
+            <p class="detail-panel-subtitle">CloudIcons.Logos</p>
+            <div class="detail-preview" id="logo-detail-preview">
+                <div style="width:@TileSize(sl)px;height:@(size)px;color:@(useDefaultTheme ? "inherit" : color);">
+                    @sl.Render(useDefaultTheme)
+                </div>
+            </div>
+            <pre class="code-snippet">@sl.Snippet(useDefaultTheme)</pre>
+            <div class="detail-actions" style="margin-top:0.75rem;">
+                <button class="btn btn-primary" @onclick="DownloadSvg">Download .svg</button>
+                <button class="btn" @onclick="DownloadRazor">Download .razor</button>
+            </div>
+        }
+        else
+        {
+            <p style="color:var(--demo-muted);font-size:0.88rem;">Select a logo to inspect it.</p>
+        }
+    </div>
+
+</div>
+
+@code {
+    private int size = 56;
+    private string color = "#1f2430";
+    private bool useDefaultTheme = true;
+    private string? selected;
+
+    private IJSObjectReference? _downloadModule;
+
+    // AngryMonkeyCloudLogo has a very wide viewBox (1046.7 × 208.9) so we give it a wider tile
+    private int TileSize(LogoDef l) => l.Wide ? (int)Math.Round(size * 5.0) : size;
+
+    private record LogoDef(string Name, bool Wide, bool SupportsTheme,
+        Func<bool, RenderFragment> Render, Func<bool, string> Snippet);
+
+    private static readonly List<LogoDef> AllLogos = new()
+    {
+        new("AngryMonkeyCloudLogo", Wide: true,  SupportsTheme: false,
+            t => @<AngryMonkeyCloudLogo />,
+            _ => "<AngryMonkeyCloudLogo />"),
+
+        new("AppleLogo",    Wide: false, SupportsTheme: true,
+            t => t ? @<AppleLogo UseDefaultTheme="true" /> : @<AppleLogo />,
+            t => t ? "<AppleLogo UseDefaultTheme=\"true\" />" : "<AppleLogo />"),
+
+        new("FacebookLogo", Wide: false, SupportsTheme: true,
+            t => t ? @<FacebookLogo UseDefaultTheme="true" /> : @<FacebookLogo />,
+            t => t ? "<FacebookLogo UseDefaultTheme=\"true\" />" : "<FacebookLogo />"),
+
+        new("GoogleLogo",   Wide: false, SupportsTheme: true,
+            t => t ? @<GoogleLogo UseDefaultTheme="true" /> : @<GoogleLogo />,
+            t => t ? "<GoogleLogo UseDefaultTheme=\"true\" />" : "<GoogleLogo />"),
+
+        new("InstagramLogo",Wide: false, SupportsTheme: true,
+            t => t ? @<InstagramLogo UseDefaultTheme="true" /> : @<InstagramLogo />,
+            t => t ? "<InstagramLogo UseDefaultTheme=\"true\" />" : "<InstagramLogo />"),
+
+        new("MetaLogo",     Wide: false, SupportsTheme: true,
+            t => t ? @<MetaLogo UseDefaultTheme="true" /> : @<MetaLogo />,
+            t => t ? "<MetaLogo UseDefaultTheme=\"true\" />" : "<MetaLogo />"),
+
+        new("MicrosoftLogo",Wide: false, SupportsTheme: true,
+            t => t ? @<MicrosoftLogo UseDefaultTheme="true" /> : @<MicrosoftLogo />,
+            t => t ? "<MicrosoftLogo UseDefaultTheme=\"true\" />" : "<MicrosoftLogo />"),
+
+        new("TwitterLogo",  Wide: false, SupportsTheme: true,
+            t => t ? @<TwitterLogo UseDefaultTheme="true" /> : @<TwitterLogo />,
+            t => t ? "<TwitterLogo UseDefaultTheme=\"true\" />" : "<TwitterLogo />"),
+    };
+
+    private LogoDef? SelectedLogo =>
+        selected is not null ? AllLogos.FirstOrDefault(l => l.Name == selected) : null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            _downloadModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/download.js");
+    }
+
+    private async Task DownloadSvg()
+    {
+        if (_downloadModule is null || SelectedLogo is null) return;
+        await _downloadModule.InvokeVoidAsync("downloadSvgFromElement",
+            "logo-detail-preview", $"{SelectedLogo.Name}.svg", color, size);
+    }
+
+    private async Task DownloadRazor()
+    {
+        if (_downloadModule is null || SelectedLogo is null) return;
+        var content = $"@using CloudIcons.Logos\n\n{SelectedLogo.Snippet(useDefaultTheme)}\n";
+        await _downloadModule.InvokeVoidAsync("downloadText", $"{SelectedLogo.Name}.razor", content);
+    }
+}
