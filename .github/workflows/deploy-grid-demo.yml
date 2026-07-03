@@ -96,7 +96,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    environment: github-pages # Configure repository Pages source to GitHub Actions.
+    environment: github-pages # Reminder: set Settings > Pages > Source to GitHub Actions.
 
     steps:
       - name: Deploy to GitHub Pages
