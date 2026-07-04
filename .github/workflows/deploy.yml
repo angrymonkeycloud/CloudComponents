@@ -1,0 +1,158 @@
+name: Deploy All Demos
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'CloudComponents.Grid.Demo/**'
+      - 'CloudComponents.Grid/**'
+      - 'CloudComponents.VideoPlayer.Demo/**'
+      - 'CloudComponents.VideoPlayer/**'
+      - 'CloudComponents.Maps.Demo/**'
+      - 'CloudComponents.Maps/**'
+      - 'CloudComponents.Maps.Web/**'
+      - 'CloudComponents.Icons.Demo/**'
+      - 'CloudComponents.Icons/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish Grid demo
+        run: dotnet publish CloudComponents.Grid.Demo/CloudComponents.Grid.Demo.csproj -c Release -o publish/grid
+
+      - name: Publish VideoPlayer demo
+        run: dotnet publish CloudComponents.VideoPlayer.Demo/CloudComponents.VideoPlayer.Demo.csproj -c Release -o publish/video
+
+      - name: Publish Maps demo
+        run: dotnet publish CloudComponents.Maps.Demo/CloudComponents.Maps.Demo.csproj -c Release -o publish/maps
+
+      - name: Publish Icons demo
+        run: dotnet publish CloudComponents.Icons.Demo/CloudComponents.Icons.Demo.csproj -c Release -o publish/icons
+
+      - name: Prepare site
+        shell: bash
+        run: |
+          mkdir -p site/grid site/video site/maps site/icons
+
+          cp -r publish/grid/wwwroot/. site/grid/
+          cp -r publish/video/wwwroot/. site/video/
+          cp -r publish/maps/wwwroot/. site/maps/
+          cp -r publish/icons/wwwroot/. site/icons/
+
+          python3 << 'PY'
+          import re
+          from pathlib import Path
+
+          INDEX_SCRIPT = """<script>
+            (function(l) {
+              if (l.search[1] === '/') {
+                var decoded = l.search.slice(1).split('&').map(function(s) {
+                  return s.replace(/~and~/g, '&');
+                }).join('?');
+                window.history.replaceState(null, null,
+                  l.pathname.slice(0, -1) + decoded + l.hash);
+              }
+            }(window.location));
+          </script>"""
+
+          NOT_FOUND_SCRIPT = """<script>
+            var pathSegmentsToKeep = 2;
+            var l = window.location;
+            l.replace(
+              l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+              l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
+              l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+              (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+              l.hash
+            );
+          </script>"""
+
+          LANDING_HTML = """<!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>CloudComponents Demos</title>
+            <style>
+              body { font-family: system-ui, sans-serif; max-width: 600px; margin: 4rem auto; padding: 0 1rem; }
+              h1 { margin-bottom: 2rem; }
+              ul { list-style: none; padding: 0; }
+              li { margin: 0.75rem 0; }
+              a { font-size: 1.1rem; color: #0074d9; text-decoration: none; }
+              a:hover { text-decoration: underline; }
+            </style>
+          </head>
+          <body>
+            <h1>CloudComponents Demos</h1>
+            <ul>
+              <li><a href="grid/">Grid</a></li>
+              <li><a href="video/">Video Player</a></li>
+              <li><a href="maps/">Maps</a></li>
+              <li><a href="icons/">Icons</a></li>
+            </ul>
+          </body>
+          </html>"""
+
+          demos = [
+            ('grid',  '/CloudComponents/grid/'),
+            ('video', '/CloudComponents/video/'),
+            ('maps',  '/CloudComponents/maps/'),
+            ('icons', '/CloudComponents/icons/'),
+          ]
+
+          for demo, base_href in demos:
+            index_path = Path(f'site/{demo}/index.html')
+            not_found_path = Path(f'site/{demo}/404.html')
+            not_found_path.write_text(index_path.read_text())
+            for path, snippet in [(index_path, INDEX_SCRIPT), (not_found_path, NOT_FOUND_SCRIPT)]:
+              content = path.read_text()
+              content = content.replace('<head>', f'<head>\n{snippet}', 1)
+              content = re.sub(r'<base\s+href="[^"]*"\s*/>', f'<base href="{base_href}" />', content)
+              path.write_text(content)
+
+          Path('site/index.html').write_text(LANDING_HTML)
+          Path('site/404.html').write_text(LANDING_HTML)
+          PY
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
