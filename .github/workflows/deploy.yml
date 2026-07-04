@@ -14,6 +14,8 @@ on:
       - 'CloudComponents.Maps.Web/**'
       - 'CloudComponents.Icons.Demo/**'
       - 'CloudComponents.Icons/**'
+      - 'Components.Demo/**'
+      - 'Components/**'
   workflow_dispatch:
 
 permissions:
@@ -52,15 +54,19 @@ jobs:
       - name: Publish Icons demo
         run: dotnet publish CloudComponents.Icons.Demo/CloudComponents.Icons.Demo.csproj -c Release -o publish/icons
 
+      - name: Publish Basic Components demo
+        run: dotnet publish Components.Demo/Components.Demo.csproj -c Release -o publish/components
+
       - name: Prepare site
         shell: bash
         run: |
-          mkdir -p site/grid site/video site/maps site/icons
+          mkdir -p site/grid site/video site/maps site/icons site/components
 
           cp -r publish/grid/wwwroot/. site/grid/
           cp -r publish/video/wwwroot/. site/video/
           cp -r publish/maps/wwwroot/. site/maps/
           cp -r publish/icons/wwwroot/. site/icons/
+          cp -r publish/components/wwwroot/. site/components/
 
           python3 << 'PY'
           import re
@@ -112,6 +118,7 @@ jobs:
               <li><a href="video/">Video Player</a></li>
               <li><a href="maps/">Maps</a></li>
               <li><a href="icons/">Icons</a></li>
+              <li><a href="components/">Basic Components</a></li>
             </ul>
           </body>
           </html>"""
@@ -121,6 +128,7 @@ jobs:
             ('video', '/CloudComponents/video/'),
             ('maps',  '/CloudComponents/maps/'),
             ('icons', '/CloudComponents/icons/'),
+            ('components', '/CloudComponents/components/'),
           ]
 
           for demo, base_href in demos:
