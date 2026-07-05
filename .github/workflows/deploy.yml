@@ -1,4 +1,4 @@
-﻿name: Deploy Demo
+name: Deploy Demo
 
 on:
   push:
@@ -16,21 +16,21 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -40,34 +40,74 @@ jobs:
       - name: Publish demo
         run: dotnet publish CloudComponents.Demo/CloudComponents.Demo.csproj -c Release -o publish
 
-      - name: Prepare site
+      - name: Prepare GitHub Pages assets
         shell: bash
         run: |
-          cp -r publish/wwwroot/. site/
+          cp publish/wwwroot/index.html publish/wwwroot/404.html
 
-          # Fix base href for GitHub Pages subdirectory
-          sed -i 's|<base href="/" />|<base href="/CloudComponents/" />|g' site/index.html
+          cat > /tmp/gh-pages-index-snippet.html <<'EOF'
+          <script>
+            (function(l) {
+              if (l.search[1] === '/') {
+                var decoded = l.search.slice(1).split('&').map(function(s) {
+                  return s.replace(/~and~/g, '&')
+                }).join('?');
+                window.history.replaceState(null, null,
+                  l.pathname.slice(0, -1) + decoded + l.hash
+                );
+              }
+            }(window.location))
+          </script>
+          EOF
 
-          # SPA fallback: copy index.html as 404.html so deep links work
-          cp site/index.html site/404.html
+          cat > /tmp/gh-pages-404-snippet.html <<'EOF'
+          <script>
+            var pathSegmentsToKeep = 1;
+            var l = window.location;
+            l.replace(
+              l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+              l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
+              l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+              (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+              l.hash
+            );
+          </script>
+          EOF
 
-          # GitHub Pages needs a .nojekyll to serve files starting with _
-          touch site/.nojekyll
+          python3 <<'PY'
+          from pathlib import Path
 
-      - name: Publish to gh-pages branch
-        shell: bash
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: |
-          rm -rf /tmp/gh-pages
-          mkdir -p /tmp/gh-pages
-          cp -r site/. /tmp/gh-pages/
+          index_path = Path('publish/wwwroot/index.html')
+          not_found_path = Path('publish/wwwroot/404.html')
+          index_snippet = Path('/tmp/gh-pages-index-snippet.html').read_text()
+          not_found_snippet = Path('/tmp/gh-pages-404-snippet.html').read_text()
 
-          cd /tmp/gh-pages
-          git init -b gh-pages
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Deploy Demo"
-          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git push --force origin gh-pages
+          def update_html(path: Path, snippet: str) -> None:
+              content = path.read_text()
+              content = content.replace('<head>', f'<head>\n{snippet}', 1)
+              content = content.replace('<base href="/" />', '<base href="/CloudComponents/" />', 1)
+              path.write_text(content)
+
+          update_html(index_path, index_snippet)
+          update_html(not_found_path, not_found_snippet)
+          PY
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: publish/wwwroot
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
