@@ -1,0 +1,12 @@
+@namespace CloudComponents.Basic.Icons
+
+<svg viewBox="0 0 32 32">
+	<path class="amc-svg-fill amc-svg-stroke @DefaultClass" d="M21.7,11.8l-0.4,4.3h-3.5v12.2h-5.2V16.1H10v-4.3h2.4V9.1c0-2,1-5.1,5.2-5.1h3.8v4.1h-2.7c-0.4,0-1.1,0.2-1.1,1.1v2.5
+	C17.7,11.8,21.7,11.8,21.7,11.8z"/>
+</svg>
+
+@code{
+
+	[Parameter]	public bool UseDefaultTheme { get; set; } = false;
+	protected string DefaultClass => UseDefaultTheme ? "_default" : null;
+}

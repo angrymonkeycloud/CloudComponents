@@ -1,0 +1,198 @@
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Routing
+
+@namespace CloudComponents.Basic
+
+@implements IDisposable
+
+@inject NavigationManager navManager
+@inject IJSRuntime js
+
+@if (IsOpen)
+{
+    <div class="amc-popup modal _open @Size @AdditionalClasses" popover @onclick="OnOverlayClick">
+        @if (UseDefaultChrome)
+        {
+            <div class="modal-content" @onclick:stopPropagation="true" role="dialog" aria-modal="true">
+                @if (!string.IsNullOrWhiteSpace(Title))
+                {
+                    <div class="header">
+                        <strong>@Title</strong>
+                        @if (HeaderClose)
+                        {
+                            <button class="closemodal" @onclick="Close">&times;</button>
+                        }
+                    </div>
+                }
+                <div class="body">
+                    @ChildContent
+                </div>
+
+                @if (Footer is not null || !HeaderClose)
+                {
+                    <div class="actions">
+
+                        @if (Footer is not null)
+                        {
+                            @Footer
+                        }
+
+                        @if (!HeaderClose && Footer is null)
+                        {
+                            <button type="button" class="close" @onclick="Close" aria-label="Close">
+                                <svg viewBox="0 0 16 16">
+                                    <path class="--svg-fill" d="M15.1 3.1 12.9.9 8 5.9 3.1.9.9 3.1l5 4.9-5 4.9 2.2 2.2 4.9-5 4.9 5 2.2-2.2-5-4.9z" />
+                                </svg>
+                            </button>
+                        }
+
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="modal-slot" @onclick:stopPropagation="true">
+                @ChildContent
+            </div>
+        }
+    </div>
+}
+
+@code {
+    bool _wasOpened = false;
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public bool HeaderClose { get; set; } = false;
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? Footer { get; set; }
+
+    // UI options
+    [Parameter] public bool UseDefaultChrome { get; set; } = true;
+    [Parameter] public string Size { get; set; } = "_small"; // _small, _medium, _large, _xlarge, _form
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? AdditionalClasses { get; set; }
+
+    // Behavior options
+    [Parameter] public bool PreventCloseOnClick { get; set; } = false;
+    [Parameter] public bool CloseOnBack { get; set; } = true;
+
+    // When set, a #popup=<FragmentKey> fragment will be pushed to history when the popup opens.
+    // Navigating back (removing the fragment) will close the popup instead of leaving the page.
+    [Parameter, Obsolete] public string? FragmentKey { get; set; }
+
+    private IDisposable? _locationChangingReg;
+
+    protected override void OnInitialized()
+    {
+        _locationChangingReg = navManager.RegisterLocationChangingHandler(OnLocationChangingAsync);
+
+        base.OnInitialized();
+    }
+
+    public async Task Open()
+    {
+        _wasOpened = true;
+        IsOpen = true;
+
+        await IsOpenChanged.InvokeAsync(true);
+
+        await InvokeAsync(StateHasChanged);
+
+        navManager.NavigateTo($"{navManager.Uri}#popup", replace: false);
+    }
+
+    public async Task Close()
+    {
+        await SoftClose();
+
+        await js.InvokeVoidAsync("history.back");
+    }
+
+    public async Task SoftClose()
+    {
+        _wasOpened = false;
+        IsOpen = false;
+
+        await IsOpenChanged.InvokeAsync(false);
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_wasOpened != IsOpen)
+        {
+            if (IsOpen)
+                await Open();
+
+            if (!IsOpen)
+                await Close();
+        }
+
+        await base.OnParametersSetAsync();
+    }
+
+    private async ValueTask OnLocationChangingAsync(LocationChangingContext context)
+    {
+        if (!CloseOnBack || !IsOpen)
+            return;
+
+        ProceedAction action = PreventNavigation(context);
+
+        switch (action)
+        {
+            case ProceedAction.OpenPopup:
+                return;
+
+            case ProceedAction.ClosePopup:
+                context.PreventNavigation();
+                await Close();
+                return;
+
+            case ProceedAction.NavigateAway:
+
+                // _ = js.InvokeVoidAsync("history.replaceState", null, "", context.TargetLocation);
+
+                await SoftClose();
+                break;
+        }
+    }
+
+    ProceedAction PreventNavigation(LocationChangingContext context)
+    {
+        var currentUri = $"/{navManager.ToBaseRelativePath(navManager.Uri)}";
+        string targetUri = context.TargetLocation.StartsWith("http", StringComparison.OrdinalIgnoreCase) ? $"/{navManager.ToBaseRelativePath(context.TargetLocation)}" : context.TargetLocation;
+
+        if (currentUri.Count(c => c == '#') < targetUri.Count(c => c == '#'))
+            return ProceedAction.OpenPopup;
+
+        int c = string.Compare(currentUri, targetUri, StringComparison.OrdinalIgnoreCase);
+
+        return c == 0 ? ProceedAction.ClosePopup : ProceedAction.NavigateAway;
+    }
+
+    enum ProceedAction
+    {
+        OpenPopup,
+        ClosePopup,
+        NavigateAway
+    }
+
+    private async Task OnOverlayClick()
+    {
+        if (PreventCloseOnClick)
+            return;
+
+        await Close();
+    }
+
+    public void Dispose()
+    {
+        try { _locationChangingReg?.Dispose(); } catch { }
+
+        if (IsOpen)
+            _ = SoftClose();
+    }
+}

@@ -15,7 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Components\Components.csproj" />
+		<ProjectReference Include="..\..\CloudComponents.Basic\CloudComponents.Basic.csproj" />
 		<ProjectReference Include="..\..\CloudComponents.Icons\CloudComponents.Icons.csproj" />
 	</ItemGroup>
 

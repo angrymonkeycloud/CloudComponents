@@ -19,7 +19,7 @@ namespace CloudComponents.VideoPlayer
  await ProgressiveDelay();
  }
 
- protected async Task OnProgressChanged(AngryMonkey.Cloud.Components.ProgressBarChangeEventArgs args)
+ protected async Task OnProgressChanged(CloudComponents.Basic.ProgressBarChangeEventArgs args)
  {
  if (Metadata.CurrentVideoInfo?.Duration == null)
  return;
@@ -47,7 +47,7 @@ namespace CloudComponents.VideoPlayer
  await ProgressiveDelay();
  }
 
- protected async Task OnProgressChanging(AngryMonkey.Cloud.Components.ProgressBarChangeEventArgs args)
+ protected async Task OnProgressChanging(CloudComponents.Basic.ProgressBarChangeEventArgs args)
  {
  if (Metadata.CurrentVideoInfo == null || Metadata.CurrentVideoInfo.Duration == null)
  return;

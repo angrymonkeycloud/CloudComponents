@@ -36,7 +36,7 @@
 
   <ItemGroup>
 	<ProjectReference Include="..\CloudComponents.Icons\CloudComponents.Icons.csproj" />
-	<ProjectReference Include="..\Components\Components.csproj" />
+	<ProjectReference Include="..\CloudComponents.Basic\CloudComponents.Basic.csproj" />
   </ItemGroup>
 
 </Project>

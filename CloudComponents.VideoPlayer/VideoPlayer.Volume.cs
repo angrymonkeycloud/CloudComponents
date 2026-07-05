@@ -17,7 +17,7 @@ namespace CloudComponents.VideoPlayer
  Metadata.DoShowVolumeControls = !Metadata.DoShowVolumeControls;
  }
 
- protected async Task OnVolumeChanging(AngryMonkey.Cloud.Components.VolumeBarChangeEventArgs args)
+ protected async Task OnVolumeChanging(CloudComponents.Basic.VolumeBarChangeEventArgs args)
  {
  Metadata.Volume = args.NewValue;
 

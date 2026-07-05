@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Components\Components.csproj" />
+    <ProjectReference Include="..\CloudComponents.Basic\CloudComponents.Basic.csproj" />
   </ItemGroup>
 
 </Project>

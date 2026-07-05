@@ -7,7 +7,7 @@ namespace CloudComponents.VideoPlayer
  {
  internal void Repaint()
  {
- ProgressBarStyle = HideControls ? AngryMonkey.Cloud.Components.ProgressBarStyle.Flat : AngryMonkey.Cloud.Components.ProgressBarStyle.Circle;
+ ProgressBarStyle = HideControls ? CloudComponents.Basic.ProgressBarStyle.Flat : CloudComponents.Basic.ProgressBarStyle.Circle;
 
  List<string> attributes = [];
 

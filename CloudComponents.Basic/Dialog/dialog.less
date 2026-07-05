@@ -1,0 +1,35 @@
+﻿@import '../General/css/common.less';
+
+::deep {
+    .amc-dialog-message {
+        color: inherit;
+    }
+
+    .amc-dialog-buttons {
+        display: flex;
+        justify-content: right;
+        gap: 5px;
+
+        button {
+            &,
+            &:focus,
+            &:hover {
+                padding: .4em .6em;
+                color: var(--amc-accentColor);
+                background-color: #fff;
+                border-radius: 4px;
+                border: 1px solid transparent;
+
+                &:focus {
+                    border-color: var(--amc-accentColor);
+                }
+
+                &:hover {
+                    color: #fff;
+                    background-color: var(--amc-accentColor);
+                    border-color: var(--amc-accentColor);
+                }
+            }
+        }
+    }
+}

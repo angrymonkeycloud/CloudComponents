@@ -1,0 +1,74 @@
+﻿[
+  {
+    "outputFile": "Dialog/Dialog.razor.css",
+    "inputFile": "Dialog/dialog.less"
+  },
+  {
+    "outputFile": "Dialog/Dialog.razor.min.css",
+    "inputFile": "Dialog/dialog.less",
+    "minify": { "enabled": true }
+  },
+  {
+    "outputFile": "ProgressBar/ProgressBar.razor.css",
+    "inputFile": "ProgressBar/progressbar.less"
+  },
+  {
+    "outputFile": "ProgressBar/ProgressBar.razor.min.css",
+    "inputFile": "ProgressBar/progressbar.less",
+    "minify": { "enabled": true }
+  },
+  {
+    "outputFile": "VolumeBar/VolumeBar.razor.css",
+    "inputFile": "VolumeBar/volumebar.less"
+  },
+  {
+    "outputFile": "VolumeBar/VolumeBar.razor.min.css",
+    "inputFile": "VolumeBar/volumebar.less",
+    "minify": { "enabled": true }
+  },
+  {
+    "outputFile": "Tabs/Tabs.razor.css",
+    "inputFile": "Tabs/Tabs.less"
+  },
+  {
+    "outputFile": "Tabs/Tabs.razor.min.css",
+    "inputFile": "Tabs/Tabs.less",
+    "minify": { "enabled": true }
+  },
+  {
+    "outputFile": "SwitchComponent/Switch.razor.css",
+    "inputFile": "SwitchComponent/Switch.razor.less"
+  },
+  {
+    "outputFile": "SwitchComponent/Switch.razor.min.css",
+    "inputFile": "SwitchComponent/Switch.razor.less",
+    "minify": { "enabled": true }
+  },
+  {
+    "outputFile": "DateTimePicker/DateTimePicker.razor.css",
+    "inputFile": "DateTimePicker/DateTimePicker.less"
+  },
+  {
+    "outputFile": "DateTimePicker/DateTimePicker.razor.min.css",
+    "inputFile": "DateTimePicker/DateTimePicker.less",
+    "minify": { "enabled": true }
+  },
+  {
+    "outputFile": "GridView/GridView.razor.css",
+    "inputFile": "GridView/GridView.less"
+  },
+  {
+    "outputFile": "GridView/GridView.razor.min.css",
+    "inputFile": "GridView/GridView.less",
+    "minify": { "enabled": true }
+  },
+  {
+    "outputFile": "Popup2/PopupComp.razor.css",
+    "inputFile": "Popup2/PopupComp.razor.less"
+  },
+  {
+    "outputFile": "Popup2/PopupComp.razor.min.css",
+    "inputFile": "Popup2/PopupComp.razor.less",
+    "minify": { "enabled": true }
+  }
+]
