@@ -43,7 +43,6 @@ jobs:
       - name: Prepare site
         shell: bash
         run: |
-          mkdir -p site
           cp -r publish/wwwroot/. site/
 
           # Fix base href for GitHub Pages subdirectory
