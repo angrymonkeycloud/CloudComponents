@@ -1,0 +1,371 @@
+@page "/maps/reverse-geocode"
+@using System.Text.Json
+@inject IOptions<AzureMapsOptions> Options
+@inject AzureMapsConfigurationService ConfigService
+
+<PageTitle>CloudMaps — Reverse Geocode</PageTitle>
+
+<div class="page-header">
+    <h1>Reverse Geocoding with Address Lookup</h1>
+    <p>
+        Pan the map to position the center pin over a location, then click <strong>Get Address</strong>
+        to perform reverse geocoding and retrieve the address, country, and administrative subdivisions
+        via Cloud Geography.
+    </p>
+</div>
+
+<MapsKeyGuard>
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
+            <h2 class="card-title">Interactive Map</h2>
+            <div class="map-host">
+                <AzureMap Height="500px"
+                          Width="100%"
+                          SubscriptionKey="@GetKey()"
+                          InitialView="_initialView"
+                          Style="MapStyle.Road"
+                          AddMarkerTrigger="MarkerAddTrigger.CenterPin"
+                          ShowCurrentLocationButton="true"
+                          OnCenterPinChanged="HandleCenterPinChanged"
+                          OnMapReady="HandleMapReady"
+                          @ref="_map" />
+            </div>
+
+            <div class="toolbar" style="margin-top: 1rem;">
+                <button class="btn btn-primary" @onclick="ResetView">Reset to Beirut</button>
+                <button class="btn" @onclick="FetchAddressManually" disabled="@_isLoading">
+                    🔄 Get Address Now
+                </button>
+                <span class="badge">Status: @_status</span>
+            </div>
+
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <div class="error-banner">⚠️ @_errorMessage</div>
+            }
+        </div>
+
+        @if (_currentAddress != null)
+        {
+            <div class="card">
+                <h2 class="card-title">📍 Full Address</h2>
+
+                <div class="info-grid-2">
+                    <div>
+                        <h3 class="info-label">Coordinates</h3>
+                        <div class="info-box mono">
+                            <div><strong>Lat:</strong> @_currentAddress.Latitude.ToString("F6")</div>
+                            <div><strong>Lng:</strong> @_currentAddress.Longitude.ToString("F6")</div>
+                            <div style="margin-top: 8px; color: var(--text-secondary); font-size: 11px;">@_currentAddress.ResolvedAt.ToString("HH:mm:ss")</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="info-label">Street Address</h3>
+                        <div class="info-box">
+                            @if (!string.IsNullOrEmpty(_currentAddress.Street))
+                            { <div><strong>Street:</strong> @_currentAddress.Street</div> }
+                            @if (!string.IsNullOrEmpty(_currentAddress.Neighborhood))
+                            { <div><strong>Neighborhood:</strong> @_currentAddress.Neighborhood</div> }
+                            @if (!string.IsNullOrEmpty(_currentAddress.City))
+                            { <div><strong>City:</strong> @_currentAddress.City</div> }
+                            @if (!string.IsNullOrEmpty(_currentAddress.County))
+                            { <div><strong>County:</strong> @_currentAddress.County</div> }
+                            @if (!string.IsNullOrEmpty(_currentAddress.PostalCode))
+                            { <div><strong>Postal Code:</strong> @_currentAddress.PostalCode</div> }
+                            @if (string.IsNullOrEmpty(_currentAddress.Street) && string.IsNullOrEmpty(_currentAddress.City))
+                            { <span style="color: var(--text-secondary); font-style: italic;">No street-level data for this location</span> }
+                        </div>
+                    </div>
+                </div>
+
+                @if (_country != null)
+                {
+                    <div style="margin-top: 20px;">
+                        <h3 class="info-label">🌍 Country</h3>
+                        <div class="chip-grid">
+                            <div class="chip"><div class="chip-label">Name</div><div class="chip-value">@_country.Name</div></div>
+                            <div class="chip"><div class="chip-label">ISO Code</div><div class="chip-value">@_country.Code / @_country.ThreeLettersCode</div></div>
+                            @if (_country.CallingCode > 0)
+                            { <div class="chip"><div class="chip-label">Calling Code</div><div class="chip-value">+@_country.CallingCode</div></div> }
+                            @if (!string.IsNullOrEmpty(_country.Capital))
+                            { <div class="chip"><div class="chip-label">Capital</div><div class="chip-value">@_country.Capital</div></div> }
+                        </div>
+                    </div>
+                }
+
+                @if (_subdivisionEntries.Count > 0)
+                {
+                    <div style="margin-top: 20px;">
+                        <h3 class="info-label">🗺️ Administrative Subdivisions (@_subdivisionEntries.Count)</h3>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            @foreach (var entry in _subdivisionEntries)
+                            {
+                                var isMatch = entry.GeoMatch is not null;
+                                <div class="subdivision-row @(isMatch ? "match" : "no-match")">
+                                    <div class="subdivision-header">
+                                        <span class="subdivision-type">@entry.Label</span>
+                                        <span class="subdivision-name">@entry.AzureName</span>
+                                        @if (!string.IsNullOrEmpty(entry.AzureCode))
+                                        { <span style="font-size: 12px; color: var(--text-secondary);">(@entry.AzureCode)</span> }
+                                        <span class="match-badge @(isMatch ? "match" : "no-match")">@(isMatch ? "Match" : "No Match")</span>
+                                    </div>
+                                    @if (entry.GeoMatch is { } gm)
+                                    {
+                                        <div class="subdivision-details">
+                                            <div><span class="detail-label">CG Name</span><span>@gm.Name</span></div>
+                                            <div><span class="detail-label">Code</span><span>@gm.Code</span></div>
+                                            <div><span class="detail-label">Type</span><span>@gm.Type</span></div>
+                                        </div>
+                                        @if (entry.Children is { Count: > 0 })
+                                        {
+                                            <div class="children-list">
+                                                <div class="children-label">Sub-regions (@entry.Children.Count)</div>
+                                                <div class="children-chips">
+                                                    @foreach (var child in entry.Children)
+                                                    {
+                                                        <span class="child-chip">@child.Code — @child.Name</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else if (_isLoading)
+        {
+            <div class="card">
+                <div style="text-align: center; padding: 40px; color: var(--text-secondary);">⏳ Loading address information…</div>
+            </div>
+        }
+        else
+        {
+            <div class="card">
+                <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                    Pan the map to position the center pin, then click <strong>Get Address</strong>.
+                </div>
+            </div>
+        }
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0;">
+                Use <code>MarkerAddTrigger.CenterPin</code> to keep a pin fixed at the map center, read its
+                coordinate from <code>OnCenterPinChanged</code>, and call the Azure Maps reverse geocode API.
+                Combine the result with <code>CloudGeographyClient</code> for richer administrative data.
+            </p>
+            <pre class="code-snippet"><code>@_snippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
+</MapsKeyGuard>
+
+@code {
+    private AzureMap? _map;
+    private readonly InitialMapView _initialView = new(33.846544, 35.534194, 13);
+
+    private AddressInfo? _currentAddress;
+    private Country? _country;
+    private List<SubdivisionEntry> _subdivisionEntries = [];
+    private bool _isLoading;
+    private string _status = "Ready";
+    private string? _errorMessage;
+    private MapCoordinate? _lastCoord;
+
+    private Task HandleMapReady() => Task.CompletedTask;
+
+    private Task HandleCenterPinChanged(MapCoordinate coord)
+    {
+        _lastCoord = coord;
+        return Task.CompletedTask;
+    }
+
+    private async Task FetchAddressManually()
+    {
+        if (_lastCoord is null)
+        {
+            _errorMessage = "No coordinates available. Pan the map first.";
+            _status = "Error";
+            StateHasChanged();
+            return;
+        }
+        await FetchAddressAsync(_lastCoord.Value);
+    }
+
+    private async Task FetchAddressAsync(MapCoordinate coord)
+    {
+        _isLoading = true;
+        _status = "Fetching address…";
+        _errorMessage = null;
+        _currentAddress = null;
+        _country = null;
+        _subdivisionEntries = [];
+        StateHasChanged();
+
+        try
+        {
+            var key = GetKey();
+            if (string.IsNullOrEmpty(key) || key.Contains("placeholder"))
+            {
+                _errorMessage = "Azure Maps subscription key not configured. Use the ⚙️ button to set it.";
+                _status = "Not configured";
+                return;
+            }
+
+            var url = $"https://atlas.microsoft.com/search/address/reverse/json?api-version=1.0&subscription-key={Uri.EscapeDataString(key)}&query={coord.Latitude},{coord.Longitude}";
+            using var client = new System.Net.Http.HttpClient();
+            var response = await client.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _errorMessage = $"Azure Maps API error: {response.StatusCode}. Check your subscription key.";
+                _status = "API Error";
+                return;
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(json);
+            var root = doc.RootElement;
+
+            if (!root.TryGetProperty("addresses", out var arr) || arr.GetArrayLength() == 0)
+            {
+                _errorMessage = "No address found for this location. Try a different area.";
+                _status = "No results";
+                return;
+            }
+
+            var first = arr[0];
+            if (!first.TryGetProperty("address", out var addr))
+            {
+                _errorMessage = "Azure Maps returned a result but with no address data.";
+                return;
+            }
+
+            string Str(string key2) => addr.TryGetProperty(key2, out var el) && el.ValueKind == JsonValueKind.String
+                ? el.GetString() ?? "" : "";
+
+            var streetNum = Str("streetNumber");
+            var streetName = Str("streetName");
+            var street = streetNum.Length > 0 && streetName.Length > 0 ? $"{streetNum} {streetName}"
+                : streetName.Length > 0 ? streetName : Str("freeformAddress");
+
+            _currentAddress = new AddressInfo
+            {
+                Latitude = coord.Latitude,
+                Longitude = coord.Longitude,
+                Street = street,
+                Neighborhood = Str("neighbourhood"),
+                PostalCode = Str("postalCode"),
+                City = Str("municipality"),
+                County = Str("municipalitySubdivision"),
+                District = Str("countrySubdivision"),
+                CountryTertiarySubdivision = Str("countryTertiarySubdivision"),
+                CountrySecondarySubdivision = Str("countrySecondarySubdivision"),
+                Subdivision = Str("countrySubdivision"),
+                SubdivisionCode = Str("countrySubdivisionCode"),
+                CountryRegion = Str("country"),
+                CountryCode = Str("countryCode")
+            };
+
+            var geo = new CloudGeographyClient();
+            var countryCode = Str("countryCode");
+            var country = !string.IsNullOrEmpty(countryCode)
+                ? geo.Countries.Get(countryCode)
+                : await geo.Countries.GetByCoordinates(new AngryMonkey.Cloud.Geography.Coordinate(coord.Latitude, coord.Longitude));
+
+            if (country != null)
+            {
+                _country = country;
+                var entries = new List<SubdivisionEntry>();
+
+                void AddEntry(string label, string azureName, string? azureCode, string? parentCode = null)
+                {
+                    Subdivision? match = null;
+                    List<Subdivision>? children = null;
+                    if (!string.IsNullOrEmpty(azureName) || !string.IsNullOrEmpty(azureCode))
+                    {
+                        if (!string.IsNullOrEmpty(azureName))
+                            match = geo.Subdivisions.Find(country.Code, azureName);
+                        if (match == null && !string.IsNullOrEmpty(azureCode))
+                            match = geo.Subdivisions.Get(country.Code, azureCode)
+                                 ?? geo.Subdivisions.Get(country.Code, $"{country.Code}-{azureCode}");
+                        if (match == null && !string.IsNullOrEmpty(azureName))
+                            match = geo.Subdivisions.Search(new() { CountryCode = country.Code, Query = azureName, ParentSubdivisionCode = parentCode })?.Matches?.FirstOrDefault()?.Subdivision;
+                        if (match != null) children = geo.Subdivisions.GetChildren(country.Code, match.Code);
+                    }
+                    entries.Add(new SubdivisionEntry { Label = label, AzureName = azureName ?? "", AzureCode = azureCode, GeoMatch = match, Children = children });
+                }
+
+                var primarySubdiv = geo.Subdivisions.Find(country.Code, _currentAddress.Subdivision ?? "");
+                AddEntry("State / Province", _currentAddress.Subdivision ?? string.Empty, _currentAddress.SubdivisionCode);
+                AddEntry("Secondary Division", _currentAddress.CountrySecondarySubdivision ?? string.Empty, null, primarySubdiv?.Code);
+                AddEntry("Tertiary Division", _currentAddress.CountryTertiarySubdivision ?? string.Empty, null, primarySubdiv?.Code);
+
+                _subdivisionEntries = entries.Where(e => !string.IsNullOrEmpty(e.AzureName)).ToList();
+                var top = entries.FirstOrDefault(e => e.GeoMatch is not null);
+                _status = top != null ? $"✓ {top.GeoMatch!.Name}, {country.Name}" : $"✓ Address retrieved ({country.Name})";
+            }
+            else
+            {
+                _status = "✓ Address retrieved";
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error: {ex.Message}";
+            _status = "Error";
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ResetView()
+    {
+        if (_map != null) await _map.SetCenterAsync(33.846544, 35.534194, 13);
+    }
+
+    private string GetKey()
+    {
+        var key = ConfigService.GetSubscriptionKey();
+        return !string.IsNullOrEmpty(key) ? key : Options.Value.SubscriptionKey ?? string.Empty;
+    }
+
+    private readonly string _snippet = """
+<AzureMap AddMarkerTrigger="MarkerAddTrigger.CenterPin"
+          OnCenterPinChanged="HandleCenterPinChanged"
+          @ref="_map" />
+
+@code {
+    private async Task HandleCenterPinChanged(MapCoordinate coord)
+    {
+        // Triggered whenever map center moves. Save coordinate
+        // and resolve the address when the user is ready.
+        _lastCoord = coord;
+    }
+
+    private async Task FetchAddressAsync(MapCoordinate coord)
+    {
+        // Call the Azure Maps reverse-geocode REST endpoint:
+        var url = $"https://atlas.microsoft.com/search/address/reverse/json" +
+                  $"?api-version=1.0&subscription-key={key}&query={coord.Latitude},{coord.Longitude}";
+        // … parse result …
+
+        // Enrich with Cloud Geography:
+        var geo = new CloudGeographyClient();
+        var country = geo.Countries.Get(countryCode);
+        var subdivision = geo.Subdivisions.Find(country.Code, subdivisionName);
+    }
+}
+""";
+}

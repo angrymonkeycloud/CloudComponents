@@ -1,0 +1,132 @@
+@page "/grid/reordering"
+@using CloudComponents.Grid
+@using CloudComponents.Grid.Models
+@using CloudComponents.Demo.Models
+@using CloudComponents.Demo.Services
+@using CloudComponents.Demo.Shared
+@inject SampleDataService Data
+
+<PageTitle>CloudGrid — Row Reordering</PageTitle>
+
+<div class="page-header">
+    <h1>Row Reordering</h1>
+    <p>
+        With <code>AllowReordering</code> enabled, each row shows a drag handle. Drag a row to a new
+        position and drop it — the grid raises <code>OnRowsReordered</code> with the moved id, the old
+        and new indexes, and the full new order. This page persists that order back into the data
+        service, so reloading keeps your arrangement. The most recent move is shown in the log.
+    </p>
+</div>
+
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
+            <div class="toolbar">
+                <span class="badge">Drag the handle on the left of each row</span>
+                <button class="btn" @onclick="ReloadGrid">Reload grid</button>
+            </div>
+
+            <div class="grid-host">
+                <CloudGrid @key="_gridKey"
+                           Header="_header"
+                           Columns="_columns"
+                           DataProvider="LoadAsync"
+                           AllowReordering="true"
+                           OnRowsReordered="OnReordered"
+                           RowHeight="40"
+                           RowsPerPage="12"
+                           HeightMode="CloudGridHeightMode.RowHeight" />
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Reorder log</h2>
+            @if (_log.Count == 0)
+            {
+                <div class="log"><span class="log-empty">No moves yet — drag a row to a new position.</span></div>
+            }
+            else
+            {
+                <div class="log">
+                    @foreach (var entry in _log)
+                    {
+                        <div class="log-line"><span class="log-time">@entry.Time</span>@entry.Message</div>
+                    }
+                </div>
+            }
+        </div>
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0;">
+                Enable <code>AllowReordering</code> and handle <code>OnRowsReordered</code> to persist
+                the new order. The event includes the moved record id, old/new indexes, and the full
+                ordered id list.
+            </p>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
+
+@code {
+    private int _gridKey;
+    private readonly List<(string Time, string Message)> _log = [];
+
+    private readonly CloudGridHeaderOptions _header = new()
+    {
+        Label = "Priority order",
+        AllowSearch = false,
+        AllowRefresh = false
+    };
+
+    private readonly List<CloudGridColumn> _columns =
+    [
+        new() { Label = "Name", Key = "name", Width = 200, Sortable = false },
+        new() { Label = "Department", Key = "department", Width = 160, Sortable = false },
+        new() { Label = "Country", Key = "country", Width = 140, Sortable = false }
+    ];
+
+    private async Task<CloudGridDataResult?> LoadAsync(CloudGridDataRequest request)
+        => await Data.QueryAsync(request, ToRow, simulatedDelayMs: 0);
+
+    private static CloudGridRow ToRow(Person p) => new()
+    {
+        Id = p.Id,
+        Cells = [p.FullName, p.Department, p.Country]
+    };
+
+    private void OnReordered(CloudGridRowReorder reorder)
+    {
+        Data.ApplyReorder(reorder);
+
+        Person? moved = Data.GetByIds([reorder.RecordId]).FirstOrDefault();
+        string name = moved?.FullName ?? reorder.RecordId.ToString()[..8];
+
+        _log.Insert(0, (DateTime.Now.ToString("HH:mm:ss"),
+            $"Moved '{name}' from #{reorder.OldIndex} to #{reorder.NewIndex} (order persisted)"));
+
+        if (_log.Count > 25) _log.RemoveAt(_log.Count - 1);
+    }
+
+    private void ReloadGrid() => _gridKey++;
+
+    private readonly string _usageSnippet = """
+<CloudGrid AllowReordering="true"
+           OnRowsReordered="OnReordered"
+           ... />
+
+@code {
+    private void OnReordered(CloudGridRowReorder reorder)
+    {
+        // reorder.RecordId:        the moved row's id
+        // reorder.OldIndex:        original position
+        // reorder.NewIndex:        final position
+        // reorder.OrderedRecordIds: full list of ids in new order
+
+        DataService.ApplyReorder(reorder);
+    }
+}
+""";
+}

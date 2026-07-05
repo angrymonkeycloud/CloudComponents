@@ -1,0 +1,12 @@
+[
+  {
+    "outputFile": "wwwroot/css/app.css",
+    "inputFile": "src/css/app.less",
+    "minify": {
+      "enabled": true,
+      "renameLocals": false
+    },
+    "sourceMap": false,
+    "options": {}
+  }
+]

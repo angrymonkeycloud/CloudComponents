@@ -1,11 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
-		<AssemblyName>Components.Demo</AssemblyName>
-		<RootNamespace>Components.Demo</RootNamespace>
+		<AssemblyName>CloudComponents.VideoPlayer.Demo</AssemblyName>
+		<RootNamespace>CloudComponents.VideoPlayer.Demo</RootNamespace>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<Configurations>Debug;Release;Release_Server</Configurations>
 		<Version>1.0.0</Version>
 	</PropertyGroup>
 
@@ -15,8 +16,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Components\Components.csproj" />
-		<ProjectReference Include="..\CloudComponents.Icons\CloudComponents.Icons.csproj" />
+		<ProjectReference Include="..\..\CloudComponents.VideoPlayer\CloudComponents.VideoPlayer.csproj" />
+		<ProjectReference Include="..\..\CloudComponents.Icons\CloudComponents.Icons.csproj" />
 	</ItemGroup>
 
 </Project>

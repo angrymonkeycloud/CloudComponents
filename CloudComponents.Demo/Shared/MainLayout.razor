@@ -1,0 +1,40 @@
+@inject IJSRuntime JS
+@inherits LayoutComponentBase
+@implements IAsyncDisposable
+
+<div class="layout">
+    <NavMenu @ref="_navMenu" />
+    <main class="content">
+        <div class="content-inner">
+            @Body
+        </div>
+    </main>
+</div>
+
+@code {
+    private NavMenu? _navMenu;
+    private IJSObjectReference? _appModule;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _appModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/app.js");
+        }
+    }
+
+    internal async Task ToggleThemeAsync()
+    {
+        if (_appModule is not null)
+        {
+            string theme = await _appModule.InvokeAsync<string>("toggleTheme");
+            StateHasChanged();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_appModule is not null)
+            await _appModule.DisposeAsync();
+    }
+}

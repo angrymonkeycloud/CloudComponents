@@ -1,0 +1,257 @@
+@page "/maps/regions"
+@inject IOptions<AzureMapsOptions> Options
+@inject AzureMapsConfigurationService ConfigService
+
+<PageTitle>CloudMaps — Regions &amp; Boundaries</PageTitle>
+
+<div class="page-header">
+    <h1>Regions &amp; Administrative Boundaries</h1>
+    <p>
+        Display administrative regions as colored overlays on the map. Each region is fetched using
+        Cloud Geography subdivisions and Azure Maps geocoding. Select a country to view its subdivisions.
+    </p>
+</div>
+
+<MapsKeyGuard>
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
+            <h2 class="card-title">Settings</h2>
+            <div class="info-grid-2" style="margin-bottom: 16px;">
+                <div>
+                    <label class="field-label">Select Country:</label>
+                    <select class="input" @onchange="HandleCountrySelected">
+                        <option value="">— Choose a country —</option>
+                        <option value="US">United States</option>
+                        <option value="CA">Canada</option>
+                        <option value="GB">United Kingdom</option>
+                        <option value="DE">Germany</option>
+                        <option value="FR">France</option>
+                        <option value="AU">Australia</option>
+                        <option value="MX">Mexico</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="field-label">Region Color:</label>
+                    <input type="color" @bind="_fillColor" style="width: 100%; height: 40px; border: 1px solid var(--border-color); border-radius: 4px; cursor: pointer;" />
+                </div>
+            </div>
+
+            <div class="toolbar">
+                <button class="btn btn-primary" @onclick="LoadRegions" disabled="@(_selectedCode == "" || _isLoading)">
+                    @(_isLoading ? "Loading…" : "Load Regions")
+                </button>
+                <button class="btn" @onclick="ClearRegions" disabled="@(_regionCount == 0)">Clear All</button>
+                <span class="badge">Regions: @_regionCount</span>
+                <span class="badge">@_status</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">📍 Map</h2>
+            <div class="map-host">
+                <AzureMap Height="500px"
+                          Width="100%"
+                          SubscriptionKey="@GetKey()"
+                          InitialView="_initialView"
+                          Style="MapStyle.Road"
+                          ShowCurrentLocationButton="false"
+                          Regions="_regions"
+                          OnMapReady="HandleMapReady"
+                          @ref="_map" />
+            </div>
+        </div>
+
+        @if (_subdivisions is { Count: > 0 })
+        {
+            <div class="card">
+                <h2 class="card-title">Subdivision Details</h2>
+                <div class="markers-grid">
+                    @foreach (var sub in _subdivisions)
+                    {
+                        <div class="marker-card">
+                            <div class="marker-card-title">@sub.Code</div>
+                            <div><strong>Name:</strong> @sub.Name</div>
+                            <div><strong>Type:</strong> @sub.Type</div>
+                            @if (sub.Children?.Count > 0)
+                            {
+                                <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-color); font-size: 11px;">
+                                    <strong>Children: @sub.Children.Count</strong>
+                                    <ul style="margin: 4px 0 0 16px; padding: 0;">
+                                        @foreach (var child in sub.Children.Take(3))
+                                        { <li>@child.Code — @child.Name</li> }
+                                        @if (sub.Children.Count > 3)
+                                        { <li style="color: var(--text-secondary);">+@(sub.Children.Count - 3) more</li> }
+                                    </ul>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0;">
+                Regions are plain data — build a list of <code>MapRegion</code> polygons and pass it to the
+                <code>Regions</code> parameter, or call <code>AddRegionsAsync</code> / <code>ClearRegionsAsync</code>
+                imperatively once the map is ready.
+            </p>
+            <pre class="code-snippet"><code>@_snippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
+</MapsKeyGuard>
+
+@code {
+    private AzureMap? _map;
+    private readonly InitialMapView _initialView = new(39.8283, -98.5795, 4);
+
+    private string _selectedCode = "";
+    private string _fillColor = "#0078d4";
+    private List<MapRegion> _regions = new();
+    private List<Subdivision>? _subdivisions;
+    private int _regionCount;
+    private bool _isLoading;
+    private string _status = "Ready";
+
+    private readonly Dictionary<string, (double lat, double lng, double zoom)> _countryViews = new()
+    {
+        { "US", (39.8283, -98.5795, 4) },
+        { "CA", (56.1304, -106.3468, 4) },
+        { "GB", (55.3781, -3.4360, 6) },
+        { "DE", (51.1657, 10.4515, 6) },
+        { "FR", (46.2276, 2.2137, 6) },
+        { "AU", (-25.2744, 133.7751, 4) },
+        { "MX", (23.6345, -102.5528, 5) },
+    };
+
+    private Task HandleMapReady() => Task.CompletedTask;
+
+    private async Task HandleCountrySelected(ChangeEventArgs e)
+    {
+        _selectedCode = e.Value?.ToString() ?? "";
+        _regions.Clear();
+        _regionCount = 0;
+        if (_selectedCode != "" && _map != null && _countryViews.TryGetValue(_selectedCode, out var v))
+            await _map.SetCenterAsync(v.lat, v.lng, (int)v.zoom);
+    }
+
+    private async Task LoadRegions()
+    {
+        if (string.IsNullOrEmpty(_selectedCode) || _map == null) return;
+
+        _isLoading = true;
+        _status = "Loading regions…";
+        StateHasChanged();
+
+        try
+        {
+            var geo = new CloudGeographyClient();
+            _subdivisions = geo.Subdivisions.Get(_selectedCode);
+            if (_subdivisions == null || _subdivisions.Count == 0)
+            {
+                _status = "No subdivisions found";
+                return;
+            }
+
+            await _map.ClearRegionsAsync();
+            _regions.Clear();
+
+            // Use a hex color with opacity overlay
+            var fillHex = _fillColor;
+            var fillWithOpacity = fillHex.Length == 7 ? fillHex + "26" : fillHex; // ~15% opacity
+
+            foreach (var sub in _subdivisions.Take(5))
+            {
+                try
+                {
+                    var result = await _map.GeocodeAsync($"{sub.Name}, {_selectedCode}");
+                    if (result != null)
+                    {
+                        var polygon = BuildPolygon(result.South, result.West, result.North, result.East);
+                        _regions.Add(new MapRegion(polygon, FillColor: fillWithOpacity, StrokeColor: fillHex, StrokeWidth: 2) { Label = sub.Code });
+                    }
+                }
+                catch { }
+            }
+
+            if (_regions.Count > 0)
+            {
+                await _map.AddRegionsAsync(_regions);
+                _regionCount = _regions.Count;
+                _status = $"Loaded {_regionCount} regions";
+            }
+            else
+            {
+                _status = "Could not load region boundaries";
+            }
+        }
+        catch (Exception ex)
+        {
+            _status = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ClearRegions()
+    {
+        if (_map != null) await _map.ClearRegionsAsync();
+        _regions.Clear();
+        _regionCount = 0;
+        _status = "Cleared";
+        StateHasChanged();
+    }
+
+    private static double[][][] BuildPolygon(double south, double west, double north, double east)
+    {
+        double[][] ring =
+        [
+            [west, south], [east, south], [east, north], [west, north], [west, south]
+        ];
+        var rng = new Random();
+        for (int i = 0; i < ring.Length - 1; i++)
+        {
+            ring[i][0] += (rng.NextDouble() - 0.5) * 0.1;
+            ring[i][1] += (rng.NextDouble() - 0.5) * 0.1;
+        }
+        return [ring];
+    }
+
+    private string GetKey()
+    {
+        var key = ConfigService.GetSubscriptionKey();
+        return !string.IsNullOrEmpty(key) ? key : Options.Value.SubscriptionKey ?? string.Empty;
+    }
+
+    private readonly string _snippet = """
+<AzureMap Regions="@_regions"
+          OnMapReady="HandleMapReady"
+          @ref="_map" />
+
+@code {
+    private List<MapRegion> _regions = new();
+
+    private async Task LoadRegionsAsync(string countryCode)
+    {
+        var polygon = await FetchPolygonAsync(countryCode); // your polygon source
+        _regions.Add(new MapRegion(
+            polygon,
+            FillColor: "rgba(0,120,212,0.15)",
+            StrokeColor: "#0078d4",
+            StrokeWidth: 2));
+
+        // Either let Blazor re-render with the updated Regions parameter,
+        // or push immediately:
+        await _map!.AddRegionsAsync(_regions);
+    }
+}
+""";
+}

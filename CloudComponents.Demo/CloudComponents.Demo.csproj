@@ -2,8 +2,8 @@
 
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
-		<AssemblyName>CloudComponents.Grid.Demo</AssemblyName>
-		<RootNamespace>CloudComponents.Grid.Demo</RootNamespace>
+		<AssemblyName>CloudComponents.Demo</AssemblyName>
+		<RootNamespace>CloudComponents.Demo</RootNamespace>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Configurations>Debug;Release;Release_Server</Configurations>
@@ -13,11 +13,16 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.8" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.8" PrivateAssets="all" />
+		<PackageReference Include="AngryMonkey.Cloud.Geography" Version="2.8.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\CloudComponents.Grid\CloudComponents.Grid.csproj" />
+		<ProjectReference Include="..\CloudComponents.VideoPlayer\CloudComponents.VideoPlayer.csproj" />
+		<ProjectReference Include="..\CloudComponents.Maps\CloudComponents.Maps.csproj" />
+		<ProjectReference Include="..\CloudComponents.Maps.Web\CloudComponents.Maps.Web.csproj" />
 		<ProjectReference Include="..\CloudComponents.Icons\CloudComponents.Icons.csproj" />
+		<ProjectReference Include="..\Components\Components.csproj" />
 	</ItemGroup>
 
 </Project>

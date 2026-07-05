@@ -1,0 +1,62 @@
+@page "/video/player"
+@using CloudComponents.VideoPlayer
+@using CloudComponents.Demo.Shared
+
+<PageTitle>VideoPlayer — MP4 Playback</PageTitle>
+
+<div class="page-header">
+    <h1>Video Player</h1>
+    <p>Standard MP4 playback with controls, settings menu, volume, fullscreen, and progress bar.</p>
+</div>
+
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
+            <h2 class="card-title">Oceans (MP4)</h2>
+            <p class="card-subtitle">
+                Open-source sample video — <code>@_metadata.VideoUrl</code>
+            </p>
+            <div class="player-wrapper">
+                <VideoPlayer Metadata="_metadata" />
+            </div>
+        </div>
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0;">
+                Create a <code>VideoPlayerMetadata</code> object and pass it to the <code>VideoPlayer</code> component.
+            </p>
+            <pre class="code-snippet"><code>@_snippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
+
+@code {
+    private readonly VideoPlayerMetadata _metadata = new()
+    {
+        Title = "Oceans",
+        VideoUrl = "https://vjs.zencdn.net/v/oceans.mp4",
+        EnableControls = true,
+        ShowProgressBar = true,
+        ShowSettings = true,
+        Volume = 0.8
+    };
+
+    private readonly string _snippet = """
+<VideoPlayer Metadata="_metadata" />
+
+@code {
+    private readonly VideoPlayerMetadata _metadata = new()
+    {
+        Title = "Oceans",
+        VideoUrl = "https://vjs.zencdn.net/v/oceans.mp4",
+        EnableControls = true,
+        ShowProgressBar = true,
+        ShowSettings = true,
+        Volume = 0.8
+    };
+}
+""";
+}

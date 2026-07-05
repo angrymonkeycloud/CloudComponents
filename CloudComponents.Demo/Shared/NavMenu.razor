@@ -1,0 +1,171 @@
+﻿@inject IJSRuntime JS
+@inject NavigationManager Nav
+@implements IAsyncDisposable
+
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-header-row">
+            <span class="sidebar-title">CloudComponents</span>
+            <button class="theme-toggle" title="Toggle light/dark mode" @onclick="ToggleTheme">@_themeIcon</button>
+        </div>
+        <span class="sidebar-version">v1.0.0 · net10.0</span>
+    </div>
+
+    <nav class="nav">
+
+        <div class="nav-group">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">&#x1F3E0; Overview</NavLink>
+        </div>
+
+        @* -- Basics -- *@
+        <div class="nav-group">
+            <button class="nav-section-btn @(IsOpen("components") ? "open" : "")" @onclick='() => Toggle("components")'>
+                <span>&#x2B21; Basics</span>
+                <i class="nav-section-chevron">&#x25B6;</i>
+            </button>
+            <div class="nav-section-links @(IsOpen("components") ? "open" : "")">
+                <NavLink class="nav-link" href="components/popup">Popup &amp; Dialog</NavLink>
+                <NavLink class="nav-link" href="components/switch">Switch</NavLink>
+                <NavLink class="nav-link" href="components/tabs">Tabs</NavLink>
+                <NavLink class="nav-link" href="components/progressbar">Progress Bar</NavLink>
+                <NavLink class="nav-link" href="components/volumebar">Volume Bar</NavLink>
+            </div>
+        </div>
+
+        @* -- CloudGrid -- *@
+        <div class="nav-group">
+            <button class="nav-section-btn @(IsOpen("grid") ? "open" : "")" @onclick='() => Toggle("grid")'>
+                <span>&#x2630; CloudGrid</span>
+                <i class="nav-section-chevron">&#x25B6;</i>
+            </button>
+            <div class="nav-section-links @(IsOpen("grid") ? "open" : "")">
+                <NavLink class="nav-link" href="grid/basic">Basic &amp; Sorting</NavLink>
+                <NavLink class="nav-link" href="grid/selection">Selection &amp; Actions</NavLink>
+                <NavLink class="nav-link" href="grid/paging">Paging Modes</NavLink>
+                <NavLink class="nav-link" href="grid/height">Height Modes</NavLink>
+                <NavLink class="nav-link" href="grid/reordering">Row Reordering</NavLink>
+                <NavLink class="nav-link" href="grid/states">States &amp; Theming</NavLink>
+            </div>
+        </div>
+
+        @* -- VideoPlayer -- *@
+        <div class="nav-group">
+            <button class="nav-section-btn @(IsOpen("video") ? "open" : "")" @onclick='() => Toggle("video")'>
+                <span>&#x25B6; VideoPlayer</span>
+                <i class="nav-section-chevron">&#x25B6;</i>
+            </button>
+            <div class="nav-section-links @(IsOpen("video") ? "open" : "")">
+                <NavLink class="nav-link" href="video/basic">Basic Components</NavLink>
+                <NavLink class="nav-link" href="video/player">Player</NavLink>
+                <NavLink class="nav-link" href="video/live">Live Stream</NavLink>
+            </div>
+        </div>
+
+        @* -- AzureMap -- *@
+        <div class="nav-group">
+            <button class="nav-section-btn @(IsOpen("maps") ? "open" : "")" @onclick='() => Toggle("maps")'>
+                <span>&#x1F5FA; AzureMap</span>
+                <i class="nav-section-chevron">&#x25B6;</i>
+            </button>
+            <div class="nav-section-links @(IsOpen("maps") ? "open" : "")">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:0 2px 4px;">
+                    <span style="font-size:11px;color:var(--color-text-muted);padding-left:10px;">Azure Maps</span>
+                    <button class="nav-config-btn" title="Configure Azure Maps key" @onclick="() => _showMapConfig = true">&#x2699;&#xFE0F;</button>
+                </div>
+                <NavLink class="nav-link" href="maps/markers">Basic Markers</NavLink>
+                <NavLink class="nav-link" href="maps/controls">Controls &amp; Styles</NavLink>
+                <NavLink class="nav-link" href="maps/search">Search &amp; Locate</NavLink>
+                <NavLink class="nav-link" href="maps/reverse-geocode">Reverse Geocode</NavLink>
+                <NavLink class="nav-link" href="maps/save-location">Save Location</NavLink>
+                <NavLink class="nav-link" href="maps/location-lock">Location Lock</NavLink>
+                <NavLink class="nav-link" href="maps/regions">Regions &amp; Boundaries</NavLink>
+                <NavLink class="nav-link" href="maps/live-tracking">Live Tracking</NavLink>
+                <NavLink class="nav-link" href="maps/history">History Replay</NavLink>
+            </div>
+        </div>
+
+        @* -- CloudIcons -- *@
+        <div class="nav-group">
+            <button class="nav-section-btn @(IsOpen("icons") ? "open" : "")" @onclick='() => Toggle("icons")'>
+                <span>&#x2726; CloudIcons</span>
+                <i class="nav-section-chevron">&#x25B6;</i>
+            </button>
+            <div class="nav-section-links @(IsOpen("icons") ? "open" : "")">
+                <NavLink class="nav-link" href="icons">Icons</NavLink>
+                <NavLink class="nav-link" href="icons/logos">Logos</NavLink>
+            </div>
+        </div>
+
+    </nav>
+</aside>
+
+@if (_showMapConfig)
+{
+    <ConfigurationModal OnClose="() => _showMapConfig = false" />
+}
+
+@code {
+    private IJSObjectReference? _appModule;
+    private string _themeIcon = "☀";
+    private bool _showMapConfig;
+    private string _openSection = "";
+
+    protected override void OnInitialized()
+    {
+        _openSection = SectionFromUrl(Nav.Uri);
+        Nav.LocationChanged += OnLocationChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _appModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/app.js");
+            string theme = await _appModule.InvokeAsync<string>("getTheme");
+            _themeIcon = theme == "light" ? "☾" : "☀";
+            StateHasChanged();
+        }
+    }
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        var section = SectionFromUrl(e.Location);
+        if (section != "" && section != _openSection)
+        {
+            _openSection = section;
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private static string SectionFromUrl(string url)
+    {
+        var path = new Uri(url).AbsolutePath.TrimStart('/');
+        if (path.StartsWith("grid")) return "grid";
+        if (path.StartsWith("video")) return "video";
+        if (path.StartsWith("maps")) return "maps";
+        if (path.StartsWith("icons")) return "icons";
+        if (path.StartsWith("components")) return "components";
+        return "";
+    }
+
+    private bool IsOpen(string section) => _openSection == section;
+
+    private void Toggle(string section) =>
+        _openSection = _openSection == section ? "" : section;
+
+    private async Task ToggleTheme()
+    {
+        if (_appModule is not null)
+        {
+            string theme = await _appModule.InvokeAsync<string>("toggleTheme");
+            _themeIcon = theme == "light" ? "☾" : "☀";
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        Nav.LocationChanged -= OnLocationChanged;
+        if (_appModule is not null)
+            await _appModule.DisposeAsync();
+    }
+}

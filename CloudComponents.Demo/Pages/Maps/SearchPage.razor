@@ -1,0 +1,150 @@
+@page "/maps/search"
+@inject IOptions<AzureMapsOptions> Options
+@inject AzureMapsConfigurationService ConfigService
+
+<PageTitle>CloudMaps — Search &amp; Locate</PageTitle>
+
+<div class="page-header">
+    <h1>Place Search &amp; Pin My Location</h1>
+    <p>
+        Use the built-in search box (top-left of the map) to find a place by name or address, or use the
+        locate button to re-center on the device's current position. Both flows work through the same
+        <code>ILocationService</code> abstraction across web and mobile.
+    </p>
+</div>
+
+<MapsKeyGuard>
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
+            <h2 class="card-title">Map</h2>
+            <div class="map-host">
+                <AzureMap Height="500px"
+                          Width="100%"
+                          SubscriptionKey="@GetKey()"
+                          InitialView="_initialView"
+                          Style="MapStyle.Road"
+                          ShowSearchBox="true"
+                          SearchPlaceholder="Search for a city, address, or landmark…"
+                          SearchResultLimit="6"
+                          ShowCurrentLocationButton="true"
+                          OnMapReady="HandleMapReady"
+                          OnSearchResultSelected="HandleSearchResultSelected"
+                          OnMyLocationFound="HandleMyLocationFound"
+                          @ref="_map" />
+            </div>
+
+            <div class="toolbar" style="margin-top: 1rem;">
+                <button class="btn btn-primary" @onclick="PinMyLocation">📌 Pin My Location</button>
+                <button class="btn" @onclick="ClearSearch">Clear Search</button>
+                <span class="badge">@_status</span>
+            </div>
+        </div>
+
+        @if (_lastSearchResult is not null || _lastCoordinate is not null)
+        {
+            <div class="card">
+                <h2 class="card-title">Last Result</h2>
+                <div class="markers-grid">
+                    @if (_lastSearchResult is { } r)
+                    {
+                        <div class="marker-card">
+                            <div class="marker-card-title">🔎 Search Result</div>
+                            <div><strong>Address:</strong> @r.Address</div>
+                            @if (!string.IsNullOrEmpty(r.Description))
+                            { <div><strong>Description:</strong> @r.Description</div> }
+                            <div><strong>Latitude:</strong> @r.Latitude.ToString("F5")</div>
+                            <div><strong>Longitude:</strong> @r.Longitude.ToString("F5")</div>
+                        </div>
+                    }
+                    @if (_lastCoordinate is { } c)
+                    {
+                        <div class="marker-card">
+                            <div class="marker-card-title">📌 My Location</div>
+                            <div><strong>Latitude:</strong> @c.Latitude.ToString("F5")</div>
+                            <div><strong>Longitude:</strong> @c.Longitude.ToString("F5")</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <ul style="font-size: 13px; color: var(--text-secondary);">
+                <li><strong>Search:</strong> Debounced Azure Maps fuzzy search with a keyboard-navigable dropdown. Selecting a result flies the camera to it.</li>
+                <li><strong>Pin my location (web):</strong> Uses <code>navigator.geolocation</code> through JS isolation (<code>CloudComponents.Maps.Web</code>'s <code>WebLocationService</code>), registered in <code>Program.cs</code>.</li>
+                <li><strong>Pin my location (mobile):</strong> A .NET MAUI Blazor Hybrid host would instead register <code>CloudComponents.Maps.Mobile</code>'s <code>MauiLocationService</code> — no component code changes required.</li>
+            </ul>
+            <pre class="code-snippet"><code>@_snippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
+</MapsKeyGuard>
+
+@code {
+    private AzureMap? _map;
+    private readonly InitialMapView _initialView = new(37.7749, -122.4194, 11);
+    private MapSearchResult? _lastSearchResult;
+    private MapCoordinate? _lastCoordinate;
+    private string _status = "Ready";
+
+    private Task HandleMapReady() => Task.CompletedTask;
+
+    private Task HandleSearchResultSelected(MapSearchResult result)
+    {
+        _lastSearchResult = result;
+        _status = "Search result selected";
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleMyLocationFound(MapCoordinate coordinate)
+    {
+        _lastCoordinate = coordinate;
+        _status = "Location pinned";
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private async Task PinMyLocation()
+    {
+        if (_map is null) return;
+        _status = "Locating…";
+        StateHasChanged();
+        var found = await _map.PinMyLocationAsync();
+        if (!found) _status = "Location unavailable";
+        StateHasChanged();
+    }
+
+    private void ClearSearch()
+    {
+        _map?.ClearSearch();
+        _lastSearchResult = null;
+        _status = "Search cleared";
+    }
+
+    private string GetKey()
+    {
+        var key = ConfigService.GetSubscriptionKey();
+        return !string.IsNullOrEmpty(key) ? key : Options.Value.SubscriptionKey ?? string.Empty;
+    }
+
+    private readonly string _snippet = """
+<AzureMap ShowSearchBox="true"
+          SearchPlaceholder="Search for a city, address, or landmark…"
+          SearchResultLimit="6"
+          ShowCurrentLocationButton="true"
+          OnSearchResultSelected="HandleSearchResultSelected"
+          OnMyLocationFound="HandleMyLocationFound"
+          @ref="_map" />
+
+// In Program.cs (web):
+builder.Services.AddScoped<ILocationService, WebLocationService>();
+
+// In Program.cs (MAUI Blazor Hybrid):
+builder.Services.AddScoped<ILocationService, MauiLocationService>();
+""";
+}

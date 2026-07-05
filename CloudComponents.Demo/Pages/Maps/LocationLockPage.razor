@@ -1,0 +1,287 @@
+@page "/maps/location-lock"
+@inject IOptions<AzureMapsOptions> Options
+@inject AzureMapsConfigurationService ConfigService
+
+<PageTitle>AzureMap — Location Lock</PageTitle>
+
+<div class="page-header">
+    <h1>Location Lock</h1>
+    <p>
+        Restrict marker placement, centre-pin dragging, "pin my location", and search-result selection
+        to one or more countries and/or subdivisions. The resolved boundary is rendered as an overlay,
+        and interactions outside the allowed area are rejected.
+    </p>
+</div>
+
+<MapsKeyGuard>
+<DemoResultCodeTabs>
+    <ResultContent>
+
+        <div class="card">
+            <h2 class="card-title">Settings</h2>
+            <div class="info-grid-2" style="margin-bottom: 16px;">
+                <div>
+                    <label class="form-label">Lock to country</label>
+                    <select @bind="_selectedCountryCode" @bind:after="ApplyLock"
+                            style="width:100%; background:var(--color-surface-2); color:var(--color-text); border:1px solid var(--color-border); border-radius:var(--radius); padding:6px 8px; font-size:13px;">
+                        <option value="">-- No lock (unrestricted) --</option>
+                        <option value="US">United States</option>
+                        <option value="CA">Canada</option>
+                        <option value="GB">United Kingdom</option>
+                        <option value="DE">Germany</option>
+                        <option value="FR">France</option>
+                        <option value="AU">Australia</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">Subdivision code (optional)</label>
+                    <input type="text"
+                           placeholder="e.g. US-CA"
+                           @bind="_subdivisionCode"
+                           @bind:after="ApplyLock"
+                           style="width:100%; background:var(--color-surface-2); color:var(--color-text); border:1px solid var(--color-border); border-radius:var(--radius); padding:6px 8px; font-size:13px;" />
+                </div>
+            </div>
+            <div class="toolbar">
+                <button @onclick="ClearLock" class="button" disabled="@(_currentLock is null)">Clear Lock</button>
+                <span class="badge">@(_currentLock is null ? "Unrestricted" : $"Locked: {_selectedCountryCode}{(_subdivisionCode is { Length: > 0 } sd ? $" ({sd})" : "")}")</span>
+                @if (_map?.IsResolvingLocationLock == true)
+                {
+                    <span class="badge" style="opacity:.7;">Resolving boundary…</span>
+                }
+                @if (!string.IsNullOrEmpty(_rejectionMessage))
+                {
+                    <span class="badge" style="background:var(--color-danger);color:#fff;opacity:.9;">@_rejectionMessage</span>
+                }
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">📍 Map</h2>
+            <div class="toolbar" style="margin-bottom: 12px;">
+                <span style="font-size: 13px; font-weight: 600;">Selection mode:</span>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px;">
+                    <input type="radio" name="selectionMode"
+                           checked="@(_selectionMode == MarkerAddTrigger.SingleClick)"
+                           @onchange="@(() => SetSelectionModeAsync(MarkerAddTrigger.SingleClick))" />
+                    <span>Click to place a pin</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px;">
+                    <input type="radio" name="selectionMode"
+                           checked="@(_selectionMode == MarkerAddTrigger.CenterPin)"
+                           @onchange="@(() => SetSelectionModeAsync(MarkerAddTrigger.CenterPin))" />
+                    <span>Centre pin (pan the map)</span>
+                </label>
+            </div>
+            <div class="map-host">
+                <AzureMap Height="500px"
+                          Width="100%"
+                          SubscriptionKey="@GetKey()"
+                          InitialView="_initialView"
+                          Style="MapStyle.Road"
+                          AddMarkerTrigger="@_selectionMode"
+                          ShowSearchBox="true"
+                          ShowCurrentLocationButton="true"
+                          LocationLock="@_currentLock"
+                          OnMapReady="HandleMapReady"
+                          OnMarkerAdded="HandleMarkerAdded"
+                          OnCenterPinChanged="HandleCenterPinChanged"
+                          OnSearchResultSelected="HandleSearchResultSelected"
+                          OnLocationLockRejected="HandleLockRejected"
+                          @ref="_map" />
+            </div>
+            <div class="toolbar" style="margin-top: 1rem;">
+                <button class="btn-primary" @onclick="CheckSelectedLocation"
+                        disabled="@(!_checkCoordinate.HasValue || _isChecking)">
+                    @(_isChecking ? "Checking…" : "Check Location")
+                </button>
+                @if (_checkCoordinate is { } toCheck)
+                {
+                    <span class="badge">@toCheck.Latitude.ToString("F4"), @toCheck.Longitude.ToString("F4")</span>
+                }
+                @if (_checkResult is { } approved)
+                {
+                    <span class="badge" style="@(approved ? "background:#dff6dd;color:#107c10;" : "background:#fde7e9;color:#a80000;")">
+                        @(approved ? "✅ Approved" : "❌ Rejected")
+                    </span>
+                }
+            </div>
+        </div>
+
+        @if (_lastSearchResult is { } searchResult)
+        {
+            <div class="card">
+                <h2 class="card-title">🔎 Search Result</h2>
+                <div class="info-card" style="max-width: 440px;">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                        <div class="info-card-title" style="flex:1;">@searchResult.Address</div>
+                        <span class="badge" style="background:#dff6dd;color:#107c10;">✅ Approved</span>
+                    </div>
+                    <p class="info-card-text">Lat: @searchResult.Latitude.ToString("F5")</p>
+                    <p class="info-card-text">Lng: @searchResult.Longitude.ToString("F5")</p>
+                    <p class="info-card-text" style="margin-top:6px;">
+                        Only reachable here because this result passed the location-lock check —
+                        searches outside the locked area are rejected before the camera moves.
+                    </p>
+                </div>
+            </div>
+        }
+
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <ul style="font-size: 13px; color: var(--color-text-muted); line-height: 1.8; padding-left: 20px;">
+                <li>Pick a country (optionally narrowed to a subdivision like <code>US-CA</code>) to build a <code>LocationLockOptions</code> instance and assign it to <code>LocationLock</code>.</li>
+                <li>The component resolves the boundary once via Cloud Geography + Azure Maps, then enforces it client-side — no repeated network calls.</li>
+                <li>Interactions outside the highlighted area are rejected and <code>OnLocationLockRejected</code> fires.</li>
+                <li>Search results are validated the same way: <code>OnSearchResultSelected</code> only fires when the result is inside the locked area.</li>
+                <li>Assign <code>null</code> (or use <strong>Clear Lock</strong>) to remove the restriction at runtime.</li>
+            </ul>
+            <h3 style="margin-top: 16px; font-size: 14px;">Usage snippet</h3>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
+</MapsKeyGuard>
+
+@code {
+    private AzureMap? _map;
+    private readonly InitialMapView _initialView = new(39.8283, -98.5795, 4);
+
+    private string _selectedCountryCode = "";
+    private string _subdivisionCode = "";
+    private LocationLockOptions? _currentLock;
+    private string _rejectionMessage = "";
+    private MarkerAddTrigger _selectionMode = MarkerAddTrigger.SingleClick;
+    private MapCoordinate? _checkCoordinate;
+    private bool? _checkResult;
+    private bool _isChecking;
+    private MapSearchResult? _lastSearchResult;
+
+    private readonly string _usageSnippet =
+        """
+<AzureMap ShowSearchBox="true"
+          ShowCurrentLocationButton="true"
+          AddMarkerTrigger="MarkerAddTrigger.CenterPin"
+          LocationLock="@_currentLock"
+          OnCenterPinChanged="HandleCenterPinChanged"
+          OnSearchResultSelected="HandleSearchResultSelected"
+          OnLocationLockRejected="HandleLockRejected" />
+
+@code {
+    private LocationLockOptions? _currentLock = new(new[]
+    {
+        new LocationLockArea("US", new[] { "US-CA" })
+    });
+}
+""";
+
+    private Task HandleMapReady() => Task.CompletedTask;
+
+    private Task HandleMarkerAdded(MapMarker marker)
+    {
+        _rejectionMessage = "";
+        _checkCoordinate = new MapCoordinate(marker.Latitude, marker.Longitude);
+        _checkResult = null;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleCenterPinChanged(MapCoordinate coordinate)
+    {
+        _checkCoordinate = coordinate;
+        _checkResult = null;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleLockRejected(MapCoordinate coordinate)
+    {
+        _rejectionMessage = $"Rejected {coordinate.Latitude:F3}, {coordinate.Longitude:F3} — outside the locked area.";
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleSearchResultSelected(MapSearchResult result)
+    {
+        _rejectionMessage = "";
+        _lastSearchResult = result;
+        _checkCoordinate = new MapCoordinate(result.Latitude, result.Longitude);
+        _checkResult = true;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private async Task SetSelectionModeAsync(MarkerAddTrigger mode)
+    {
+        if (_selectionMode == mode) return;
+        _selectionMode = mode;
+        _checkCoordinate = null;
+        _checkResult = null;
+        _rejectionMessage = "";
+        _lastSearchResult = null;
+
+        if (mode == MarkerAddTrigger.SingleClick && _map is not null)
+            await _map.ClearMarkersAsync();
+    }
+
+    private async Task CheckSelectedLocation()
+    {
+        if (_checkCoordinate is not { } coordinate || _map is null || _isChecking) return;
+
+        _isChecking = true;
+        _checkResult = null;
+        StateHasChanged();
+
+        try
+        {
+            _checkResult = await _map.IsPointAllowedByLocationLockAsync(
+                coordinate.Latitude, coordinate.Longitude);
+        }
+        finally
+        {
+            _isChecking = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ApplyLock()
+    {
+        _rejectionMessage = "";
+        _checkResult = null;
+        _lastSearchResult = null;
+
+        if (string.IsNullOrWhiteSpace(_selectedCountryCode))
+        {
+            _currentLock = null;
+            return;
+        }
+
+        var subdivisionCodes = string.IsNullOrWhiteSpace(_subdivisionCode)
+            ? null
+            : new[] { _subdivisionCode.Trim() };
+
+        _currentLock = new LocationLockOptions(new[]
+        {
+            new LocationLockArea(_selectedCountryCode, subdivisionCodes)
+        });
+    }
+
+    private void ClearLock()
+    {
+        _selectedCountryCode = "";
+        _subdivisionCode = "";
+        _currentLock = null;
+        _rejectionMessage = "";
+        _checkResult = null;
+        _lastSearchResult = null;
+    }
+
+    private string GetKey()
+    {
+        var key = ConfigService.GetSubscriptionKey();
+        return !string.IsNullOrEmpty(key) ? key : Options.Value.SubscriptionKey ?? string.Empty;
+    }
+}

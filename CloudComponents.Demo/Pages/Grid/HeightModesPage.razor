@@ -1,0 +1,193 @@
+@page "/grid/height"
+@using CloudComponents.Grid
+@using CloudComponents.Grid.Models
+@using CloudComponents.Demo.Models
+@using CloudComponents.Demo.Services
+@using CloudComponents.Demo.Shared
+@inject SampleDataService Data
+
+<PageTitle>CloudGrid — Height Modes</PageTitle>
+
+<div class="page-header">
+    <h1>Height Modes</h1>
+    <p>
+        Switch between <strong>FullHeight</strong> (fills parent, only rows scroll), <strong>RowHeight</strong>
+        (fixed to <code>RowsPerPage</code> rows), and <strong>Auto</strong> (grows with content, optional
+        <code>MaxHeight</code> cap). Each mode is sized differently — watch the grid's height and scroll
+        behavior change as you toggle.
+    </p>
+</div>
+
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
+            <h2 class="card-title">FullHeight Mode (default)</h2>
+            <p class="card-subtitle">
+                Fills the full height of its parent container. The header/footer stay fixed and only the
+                row area scrolls. Requires a parent with a definite height.
+            </p>
+
+            <div class="toolbar">
+                <label>Rows per page:</label>
+                <select class="input" @bind="_fullHeightRowsPerPage">
+                    <option value="5">5</option>
+                    <option value="8">8</option>
+                    <option value="12">12</option>
+                </select>
+                <span class="badge">Height fills parent</span>
+            </div>
+
+            <div class="grid-host" style="height: 500px; border: 2px dashed var(--border-color);">
+                <CloudGrid @key="_fullHeightKey"
+                           Columns="_columns"
+                           DataProvider="LoadAsync"
+                           HeightMode="CloudGridHeightMode.FullHeight"
+                           RowsPerPage="_fullHeightRowsPerPage"
+                           RowHeight="40"
+                           PagingMode="CloudGridPagingMode.Pages" />
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">RowHeight Mode</h2>
+            <p class="card-subtitle">
+                Exactly tall enough to show <code>RowsPerPage</code> rows — no more, no less. Perfect for
+                embedding a grid in a content flow without forcing a parent container height.
+            </p>
+
+            <div class="toolbar">
+                <label>Rows per page:</label>
+                <select class="input" @bind="_rowHeightRowsPerPage" @bind:after="ReloadRowHeightGrid">
+                    <option value="5">5</option>
+                    <option value="8">8</option>
+                    <option value="12">12</option>
+                </select>
+                <span class="badge">Height = @_rowHeightRowsPerPage rows × row-height</span>
+            </div>
+
+            <div class="grid-host" style="border: 2px dashed var(--border-color);">
+                <CloudGrid @key="_rowHeightKey"
+                           Columns="_columns"
+                           DataProvider="LoadAsync"
+                           HeightMode="CloudGridHeightMode.RowHeight"
+                           RowsPerPage="_rowHeightRowsPerPage"
+                           RowHeight="40"
+                           PagingMode="CloudGridPagingMode.Pages" />
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Auto Mode</h2>
+            <p class="card-subtitle">
+                Grows vertically to fit all rows (no scroll by default). An optional <code>MaxHeight</code>
+                caps the grid's height — once content exceeds the cap, it behaves like <code>FullHeight</code>.
+            </p>
+
+            <div class="toolbar">
+                <label>Rows to load:</label>
+                <select class="input" @bind="_autoRowsPerPage" @bind:after="ReloadAutoGrid">
+                    <option value="3">3</option>
+                    <option value="6">6</option>
+                    <option value="12">12</option>
+                    <option value="20">20</option>
+                </select>
+                <label style="margin-left:1rem;">Max height (px):</label>
+                <select class="input" @bind="_autoMaxHeight" @bind:after="ReloadAutoGrid">
+                    <option value="">None (unlimited)</option>
+                    <option value="300">300</option>
+                    <option value="500">500</option>
+                    <option value="700">700</option>
+                </select>
+                <span class="badge">@(_autoMaxHeight == "" ? "No scroll" : $"Scrolls past {_autoMaxHeight}px")</span>
+            </div>
+
+            <div class="grid-host" style="border: 2px dashed var(--border-color);">
+                <CloudGrid @key="_autoKey"
+                           Columns="_columns"
+                           DataProvider="LoadAutoAsync"
+                           HeightMode="CloudGridHeightMode.Auto"
+                           MaxHeight="@ParseMaxHeight()"
+                           RowHeight="40"
+                           PagingMode="CloudGridPagingMode.Pages" />
+            </div>
+        </div>
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How to use each mode</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0;">
+                Choose the mode that best fits your layout context.
+            </p>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
+
+@code {
+    private int _fullHeightRowsPerPage = 8;
+    private int _fullHeightKey = 0;
+
+    private int _rowHeightRowsPerPage = 8;
+    private int _rowHeightKey;
+
+    private int _autoRowsPerPage = 6;
+    private string _autoMaxHeight = "500";
+    private int _autoKey;
+
+    private readonly List<CloudGridColumn> _columns =
+    [
+        new() { Label = "Name", Key = "name", Width = 200 },
+        new() { Label = "Email", Key = "email", Width = 250 },
+        new() { Label = "Department", Key = "department", Width = 150 },
+        new() { Label = "Country", Key = "country", Width = 130 }
+    ];
+
+    private async Task<CloudGridDataResult?> LoadAsync(CloudGridDataRequest request)
+        => await Data.QueryAsync(request, ToRow);
+
+    private async Task<CloudGridDataResult?> LoadAutoAsync(CloudGridDataRequest request)
+    {
+        CloudGridDataRequest modified = new()
+        {
+            Page = request.Page,
+            PageSize = _autoRowsPerPage,
+            Search = request.Search,
+            Sort = request.Sort,
+            IsAppend = request.IsAppend,
+            Total = request.Total
+        };
+        return await Data.QueryAsync(modified, ToRow);
+    }
+
+    private static CloudGridRow ToRow(Person p) => new()
+    {
+        Id = p.Id,
+        Cells = [p.FullName, p.Email, p.Department, p.Country]
+    };
+
+    private double? ParseMaxHeight() =>
+        string.IsNullOrWhiteSpace(_autoMaxHeight) ? null : double.Parse(_autoMaxHeight);
+
+    private void ReloadRowHeightGrid() => _rowHeightKey++;
+    private void ReloadAutoGrid() => _autoKey++;
+
+    private readonly string _usageSnippet = """
+<!-- FullHeight: fills parent, header/footer fixed, rows scroll -->
+<div style="height: 600px;">
+    <CloudGrid HeightMode="CloudGridHeightMode.FullHeight"
+               RowsPerPage="10"
+               DataProvider="@LoadAsync" ... />
+</div>
+
+<!-- RowHeight: exactly RowsPerPage rows tall, no parent height needed -->
+<CloudGrid HeightMode="CloudGridHeightMode.RowHeight"
+           RowsPerPage="10"
+           DataProvider="@LoadAsync" ... />
+
+<!-- Auto: grows with content, optional MaxHeight cap -->
+<CloudGrid HeightMode="CloudGridHeightMode.Auto"
+           MaxHeight="500"
+           DataProvider="@LoadAsync" ... />
+""";
+}

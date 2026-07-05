@@ -1,0 +1,238 @@
+@page "/maps/live-tracking"
+@inject IOptions<AzureMapsOptions> Options
+@inject AzureMapsConfigurationService ConfigService
+@inject SampleTrackingService TrackingService
+@implements IAsyncDisposable
+
+<PageTitle>CloudMaps — Live Tracking</PageTitle>
+
+<div class="page-header">
+    <h1>Live Position Tracking</h1>
+    <p>
+        Real-time tracking of one or multiple moving objects. Simulated GPS updates show current position
+        and historical trail. Perfect for fleet management, delivery tracking, or asset monitoring.
+    </p>
+</div>
+
+<MapsKeyGuard>
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
+            <h2 class="card-title">Tracking Controls</h2>
+            <div class="controls-grid-3">
+                <div>
+                    <label class="field-label">Update Interval (ms):</label>
+                    <input class="input" type="number" @bind="_updateIntervalMs" min="100" max="5000" step="100" />
+                </div>
+                <div>
+                    <label class="field-label">Tracking Mode:</label>
+                    <select class="input" @bind="_trackingMode">
+                        <option value="single">Single Vehicle</option>
+                        <option value="multi">Multiple Vehicles</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: flex-end;">
+                    <button class="btn btn-primary" @onclick="StartTracking" disabled="@_isTracking" style="flex: 1;">
+                        @(_isTracking ? "Tracking…" : "Start Tracking")
+                    </button>
+                    <button class="btn" @onclick="StopTracking" disabled="@(!_isTracking)" style="flex: 1;">Stop</button>
+                    <button class="btn" @onclick="ResetTracking" style="flex: 1;">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">📍 Live Map</h2>
+            <div class="map-host">
+                <AzureMap Height="500px"
+                          Width="100%"
+                          SubscriptionKey="@GetKey()"
+                          InitialView="_initialView"
+                          Style="MapStyle.Road"
+                          ShowCurrentLocationButton="false"
+                          Markers="_liveMarkers"
+                          OnMapReady="HandleMapReady"
+                          @ref="_map" />
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">📊 Active Trackers</h2>
+            @if (_trackers.Count == 0)
+            {
+                <p style="color: var(--text-secondary); font-size: 13px;">No active trackers. Start tracking to begin monitoring positions.</p>
+            }
+            else
+            {
+                <div class="markers-grid">
+                    @foreach (var tracker in _trackers)
+                    {
+                        <div class="marker-card">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                <div style="width: 14px; height: 14px; background: @tracker.Color; border-radius: 50;"></div>
+                                <div class="marker-card-title" style="margin: 0;">@tracker.Name</div>
+                            </div>
+                            <div><strong>Latitude:</strong> @tracker.CurrentLat.ToString("F5")</div>
+                            <div><strong>Longitude:</strong> @tracker.CurrentLng.ToString("F5")</div>
+                            <div><strong>Last Update:</strong> @tracker.LastUpdate.ToString("HH:mm:ss")</div>
+                            <div><strong>History:</strong> @tracker.PositionHistory.Count points</div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0;">
+                Live tracking is just markers you keep moving. On a timer, recompute each tracked object's
+                coordinate, rebuild the marker list, and call <code>ClearMarkersAsync</code> +
+                <code>AddMarkersAsync</code> to push the new positions to the map.
+            </p>
+            <pre class="code-snippet"><code>@_snippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
+</MapsKeyGuard>
+
+@code {
+    private AzureMap? _map;
+    private readonly InitialMapView _initialView = new(37.7749, -122.4194, 13);
+
+    private List<LiveTracker> _trackers = new();
+    private List<MapMarker> _liveMarkers = new();
+    private int _updateIntervalMs = 1000;
+    private string _trackingMode = "single";
+    private bool _isTracking;
+    private CancellationTokenSource? _trackingCts;
+    private Task? _trackingTask;
+
+    private Task HandleMapReady() => Task.CompletedTask;
+
+    private async Task StartTracking()
+    {
+        if (_isTracking) return;
+        _isTracking = true;
+        _trackingCts = new CancellationTokenSource();
+
+        _trackers.Clear();
+        _liveMarkers.Clear();
+
+        if (_trackingMode == "single")
+        {
+            var t = TrackingService.CreateLiveTracker("Vehicle 1", 37.7749, -122.4194);
+            t.Color = "#0078d4";
+            _trackers.Add(t);
+        }
+        else
+        {
+            var vehiclesData = new[]
+            {
+                ("Vehicle 1", 37.7749, -122.4194, "#0078d4"),
+                ("Vehicle 2", 37.7849, -122.4100, "#107c10"),
+                ("Vehicle 3", 37.7649, -122.4300, "#c50f1f"),
+            };
+            foreach (var (name, lat, lng, color) in vehiclesData)
+            {
+                var t = TrackingService.CreateLiveTracker(name, lat, lng);
+                t.Color = color;
+                _trackers.Add(t);
+            }
+        }
+
+        foreach (var tracker in _trackers)
+            _liveMarkers.Add(tracker.ToMarker());
+
+        if (_map != null)
+            await _map.AddMarkersAsync(_liveMarkers);
+
+        StateHasChanged();
+        _trackingTask = TrackingLoop(_trackingCts.Token);
+    }
+
+    private async Task TrackingLoop(CancellationToken ct)
+    {
+        while (!ct.IsCancellationRequested)
+        {
+            try
+            {
+                await Task.Delay(_updateIntervalMs, ct);
+
+                foreach (var tracker in _trackers)
+                {
+                    var (lat, lng) = TrackingService.SimulateNextPosition(tracker);
+                    tracker.UpdatePosition(lat, lng);
+                }
+
+                if (_map != null)
+                {
+                    await _map.ClearMarkersAsync();
+                    _liveMarkers.Clear();
+                    foreach (var tracker in _trackers)
+                        _liveMarkers.Add(tracker.ToMarker());
+                    await _map.AddMarkersAsync(_liveMarkers);
+                }
+
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (OperationCanceledException) { break; }
+            catch { }
+        }
+    }
+
+    private async Task StopTracking()
+    {
+        _isTracking = false;
+        _trackingCts?.Cancel();
+        if (_trackingTask != null)
+            try { await _trackingTask; } catch (OperationCanceledException) { }
+        StateHasChanged();
+    }
+
+    private async Task ResetTracking()
+    {
+        await StopTracking();
+        _trackers.Clear();
+        _liveMarkers.Clear();
+        if (_map != null) await _map.ClearMarkersAsync();
+        StateHasChanged();
+    }
+
+    private string GetKey()
+    {
+        var key = ConfigService.GetSubscriptionKey();
+        return !string.IsNullOrEmpty(key) ? key : Options.Value.SubscriptionKey ?? string.Empty;
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        await StopTracking();
+        _trackingCts?.Dispose();
+    }
+
+    private readonly string _snippet = """
+<AzureMap Markers="@_liveMarkers"
+          OnMapReady="HandleMapReady"
+          @ref="_map" />
+
+@code {
+    private List<MapMarker> _liveMarkers = new();
+
+    private async Task StartTrackingAsync(CancellationToken ct)
+    {
+        while (!ct.IsCancellationRequested)
+        {
+            await Task.Delay(1000, ct);
+
+            // Update positions from your GPS/telemetry source
+            _liveMarkers = GetLatestMarkerPositions();
+
+            await _map!.ClearMarkersAsync();
+            await _map.AddMarkersAsync(_liveMarkers);
+        }
+    }
+}
+""";
+}

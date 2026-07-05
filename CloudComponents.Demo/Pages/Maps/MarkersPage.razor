@@ -1,0 +1,167 @@
+@page "/maps/markers"
+@inject IOptions<AzureMapsOptions> Options
+@inject AzureMapsConfigurationService ConfigService
+
+<PageTitle>CloudMaps — Basic Markers</PageTitle>
+
+<div class="page-header">
+    <h1>Basic Markers</h1>
+    <p>
+        Double-click on an empty area to add a marker. Drag a marker to update its coordinates.
+        Double-click a marker to remove it. All markers and their coordinates are displayed below the map.
+    </p>
+</div>
+
+<MapsKeyGuard>
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
+            <h2 class="card-title">Map</h2>
+            <div class="map-host">
+                <AzureMap Height="500px"
+                          Width="100%"
+                          SubscriptionKey="@GetKey()"
+                          InitialView="_initialView"
+                          Style="MapStyle.Road"
+                          AddMarkerTrigger="MarkerAddTrigger.DoubleClick"
+                          AllowMarkerRemoval="true"
+                          ShowTrafficFlow="false"
+                          ShowCurrentLocationButton="true"
+                          Markers="_markers"
+                          OnMapReady="HandleMapReady"
+                          OnMarkerAdded="HandleMarkerAdded"
+                          OnMarkerRemoved="HandleMarkerRemoved"
+                          OnMarkerClick="HandleMarkerClick"
+                          @ref="_map" />
+            </div>
+
+            <div class="toolbar" style="margin-top: 1rem;">
+                <button class="btn btn-primary" @onclick="ClearAllMarkers">Clear All Markers</button>
+                <button class="btn" @onclick="AddSampleMarkers">Add Sample Markers</button>
+                <span class="badge">Markers: @_markers.Count</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Marker Details</h2>
+            @if (_markers.Count == 0)
+            {
+                <p style="color: var(--text-secondary); font-size: 13px;">No markers yet. Double-click on the map to add markers.</p>
+            }
+            else
+            {
+                <div class="markers-grid">
+                    @foreach (var marker in _markers)
+                    {
+                        <div class="marker-card">
+                            <div class="marker-card-title">Marker @_markers.IndexOf(marker)</div>
+                            <div><strong>ID:</strong> <code>@marker.Id[..8]…</code></div>
+                            <div><strong>Latitude:</strong> @marker.Latitude.ToString("F5")</div>
+                            <div><strong>Longitude:</strong> @marker.Longitude.ToString("F5")</div>
+                            <div><strong>Label:</strong> @(marker.Label ?? "(none)")</div>
+                            <button class="btn" style="margin-top: 8px; font-size: 11px; padding: 3px 8px;" @onclick="() => RemoveMarker(marker.Id)">Remove</button>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0;">
+                Marker add/remove is opt-in. Enable the interaction mode explicitly and handle callbacks.
+            </p>
+            <pre class="code-snippet"><code>@_snippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
+</MapsKeyGuard>
+
+@code {
+    private AzureMap? _map;
+    private readonly List<MapMarker> _markers = new();
+    private readonly InitialMapView _initialView = new(37.7749, -122.4194, 13);
+
+    private Task HandleMapReady() => Task.CompletedTask;
+
+    private Task HandleMarkerAdded(MapMarker marker)
+    {
+        _markers.Add(marker);
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleMarkerRemoved(MapMarker marker)
+    {
+        _markers.Remove(marker);
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleMarkerClick(MapMarker marker) => Task.CompletedTask;
+
+    private async Task ClearAllMarkers()
+    {
+        if (_map is null) return;
+        await _map.ClearMarkersAsync();
+        _markers.Clear();
+        StateHasChanged();
+    }
+
+    private async Task AddSampleMarkers()
+    {
+        if (_map is null) return;
+        var samples = new[]
+        {
+            new MapMarker(37.7749, -122.4194, "San Francisco"),
+            new MapMarker(34.0522, -118.2437, "Los Angeles"),
+            new MapMarker(47.6062, -122.3321, "Seattle"),
+        };
+        foreach (var m in samples)
+        {
+            _markers.Add(m);
+            await _map.AddMarkerAsync(m);
+        }
+        StateHasChanged();
+    }
+
+    private async Task RemoveMarker(string id)
+    {
+        if (_map is null) return;
+        await _map.RemoveMarkerAsync(id);
+        _markers.RemoveAll(m => m.Id == id);
+        StateHasChanged();
+    }
+
+    private string GetKey()
+    {
+        var key = ConfigService.GetSubscriptionKey();
+        return !string.IsNullOrEmpty(key) ? key : Options.Value.SubscriptionKey ?? string.Empty;
+    }
+
+    private readonly string _snippet = """
+<AzureMap AddMarkerTrigger="MarkerAddTrigger.DoubleClick"
+          AllowMarkerRemoval="true"
+          OnMarkerAdded="HandleMarkerAdded"
+          OnMarkerRemoved="HandleMarkerRemoved"
+          @ref="_map" />
+
+@code {
+    private readonly List<MapMarker> _markers = new();
+
+    private Task HandleMarkerAdded(MapMarker marker)
+    {
+        _markers.Add(marker);
+        return Task.CompletedTask;
+    }
+
+    private Task HandleMarkerRemoved(MapMarker marker)
+    {
+        _markers.Remove(marker);
+        return Task.CompletedTask;
+    }
+}
+""";
+}

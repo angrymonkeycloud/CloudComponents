@@ -1,0 +1,131 @@
+@page "/"
+@inject SampleDataService Data
+
+<PageTitle>CloudComponents Demo</PageTitle>
+
+<div class="page-header">
+    <h1>CloudComponents Demo</h1>
+    <p>
+        A unified showcase for all <code>AngryMonkey.CloudComponents</code> libraries — Grid, VideoPlayer,
+        Maps, and Icons — in one professional app with full dark &amp; light mode support.
+        Use the sidebar to navigate between component demos.
+    </p>
+</div>
+
+<div class="card-grid">
+    <div class="card">
+        <h3>CloudGrid</h3>
+        <p>
+            Data grid with sorting, search, selection, paging modes, row reordering,
+            height modes, and CSS variable theming. Backed by a server-like async data provider.
+        </p>
+        <NavLink class="btn btn-primary" href="grid/basic">Open Grid →</NavLink>
+    </div>
+
+    <div class="card">
+        <h3>VideoPlayer</h3>
+        <p>
+            Full-featured video player with MP4 playback, HLS live streaming, controls,
+            settings menu, volume, fullscreen, and progress bar.
+        </p>
+        <NavLink class="btn btn-primary" href="video/player">Open Player →</NavLink>
+    </div>
+
+    <div class="card">
+        <h3>Azure Maps</h3>
+        <p>
+            Azure Maps Blazor component with markers, reverse geocoding, region overlays,
+            live tracking, history replay, search, and location lock.
+        </p>
+        <NavLink class="btn btn-primary" href="maps/markers">Open Maps →</NavLink>
+    </div>
+
+    <div class="card">
+        <h3>Icons &amp; Logos</h3>
+        <p>
+            Library of 23 SVG icons and 8 brand logos as Blazor components.
+            Browse, filter, resize, recolor, download as SVG, and copy usage snippets.
+        </p>
+        <NavLink class="btn btn-primary" href="icons">Open Icons →</NavLink>
+    </div>
+</div>
+
+<div class="section">
+    <h2>What's in each demo</h2>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <h3>Grid — Basic &amp; Sorting</h3>
+            <p>Image column, sortable/resizable columns, search, refresh, and row links.</p>
+            <NavLink href="grid/basic" class="feature-link">Explore →</NavLink>
+        </div>
+        <div class="feature-card">
+            <h3>Grid — Selection &amp; Actions</h3>
+            <p>Checkbox selection, bulk header actions, per-row actions, and action filters.</p>
+            <NavLink href="grid/selection" class="feature-link">Explore →</NavLink>
+        </div>
+        <div class="feature-card">
+            <h3>Grid — Paging Modes</h3>
+            <p>Pages, Load More, and Infinite Scroll — all switchable at runtime.</p>
+            <NavLink href="grid/paging" class="feature-link">Explore →</NavLink>
+        </div>
+        <div class="feature-card">
+            <h3>Grid — Height Modes</h3>
+            <p>FullHeight, RowHeight, and Auto with optional MaxHeight cap.</p>
+            <NavLink href="grid/height" class="feature-link">Explore →</NavLink>
+        </div>
+        <div class="feature-card">
+            <h3>Grid — Row Reordering</h3>
+            <p>Drag-and-drop reordering with persisted order via data service.</p>
+            <NavLink href="grid/reordering" class="feature-link">Explore →</NavLink>
+        </div>
+        <div class="feature-card">
+            <h3>Grid — States &amp; Theming</h3>
+            <p>Loading, empty, error states, and full CSS variable theming.</p>
+            <NavLink href="grid/states" class="feature-link">Explore →</NavLink>
+        </div>
+        <div class="feature-card">
+            <h3>Video — MP4 Player</h3>
+            <p>Standard playback with controls, settings, volume, and fullscreen.</p>
+            <NavLink href="video/player" class="feature-link">Explore →</NavLink>
+        </div>
+        <div class="feature-card">
+            <h3>Video — HLS Live Stream</h3>
+            <p>Live stream playback using the built-in HLS.js integration.</p>
+            <NavLink href="video/live" class="feature-link">Explore →</NavLink>
+        </div>
+        <div class="feature-card">
+            <h3>Maps — Markers</h3>
+            <p>Add, drag, and remove markers. Double-click to add, double-click to remove.</p>
+            <NavLink href="maps/markers" class="feature-link">Explore →</NavLink>
+        </div>
+        <div class="feature-card">
+            <h3>Maps — Reverse Geocode</h3>
+            <p>Pan the center pin and fetch address with Cloud Geography subdivisions.</p>
+            <NavLink href="maps/reverse-geocode" class="feature-link">Explore →</NavLink>
+        </div>
+        <div class="feature-card">
+            <h3>Maps — Live Tracking</h3>
+            <p>Real-time simulated GPS tracking of single or multiple vehicles.</p>
+            <NavLink href="maps/live-tracking" class="feature-link">Explore →</NavLink>
+        </div>
+        <div class="feature-card">
+            <h3>Icons — Browser</h3>
+            <p>Filter, resize, and recolor all 23 icons. Download SVG or copy snippet.</p>
+            <NavLink href="icons" class="feature-link">Explore →</NavLink>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h2>Data provider pattern (Grid)</h2>
+    <p>
+        All grid pages share one <code>SampleDataService</code> (@Data.Count records) that emulates a server
+        by applying search, sorting, and paging — including a short artificial delay so loading and
+        searching states are visible.
+    </p>
+    <pre><code>DataProvider="LoadAsync"
+
+private async Task&lt;CloudGridDataResult?&gt; LoadAsync(CloudGridDataRequest request)
+    =&gt; await Data.QueryAsync(request, ToRow);</code></pre>
+</div>

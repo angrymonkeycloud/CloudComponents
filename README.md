@@ -1,135 +1,150 @@
-# Angry Monkey Cloud Components
+﻿# AngryMonkey CloudComponents
 
-Free Blazor components built on .NET 6.
+Free, open-source Blazor component libraries for **.NET 10**.
 
-## Video Player
+[![Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-0074d9?logo=github)](https://angrymonkeycloud.github.io/CloudComponents/)
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
+[![Blazor](https://img.shields.io/badge/UI-Blazor-5C2D91?logo=blazor)](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor)
 
-Open source Blazor Video Player.
+> **[Live Demo](https://angrymonkeycloud.github.io/CloudComponents/)** — showcases every feature with interactive examples and light/dark mode.
 
-[Video Player](https://github.com/angrymonkeycloud/CloudComponents/tree/main/Components/VideoPlayer)
+---
 
+## Packages
 
-## Blazor Initialization
+| Package | NuGet | Description |
+|---------|-------|-------------|
+| `AngryMonkey.Cloud.Components` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.Cloud.Components?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.Cloud.Components) | Core UI primitives: Popup, Dialog, Switch, Tabs, ProgressBar, VolumeBar |
+| `AngryMonkey.CloudComponents.Grid` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.Grid?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.Grid) | Feature-rich data grid with sorting, paging, selection, actions, reordering, and export |
+| `AngryMonkey.CloudComponents.VideoPlayer` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.VideoPlayer?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.VideoPlayer) | HTML5 / HLS video player with full controls, casting, and settings |
+| `AngryMonkey.CloudComponents.Maps` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.Maps?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.Maps) | Azure Maps wrapper with markers, regions, geocoding, search, and location-lock |
+| `AngryMonkey.CloudComponents.Icons` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.Icons?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.Icons) | SVG icon and logo Razor components |
 
-This section provides instructions for building a Blazor Server app OR Blazor Webassembly app based on Cloud Components.
+---
 
-### **Blazor Server App**
-- Add Cloud Web as a service under **Program.cs**.
+## Quick start
 
-```cs
-builder.Services.AddCloudWeb(new CloudWebOptions()
-{
- DefaultTitle = "My Blazor app", // Your app main title
- TitlePrefix = "My Blazor app: ", // Your app suffix that would be added to a page title if exists
- TitleSuffix = " - My Blazor app", // Your app suffix that would be added to a page title if exists
- SiteBundles = new List<CloudBundle>() // Bundles that should be added to the layout
- {
-  new CloudBundle(){ JQuery = "3.4.1"}, // Adding JQuery
-  new CloudBundle(){ Source = "ServerDemo.styles.css", MinOnRelease = false},
-  new CloudBundle(){ Source = "css/site.css"},
-  new CloudBundle(){ Source = "js/site.js"}
- }
-});
+### 1. Install
+
+```bash
+dotnet add package AngryMonkey.Cloud.Components
+dotnet add package AngryMonkey.CloudComponents.Grid
+dotnet add package AngryMonkey.CloudComponents.VideoPlayer
+dotnet add package AngryMonkey.CloudComponents.Maps
+dotnet add package AngryMonkey.CloudComponents.Icons
 ```
 
-- Update **MainLayout.razor** to the following.
+### 2. Add namespaces to `_Imports.razor`
 
-```html
-@inherits LayoutComponentBase
-
-<header>
- @*Header here*@
-</header>
-
- <main>
-  @Body
- </main>
-
-<footer>
- @*Footer here*@
-</footer>
-</footer>
-```
-
-- Add cloud components using to **_Imports.razor**.
-
-```java
+```razor
 @using AngryMonkey.Cloud.Components
+@using CloudComponents.Grid.Components
+@using CloudComponents.Grid.Models
+@using CloudComponents.VideoPlayer
+@using CloudComponents.Maps.Components
+@using CloudComponents.Maps.Models
+@using CloudComponents.Maps.Services
+@using CloudIcons
+@using CloudIcons.Icons
+@using CloudIcons.Logos
 ```
 
-- Update page title and other head tags as follows
+### 3. Add required assets to `wwwroot/index.html`
 
 ```html
-<HeadContent>
- <CloudHead Title="My First Page Title"
-            Keywords="key1,key2"
-            Description="My First Page Description">
- </CloudHead>
+<!-- Core components CSS + JS -->
+<link rel="stylesheet" href="_content/AngryMonkey.Cloud.Components/css/amc-components.css" />
+<script src="_content/AngryMonkey.Cloud.Components/js/amc-components.js"></script>
+<script src="_content/AngryMonkey.Cloud.Components/js/dialog.js"></script>
 
- <CloudBundle Source="myfirstpage.css" />
- <CloudBundle Source="myfirstpage.js" />
-</HeadContent>
+<!-- VideoPlayer -->
+<script src="_content/AngryMonkey.CloudComponents.VideoPlayer/hls.js"></script>
+<script src="_content/AngryMonkey.CloudComponents.VideoPlayer/videoPlayer.js"></script>
+<script src="_content/AngryMonkey.CloudComponents.VideoPlayer/progressbar.js"></script>
 ```
 
+---
 
-### **Blazor Webassembly App**
+## Components at a glance
 
+### Basics (`AngryMonkey.Cloud.Components`)
 
-- Under **Program.cs**, remove
+| Component | Minimum usage |
+|-----------|---------------|
+| `PopupComp` | `<PopupComp @ref="_p" Title="Hello"><p>Body</p></PopupComp>` then `await _p.Open()` |
+| `Dialog` | `<Dialog @ref="_d" Title="Confirm" Buttons="@_btns">Message</Dialog>` |
+| `Switch` | `<Switch Value="@_val" ValueChanged="OnChanged" AllowNone="true" DisplayText="true" />` |
+| `Tabs` | `<Tabs TabsList="@_tabs" />` where `_tabs` is a `List<TabItem>` |
+| `ProgressBar` | `<ProgressBar Style="ProgressBarStyle.Flat" Value="@_v" Total="100" OnChanged="OnChanged" />` |
+| `VolumeBar` | `<VolumeBar Value="@_vol" Extended="true" OnChanged="OnChanged" />` |
 
-```cs
-builder.RootComponents.Add<HeadOutlet>("head::after");
+### CloudGrid (`AngryMonkey.CloudComponents.Grid`)
+
+```razor
+<CloudGrid TItem="MyModel" DataProvider="LoadData" Columns="@_columns" />
 ```
 
-- Add Cloud Web as a service & Cloud Head Initialization as a component.
+- `DataProvider` — async callback for server-driven load, sort, and page
+- `CloudGridHeaderOptions` — adds search, refresh, export toolbar
+- Paging modes: `None`, `LoadMore`, `Pager`
+- Row actions, bulk selection, column reordering, drag-and-drop row reordering
 
-```cs
-csbuilder.Services.AddCloudWeb(new CloudWebOptions()
-{
-	DefaultTitle = "Angry Monkey Cloud Components",
-	TitleSuffix = " - Angry Monkey Cloud Components",
-	SiteBundles = new List<CloudBundle>()
-	{
-		//new CloudBundle(){ JQuery = "3.4.1"},
-		new CloudBundle(){ Source = "css/site.css"},
-		new CloudBundle(){ Source = "js/site.js"}
-	}
-});
+See [CloudComponents.Grid/README.md](CloudComponents.Grid/README.md) for the full API.
 
-builder.RootComponents.Add<CloudHeadInit>("head::after");
+### VideoPlayer (`AngryMonkey.CloudComponents.VideoPlayer`)
+
+```razor
+<VideoPlayer Metadata="@_metadata" />
 ```
 
-- Update **MainLayout.razor** to the following.
+Build `VideoPlayerMetadata` to configure source URL, type (MP4 / HLS), controls, volume, loop, aspect ratio, and captions.
+See [CloudComponents.VideoPlayer/README.md](CloudComponents.VideoPlayer/README.md) for all options.
 
-```html
-@inherits LayoutComponentBase
+### AzureMap (`AngryMonkey.CloudComponents.Maps`)
 
-<Components />
-
-<div class="page">
-    <main>
-        @Body
-    </main>
-</div>
+```razor
+<AzureMap @ref="_map" Options="@_options" OnMapReady="OnMapReady" />
 ```
 
-- Add cloud components using to **_Imports.razor**.
+Register your key in `Program.cs`:
 
-
-```java
-@using AngryMonkey.Cloud.Components
+```csharp
+builder.Services.AddAzureMaps(options => options.SubscriptionKey = "YOUR_AZURE_MAPS_KEY");
 ```
 
-- Update page title and other head tags as follows
+Features: markers, regions, polygon boundaries, geocoding, reverse geocoding, place search, pin-my-location, location lock, camera and style updates at runtime.
+See [CloudComponents.Maps/README.md](CloudComponents.Maps/README.md) for the full API.
 
-```html
-<HeadContent>
- <CloudHead Title="My First Page Title"
-            Keywords="key1,key2"
-            Description="My First Page Description">
- </CloudHead>
+### CloudIcons (`AngryMonkey.CloudComponents.Icons`)
 
- <CloudBundle Source="myfirstpage.css" />
- <CloudBundle Source="myfirstpage.js" />
-</HeadContent>
+```razor
+<PlayIcon />  <PauseIcon />  <SearchIcon />  <GoogleLogo />  <MicrosoftLogo />
 ```
+
+SVG icon and logo Razor components — no extra CSS class or import required.
+
+---
+
+## Repository structure
+
+```
+CloudComponents/
++-- Components/                    # Core UI primitives (Cloud.Components)
++-- CloudComponents.Grid/          # Data grid library
++-- CloudComponents.VideoPlayer/   # Video player library
++-- CloudComponents.Maps/          # Azure Maps library
++-- CloudComponents.Maps.Web/      # Maps web helpers
++-- CloudComponents.Icons/         # SVG icon components
++-- CloudComponents.Demo/          # Unified demo app (deployed to GitHub Pages)
++-- archived/                      # Legacy standalone demo projects (reference only)
+```
+
+---
+
+## Contributing
+
+Pull requests are welcome. For larger changes please open an issue first to discuss the approach.
+
+## License
+
+MIT

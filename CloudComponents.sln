@@ -1,11 +1,10 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.2.11415.280
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Components", "Components\Components.csproj", "{5C9C82BC-E60C-4FFE-A8F4-96A5DFF36D75}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Components.WebAssmbly", "Components.WebAssmbly\Components.WebAssmbly.csproj", "{A5C371C9-7183-4821-8714-77F4A69D2CAA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Components.WebAssmbly", "archived\Components.WebAssmbly\Components.WebAssmbly.csproj", "{A5C371C9-7183-4821-8714-77F4A69D2CAA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Maps", "Maps", "{185FF486-A759-4A7E-BEF7-BBF8AC541F4E}"
 EndProject
@@ -21,23 +20,25 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Grid", "Grid", "{727CC0E9-9
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.Icons", "CloudComponents.Icons\CloudComponents.Icons.csproj", "{D3B09CF6-43E1-4D47-989A-75CC25921192}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.Grid.Demo", "CloudComponents.Grid.Demo\CloudComponents.Grid.Demo.csproj", "{A4F5784A-1607-BABB-CAF4-8EAB217A9C87}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.Grid.Demo", "archived\CloudComponents.Grid.Demo\CloudComponents.Grid.Demo.csproj", "{A4F5784A-1607-BABB-CAF4-8EAB217A9C87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.Maps.Demo", "CloudComponents.Maps.Demo\CloudComponents.Maps.Demo.csproj", "{CF2DC545-D0E3-A396-ED05-CF2DEA797709}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.Maps.Demo", "archived\CloudComponents.Maps.Demo\CloudComponents.Maps.Demo.csproj", "{CF2DC545-D0E3-A396-ED05-CF2DEA797709}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VideoPlayer", "VideoPlayer", "{42AB3EEE-51A7-4C23-8AF9-11E03BB2DE53}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.VideoPlayer", "CloudComponents.VideoPlayer\CloudComponents.VideoPlayer.csproj", "{66B0B512-341F-7C1C-2562-1C8AC786BB68}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.VideoPlayer.Demo", "CloudComponents.VideoPlayer.Demo\CloudComponents.VideoPlayer.Demo.csproj", "{988651A8-4B36-F06F-7D96-2357ECC4D738}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.VideoPlayer.Demo", "archived\CloudComponents.VideoPlayer.Demo\CloudComponents.VideoPlayer.Demo.csproj", "{988651A8-4B36-F06F-7D96-2357ECC4D738}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Components.Demo", "Components.Demo\Components.Demo.csproj", "{87686246-725E-2015-ADA2-C54999C555D3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Components.Demo", "archived\Components.Demo\Components.Demo.csproj", "{87686246-725E-2015-ADA2-C54999C555D3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Components", "Components", "{AC024A07-5A9B-4C77-BC28-916AD83C5EF1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Icons", "Icons", "{D41FD700-F286-4EC1-9180-99FBDFC5719A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.Icons.Demo", "CloudComponents.Icons.Demo\CloudComponents.Icons.Demo.csproj", "{7107F6C9-B7B2-F31B-6F6E-BA96207DEDD7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.Icons.Demo", "archived\CloudComponents.Icons.Demo\CloudComponents.Icons.Demo.csproj", "{7107F6C9-B7B2-F31B-6F6E-BA96207DEDD7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.Demo", "CloudComponents.Demo\CloudComponents.Demo.csproj", "{97CCEBC6-A60B-4FF9-BE55-13DDAC977392}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -78,10 +79,10 @@ Global
 		{A5C371C9-7183-4821-8714-77F4A69D2CAA}.Debug|x86.Build.0 = Debug|Any CPU
 		{A5C371C9-7183-4821-8714-77F4A69D2CAA}.Release_Server|Any CPU.ActiveCfg = Release|Any CPU
 		{A5C371C9-7183-4821-8714-77F4A69D2CAA}.Release_Server|Any CPU.Build.0 = Release|Any CPU
-		{A5C371C9-7183-4821-8714-77F4A69D2CAA}.Release_Server|x64.ActiveCfg = Release_Server|Any CPU
-		{A5C371C9-7183-4821-8714-77F4A69D2CAA}.Release_Server|x64.Build.0 = Release_Server|Any CPU
-		{A5C371C9-7183-4821-8714-77F4A69D2CAA}.Release_Server|x86.ActiveCfg = Release_Server|Any CPU
-		{A5C371C9-7183-4821-8714-77F4A69D2CAA}.Release_Server|x86.Build.0 = Release_Server|Any CPU
+		{A5C371C9-7183-4821-8714-77F4A69D2CAA}.Release_Server|x64.ActiveCfg = Release|Any CPU
+		{A5C371C9-7183-4821-8714-77F4A69D2CAA}.Release_Server|x64.Build.0 = Release|Any CPU
+		{A5C371C9-7183-4821-8714-77F4A69D2CAA}.Release_Server|x86.ActiveCfg = Release|Any CPU
+		{A5C371C9-7183-4821-8714-77F4A69D2CAA}.Release_Server|x86.Build.0 = Release|Any CPU
 		{A5C371C9-7183-4821-8714-77F4A69D2CAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5C371C9-7183-4821-8714-77F4A69D2CAA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A5C371C9-7183-4821-8714-77F4A69D2CAA}.Release|x64.ActiveCfg = Release|Any CPU
@@ -286,6 +287,24 @@ Global
 		{7107F6C9-B7B2-F31B-6F6E-BA96207DEDD7}.Release|x64.Build.0 = Release|Any CPU
 		{7107F6C9-B7B2-F31B-6F6E-BA96207DEDD7}.Release|x86.ActiveCfg = Release|Any CPU
 		{7107F6C9-B7B2-F31B-6F6E-BA96207DEDD7}.Release|x86.Build.0 = Release|Any CPU
+		{97CCEBC6-A60B-4FF9-BE55-13DDAC977392}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97CCEBC6-A60B-4FF9-BE55-13DDAC977392}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97CCEBC6-A60B-4FF9-BE55-13DDAC977392}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{97CCEBC6-A60B-4FF9-BE55-13DDAC977392}.Debug|x64.Build.0 = Debug|Any CPU
+		{97CCEBC6-A60B-4FF9-BE55-13DDAC977392}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{97CCEBC6-A60B-4FF9-BE55-13DDAC977392}.Debug|x86.Build.0 = Debug|Any CPU
+		{97CCEBC6-A60B-4FF9-BE55-13DDAC977392}.Release_Server|Any CPU.ActiveCfg = Release_Server|Any CPU
+		{97CCEBC6-A60B-4FF9-BE55-13DDAC977392}.Release_Server|Any CPU.Build.0 = Release_Server|Any CPU
+		{97CCEBC6-A60B-4FF9-BE55-13DDAC977392}.Release_Server|x64.ActiveCfg = Release_Server|Any CPU
+		{97CCEBC6-A60B-4FF9-BE55-13DDAC977392}.Release_Server|x64.Build.0 = Release_Server|Any CPU
+		{97CCEBC6-A60B-4FF9-BE55-13DDAC977392}.Release_Server|x86.ActiveCfg = Release_Server|Any CPU
+		{97CCEBC6-A60B-4FF9-BE55-13DDAC977392}.Release_Server|x86.Build.0 = Release_Server|Any CPU
+		{97CCEBC6-A60B-4FF9-BE55-13DDAC977392}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97CCEBC6-A60B-4FF9-BE55-13DDAC977392}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97CCEBC6-A60B-4FF9-BE55-13DDAC977392}.Release|x64.ActiveCfg = Release|Any CPU
+		{97CCEBC6-A60B-4FF9-BE55-13DDAC977392}.Release|x64.Build.0 = Release|Any CPU
+		{97CCEBC6-A60B-4FF9-BE55-13DDAC977392}.Release|x86.ActiveCfg = Release|Any CPU
+		{97CCEBC6-A60B-4FF9-BE55-13DDAC977392}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

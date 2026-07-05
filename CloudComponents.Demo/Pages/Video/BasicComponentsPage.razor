@@ -1,0 +1,195 @@
+@page "/video/basic"
+@using CloudComponents.VideoPlayer
+
+<PageTitle>VideoPlayer — Basic Components</PageTitle>
+
+<div class="page-header">
+    <h1>Basic Components</h1>
+    <p>Explore every configurable feature of the <code>VideoPlayer</code>: controls, progress bar, volume, settings, loop, autoplay, stop button, and more.</p>
+</div>
+
+<div class="section">
+    <h2>Live preview</h2>
+    <div class="controls-bar">
+        <label class="toggle-wrap">
+            <span class="toggle">
+                <input type="checkbox" @bind="_enableControls" />
+                <span class="toggle-track"></span>
+                <span class="toggle-thumb"></span>
+            </span>
+            Controls
+        </label>
+        <label class="toggle-wrap">
+            <span class="toggle">
+                <input type="checkbox" @bind="_showProgressBar" />
+                <span class="toggle-track"></span>
+                <span class="toggle-thumb"></span>
+            </span>
+            Progress bar
+        </label>
+        <label class="toggle-wrap">
+            <span class="toggle">
+                <input type="checkbox" @bind="_showSettings" />
+                <span class="toggle-track"></span>
+                <span class="toggle-thumb"></span>
+            </span>
+            Settings
+        </label>
+        <label class="toggle-wrap">
+            <span class="toggle">
+                <input type="checkbox" @bind="_loop" />
+                <span class="toggle-track"></span>
+                <span class="toggle-thumb"></span>
+            </span>
+            Loop
+        </label>
+        <label class="toggle-wrap">
+            <span class="toggle">
+                <input type="checkbox" @bind="_showStopButton" />
+                <span class="toggle-track"></span>
+                <span class="toggle-thumb"></span>
+            </span>
+            Stop button
+        </label>
+        <label class="toggle-wrap">
+            <span class="toggle">
+                <input type="checkbox" @bind="_reserveAspectRatio" />
+                <span class="toggle-track"></span>
+                <span class="toggle-thumb"></span>
+            </span>
+            Reserve aspect ratio
+        </label>
+        <label>
+            Volume: <span class="value-badge">@(_volume.ToString("0.0"))</span>
+            <input type="range" min="0" max="1" step="0.05"
+                   value="@_volume"
+                   @onchange="@(e => _volume = double.Parse(e.Value!.ToString()!))" />
+        </label>
+    </div>
+
+    <div style="margin-bottom: 16px;">
+        <span class="field-label">Volume type</span>
+        <div class="segmented">
+            <button class="@(_volumeType == VolumeType.Full ? "active" : "")" @onclick="@(() => _volumeType = VolumeType.Full)">Full</button>
+            <button class="@(_volumeType == VolumeType.Mute ? "active" : "")" @onclick="@(() => _volumeType = VolumeType.Mute)">Mute</button>
+            <button class="@(_volumeType == VolumeType.None ? "active" : "")" @onclick="@(() => _volumeType = VolumeType.None)">None</button>
+        </div>
+    </div>
+
+    <div class="player-wrapper">
+        <VideoPlayer Metadata="@BuildMetadata()" />
+    </div>
+</div>
+
+<div class="section">
+    <h2>API reference</h2>
+    <table class="api-table">
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>EnableControls</code></td>
+                <td><code>bool</code></td>
+                <td><code>true</code></td>
+                <td>Show the entire control bar (play, pause, volume, fullscreen, settings).</td>
+            </tr>
+            <tr>
+                <td><code>ShowProgressBar</code></td>
+                <td><code>bool</code></td>
+                <td><code>true</code></td>
+                <td>Show a seekable scrubber bar beneath the video.</td>
+            </tr>
+            <tr>
+                <td><code>ShowSettings</code></td>
+                <td><code>bool</code></td>
+                <td><code>true</code></td>
+                <td>Show the settings gear icon that opens the info/playback-speed sidebar.</td>
+            </tr>
+            <tr>
+                <td><code>VolumeType</code></td>
+                <td><code>VolumeType</code></td>
+                <td><code>Full</code></td>
+                <td><code>Full</code> — slider + icon; <code>Mute</code> — icon only; <code>None</code> — no volume control.</td>
+            </tr>
+            <tr>
+                <td><code>Volume</code></td>
+                <td><code>double</code></td>
+                <td><code>1.0</code></td>
+                <td>Initial volume level from 0 to 1.</td>
+            </tr>
+            <tr>
+                <td><code>Loop</code></td>
+                <td><code>bool</code></td>
+                <td><code>false</code></td>
+                <td>Automatically restart playback when the video ends.</td>
+            </tr>
+            <tr>
+                <td><code>ShowStopButton</code></td>
+                <td><code>bool</code></td>
+                <td><code>false</code></td>
+                <td>Add a stop button alongside play/pause.</td>
+            </tr>
+            <tr>
+                <td><code>ReserveAspectRatio</code></td>
+                <td><code>bool</code></td>
+                <td><code>false</code></td>
+                <td>Allocate space in the layout before the video is loaded.</td>
+            </tr>
+            <tr>
+                <td><code>Autoplay</code></td>
+                <td><code>bool</code></td>
+                <td><code>false</code></td>
+                <td>Start playing immediately when the component mounts (browser policies apply).</td>
+            </tr>
+            <tr>
+                <td><code>IsLive</code></td>
+                <td><code>bool</code></td>
+                <td><code>false</code></td>
+                <td>Enable HLS.js integration for <code>.m3u8</code> streams and show the live indicator.</td>
+            </tr>
+            <tr>
+                <td><code>Title</code></td>
+                <td><code>string?</code></td>
+                <td><code>null</code></td>
+                <td>Video title shown in the settings sidebar.</td>
+            </tr>
+            <tr>
+                <td><code>VideoUrl</code></td>
+                <td><code>string?</code></td>
+                <td><code>null</code></td>
+                <td>URL of the video file or HLS manifest.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+@code {
+    private bool _enableControls     = true;
+    private bool _showProgressBar    = true;
+    private bool _showSettings       = true;
+    private bool _loop               = false;
+    private bool _showStopButton     = false;
+    private bool _reserveAspectRatio = false;
+    private VolumeType _volumeType   = VolumeType.Full;
+    private double _volume           = 0.8;
+
+    private VideoPlayerMetadata BuildMetadata() => new()
+    {
+        Title              = "Oceans",
+        VideoUrl           = "https://vjs.zencdn.net/v/oceans.mp4",
+        EnableControls     = _enableControls,
+        ShowProgressBar    = _showProgressBar,
+        ShowSettings       = _showSettings,
+        Loop               = _loop,
+        ShowStopButton     = _showStopButton,
+        ReserveAspectRatio = _reserveAspectRatio,
+        VolumeType         = _volumeType,
+        Volume             = _volume
+    };
+}

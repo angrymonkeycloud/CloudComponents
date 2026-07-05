@@ -1,0 +1,62 @@
+@page "/video/live"
+@using CloudComponents.VideoPlayer
+@using CloudComponents.Demo.Shared
+
+<PageTitle>VideoPlayer — HLS Live Stream</PageTitle>
+
+<div class="page-header">
+    <h1>Live Stream</h1>
+    <p>HLS live-stream playback using the built-in HLS.js integration.</p>
+</div>
+
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
+            <h2 class="card-title">HLS Test Stream</h2>
+            <p class="card-subtitle">
+                Public HLS test stream — <code>@_metadata.VideoUrl</code>
+            </p>
+            <div class="player-wrapper">
+                <VideoPlayer Metadata="_metadata" />
+            </div>
+        </div>
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0;">
+                Set <code>IsLive = true</code> to enable HLS.js integration for <code>.m3u8</code> streams.
+            </p>
+            <pre class="code-snippet"><code>@_snippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
+
+@code {
+    private readonly VideoPlayerMetadata _metadata = new()
+    {
+        Title = "HLS Live Stream",
+        VideoUrl = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+        IsLive = true,
+        EnableControls = true,
+        ShowSettings = false,
+        Volume = 0.8
+    };
+
+    private readonly string _snippet = """
+<VideoPlayer Metadata="_metadata" />
+
+@code {
+    private readonly VideoPlayerMetadata _metadata = new()
+    {
+        Title = "HLS Live Stream",
+        VideoUrl = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+        IsLive = true,        // enables HLS.js for .m3u8 streams
+        EnableControls = true,
+        ShowSettings = false,
+        Volume = 0.8
+    };
+}
+""";
+}

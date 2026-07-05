@@ -1,0 +1,136 @@
+@page "/components/volumebar"
+
+<PageTitle>Volume Bar — Cloud Components Demo</PageTitle>
+
+<div class="page-header">
+    <h1>Volume Bar</h1>
+    <p>
+        <code>VolumeBar</code> composes a <code>ProgressBar</code> (Disk style) with a mute button
+        and an optional extended layout. <code>OnChanging</code> and <code>OnChanged</code>
+        provide <code>VolumeBarChangeEventArgs</code> including previous value and mute state.
+    </p>
+</div>
+
+<!-- ── Compact (default) ──────────────────────────────────────────────────── -->
+<div class="card">
+    <h2 class="card-title">Compact (default)</h2>
+    <p class="card-subtitle">
+        <code>Extended="false"</code> — shows only the mute/unmute icon button.
+        Click the icon to toggle extended view.
+    </p>
+
+    <div class="demo-stage">
+        <VolumeBar Value="@_volume1"
+                   IsMuted="@_muted1"
+                   Extended="false"
+                   OnChanging="OnCompactChanging"
+                   OnChanged="OnCompactChanged" />
+    </div>
+    <p>
+        Volume: <span class="badge">@_volume1.ToString("P0")</span>
+        &nbsp; Muted: <span class="badge">@_muted1</span>
+    </p>
+</div>
+
+<!-- ── Extended ──────────────────────────────────────────────────────────── -->
+<div class="card">
+    <h2 class="card-title">Extended</h2>
+    <p class="card-subtitle">
+        <code>Extended="true"</code> — shows the seek bar, numeric display, and a dedicated mute button.
+    </p>
+
+    <div class="demo-stage">
+        <VolumeBar Value="@_volume2"
+                   IsMuted="@_muted2"
+                   Extended="true"
+                   OnChanging="OnExtendedChanging"
+                   OnChanged="OnExtendedChanged" />
+    </div>
+    <p>
+        Volume: <span class="badge">@_volume2.ToString("P0")</span>
+        &nbsp; Muted: <span class="badge">@_muted2</span>
+    </p>
+</div>
+
+<!-- ── Programmatic control ───────────────────────────────────────────────── -->
+<div class="card">
+    <h2 class="card-title">Programmatic control</h2>
+    <p class="card-subtitle">Set the extended bar's volume from code.</p>
+
+    <div class="toolbar">
+        <button class="button" @onclick="@(() => SetVolume(0))">0 %</button>
+        <button class="button" @onclick="@(() => SetVolume(0.25))">25 %</button>
+        <button class="button" @onclick="@(() => SetVolume(0.5))">50 %</button>
+        <button class="button" @onclick="@(() => SetVolume(0.75))">75 %</button>
+        <button class="button" @onclick="@(() => SetVolume(1))">100 %</button>
+        <button class="button" @onclick="ToggleMute">Toggle mute</button>
+    </div>
+</div>
+
+<!-- ── Event log ──────────────────────────────────────────────────────────── -->
+<div class="card">
+    <h2 class="card-title">Event log</h2>
+    <div class="log">
+        @if (_log.Count == 0)
+        {
+            <span class="log-empty">No events yet — interact with a volume bar above.</span>
+        }
+        @foreach (var entry in _log)
+        {
+            <div class="log-line"><span class="log-time">@entry.Time</span>@entry.Message</div>
+        }
+    </div>
+</div>
+
+@code {
+    private double _volume1 = 0.7;
+    private bool _muted1 = false;
+
+    private double _volume2 = 0.5;
+    private bool _muted2 = false;
+
+    private List<LogEntry> _log = new();
+
+    private void OnCompactChanging(VolumeBarChangeEventArgs e)
+    {
+        _volume1 = e.NewValue;
+        _muted1 = e.IsMuted;
+        Log($"Compact changing → {e.NewValue:P0} muted={e.IsMuted}");
+    }
+
+    private void OnCompactChanged(VolumeBarChangeEventArgs e)
+    {
+        _volume1 = e.NewValue;
+        _muted1 = e.IsMuted;
+        Log($"Compact changed → {e.NewValue:P0} muted={e.IsMuted}");
+    }
+
+    private void OnExtendedChanging(VolumeBarChangeEventArgs e)
+    {
+        _volume2 = e.NewValue;
+        _muted2 = e.IsMuted;
+        Log($"Extended changing → {e.NewValue:P0} muted={e.IsMuted}");
+    }
+
+    private void OnExtendedChanged(VolumeBarChangeEventArgs e)
+    {
+        _volume2 = e.NewValue;
+        _muted2 = e.IsMuted;
+        Log($"Extended changed → {e.NewValue:P0} muted={e.IsMuted}");
+    }
+
+    private void SetVolume(double v)
+    {
+        _volume2 = v;
+        Log($"Volume set programmatically → {v:P0}");
+    }
+
+    private void ToggleMute()
+    {
+        _muted2 = !_muted2;
+        Log($"Mute toggled → {_muted2}");
+    }
+
+    private void Log(string msg) =>
+        _log.Insert(0, new LogEntry(DateTime.Now.ToString("HH:mm:ss.fff"), msg));
+}

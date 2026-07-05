@@ -1,0 +1,140 @@
+@using CloudComponents.Demo.Services
+@inject AzureMapsConfigurationService ConfigService
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<div class="modal-overlay @(IsVisible ? "visible" : "")" @onclick="OnBackdropClick">
+    <div class="modal-container" @onclick:stopPropagation="true">
+        <div class="modal-header">
+            <h2 class="modal-title">🗺️ Azure Maps Configuration</h2>
+            <button class="modal-close" @onclick="OnClose" disabled="@(!IsVisible || IsLoading)">✕</button>
+        </div>
+
+        <div class="modal-body">
+            @if (IsLoading)
+            {
+                <div class="loading-message"><span>Initializing configuration…</span></div>
+            }
+            else if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <div class="error-message"><strong>⚠️ Error:</strong> @ErrorMessage</div>
+            }
+
+            <div class="form-group">
+                <label for="mapsKeyInput" class="form-label">Azure Maps Subscription Key</label>
+                <input type="password"
+                       id="mapsKeyInput"
+                       class="form-input"
+                       placeholder="Enter your Azure Maps subscription key"
+                       @bind="SubscriptionKey"
+                       @onkeydown="@OnKeyDown"
+                       disabled="@IsLoading"
+                       autocomplete="off" />
+                <div class="form-hint">
+                    <strong>Note:</strong> Your key is stored in browser SessionStorage and cleared when this tab is closed.
+                </div>
+            </div>
+
+            <div class="info-section">
+                <details>
+                    <summary>ℹ️ Where to find your Azure Maps key?</summary>
+                    <div class="info-content">
+                        <ol>
+                            <li>Go to <strong>Azure Portal</strong> (portal.azure.com)</li>
+                            <li>Find your <strong>Azure Maps resource</strong></li>
+                            <li>Click <strong>Authentication</strong> in the left menu</li>
+                            <li>Copy your <strong>Primary Key</strong> or <strong>Secondary Key</strong></li>
+                            <li>Paste it above and click Save</li>
+                        </ol>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" @onclick="OnClear"
+                    disabled="@(IsLoading || string.IsNullOrWhiteSpace(SubscriptionKey))">
+                Clear
+            </button>
+            <button class="btn-primary" @onclick="OnSave"
+                    disabled="@(IsLoading || string.IsNullOrWhiteSpace(SubscriptionKey))">
+                Save Configuration
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback<string> OnConfigurationSaved { get; set; }
+
+    private string SubscriptionKey { get; set; } = string.Empty;
+    private string ErrorMessage { get; set; } = string.Empty;
+    private bool IsLoading { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ConfigService.InitializeAsync();
+        SubscriptionKey = ConfigService.GetSubscriptionKey();
+    }
+
+    private async Task OnSave()
+    {
+        if (string.IsNullOrWhiteSpace(SubscriptionKey))
+        {
+            ErrorMessage = "Please enter a valid subscription key.";
+            return;
+        }
+
+        IsLoading = true;
+        ErrorMessage = string.Empty;
+
+        try
+        {
+            await ConfigService.SetSubscriptionKeyAsync(SubscriptionKey);
+            await OnConfigurationSaved.InvokeAsync(SubscriptionKey);
+            await Task.Delay(200);
+            await JS.InvokeVoidAsync("location.reload");
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Failed to save configuration: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task OnClear()
+    {
+        IsLoading = true;
+        try
+        {
+            await ConfigService.ClearSubscriptionKeyAsync();
+            SubscriptionKey = string.Empty;
+            ErrorMessage = string.Empty;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(SubscriptionKey) && !IsLoading)
+            await OnSave();
+    }
+
+    private async Task OnBackdropClick()
+    {
+        if (!ConfigService.IsConfigured && IsVisible)
+            return;
+
+        await OnClose.InvokeAsync();
+    }
+
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+}

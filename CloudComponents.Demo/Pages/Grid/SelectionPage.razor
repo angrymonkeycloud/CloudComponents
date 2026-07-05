@@ -1,0 +1,228 @@
+@page "/grid/selection"
+@using CloudComponents.Grid
+@using CloudComponents.Grid.Models
+@using CloudComponents.Demo.Models
+@using CloudComponents.Demo.Services
+@using CloudComponents.Demo.Shared
+@inject SampleDataService Data
+
+<PageTitle>CloudGrid — Selection &amp; Actions</PageTitle>
+
+<div class="page-header">
+    <h1>Selection &amp; Actions</h1>
+    <p>
+        Tick the checkboxes (or the header's select-all) to select rows — the selection is two-way
+        bound, so the live count below updates instantly. A <strong>bulk</strong> action appears next
+        to the title only while rows are selected. The <strong>Export</strong> header action opens a
+        dropdown that exports the current page, all matching rows, or the selection as
+        <code>.csv</code> by default. Each row exposes <strong>Edit</strong> and <strong>Delete</strong>
+        actions; an <code>ActionFilter</code> hides Delete on active employees. Every action click is
+        recorded in the event log.
+    </p>
+</div>
+
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
+            <div class="toolbar">
+                <span class="badge">Selected: @_selected.Count</span>
+                <button class="btn" @onclick="ClearSelection" disabled="@(_selected.Count == 0)">Clear selection</button>
+            </div>
+
+            <div class="grid-host">
+                <CloudGrid Header="_header"
+                           Columns="_columns"
+                           DataProvider="LoadAsync"
+                           AllowSelection="true"
+                           @bind-SelectedRecords="_selected"
+                           RowActions="_rowActions"
+                           ActionFilter="FilterAction"
+                           OnActionClicked="OnAction"
+                           RowHeight="40"
+                           RowsPerPage="10"
+                           HeightMode="CloudGridHeightMode.RowHeight" />
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Event log</h2>
+            <p class="card-subtitle">Bulk actions report every selected id; row actions report the single row id.</p>
+            @if (_log.Count == 0)
+            {
+                <div class="log"><span class="log-empty">No actions yet — select rows and use the toolbar, or click a row action.</span></div>
+            }
+            else
+            {
+                <div class="log">
+                    @foreach (var entry in _log)
+                    {
+                        <div class="log-line"><span class="log-time">@entry.Time</span>@entry.Message</div>
+                    }
+                </div>
+            }
+        </div>
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0;">
+                Enable <code>AllowSelection</code>, bind <code>SelectedRecords</code>, and optionally
+                add bulk/row actions that respond to <code>OnActionClicked</code>.
+            </p>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
+
+@code {
+    private List<Guid> _selected = [];
+    private readonly List<(string Time, string Message)> _log = [];
+
+    private readonly CloudGridHeaderOptions _header = new()
+    {
+        Label = "Team",
+        AllowSearch = true,
+        AllowRefresh = true,
+        AllowExport = true
+    };
+
+    private readonly List<CloudGridColumn> _columns =
+    [
+        new() { Label = "Photo", IsImage = true, Sortable = false, Resizable = false, Width = 56 },
+        new() { Label = "Name", Key = "name", Width = 190 },
+        new() { Label = "Department", Key = "department", Width = 150 },
+        new() { Label = "Country", Key = "country", Width = 130 },
+        new() { Label = "Status", Key = "active", Width = 110 }
+    ];
+
+    private List<CloudGridAction> _rowActions = [];
+
+    protected override void OnInitialized()
+    {
+        _header.Actions =
+        [
+            new CloudGridAction
+            {
+                Key = "bulk-deactivate",
+                Text = "Deactivate",
+                Tooltip = "Deactivate selected",
+                ShowOnHeader = false,
+                ShowOnBulkHeader = true
+            }
+        ];
+
+        _header.OnActionClicked = EventCallback.Factory.Create<CloudGridActionEventArgs>(this, OnAction);
+
+        _rowActions =
+        [
+            new CloudGridAction
+            {
+                Key = "edit",
+                Tooltip = "Edit",
+                Icon = builder => { builder.OpenComponent<ExpandIcon>(0); builder.CloseComponent(); },
+                ShowOnHeader = false,
+                ShowOnRow = true
+            },
+            new CloudGridAction
+            {
+                Key = "delete",
+                Tooltip = "Delete",
+                Icon = builder => { builder.OpenComponent<CrossIcon>(0); builder.CloseComponent(); },
+                CssClass = "_danger",
+                ShowOnHeader = false,
+                ShowOnRow = true
+            }
+        ];
+    }
+
+    private async Task<CloudGridDataResult?> LoadAsync(CloudGridDataRequest request)
+        => await Data.QueryAsync(request, ToRow);
+
+    private static CloudGridRow ToRow(Person p) => new()
+    {
+        Id = p.Id,
+        Cells =
+        [
+            p.AvatarUrl,
+            p.FullName,
+            p.Department,
+            p.Country,
+            p.IsActive ? "Active" : "Inactive"
+        ]
+    };
+
+    private bool FilterAction(CloudGridRow row, CloudGridAction action)
+    {
+        if (action.Key != "delete") return true;
+        Person? person = Data.GetByIds([row.Id]).FirstOrDefault();
+        return person is null || !person.IsActive;
+    }
+
+    private void OnAction(CloudGridActionEventArgs args)
+    {
+        string ids = args.RecordIds.Count switch
+        {
+            0 => "(no rows)",
+            1 => ShortId(args.RecordIds[0]),
+            _ => $"{args.RecordIds.Count} rows"
+        };
+        AddLog($"Action '{args.Action.Key}' → {ids}");
+    }
+
+    private void ClearSelection()
+    {
+        _selected = [];
+        AddLog("Selection cleared");
+    }
+
+    private void AddLog(string message)
+    {
+        _log.Insert(0, (DateTime.Now.ToString("HH:mm:ss"), message));
+        if (_log.Count > 25) _log.RemoveAt(_log.Count - 1);
+    }
+
+    private static string ShortId(Guid id) => id.ToString()[..8];
+
+    private readonly string _usageSnippet = """
+<CloudGrid AllowSelection="true"
+           @bind-SelectedRecords="_selected"
+           RowActions="_rowActions"
+           ActionFilter="FilterAction"
+           OnActionClicked="OnAction"
+           Header="_header"
+           ... />
+
+@code {
+    private List<Guid> _selected = [];
+
+    private readonly CloudGridHeaderOptions _header = new()
+    {
+        Label = "Team",
+        AllowExport = true,
+        Actions = [
+            new CloudGridAction
+            {
+                Key = "bulk-deactivate",
+                Text = "Deactivate",
+                ShowOnBulkHeader = true  // Only when rows selected
+            }
+        ],
+        OnActionClicked = EventCallback.Factory.Create<...>(this, OnAction)
+    };
+
+    private List<CloudGridAction> _rowActions = [
+        new() { Key = "edit",   Tooltip = "Edit",   ShowOnRow = true },
+        new() { Key = "delete", Tooltip = "Delete", ShowOnRow = true }
+    ];
+
+    private bool FilterAction(CloudGridRow row, CloudGridAction action)
+    {
+        // Hide Delete on active employees
+        if (action.Key != "delete") return true;
+        Person? p = DataService.GetByIds([row.Id]).FirstOrDefault();
+        return p is null || !p.IsActive;
+    }
+}
+""";
+}

@@ -1,0 +1,215 @@
+@page "/maps/save-location"
+@inject IOptions<AzureMapsOptions> Options
+@inject AzureMapsConfigurationService ConfigService
+@inject SavedLocationService SavedLocationService
+
+<PageTitle>AzureMap — Save Location</PageTitle>
+
+<div class="page-header">
+    <h1>Set, Save &amp; Restore a Location</h1>
+    <p>
+        Pan the map so the pin — always fixed to the centre — sits over the location you want,
+        then save it to browser storage. Demonstrates the centre-pin selection pattern combined
+        with a persistence service.
+    </p>
+</div>
+
+<MapsKeyGuard>
+<DemoResultCodeTabs>
+    <ResultContent>
+
+        <div class="card">
+            <h2 class="card-title">📍 Map</h2>
+            <div class="map-host">
+                <AzureMap Height="500px"
+                          Width="100%"
+                          SubscriptionKey="@GetKey()"
+                          InitialView="_initialView"
+                          Style="MapStyle.Road"
+                          ShowSearchBox="true"
+                          ShowCurrentLocationButton="true"
+                          ScrollZoomInteraction="false"
+                          AddMarkerTrigger="MarkerAddTrigger.CenterPin"
+                          OnMapReady="HandleMapReady"
+                          OnCenterPinChanged="HandleCenterPinChanged"
+                          OnSearchResultSelected="HandleSearchResultSelected"
+                          @ref="_map" />
+            </div>
+            <div class="toolbar" style="margin-top: 1rem;">
+                <button class="btn-primary" @onclick="SaveSelectedLocation"
+                        disabled="@(!_selectedCoordinate.HasValue || _isSaving)">
+                    @(_isSaving ? "Saving…" : "Save Selected")
+                </button>
+                <button @onclick="RestoreSavedLocation" class="button" disabled="@(_savedLocation is null)">Restore Saved</button>
+                <button @onclick="ClearSavedLocation" class="button" disabled="@(_savedLocation is null)">Clear Saved</button>
+                <span class="badge" style="@(_statusIsError ? "background:#fde7e9;color:#a80000;" : "")">@_status</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Selection</h2>
+            @if (_selectedCoordinate is { } selected)
+            {
+                <div class="info-grid-2">
+                    <div class="info-card">
+                        <div class="info-card-title">Current Pin</div>
+                        <p class="info-card-text">Lat: @selected.Latitude.ToString("F6")</p>
+                        <p class="info-card-text">Lng: @selected.Longitude.ToString("F6")</p>
+                    </div>
+                    @if (_savedLocation is { } saved)
+                    {
+                        <div class="info-card">
+                            <div class="info-card-title" style="color: var(--color-success, #4caf7d);">Persisted</div>
+                            @if (!string.IsNullOrWhiteSpace(saved.Label))
+                            {
+                                <p class="info-card-text">@saved.Label</p>
+                            }
+                            <p class="info-card-text">Lat: @saved.Latitude.ToString("F6")</p>
+                            <p class="info-card-text">Lng: @saved.Longitude.ToString("F6")</p>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p style="color: var(--color-text-muted); font-size: 13px;">Pan the map to position the pin over a location.</p>
+            }
+        </div>
+
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <p style="font-size: 13px; color: var(--color-text-muted); margin-top: 0;">
+                Register a persistence service, use <code>MarkerAddTrigger.CenterPin</code> for an always-visible
+                pin, handle <code>OnCenterPinChanged</code>, and call <code>SaveAsync</code>.
+            </p>
+            <h3 style="margin-top: 16px; font-size: 14px;">Component usage</h3>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+            <h3 style="margin-top: 16px; font-size: 14px;">Program.cs</h3>
+            <pre class="code-snippet"><code>builder.Services.AddScoped&lt;SavedLocationService&gt;();</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
+</MapsKeyGuard>
+
+@code {
+    private AzureMap? _map;
+    private readonly InitialMapView _initialView = new(37.7749, -122.4194, 11);
+
+    private MapCoordinate? _selectedCoordinate;
+    private SavedLocation? _savedLocation;
+    private bool _isSaving;
+    private bool _statusIsError;
+    private string _status = "Pan the map to move the pin over a location";
+
+    private readonly string _usageSnippet =
+        """
+<AzureMap ScrollZoomInteraction="false"
+          AddMarkerTrigger="MarkerAddTrigger.CenterPin"
+          OnCenterPinChanged="HandleCenterPinChanged"
+          @ref="_map" />
+
+@code {
+    private AzureMap? _map;
+    private MapCoordinate? _coord;
+
+    private Task HandleCenterPinChanged(MapCoordinate pt)
+    {
+        _coord = pt;
+        return Task.CompletedTask;
+    }
+}
+""";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _savedLocation = await SavedLocationService.InitializeAsync();
+
+        if (_savedLocation is not null)
+        {
+            _selectedCoordinate = new MapCoordinate(_savedLocation.Latitude, _savedLocation.Longitude);
+            _status = "Saved location loaded";
+        }
+    }
+
+    private async Task HandleMapReady()
+    {
+        if (_selectedCoordinate is { } selected)
+            await _map!.SetCenterAsync(selected.Latitude, selected.Longitude, 13);
+    }
+
+    private Task HandleCenterPinChanged(MapCoordinate coordinate)
+    {
+        _selectedCoordinate = coordinate;
+        _statusIsError = false;
+        _status = "Location selected — click Save Selected to persist it";
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleSearchResultSelected(MapSearchResult result)
+    {
+        _statusIsError = false;
+        _status = $"Flew to \"{result.Address}\" — adjust the pin, then save";
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private async Task SaveSelectedLocation()
+    {
+        if (!_selectedCoordinate.HasValue || _isSaving) return;
+
+        _isSaving = true;
+        _statusIsError = false;
+        _status = "Saving…";
+        StateHasChanged();
+
+        try
+        {
+            var location = new SavedLocation(_selectedCoordinate.Value.Latitude,
+                                             _selectedCoordinate.Value.Longitude,
+                                             "Pinned location");
+            var saved = await SavedLocationService.SaveAsync(location);
+
+            if (saved)
+            {
+                _savedLocation = location;
+                _status = "Location saved ✓";
+            }
+            else
+            {
+                _statusIsError = true;
+                _status = "Save failed — browser storage may be unavailable";
+            }
+        }
+        finally
+        {
+            _isSaving = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RestoreSavedLocation()
+    {
+        if (_savedLocation is null || _map is null) return;
+        _status = "Saved location restored";
+        await _map.SetCenterAsync(_savedLocation.Latitude, _savedLocation.Longitude, 15);
+        StateHasChanged();
+    }
+
+    private async Task ClearSavedLocation()
+    {
+        await SavedLocationService.ClearAsync();
+        _savedLocation = null;
+        _status = "Saved location cleared";
+        StateHasChanged();
+    }
+
+    private string GetKey()
+    {
+        var key = ConfigService.GetSubscriptionKey();
+        return !string.IsNullOrEmpty(key) ? key : Options.Value.SubscriptionKey ?? string.Empty;
+    }
+}

@@ -1,0 +1,352 @@
+@page "/maps/controls"
+@inject IOptions<AzureMapsOptions> Options
+@inject AzureMapsConfigurationService ConfigService
+
+<PageTitle>AzureMap — Controls &amp; Styles</PageTitle>
+
+<div class="page-header">
+    <h1>Map Controls &amp; Styles</h1>
+    <p>
+        Explore all available map controls, visual styles, and interaction modes. Toggle individual controls
+        to see how they affect the map interface. Switch between map styles including satellite, grayscale,
+        and night modes.
+    </p>
+</div>
+
+<MapsKeyGuard>
+<DemoResultCodeTabs>
+    <ResultContent>
+
+        <div class="card">
+            <h2 class="card-title">Map Style</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px;">
+                @foreach (var style in _availableStyles)
+                {
+                    <button class="@(_selectedStyle == style.Key ? "btn-primary" : "btn-secondary")"
+                            @onclick="() => ChangeStyle(style.Key)">
+                        @style.Value
+                    </button>
+                }
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Map Controls</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+                <label class="toggle-row">
+                    <input type="checkbox" @bind="_showZoomControl" @bind:after="ApplyStateChange" />
+                    <span>Zoom Control</span>
+                    <small>+ / − buttons for precise zooming.</small>
+                </label>
+                <label class="toggle-row">
+                    <input type="checkbox" @bind="_showCompassControl" @bind:after="ApplyStateChange" />
+                    <span>Compass Control</span>
+                    <small>Shows bearing; click to reset to north.</small>
+                </label>
+                <label class="toggle-row">
+                    <input type="checkbox" @bind="_showPitchControl" @bind:after="ApplyStateChange" />
+                    <span>Pitch Control</span>
+                    <small>Slider to tilt the camera for 3D perspective.</small>
+                </label>
+                <label class="toggle-row">
+                    <input type="checkbox" @bind="_showStyleControl" @bind:after="ApplyStateChange" />
+                    <span>Style Control</span>
+                    <small>Lets users switch base map style on the map.</small>
+                </label>
+                <label class="toggle-row">
+                    <input type="checkbox" @bind="_showFullscreenControl" @bind:after="ApplyStateChange" />
+                    <span>Fullscreen Control</span>
+                    <small>Button to expand the map to fill the screen.</small>
+                </label>
+                <label class="toggle-row">
+                    <input type="checkbox" @bind="_showScaleControl" @bind:after="ApplyStateChange" />
+                    <span>Scale Control</span>
+                    <small>Displays a distance scale for the current zoom.</small>
+                </label>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Interaction Modes</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+                <label class="toggle-row">
+                    <input type="checkbox" @bind="_dragPan" @bind:after="ApplyStateChange" />
+                    <span>Drag Pan</span>
+                    <small>Move the map by dragging with mouse/touch.</small>
+                </label>
+                <label class="toggle-row">
+                    <input type="checkbox" @bind="_dragRotate" @bind:after="ApplyStateChange" />
+                    <span>Drag Rotate</span>
+                    <small>Right-click drag to rotate bearing.</small>
+                </label>
+                <label class="toggle-row">
+                    <input type="checkbox" @bind="_scrollZoom" @bind:after="ApplyStateChange" />
+                    <span>Scroll Zoom</span>
+                    <small>Zoom with mouse wheel. Hold Ctrl to zoom when disabled.</small>
+                </label>
+                <label class="toggle-row">
+                    <input type="checkbox" @bind="_dblClickZoom" @bind:after="ApplyStateChange" />
+                    <span>Double-Click Zoom</span>
+                    <small>Double-click to zoom in one level.</small>
+                </label>
+                <label class="toggle-row">
+                    <input type="checkbox" @bind="_boxZoom" @bind:after="ApplyStateChange" />
+                    <span>Box Zoom</span>
+                    <small>Shift+drag a rectangle to zoom to that area.</small>
+                </label>
+                <label class="toggle-row">
+                    <input type="checkbox" @bind="_keyboard" @bind:after="ApplyStateChange" />
+                    <span>Keyboard Navigation</span>
+                    <small>Arrow keys pan, +/− keys zoom.</small>
+                </label>
+                <label class="toggle-row">
+                    <input type="checkbox" @bind="_touchInteraction" @bind:after="ApplyStateChange" />
+                    <span>Touch Interaction</span>
+                    <small>Pan/pinch-zoom/rotate via touch gestures.</small>
+                </label>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Functionality</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+                <label class="toggle-row">
+                    <input type="checkbox" @bind="_showSearchBox" @bind:after="ApplyStateChange" />
+                    <span>Search Box</span>
+                    <small>Built-in place search with results dropdown.</small>
+                </label>
+                <label class="toggle-row">
+                    <input type="checkbox" @bind="_showCurrentLocationButton" @bind:after="ApplyStateChange" />
+                    <span>Pin My Location Button</span>
+                    <small>Requests device location and recenters the map.</small>
+                </label>
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px;">Marker Add Trigger</label>
+                    <select @bind="_addMarkerTrigger" @bind:after="ApplyStateChange"
+                            style="width:100%; background: var(--color-surface-2); color: var(--color-text); border: 1px solid var(--color-border); border-radius: var(--radius); padding: 6px 8px; font-size: 13px;">
+                        <option value="@MarkerAddTrigger.Disabled">Disabled</option>
+                        <option value="@MarkerAddTrigger.SingleClick">Single Click</option>
+                        <option value="@MarkerAddTrigger.DoubleClick">Double Click</option>
+                        <option value="@MarkerAddTrigger.CenterPin">Center Pin</option>
+                    </select>
+                </div>
+                <label class="toggle-row">
+                    <input type="checkbox" @bind="_allowMarkerRemoval" @bind:after="ApplyStateChange" />
+                    <span>Allow Marker Removal</span>
+                    <small>Double-click a marker to remove it.</small>
+                </label>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🗺️ Interactive Map</h2>
+            <div class="map-host">
+                <AzureMap Height="500px"
+                          Width="100%"
+                          SubscriptionKey="@GetKey()"
+                          InitialView="_initialView"
+                          Style="@_selectedStyle"
+                          ZoomControl="@(new MapControlOption(_showZoomControl))"
+                          CompassControl="@(new MapControlOption(_showCompassControl))"
+                          PitchControl="@(new MapControlOption(_showPitchControl))"
+                          StyleControl="@(new MapControlOption(_showStyleControl))"
+                          FullscreenControl="@(new MapControlOption(_showFullscreenControl))"
+                          ScaleControl="@(new MapControlOption(_showScaleControl))"
+                          DragPanInteraction="@_dragPan"
+                          DragRotateInteraction="@_dragRotate"
+                          ScrollZoomInteraction="@_scrollZoom"
+                          DblClickZoomInteraction="@_dblClickZoom"
+                          BoxZoomInteraction="@_boxZoom"
+                          KeyboardInteraction="@_keyboard"
+                          TouchInteraction="@_touchInteraction"
+                          ShowTrafficFlow="@_showTraffic"
+                          ShowSearchBox="@_showSearchBox"
+                          ShowCurrentLocationButton="@_showCurrentLocationButton"
+                          AddMarkerTrigger="@_addMarkerTrigger"
+                          AllowMarkerRemoval="@_allowMarkerRemoval"
+                          OnMapReady="HandleMapReady"
+                          OnSearchResultSelected="HandleSearchResultSelected"
+                          OnMyLocationFound="HandleMyLocationFound"
+                          OnMarkerAdded="HandleMarkerAdded"
+                          OnMarkerRemoved="HandleMarkerRemoved"
+                          OnCenterPinChanged="HandleCenterPinChanged"
+                          @ref="_map" />
+            </div>
+            <div class="toolbar" style="margin-top: 1rem;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13.5px;">
+                    <input type="checkbox" @bind="_showTraffic" @bind:after="ApplyTrafficAsync" />
+                    <span>Show Traffic Flow</span>
+                </label>
+                @if (!string.IsNullOrEmpty(_statusMessage))
+                {
+                    <span class="badge">@_statusMessage</span>
+                }
+            </div>
+        </div>
+
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">Control Information</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;">
+                @foreach (var info in _controlInfo)
+                {
+                    <div class="info-card">
+                        <div class="info-card-title">@info.Key</div>
+                        <p class="info-card-text">@info.Value</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Usage Snippet</h2>
+            <p style="font-size: 13px; color: var(--color-text-muted); margin-top: 0;">
+                Controls, interaction modes, and functionality flags are all regular
+                <code>[Parameter]</code>s — changing them and re-rendering is enough for
+                <code>AzureMap</code> to push the update to the live JS map.
+            </p>
+            <pre class="code-snippet"><code>@_snippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
+</MapsKeyGuard>
+
+@code {
+    private AzureMap? _map;
+    private readonly InitialMapView _initialView = new(37.7749, -122.4194, 13);
+    private string _statusMessage = "";
+
+    private MapStyle _selectedStyle = MapStyle.Road;
+
+    // Controls
+    private bool _showZoomControl = true;
+    private bool _showCompassControl;
+    private bool _showPitchControl;
+    private bool _showStyleControl;
+    private bool _showFullscreenControl;
+    private bool _showScaleControl;
+    private bool _showTraffic;
+
+    // Interactions
+    private bool _dragPan = true;
+    private bool _dragRotate = true;
+    private bool _scrollZoom;
+    private bool _dblClickZoom = true;
+    private bool _boxZoom = true;
+    private bool _keyboard = true;
+    private bool _touchInteraction = true;
+
+    // Functionality
+    private bool _showSearchBox;
+    private bool _showCurrentLocationButton = true;
+    private MarkerAddTrigger _addMarkerTrigger = MarkerAddTrigger.Disabled;
+    private bool _allowMarkerRemoval;
+
+    private readonly Dictionary<MapStyle, string> _availableStyles = new()
+    {
+        { MapStyle.Road,                "Road" },
+        { MapStyle.Satellite,           "Satellite" },
+        { MapStyle.SatelliteRoadLabels, "Satellite + Roads" },
+        { MapStyle.GrayscaleLight,      "Grayscale Light" },
+        { MapStyle.GrayscaleDark,       "Grayscale Dark" },
+        { MapStyle.Night,               "Night" },
+        { MapStyle.RoadShadedRelief,    "Road + Terrain" },
+        { MapStyle.HighContrastLight,   "High Contrast Light" },
+        { MapStyle.HighContrastDark,    "High Contrast Dark" },
+    };
+
+    private readonly Dictionary<string, string> _controlInfo = new()
+    {
+        { "Zoom Control",        "Provides + and - buttons to zoom in and out. Essential for detailed navigation." },
+        { "Compass Control",     "Shows map orientation and allows rotation. Click to reset to north." },
+        { "Pitch Control",       "Adjusts map viewing angle for 3D perspective. Useful for terrain visualization." },
+        { "Style Control",       "Allows users to switch between different map styles without app intervention." },
+        { "Fullscreen Control",  "Expands map to fill the entire screen for better immersion." },
+        { "Scale Control",       "Displays distance scale relative to current zoom level for reference." },
+        { "Drag Pan",            "Move the map by dragging with mouse or touch. Core navigation interaction." },
+        { "Drag Rotate",         "Right-click drag to rotate the map bearing. Useful for orientation." },
+        { "Scroll Zoom",         "Zoom with mouse wheel/trackpad. Hold Ctrl (⌘) when disabled." },
+        { "Double-Click Zoom",   "Double-click to zoom in one level. Quick zoom without toolbar." },
+        { "Box Zoom",            "Shift+drag to zoom to a bounding rectangle." },
+        { "Keyboard Navigation", "Arrow keys pan; +/− keys zoom when map has focus." },
+        { "Touch Interaction",   "Pan, pinch-zoom, and rotate via touch gestures on mobile." },
+    };
+
+    private readonly string _snippet =
+        """
+<AzureMap Style="MapStyle.Road"
+          ZoomControl="new MapControlOption(true)"
+          CompassControl="new MapControlOption(false)"
+          DragPanInteraction="true"
+          ScrollZoomInteraction="false"
+          ShowSearchBox="false"
+          ShowCurrentLocationButton="true"
+          AddMarkerTrigger="MarkerAddTrigger.Disabled"
+          @ref="_map" />
+
+@code {
+    private AzureMap? _map;
+
+    private async Task ChangeStyleAsync(MapStyle style)
+    {
+        if (_map is not null)
+            await _map.SetStyleAsync(style);
+    }
+}
+""";
+
+    private Task HandleMapReady() => Task.CompletedTask;
+
+    private async Task ChangeStyle(MapStyle style)
+    {
+        _selectedStyle = style;
+        if (_map is not null)
+            await _map.SetStyleAsync(style);
+    }
+
+    private void ApplyStateChange() => StateHasChanged();
+
+    private async Task ApplyTrafficAsync()
+    {
+        if (_map is not null)
+            await _map.SetTrafficAsync(_showTraffic, false);
+    }
+
+    private Task HandleSearchResultSelected(MapSearchResult result)
+    {
+        _statusMessage = $"Search: {result.Address}";
+        return Task.CompletedTask;
+    }
+
+    private Task HandleMyLocationFound(MapCoordinate coord)
+    {
+        _statusMessage = $"Located at {coord.Latitude:F4}, {coord.Longitude:F4}";
+        return Task.CompletedTask;
+    }
+
+    private Task HandleMarkerAdded(MapMarker marker)
+    {
+        _statusMessage = $"Marker added at {marker.Latitude:F4}, {marker.Longitude:F4}";
+        return Task.CompletedTask;
+    }
+
+    private Task HandleMarkerRemoved(MapMarker marker)
+    {
+        _statusMessage = "Marker removed";
+        return Task.CompletedTask;
+    }
+
+    private Task HandleCenterPinChanged(MapCoordinate coord)
+    {
+        _statusMessage = $"Center pin at {coord.Latitude:F4}, {coord.Longitude:F4}";
+        return Task.CompletedTask;
+    }
+
+    private string GetKey()
+    {
+        var key = ConfigService.GetSubscriptionKey();
+        return !string.IsNullOrEmpty(key) ? key : Options.Value.SubscriptionKey ?? string.Empty;
+    }
+}

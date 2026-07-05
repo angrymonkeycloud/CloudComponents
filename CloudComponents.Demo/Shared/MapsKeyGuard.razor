@@ -1,0 +1,63 @@
+@inject AzureMapsConfigurationService ConfigService
+
+@if (!_initialized)
+{
+    <div class="key-guard-loading">
+        <span class="spinner"></span> Checking configuration…
+    </div>
+}
+else if (!ConfigService.IsConfigured)
+{
+    <div class="key-guard-banner">
+        <div class="key-guard-icon">🗺️</div>
+        <div class="key-guard-body">
+            <h3 class="key-guard-title">Azure Maps Key Required</h3>
+            <p class="key-guard-text">
+                This demo requires an Azure Maps subscription key.
+                Get one free from the <a href="https://portal.azure.com" target="_blank" rel="noopener">Azure Portal</a>.
+            </p>
+            <button class="btn-primary" @onclick="OpenConfig">Configure Key</button>
+        </div>
+    </div>
+}
+else
+{
+    @ChildContent
+}
+
+@if (_showConfig)
+{
+    <ConfigurationModal IsVisible="true"
+                        OnClose="CloseConfig"
+                        OnConfigurationSaved="OnKeySaved" />
+}
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private bool _initialized;
+    private bool _showConfig;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ConfigService.InitializeAsync();
+        _initialized = true;
+
+        if (!ConfigService.IsConfigured)
+            _showConfig = true;
+    }
+
+    private void OpenConfig() => _showConfig = true;
+
+    private void CloseConfig()
+    {
+        _showConfig = false;
+        StateHasChanged();
+    }
+
+    private Task OnKeySaved(string key)
+    {
+        _showConfig = false;
+        return Task.CompletedTask;
+    }
+}
