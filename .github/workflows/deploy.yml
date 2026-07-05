@@ -12,7 +12,7 @@ on:
       - 'CloudComponents.Maps/**'
       - 'CloudComponents.Maps.Web/**'
       - 'CloudComponents.Icons/**'
-      - 'Components/**'
+      - 'CloudComponents.Basic/**'
   workflow_dispatch:
 
 permissions:
