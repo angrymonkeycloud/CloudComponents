@@ -132,11 +132,11 @@ Professional icon and logo gallery with:
 
 ### How It Works
 
-Each workflow:
-1. **Publishes** demo in Release mode
-2. **Prepares HTML files** with routing scripts (404.html pattern)
-3. **Updates base href** for subdirectory deployment
-4. **Uploads artifact** to GitHub Pages
+The current `deploy.yml` workflow:
+1. **Publishes** the demo in Release mode
+2. **Prepares HTML files** for GitHub Pages routing
+3. **Updates the base href** for `/CloudComponents/`
+4. **Pushes the prepared site** to the `gh-pages` branch
 
 The `deploy-all-demos.yml` additionally:
 - Merges all artifacts into proper subdirectories
