@@ -72,7 +72,7 @@
 
                                         <a href="https://angrymonkeycloud.com/" target="_blank" class="amc-videoplayer-settings-angrymonkeycloud">
 
-                                            <CloudComponents.Basic.Icons.AngryMonkeyCloudLogo />
+                                            <AngryMonkey.CloudComponents.Icons.AngryMonkeyCloudLogo />
 
                                         </a>
                                     </div>
@@ -150,7 +150,7 @@
                                 {
                                     @* Volume *@
                                     <div class="amc-videoplayer-volume @(Metadata.DoShowVolumeControls? "_extended": string.Empty)" @onclick="OnVolumeButtonClick">
-                                        <CloudComponents.Basic.VolumeBar Value="@Metadata.Volume" IsMuted="Metadata.IsMuted" Extended="Metadata.DoShowVolumeControls" OnChanging="OnVolumeChanging"></CloudComponents.Basic.VolumeBar>
+                                        <AngryMonkey.CloudComponents.VolumeBar Value="@Metadata.Volume" IsMuted="Metadata.IsMuted" Extended="Metadata.DoShowVolumeControls" OnChanging="OnVolumeChanging"></AngryMonkey.CloudComponents.VolumeBar>
                                     </div>
                                 }
 
@@ -158,7 +158,7 @@
                                 <div class="amc-videoplayer-status">
                                     @if (Metadata.PlayingState == PlayingStates.Buffering)
                                     {
-                                        <CloudComponents.Basic.Icons.Loading />
+                                        <AngryMonkey.CloudComponents.Icons.Loading />
                                     }
                                 </div>
                             </div>
@@ -167,14 +167,14 @@
                                 @* Play *@
                                 <div class="amc-videoplayer-play">
                                     <button @onclick="PlayVideo">
-                                        <CloudComponents.Basic.Icons.PlayButton />
+                                        <AngryMonkey.CloudComponents.Icons.PlayButton />
                                     </button>
                                 </div>
 
                                 @* Pause *@
                                 <div class="amc-videoplayer-pause">
                                     <button @onclick="PauseVideo">
-                                        <CloudComponents.Basic.Icons.PauseButton />
+                                        <AngryMonkey.CloudComponents.Icons.PauseButton />
                                     </button>
                                 </div>
                             </div>
@@ -193,7 +193,7 @@
                                 @* Cast *@
                                 <div class="amc-videoplayer-castbutton">
                                     <button @onclick="Cast">
-                                        <CloudComponents.Basic.Icons.Cast />
+                                        <AngryMonkey.CloudComponents.Icons.Cast />
                                     </button>
                                 </div>
 
@@ -221,7 +221,7 @@
                             @ontouchstart="OnProgressTouchStart"
                             @onmousemove="OnProgressMouseMove"
                             @onmouseout="OnProgressMouseOut">
-                                <CloudComponents.Basic.ProgressBar Value="Metadata.CurrentTime" Total="Metadata.CurrentVideoInfo?.Duration ?? 0" Style="ProgressBarStyle" OnChanged="OnProgressChanged" OnChanging="OnProgressChanging" />
+                                <AngryMonkey.CloudComponents.ProgressBar Value="Metadata.CurrentTime" Total="Metadata.CurrentVideoInfo?.Duration ?? 0" Style="ProgressBarStyle" OnChanged="OnProgressChanged" OnChanging="OnProgressChanging" />
                             </div>
                         }
                     }

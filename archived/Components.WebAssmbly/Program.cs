@@ -1,4 +1,4 @@
-using CloudComponents.Basic;
+using  AngryMonkey.CloudComponents;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);

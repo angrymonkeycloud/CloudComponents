@@ -21,7 +21,7 @@ await new CloudPack(new CloudPackConfig() { NugetApiKey = apiKey })
     ],
     Projects =
     [
-        new CloudPackProject("CloudComponents.Basic"),
+        new CloudPackProject("CloudComponents"),
         new CloudPackProject("CloudComponents.Icons"),
         new CloudPackProject("CloudComponents.Grid"),
         new CloudPackProject("CloudComponents.VideoPlayer"),

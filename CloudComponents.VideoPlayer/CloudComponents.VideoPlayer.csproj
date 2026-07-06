@@ -13,7 +13,7 @@
 		<Authors>Angry Monkey</Authors>
 		<Company>Angry Monkey</Company>
 		<PackageProjectUrl>https://www.angrymonkeycloud.com/</PackageProjectUrl>
-		<Version>4.1.1</Version>
+		<Version>4.1.2</Version>
 		<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
 		<FileVersion>$(PackageVersion)</FileVersion>
 		<PackageOutputPath>..\NugetPackage\</PackageOutputPath>
@@ -39,7 +39,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\CloudComponents.Icons\CloudComponents.Icons.csproj" />
-		<ProjectReference Include="..\CloudComponents.Basic\CloudComponents.Basic.csproj" />
+		<ProjectReference Include="..\CloudComponents\CloudComponents.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

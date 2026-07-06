@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using CloudComponents.Basic;
+using  AngryMonkey.CloudComponents;
 
 namespace CloudComponents.VideoPlayer
 {

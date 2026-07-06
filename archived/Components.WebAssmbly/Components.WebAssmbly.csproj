@@ -11,8 +11,4 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.8" PrivateAssets="all" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\CloudComponents.Basic\CloudComponents.Basic.csproj" />
-  </ItemGroup>
-
 </Project>

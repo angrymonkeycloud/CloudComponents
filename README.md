@@ -14,7 +14,7 @@ Free, open-source Blazor component libraries for **.NET 10**.
 
 | Package | NuGet | Description |
 |---------|-------|-------------|
-| `AngryMonkey.Cloud.Components` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.Cloud.Components?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.Cloud.Components) | Core UI primitives: Popup, Dialog, Switch, Tabs, ProgressBar, VolumeBar |
+| `AngryMonkey.CloudComponents` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents) | Core UI primitives: Popup, Dialog, Switch, Tabs, ProgressBar, VolumeBar |
 | `AngryMonkey.CloudComponents.Grid` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.Grid?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.Grid) | Feature-rich data grid with sorting, paging, selection, actions, reordering, and export |
 | `AngryMonkey.CloudComponents.VideoPlayer` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.VideoPlayer?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.VideoPlayer) | HTML5 / HLS video player with full controls, casting, and settings |
 | `AngryMonkey.CloudComponents.Maps` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.Maps?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.Maps) | Azure Maps wrapper with markers, regions, geocoding, search, and location-lock |
@@ -27,7 +27,7 @@ Free, open-source Blazor component libraries for **.NET 10**.
 ### 1. Install
 
 ```bash
-dotnet add package AngryMonkey.Cloud.Components
+dotnet add package AngryMonkey.CloudComponents
 dotnet add package AngryMonkey.CloudComponents.Grid
 dotnet add package AngryMonkey.CloudComponents.VideoPlayer
 dotnet add package AngryMonkey.CloudComponents.Maps
@@ -37,7 +37,7 @@ dotnet add package AngryMonkey.CloudComponents.Icons
 ### 2. Add namespaces to `_Imports.razor`
 
 ```razor
-@using AngryMonkey.Cloud.Components
+@using CloudComponents.Basic
 @using CloudComponents.Grid.Components
 @using CloudComponents.Grid.Models
 @using CloudComponents.VideoPlayer
@@ -53,9 +53,9 @@ dotnet add package AngryMonkey.CloudComponents.Icons
 
 ```html
 <!-- Core components CSS + JS -->
-<link rel="stylesheet" href="_content/AngryMonkey.Cloud.Components/css/amc-components.css" />
-<script src="_content/AngryMonkey.Cloud.Components/js/amc-components.js"></script>
-<script src="_content/AngryMonkey.Cloud.Components/js/dialog.js"></script>
+<link rel="stylesheet" href="_content/AngryMonkey.CloudComponents/css/amc-components.css" />
+<script src="_content/AngryMonkey.CloudComponents/js/amc-components.js"></script>
+<script src="_content/AngryMonkey.CloudComponents/js/dialog.js"></script>
 
 <!-- VideoPlayer -->
 <script src="_content/AngryMonkey.CloudComponents.VideoPlayer/hls.js"></script>
@@ -67,7 +67,7 @@ dotnet add package AngryMonkey.CloudComponents.Icons
 
 ## Components at a glance
 
-### Basics (`AngryMonkey.Cloud.Components`)
+### Basics (`AngryMonkey.CloudComponents`)
 
 | Component | Minimum usage |
 |-----------|---------------|
@@ -129,7 +129,7 @@ SVG icon and logo Razor components — no extra CSS class or import required.
 
 ```
 CloudComponents/
-+-- Components/                    # Core UI primitives (Cloud.Components)
++-- CloudComponents.Basic/         # Core UI primitives package
 +-- CloudComponents.Grid/          # Data grid library
 +-- CloudComponents.VideoPlayer/   # Video player library
 +-- CloudComponents.Maps/          # Azure Maps library

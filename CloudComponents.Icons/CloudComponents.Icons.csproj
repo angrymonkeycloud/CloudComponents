@@ -14,7 +14,7 @@
 
 
 
-		<Version>4.1.1</Version>
+		<Version>4.1.2</Version>
 		<Authors>Angry Monkey</Authors>
 		<Company>Angry Monkey</Company>
 		<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
