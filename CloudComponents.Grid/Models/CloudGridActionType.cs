@@ -1,4 +1,4 @@
-namespace CloudComponents.Grid.Models;
+namespace AngryMonkey.CloudComponents.Grid.Models;
 
 /// <summary>
 /// Determines how a <see cref="CloudGridAction"/> is rendered and what happens when it is activated.

@@ -1,10 +1,10 @@
-using CloudComponents.Grid.Models;
+using AngryMonkey.CloudComponents.Grid.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
 using System.Globalization;
 
-namespace CloudComponents.Grid.Components;
+namespace AngryMonkey.CloudComponents.Grid.Components;
 
 /// <summary>
 /// Inner table component for <see cref="CloudGrid"/>: renders the column header row,

@@ -1,4 +1,4 @@
-namespace CloudComponents.Maps.Options;
+namespace AngryMonkey.CloudComponents.Maps.Options;
 
 /// <summary>How a marker is added to / displayed on the map.</summary>
 public enum MarkerAddTrigger

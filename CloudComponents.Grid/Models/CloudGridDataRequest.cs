@@ -1,4 +1,4 @@
-namespace CloudComponents.Grid.Models;
+namespace AngryMonkey.CloudComponents.Grid.Models;
 
 /// <summary>
 /// Describes the parameters the <c>CloudGrid</c> passes to its

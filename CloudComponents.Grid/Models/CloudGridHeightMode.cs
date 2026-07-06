@@ -1,4 +1,4 @@
-namespace CloudComponents.Grid.Models;
+namespace AngryMonkey.CloudComponents.Grid.Models;
 
 /// <summary>
 /// How the <c>CloudGrid</c> body is sized vertically.

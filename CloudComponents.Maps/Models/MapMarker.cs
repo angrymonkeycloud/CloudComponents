@@ -1,4 +1,4 @@
-namespace CloudComponents.Maps.Models;
+namespace AngryMonkey.CloudComponents.Maps.Models;
 
 /// <summary>
 /// Represents a marker on the map. <see cref="Id"/> is auto-generated unless

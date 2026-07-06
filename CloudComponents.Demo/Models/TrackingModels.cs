@@ -1,5 +1,5 @@
 using AngryMonkey.Cloud.Geography;
-using CloudComponents.Maps.Models;
+using AngryMonkey.CloudComponents.Maps.Models;
 
 namespace CloudComponents.Demo.Models;
 

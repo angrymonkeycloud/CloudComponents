@@ -1,27 +1,41 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Version>4.1.1</Version>
+		<Authors>Angry Monkey</Authors>
+		<Company>Angry Monkey</Company>
+		<AssemblyName>AngryMonkey.CloudComponents.Maps.Mobile</AssemblyName>
+		<PackageId>AngryMonkey.CloudComponents.Maps.Mobile</PackageId>
+		<RootNamespace>AngryMonkey.CloudComponents.Maps.Mobile</RootNamespace>
+		<FileVersion>$(PackageVersion)</FileVersion>
+		<PackageIcon>amc-logo.png</PackageIcon>
+	<AssemblyVersion>$(PackageVersion)</AssemblyVersion></PropertyGroup>
 
 
-  <ItemGroup>
-    <SupportedPlatform Include="browser" />
-  </ItemGroup>
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.8" />
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.70" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.8" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.70" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\CloudComponents.Maps\CloudComponents.Maps.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\CloudComponents.Maps\CloudComponents.Maps.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Platforms\Android\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Platforms\Android\" />
+	</ItemGroup>
 
+	<ItemGroup>
+		<None Update="amc-logo.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 </Project>

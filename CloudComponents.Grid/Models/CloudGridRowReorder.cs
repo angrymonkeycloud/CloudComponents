@@ -1,4 +1,4 @@
-namespace CloudComponents.Grid.Models;
+namespace AngryMonkey.CloudComponents.Grid.Models;
 
 /// <summary>
 /// Raised by <c>CloudGrid</c> after the user drags a row to a new position.

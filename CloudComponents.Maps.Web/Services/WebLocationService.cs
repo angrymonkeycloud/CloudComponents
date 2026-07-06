@@ -1,7 +1,7 @@
-using CloudComponents.Maps.Services;
+using AngryMonkey.CloudComponents.Maps.Services;
 using Microsoft.JSInterop;
 
-namespace CloudComponents.Maps.Web.Services;
+namespace AngryMonkey.CloudComponents.Maps.Web.Services;
 
 /// <summary>
 /// Browser implementation of <see cref="ILocationService"/> using
@@ -9,7 +9,7 @@ namespace CloudComponents.Maps.Web.Services;
 /// </summary>
 public sealed class WebLocationService : ILocationService, IAsyncDisposable
 {
-    private const string ModulePath = "./_content/CloudComponents.Maps/mapInterop.js";
+    private const string ModulePath = "./_content/AngryMonkey.CloudComponents.Maps/mapInterop.js";
 
     private readonly IJSRuntime _js;
     private IJSObjectReference? _module;

@@ -1,4 +1,4 @@
-namespace CloudComponents.Grid.Models;
+namespace AngryMonkey.CloudComponents.Grid.Models;
 
 /// <summary>
 /// Defines a single column of a <c>CloudGrid</c>.

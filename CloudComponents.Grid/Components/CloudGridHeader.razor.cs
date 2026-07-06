@@ -1,9 +1,9 @@
-using CloudComponents.Grid.Models;
+using AngryMonkey.CloudComponents.Grid.Models;
 using CloudIcons.Icons;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace CloudComponents.Grid.Components;
+namespace AngryMonkey.CloudComponents.Grid.Components;
 
 /// <summary>
 /// Toolbar rendered above a <see cref="CloudGrid"/>: label, and a unified list of

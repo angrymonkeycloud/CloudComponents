@@ -1,4 +1,4 @@
-namespace CloudComponents.Maps.Models;
+namespace AngryMonkey.CloudComponents.Maps.Models;
 
 /// <summary>
 /// Result of a geocode operation, including the center point, viewport,

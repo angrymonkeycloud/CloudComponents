@@ -1,4 +1,4 @@
-namespace CloudComponents.Maps.Models;
+namespace AngryMonkey.CloudComponents.Maps.Models;
 
 /// <summary>
 /// A single suggestion returned while searching (Azure Maps fuzzy search), shown in the

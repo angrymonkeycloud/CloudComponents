@@ -1,4 +1,4 @@
-namespace CloudComponents.Maps.Options;
+namespace AngryMonkey.CloudComponents.Maps.Options;
 
 /// <summary>
 /// Library-wide Azure Maps configuration, normally registered through

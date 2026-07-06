@@ -1,42 +1,51 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-  <PropertyGroup>
-	<TargetFramework>net10.0</TargetFramework>
-	<Nullable>enable</Nullable>
-	<ImplicitUsings>enable</ImplicitUsings>
-	<RootNamespace>CloudComponents.VideoPlayer</RootNamespace>
-	<IsPackable>true</IsPackable>
-	<PackageId>AngryMonkey.CloudComponents.VideoPlayer</PackageId>
-	<Product>Cloud Components VideoPlayer</Product>
-	<Authors>Angry Monkey</Authors>
-	<Company>Angry Monkey</Company>
-	<PackageProjectUrl>https://www.angrymonkeycloud.com/</PackageProjectUrl>
-	<Version>1.0.0</Version>
-	<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
-	<FileVersion>$(PackageVersion)</FileVersion>
-	<PackageOutputPath>..\NugetPackage\</PackageOutputPath>
-	<Configurations>Debug;Release;Release_Server</Configurations>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<RootNamespace>CloudComponents.VideoPlayer</RootNamespace>
+		<IsPackable>true</IsPackable>
+		<AssemblyName>AngryMonkey.CloudComponents.VideoPlayer</AssemblyName>
+		<PackageId>AngryMonkey.CloudComponents.VideoPlayer</PackageId>
+		<RootNamespace>AngryMonkey.CloudComponents.VideoPlayer</RootNamespace>
+		<Product>Cloud Components VideoPlayer</Product>
+		<Authors>Angry Monkey</Authors>
+		<Company>Angry Monkey</Company>
+		<PackageProjectUrl>https://www.angrymonkeycloud.com/</PackageProjectUrl>
+		<Version>4.1.1</Version>
+		<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
+		<FileVersion>$(PackageVersion)</FileVersion>
+		<PackageOutputPath>..\NugetPackage\</PackageOutputPath>
+		<Configurations>Debug;Release;Release_Server</Configurations>
+		<PackageIcon>amc-logo.png</PackageIcon>
+	</PropertyGroup>
 
-  <ItemGroup>
-	<Content Remove="compilerconfig.json" />
-  </ItemGroup>
+	<ItemGroup>
+		<Content Remove="compilerconfig.json" />
+	</ItemGroup>
 
-  <ItemGroup>
-	<None Include="compilerconfig.json" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="compilerconfig.json" />
+	</ItemGroup>
 
-  <ItemGroup>
-	<SupportedPlatform Include="browser" />
-  </ItemGroup>
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
 
-  <ItemGroup>
-	<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.8" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.8" />
+	</ItemGroup>
 
-  <ItemGroup>
-	<ProjectReference Include="..\CloudComponents.Icons\CloudComponents.Icons.csproj" />
-	<ProjectReference Include="..\CloudComponents.Basic\CloudComponents.Basic.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\CloudComponents.Icons\CloudComponents.Icons.csproj" />
+		<ProjectReference Include="..\CloudComponents.Basic\CloudComponents.Basic.csproj" />
+	</ItemGroup>
 
+	<ItemGroup>
+		<None Update="amc-logo.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 </Project>

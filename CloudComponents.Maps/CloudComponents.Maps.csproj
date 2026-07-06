@@ -1,31 +1,45 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Version>4.1.1</Version>
+		<Authors>Angry Monkey</Authors>
+		<Company>Angry Monkey</Company>
+		<AssemblyName>AngryMonkey.CloudComponents.Maps</AssemblyName>
+		<PackageId>AngryMonkey.CloudComponents.Maps</PackageId>
+		<RootNamespace>AngryMonkey.CloudComponents.Maps</RootNamespace>
+		<FileVersion>$(PackageVersion)</FileVersion>
+		<PackageIcon>amc-logo.png</PackageIcon>
+	<AssemblyVersion>$(PackageVersion)</AssemblyVersion></PropertyGroup>
 
-  <ItemGroup>
-    <Content Remove="compilerconfig.json" />
-  </ItemGroup>
+	<ItemGroup>
+		<Content Remove="compilerconfig.json" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Include="compilerconfig.json" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="compilerconfig.json" />
+	</ItemGroup>
 
 
-  <ItemGroup>
-    <SupportedPlatform Include="browser" />
-  </ItemGroup>
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AngryMonkey.Cloud.Geography" Version="2.8.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.8" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="AngryMonkey.Cloud.Geography" Version="2.8.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.8" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\CloudComponents.Basic\CloudComponents.Basic.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\CloudComponents.Basic\CloudComponents.Basic.csproj" />
+	</ItemGroup>
 
+	<ItemGroup>
+		<None Update="amc-logo.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 </Project>

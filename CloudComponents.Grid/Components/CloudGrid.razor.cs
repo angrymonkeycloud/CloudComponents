@@ -1,10 +1,10 @@
-using CloudComponents.Grid.Models;
+using AngryMonkey.CloudComponents.Grid.Models;
 using CloudIcons.Icons;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Globalization;
 
-namespace CloudComponents.Grid.Components;
+namespace AngryMonkey.CloudComponents.Grid.Components;
 
 /// <summary>
 /// Single entry point for the full grid experience.
@@ -231,7 +231,7 @@ public partial class CloudGrid : IAsyncDisposable
     private async Task<IJSObjectReference> GetJsModuleAsync()
     {
         _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import",
-            "./_content/AngryMonkey.CloudComponents.Grid/cloudgrid.js");
+            "./_content/AngryMonkey.AngryMonkey.CloudComponents.Grid/cloudgrid.js");
         return _jsModule;
     }
 

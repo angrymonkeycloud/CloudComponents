@@ -5,8 +5,8 @@
     <Nullable>enable</Nullable>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <AssemblyName>AngryMonkey.CloudComponents.Basic</AssemblyName>
-    <RootNamespace>CloudComponents.Basic</RootNamespace>
     <PackageId>AngryMonkey.CloudComponents.Basic</PackageId>
+    <RootNamespace>AngryMonkey.CloudComponents.Basic</RootNamespace>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <Product>Cloud Components Basic</Product>
     <Authors>Angry Monkey</Authors>
@@ -17,19 +17,12 @@
 
     <AssemblyVersion>$(PackageVersion)</AssemblyVersion>
     <FileVersion>$(PackageVersion)</FileVersion>
-    <Version>4.0.0</Version>
-    <PackageIcon>AngryMonkeyCloudLogo-64x64.png</PackageIcon>
+    <Version>4.1.1</Version>
+    <PackageIcon>amc-logo.png</PackageIcon>
     <PackageOutputPath>..\NugetPackage\</PackageOutputPath>
 
     <Configurations>Debug;Release;Release_Server</Configurations>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Update="AngryMonkeyCloudLogo-64x64.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Icons\**" />
@@ -86,4 +79,4 @@
     </Content>
   </ItemGroup>
 
-</Project>
+<ItemGroup><None Update="amc-logo.png"><Pack>True</Pack><PackagePath>\</PackagePath></None></ItemGroup></Project>

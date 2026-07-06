@@ -1,22 +1,25 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>CloudComponents.Grid</RootNamespace>
-    <IsPackable>true</IsPackable>
+	  
+    <AssemblyName>AngryMonkey.CloudComponents.Grid</AssemblyName>
     <PackageId>AngryMonkey.CloudComponents.Grid</PackageId>
+    <RootNamespace>AngryMonkey.CloudComponents.Grid</RootNamespace>	  
+	  
+    <IsPackable>true</IsPackable>
     <Product>Cloud Components Grid</Product>
     <Authors>Angry Monkey</Authors>
     <Company>Angry Monkey</Company>
     <PackageProjectUrl>https://www.angrymonkeycloud.com/</PackageProjectUrl>
-    <Version>1.0.0</Version>
+    <Version>4.1.1</Version>
     <AssemblyVersion>$(PackageVersion)</AssemblyVersion>
     <FileVersion>$(PackageVersion)</FileVersion>
     <PackageOutputPath>..\NugetPackage\</PackageOutputPath>
     <Configurations>Debug;Release;Release_Server</Configurations>
-  </PropertyGroup>
+  <PackageIcon>amc-logo.png</PackageIcon></PropertyGroup>
 
   <ItemGroup>
     <Content Remove="compilerconfig.json" />
@@ -38,4 +41,4 @@
     <ProjectReference Include="..\CloudComponents.Icons\CloudComponents.Icons.csproj" />
   </ItemGroup>
 
-</Project>
+<ItemGroup><None Update="amc-logo.png"><Pack>True</Pack><PackagePath>\</PackagePath></None></ItemGroup></Project>

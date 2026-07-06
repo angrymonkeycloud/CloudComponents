@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace CloudComponents.Maps.Options;
+namespace AngryMonkey.CloudComponents.Maps.Options;
 
 /// <summary>
 /// Azure Maps base style. Names match the Azure Maps Web SDK style identifiers

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace CloudComponents.Grid.Models;
+namespace AngryMonkey.CloudComponents.Grid.Models;
 
 /// <summary>
 /// Options for the built-in <c>CloudGridHeader</c> rendered above a <c>CloudGrid</c>.

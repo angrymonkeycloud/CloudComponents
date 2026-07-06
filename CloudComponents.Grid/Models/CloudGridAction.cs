@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace CloudComponents.Grid.Models;
+namespace AngryMonkey.CloudComponents.Grid.Models;
 
 /// <summary>
 /// Defines a single interactive action rendered inside the <c>CloudGrid</c> toolbar or on a row.

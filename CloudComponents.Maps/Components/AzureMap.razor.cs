@@ -1,11 +1,11 @@
-﻿using CloudComponents.Maps.Models;
-using CloudComponents.Maps.Options;
-using CloudComponents.Maps.Services;
+using AngryMonkey.CloudComponents.Maps.Models;
+using AngryMonkey.CloudComponents.Maps.Options;
+using AngryMonkey.CloudComponents.Maps.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 
-namespace CloudComponents.Maps.Components;
+namespace AngryMonkey.CloudComponents.Maps.Components;
 
 /// <summary>
 /// Azure Maps Blazor component. Encapsulates the Azure Maps Web SDK behind a
@@ -13,7 +13,7 @@ namespace CloudComponents.Maps.Components;
 /// </summary>
 public partial class AzureMap : ComponentBase, IAsyncDisposable
 {
-    private const string ModulePath = "./_content/CloudComponents.Maps/mapInterop.js";
+    private const string ModulePath = "./_content/AngryMonkey.CloudComponents.Maps/mapInterop.js";
 
     private IJSObjectReference? _module;
     private IJSObjectReference? _controller;

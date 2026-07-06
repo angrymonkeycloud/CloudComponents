@@ -1,4 +1,4 @@
-namespace CloudComponents.Maps.Models;
+namespace AngryMonkey.CloudComponents.Maps.Models;
 
 /// <summary>
 /// A single allowed country, optionally narrowed to specific subdivisions

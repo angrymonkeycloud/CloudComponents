@@ -1,4 +1,4 @@
-namespace CloudComponents.Grid.Models;
+namespace AngryMonkey.CloudComponents.Grid.Models;
 
 /// <summary>
 /// Raised by <c>CloudGridHeader</c> or <c>CloudGridBody</c> when a <see cref="CloudGridAction"/> is activated.

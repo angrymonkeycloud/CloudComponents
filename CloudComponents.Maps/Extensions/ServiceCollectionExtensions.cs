@@ -1,7 +1,7 @@
-using CloudComponents.Maps.Options;
+using AngryMonkey.CloudComponents.Maps.Options;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CloudComponents.Maps.Extensions;
+namespace AngryMonkey.CloudComponents.Maps.Extensions;
 
 public static class ServiceCollectionExtensions
 {

@@ -82,8 +82,8 @@
             <h2 class="card-title">How it works</h2>
             <ul>
                 <li><strong>Search:</strong> Debounced Azure Maps fuzzy search with a keyboard-navigable dropdown (Arrow keys + Enter/Escape). Selecting a result flies the camera to it.</li>
-                <li><strong>Pin my location (web):</strong> Uses <code>navigator.geolocation</code> through JS isolation (<code>CloudComponents.Maps.Web</code>'s <code>WebLocationService</code>), registered in <code>Program.cs</code>.</li>
-                <li><strong>Pin my location (mobile):</strong> A .NET MAUI Blazor Hybrid host would instead register <code>CloudComponents.Maps.Mobile</code>'s <code>MauiLocationService</code>, which uses native <code>Geolocation</code>/<code>Permissions</code> APIs — no component code changes required.</li>
+                <li><strong>Pin my location (web):</strong> Uses <code>navigator.geolocation</code> through JS isolation (<code>AngryMonkey.CloudComponents.Maps.Web</code>'s <code>WebLocationService</code>), registered in <code>Program.cs</code>.</li>
+                <li><strong>Pin my location (mobile):</strong> A .NET MAUI Blazor Hybrid host would instead register <code>AngryMonkey.CloudComponents.Maps.Mobile</code>'s <code>MauiLocationService</code>, which uses native <code>Geolocation</code>/<code>Permissions</code> APIs — no component code changes required.</li>
                 <li><strong>Permission consent:</strong> The component shows its own confirmation popup before requesting the OS/browser permission prompt, keeping the UX consistent across platforms.</li>
             </ul>
 

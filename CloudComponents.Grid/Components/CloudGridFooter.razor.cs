@@ -1,7 +1,7 @@
-using CloudComponents.Grid.Models;
+using AngryMonkey.CloudComponents.Grid.Models;
 using Microsoft.AspNetCore.Components;
 
-namespace CloudComponents.Grid.Components;
+namespace AngryMonkey.CloudComponents.Grid.Components;
 
 /// <summary>
 /// Presentational footer bar for <see cref="CloudGrid"/>: shows the current range

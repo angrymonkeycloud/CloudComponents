@@ -1,4 +1,4 @@
-﻿namespace CloudComponents.Maps.Services;
+namespace AngryMonkey.CloudComponents.Maps.Services;
 
 /// <summary>Browser/device geolocation permission state.</summary>
 public enum LocationPermissionState

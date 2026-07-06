@@ -1,20 +1,40 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>CloudIcons</RootNamespace>
-    <AssemblyName>CloudIcons</AssemblyName>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
 
 
-  <ItemGroup>
-    <SupportedPlatform Include="browser" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.8" />
-  </ItemGroup>
 
+		<AssemblyName>AngryMonkey.CloudComponents.Icons</AssemblyName>
+		<PackageId>AngryMonkey.CloudComponents.Icons</PackageId>
+		<RootNamespace>AngryMonkey.CloudComponents.Icons</RootNamespace>
+
+
+
+		<Version>4.1.1</Version>
+		<Authors>Angry Monkey</Authors>
+		<Company>Angry Monkey</Company>
+		<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
+		<FileVersion>$(PackageVersion)</FileVersion>
+		<PackageIcon>amc-logo.png</PackageIcon>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.8" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="amc-logo.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 </Project>

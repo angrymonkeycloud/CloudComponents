@@ -1,8 +1,8 @@
-using CloudComponents.Maps.Models;
+using AngryMonkey.CloudComponents.Maps.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace CloudComponents.Maps.Components;
+namespace AngryMonkey.CloudComponents.Maps.Components;
 
 /// <summary>
 /// Built-in place search box for <see cref="AzureMap"/>: debounced Azure Maps fuzzy search

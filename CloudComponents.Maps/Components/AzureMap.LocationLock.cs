@@ -1,9 +1,9 @@
 using AngryMonkey.Cloud;
-using CloudComponents.Maps.Models;
+using AngryMonkey.CloudComponents.Maps.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace CloudComponents.Maps.Components;
+namespace AngryMonkey.CloudComponents.Maps.Components;
 
 /// <summary>
 /// Restricts interactive location selection (marker add, center-pin drag, search-result

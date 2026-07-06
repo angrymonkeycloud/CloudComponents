@@ -1,5 +1,5 @@
 using CloudComponents.Grid.Demo.Models;
-using CloudComponents.Grid.Models;
+using AngryMonkey.CloudComponents.Grid.Models;
 
 namespace CloudComponents.Grid.Demo.Services;
 
