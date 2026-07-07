@@ -5,14 +5,15 @@
 .cloudgridheader {
     display: flex;
     align-items: center;
-    gap: 8px;
+    flex-wrap: nowrap;
     box-sizing: border-box;
     height: var(--cloudgrid-header-height, 40px);
     min-height: var(--cloudgrid-header-height, 40px);
     padding: 4px 8px;
-
+    overflow: visible;
+    position:relative;
     h2 {
-        flex: 1 1 auto;
+        flex: 0 0 auto;
         min-width: 0;
         margin: 0;
         font-size: 16px;
@@ -23,18 +24,27 @@
         text-overflow: ellipsis;
     }
 
+    .right{
+        margin-left:auto;
+        display:flex;
+
+    }
+
     &-bulkactions,
     &-actions {
         display: flex;
         align-items: stretch;
+        flex-wrap: nowrap;
         gap: 4px;
         height: 100%;
         min-height: 0;
     }
 
     &-actions {
-        flex: none;
-        margin-left: auto;
+        flex: 0 1 auto;
+        margin-left: 0;
+        justify-content: flex-end;
+        white-space: nowrap;
 
         &._mode-active {
             .cloudgridheader-slot:not(._active) {
@@ -43,8 +53,33 @@
         }
     }
 
+    &-scroll {
+        display: flex;
+        align-items: center;
+        flex: 1 1 auto;
+        min-width: 0;
+        gap: 8px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+        scrollbar-width: thin;
+    }
+
+    &-actions-scroll {
+        display: flex;
+        align-items: stretch;
+        flex-wrap: nowrap;
+        gap: 4px;
+        height: 100%;
+        min-width: 0;
+        white-space: nowrap;
+    }
+
     &-bulkactions {
-        flex: none;
+        flex: 0 1 auto;
+        min-width: 0;
+        white-space: nowrap;
     }
 
     &._mode-active {
@@ -58,9 +93,9 @@
         align-items: center;
         gap: 4px;
         height: 100%;
+        min-width: 0;
 
         &._active {
-            flex: 1 1 auto;
             min-width: 0;
         }
     }
@@ -167,7 +202,7 @@
 
     &-search {
         box-sizing: border-box;
-        width: 180px;
+        width: min(180px, 100%);
         max-width: 100%;
         height: calc(var(--cloudgrid-header-height, 40px) - 8px);
         min-height: calc(var(--cloudgrid-header-height, 40px) - 8px);
@@ -183,6 +218,7 @@
     }
 
     &-more {
+        flex: 0 0 auto;
         position: relative;
 
         &-dropdown {
@@ -191,12 +227,14 @@
             right: 0;
             z-index: 100;
             min-width: 160px;
+            max-width: min(280px, calc(100vw - 16px));
             margin-top: 4px;
             padding: 4px 0;
             background: var(--cloudgrid-background, #fff);
             border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
             border-radius: 4px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            overflow-x: hidden;
         }
 
         &-item {
@@ -269,6 +307,56 @@
 
         &:hover {
             background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, #e8e8e8));
+        }
+    }
+
+    @media (max-width: 640px) {
+        gap: 6px;
+        padding: 6px;
+
+        h2 {
+            flex: 0 0 auto;
+            max-width: none;
+        }
+
+        &-scroll {
+            gap: 6px;
+        }
+
+        &-actions {
+            justify-content: flex-end;
+        }
+
+        &-action,
+        ::deep .cloudgrid-export-btn {
+            padding: 0 8px;
+        }
+
+        &-slot {
+            max-width: none;
+        }
+
+        &-search {
+            width: 160px;
+            max-width: none;
+        }
+
+        ::deep .cloudgrid-export-panel {
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            height: 100%;
+        }
+
+        &-more {
+            position: relative;
+
+            &-dropdown {
+                right: 0;
+                left: auto;
+                width: auto;
+                min-width: 160px;
+                max-width: min(280px, calc(100vw - 16px));
+            }
         }
     }
 }
