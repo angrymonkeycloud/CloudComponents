@@ -84,6 +84,20 @@
             </div>
         </div>
 
+        @* -- CloudEditor -- *@
+        <div class="nav-group">
+            <button class="nav-section-btn @(IsOpen("editor") ? "open" : "")" @onclick='() => Toggle("editor")'>
+                <span>&#x270E; CloudEditor</span>
+                <i class="nav-section-chevron">&#x25B6;</i>
+            </button>
+            <div class="nav-section-links @(IsOpen("editor") ? "open" : "")">
+                <NavLink class="nav-link" href="editor/basic">Basic Editor</NavLink>
+                <NavLink class="nav-link" href="editor/headings">Heading Levels</NavLink>
+                <NavLink class="nav-link" href="editor/codeview">Code View &amp; Validation</NavLink>
+                <NavLink class="nav-link" href="editor/media">Media &amp; Uploads</NavLink>
+            </div>
+        </div>
+
         @* -- CloudIcons -- *@
         <div class="nav-group">
             <button class="nav-section-btn @(IsOpen("icons") ? "open" : "")" @onclick='() => Toggle("icons")'>
@@ -143,6 +157,7 @@
         if (path.StartsWith("grid")) return "grid";
         if (path.StartsWith("video")) return "video";
         if (path.StartsWith("maps")) return "maps";
+        if (path.StartsWith("editor")) return "editor";
         if (path.StartsWith("icons")) return "icons";
         if (path.StartsWith("components")) return "components";
         return "";

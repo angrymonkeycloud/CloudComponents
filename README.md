@@ -18,6 +18,7 @@ Free, open-source Blazor component libraries for **.NET 10**.
 | `AngryMonkey.CloudComponents.Grid` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.Grid?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.Grid) | Feature-rich data grid with sorting, paging, selection, actions, reordering, and export |
 | `AngryMonkey.CloudComponents.VideoPlayer` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.VideoPlayer?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.VideoPlayer) | HTML5 / HLS video player with full controls, casting, and settings |
 | `AngryMonkey.CloudComponents.Maps` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.Maps?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.Maps) | Azure Maps wrapper with markers, regions, geocoding, search, and location-lock |
+| `AngryMonkey.CloudComponents.Editor` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.Editor?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.Editor) | Rich text editor with formatting toolbar, media embeds, and HTML code view validation |
 | `AngryMonkey.CloudComponents.Icons` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.Icons?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.Icons) | SVG icon and logo Razor components |
 
 ---
@@ -31,6 +32,7 @@ dotnet add package AngryMonkey.CloudComponents
 dotnet add package AngryMonkey.CloudComponents.Grid
 dotnet add package AngryMonkey.CloudComponents.VideoPlayer
 dotnet add package AngryMonkey.CloudComponents.Maps
+dotnet add package AngryMonkey.CloudComponents.Editor
 dotnet add package AngryMonkey.CloudComponents.Icons
 ```
 
@@ -44,6 +46,9 @@ dotnet add package AngryMonkey.CloudComponents.Icons
 @using CloudComponents.Maps.Components
 @using CloudComponents.Maps.Models
 @using CloudComponents.Maps.Services
+@using AngryMonkey.CloudComponents.Editor.Components
+@using AngryMonkey.CloudComponents.Editor.Models
+@using AngryMonkey.CloudComponents.Editor.Services
 @using CloudIcons
 @using CloudIcons.Icons
 @using CloudIcons.Logos
@@ -115,6 +120,15 @@ builder.Services.AddAzureMaps(options => options.SubscriptionKey = "YOUR_AZURE_M
 Features: markers, regions, polygon boundaries, geocoding, reverse geocoding, place search, pin-my-location, location lock, camera and style updates at runtime.
 See [CloudComponents.Maps/README.md](CloudComponents.Maps/README.md) for the full API.
 
+### CloudEditor (`AngryMonkey.CloudComponents.Editor`)
+
+```razor
+<CloudEditor @bind-Value="_html" Placeholder="Start writing…" FirstHeadingLevel="2" />
+```
+
+Rich text editor with headings, bold/italic/strikethrough, colors, alignment, lists, links, image/video insertion, fullscreen mode, and HTML code view with validation.
+See [CloudComponents.Editor/README.md](CloudComponents.Editor/README.md) for the full API.
+
 ### CloudIcons (`AngryMonkey.CloudComponents.Icons`)
 
 ```razor
@@ -134,6 +148,7 @@ CloudComponents/
 +-- CloudComponents.VideoPlayer/   # Video player library
 +-- CloudComponents.Maps/          # Azure Maps library
 +-- CloudComponents.Maps.Web/      # Maps web helpers
++-- CloudComponents.Editor/        # Rich text editor library
 +-- CloudComponents.Icons/         # SVG icon components
 +-- CloudComponents.Demo/          # Unified demo app (deployed to GitHub Pages)
 +-- archived/                      # Legacy standalone demo projects (reference only)

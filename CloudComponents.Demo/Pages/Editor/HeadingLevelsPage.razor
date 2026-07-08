@@ -1,0 +1,130 @@
+@page "/editor/headings"
+
+<PageTitle>CloudEditor — Heading Levels</PageTitle>
+
+<div class="page-header">
+    <h1>Heading Levels &amp; Toolbar Options</h1>
+    <p>
+        Control which HTML heading the first "Heading" entry produces with
+        <code>FirstHeadingLevel</code> — useful when the page already owns its <code>&lt;h1&gt;</code>.
+        Toolbar groups can be switched off individually through <code>CloudEditorToolbarOptions</code>.
+    </p>
+</div>
+
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
+            <h2 class="card-title">Heading offset</h2>
+            <p class="card-subtitle">
+                This editor uses <code>FirstHeadingLevel="@_firstHeadingLevel"</code> and
+                <code>HeadingCount="@_headingCount"</code> — so "Heading 1" in the dropdown produces
+                an <code>&lt;h@(_firstHeadingLevel)&gt;</code> element. Try it: pick a heading from the
+                dropdown and inspect the output below.
+            </p>
+
+            <div class="toolbar" style="margin-bottom:0.75rem;">
+                <label style="font-size:13px;">
+                    First heading level:
+                    <select @bind="_firstHeadingLevel" style="margin-left:4px;">
+                        <option value="1">1 (h1)</option>
+                        <option value="2">2 (h2)</option>
+                        <option value="3">3 (h3)</option>
+                        <option value="4">4 (h4)</option>
+                    </select>
+                </label>
+                <label style="font-size:13px;">
+                    Heading count:
+                    <select @bind="_headingCount" style="margin-left:4px;">
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                    </select>
+                </label>
+            </div>
+
+            <CloudEditor @bind-Value="_offsetHtml"
+                         FirstHeadingLevel="_firstHeadingLevel"
+                         HeadingCount="_headingCount"
+                         MinHeight="200px" />
+
+            <pre class="code-snippet" style="max-height:160px;overflow:auto;margin-top:0.75rem;"><code>@(_offsetHtml ?? "(empty)")</code></pre>
+        </div>
+
+        <div class="card" style="margin-top:1rem;">
+            <h2 class="card-title">Minimal toolbar</h2>
+            <p class="card-subtitle">
+                Only basic formatting, lists and undo/redo are enabled here — everything else is
+                switched off via <code>Toolbar</code>.
+            </p>
+
+            <CloudEditor @bind-Value="_minimalHtml"
+                         Placeholder="Bold, italic, underline, strikethrough, lists and undo/redo only…"
+                         MinHeight="160px"
+                         Toolbar="_minimalToolbar" />
+        </div>
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0;">
+                <code>FirstHeadingLevel</code> remaps the heading dropdown; heading entries never map
+                beyond <code>&lt;h6&gt;</code>. <code>CloudEditorToolbarOptions</code> exposes a boolean
+                per tool group.
+            </p>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
+
+@code {
+    private int _firstHeadingLevel = 2;
+    private int _headingCount = 3;
+
+    private string? _offsetHtml = "<p>Select this line and choose <strong>Heading 1</strong> from the dropdown.</p>";
+    private string? _minimalHtml;
+
+    private readonly CloudEditorToolbarOptions _minimalToolbar = new()
+    {
+        Headings = false,
+        Script = false,
+        InlineCode = false,
+        TextColor = false,
+        HighlightColor = false,
+        Alignment = false,
+        Indentation = false,
+        Blockquote = false,
+        CodeBlock = false,
+        Link = false,
+        Image = false,
+        Video = false,
+        HorizontalRule = false,
+        ClearFormatting = false,
+        CodeView = false,
+        Fullscreen = false
+    };
+
+    private readonly string _usageSnippet = """
+        <!-- "Heading 1" produces <h2>, "Heading 2" produces <h3>, "Heading 3" produces <h4> -->
+        <CloudEditor @bind-Value="_html"
+                     FirstHeadingLevel="2"
+                     HeadingCount="3" />
+
+        <!-- Minimal toolbar: only basic formatting, lists and undo/redo -->
+        <CloudEditor @bind-Value="_html"
+                     Toolbar="new CloudEditorToolbarOptions
+                     {
+                         Headings = false,
+                         TextColor = false,
+                         HighlightColor = false,
+                         Alignment = false,
+                         Link = false,
+                         Image = false,
+                         Video = false,
+                         CodeView = false,
+                         // …
+                     }" />
+        """;
+}

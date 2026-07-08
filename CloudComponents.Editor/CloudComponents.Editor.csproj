@@ -4,21 +4,28 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<RootNamespace>CloudComponents.VideoPlayer</RootNamespace>
+
+		<AssemblyName>AngryMonkey.CloudComponents.Editor</AssemblyName>
+		<PackageId>AngryMonkey.CloudComponents.Editor</PackageId>
+		<RootNamespace>AngryMonkey.CloudComponents.Editor</RootNamespace>
+
 		<IsPackable>true</IsPackable>
-		<AssemblyName>AngryMonkey.CloudComponents.VideoPlayer</AssemblyName>
-		<PackageId>AngryMonkey.CloudComponents.VideoPlayer</PackageId>
-		<RootNamespace>AngryMonkey.CloudComponents.VideoPlayer</RootNamespace>
-		<Product>Cloud Components VideoPlayer</Product>
+		<Product>Cloud Components Editor</Product>
 		<Authors>Angry Monkey</Authors>
 		<Company>Angry Monkey</Company>
+		<Description>Rich text editor Blazor component for .NET 10. Semantic HTML output, configurable toolbar (bold, italic, headings, color, lists, alignment, code block, links, images, video embeds), HTML code view with built-in validation, paste sanitization, and no external JavaScript dependencies.</Description>
+		<PackageTags>blazor;editor;rich-text;wysiwyg;dotnet;component;webassembly</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://www.angrymonkeycloud.com/</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/angrymonkeycloud/CloudComponents</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
 		<Version>4.1.4</Version>
 		<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
 		<FileVersion>$(PackageVersion)</FileVersion>
 		<PackageOutputPath>..\NugetPackage\</PackageOutputPath>
 		<Configurations>Debug;Release;Release_Server</Configurations>
 		<PackageIcon>amc-logo.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -38,14 +45,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\CloudComponents.Icons\CloudComponents.Icons.csproj" />
-		<ProjectReference Include="..\CloudComponents\CloudComponents.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<None Update="amc-logo.png">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
+		<None Update="README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
 	</ItemGroup>
+
 </Project>

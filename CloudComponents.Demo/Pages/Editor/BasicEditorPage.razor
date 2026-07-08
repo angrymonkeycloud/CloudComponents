@@ -1,0 +1,90 @@
+@page "/editor/basic"
+
+<PageTitle>CloudEditor — Basic</PageTitle>
+
+<div class="page-header">
+    <h1>Basic Editor</h1>
+    <p>
+        A full-featured rich text editor with two-way binding. Type, format with the toolbar or
+        keyboard shortcuts (Ctrl+B, Ctrl+I, Ctrl+U, Ctrl+K), paste content, and watch the bound
+        HTML value update live below. Paste sanitization keeps the output semantic and safe.
+    </p>
+</div>
+
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
+            <h2 class="card-title">Editor</h2>
+            <p class="card-subtitle">
+                All toolbar features enabled: headings, <strong>bold</strong>, <em>italic</em>,
+                <u>underline</u>, <s>strikethrough</s>, sub/superscript, inline code, colors,
+                alignment, lists, indentation, blockquote, code block, link, image, video,
+                horizontal rule, clear formatting, undo/redo, code view and fullscreen.
+            </p>
+
+            <CloudEditor @bind-Value="_html"
+                         Placeholder="Start writing something great…"
+                         MinHeight="280px"
+                         OnChanged="HandleChanged" />
+
+            <div class="toolbar" style="margin-top:1rem;">
+                <span class="badge">Changes: @_changeCount</span>
+                <span class="badge">Length: @(_html?.Length ?? 0) chars</span>
+                <button class="badge" style="cursor:pointer;" @onclick="ResetContent">Reset sample content</button>
+            </div>
+
+            <h2 class="card-title" style="margin-top:1.5rem;">Bound HTML value</h2>
+            <pre class="code-snippet" style="max-height:220px;overflow:auto;"><code>@(_html ?? "(empty)")</code></pre>
+        </div>
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0;">
+                Bind an HTML string with <code>@@bind-Value</code>. Updates are debounced while
+                typing (250 ms by default) and always flushed on blur.
+            </p>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
+
+@code {
+    private string? _html;
+    private int _changeCount;
+
+    private const string SampleContent = """
+        <h1>Welcome to CloudEditor</h1>
+        <p>This is a <strong>rich text editor</strong> for Blazor with <em>semantic HTML</em> output. It supports <u>underline</u>, <s>strikethrough</s>, <code>inline code</code>, and much more.</p>
+        <blockquote>Select some text and try the toolbar — or use Ctrl+B, Ctrl+I, Ctrl+U and Ctrl+K.</blockquote>
+        <ul><li>Bulleted lists</li><li>Numbered lists</li><li>Indentation with Tab / Shift+Tab</li></ul>
+        <p>Switch to <strong>code view</strong> with the <code>&lt;/&gt;</code> button to edit the HTML source directly — with validation.</p>
+        """;
+
+    protected override void OnInitialized() => _html = SampleContent;
+
+    private void HandleChanged(string? value) => _changeCount++;
+
+    private void ResetContent()
+    {
+        _html = SampleContent;
+        _changeCount = 0;
+    }
+
+    private readonly string _usageSnippet = """
+        <CloudEditor @bind-Value="_html"
+                     Placeholder="Start writing something great…"
+                     MinHeight="280px"
+                     OnChanged="HandleChanged" />
+
+        @code {
+            private string? _html;
+
+            private void HandleChanged(string? value)
+            {
+                // Raised after every content change (debounced).
+            }
+        }
+        """;
+}

@@ -21,6 +21,7 @@
 		<ProjectReference Include="..\CloudComponents.VideoPlayer\CloudComponents.VideoPlayer.csproj" />
 		<ProjectReference Include="..\CloudComponents.Maps\CloudComponents.Maps.csproj" />
 		<ProjectReference Include="..\CloudComponents.Maps.Web\CloudComponents.Maps.Web.csproj" />
+		<ProjectReference Include="..\CloudComponents.Editor\CloudComponents.Editor.csproj" />
 		<ProjectReference Include="..\CloudComponents.Icons\CloudComponents.Icons.csproj" />
 		<ProjectReference Include="..\CloudComponents\CloudComponents.csproj" />
 	</ItemGroup>

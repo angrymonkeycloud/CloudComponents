@@ -1,0 +1,107 @@
+@page "/editor/codeview"
+
+<PageTitle>CloudEditor — Code View &amp; Validation</PageTitle>
+
+<div class="page-header">
+    <h1>Code View &amp; Validation</h1>
+    <p>
+        The <code>&lt;/&gt;</code> toolbar button switches the editor to an HTML source view.
+        The source is validated live — unclosed or mismatched tags, unterminated quotes and
+        stray closing tags are reported with line and column, and <strong>Apply</strong> stays
+        disabled until the source is error-free.
+    </p>
+</div>
+
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
+            <h2 class="card-title">Try it</h2>
+            <p class="card-subtitle">
+                Switch to code view, then break the markup — remove a closing tag, or leave an
+                attribute quote open — and watch the validation messages. Warnings (like inline
+                event handlers or <code>&lt;font&gt;</code> tags) don't block applying; errors do.
+            </p>
+
+            <CloudEditor @bind-Value="_html" MinHeight="260px" />
+        </div>
+
+        <div class="card" style="margin-top:1rem;">
+            <h2 class="card-title">Standalone validator</h2>
+            <p class="card-subtitle">
+                <code>CloudEditorHtmlValidator</code> can also be used directly. Paste any HTML
+                fragment below to validate it.
+            </p>
+
+            <textarea class="code-snippet"
+                      style="width:100%;min-height:120px;font-family:monospace;font-size:13px;resize:vertical;"
+                      placeholder="<p>Paste an HTML fragment here…</p>"
+                      @oninput="ValidateInput">@_validatorInput</textarea>
+
+            @if (_validationResult is not null)
+            {
+                <div style="margin-top:0.5rem;">
+                    @if (_validationResult.IsValid && !_validationResult.Warnings.Any())
+                    {
+                        <span class="badge" style="color:var(--color-success, #2e7d32);">✓ Valid HTML</span>
+                    }
+                    @foreach (var error in _validationResult.Errors)
+                    {
+                        <div style="font-size:13px;color:#c62828;">✕ @error.ToString()</div>
+                    }
+                    @foreach (var warning in _validationResult.Warnings)
+                    {
+                        <div style="font-size:13px;color:#e65100;">⚠ @warning.ToString()</div>
+                    }
+                </div>
+            }
+        </div>
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0;">
+                Code view is built in — no extra setup. The validator is a static class you can
+                also call from your own code.
+            </p>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
+
+@code {
+    private string? _html = """
+        <h2>Edit me as source</h2>
+        <p>Click the <code>&lt;/&gt;</code> button in the toolbar to switch to code view.</p>
+        <ul><li>Errors block the Apply button</li><li>Warnings are informational</li></ul>
+        """;
+
+    private string _validatorInput = "";
+    private CloudEditorHtmlValidationResult? _validationResult;
+
+    private void ValidateInput(ChangeEventArgs e)
+    {
+        _validatorInput = e.Value?.ToString() ?? "";
+        _validationResult = string.IsNullOrWhiteSpace(_validatorInput)
+            ? null
+            : CloudEditorHtmlValidator.Validate(_validatorInput);
+    }
+
+    private readonly string _usageSnippet = """
+        <!-- Code view is enabled by default; disable it with Toolbar options -->
+        <CloudEditor @bind-Value="_html" />
+
+        @code {
+            private void ValidateSomething(string html)
+            {
+                CloudEditorHtmlValidationResult result = CloudEditorHtmlValidator.Validate(html);
+
+                if (!result.IsValid)
+                {
+                    foreach (CloudEditorHtmlValidationMessage error in result.Errors)
+                        Console.WriteLine(error); // "Line 3, Col 8: Unclosed tag <div>."
+                }
+            }
+        }
+        """;
+}

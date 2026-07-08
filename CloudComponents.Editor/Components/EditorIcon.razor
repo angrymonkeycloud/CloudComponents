@@ -1,0 +1,130 @@
+@namespace AngryMonkey.CloudComponents.Editor.Components
+
+<svg class="cloudeditor-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    @switch (Name)
+    {
+        case "bold":
+            <path d="M7 4h5.5a3.5 3.5 0 0 1 0 7H7zM7 11h6.5a3.5 3.5 0 0 1 0 7H7z" />
+            break;
+        case "italic":
+            <path d="M10 4h8M6 20h8M14 4l-4 16" />
+            break;
+        case "underline":
+            <path d="M6 4v6a6 6 0 0 0 12 0V4M5 20h14" />
+            break;
+        case "strikethrough":
+            <path d="M7 5.8C8 4.7 9.8 4 12 4c2.4 0 4 .8 5 2.2M7 18.2C8 19.3 9.8 20 12 20c2.4 0 4-.8 5-2.2M4 12h16" />
+            break;
+        case "subscript":
+            <path d="M4 5l8 10M12 5L4 15" />
+            <path d="M15 19c0-2.5 4-2.6 4-4.6 0-1-.8-1.6-2-1.6-1 0-1.7.4-2 1.2M15 19h4.5" stroke-width="1.5" />
+            break;
+        case "superscript":
+            <path d="M4 9l8 10M12 9L4 19" />
+            <path d="M15 11c0-2.5 4-2.6 4-4.6 0-1-.8-1.6-2-1.6-1 0-1.7.4-2 1.2M15 11h4.5" stroke-width="1.5" />
+            break;
+        case "inline-code":
+            <path d="M9 7l-4.5 5L9 17M15 7l4.5 5L15 17" />
+            break;
+        case "text-color":
+            <path d="M6.5 15L12 3l5.5 12M8.5 10.5h7" />
+            <rect x="5" y="18.5" width="14" height="3" rx="0.8" fill="currentColor" stroke="none" />
+            break;
+        case "highlight":
+            <path d="M9.5 15.5L5 20H2l3.5-4.5zM9 10l8.5-8L21 5.5l-8 8.5z" />
+            <path d="M9 10l5 5" />
+            <rect x="4" y="21" width="18" height="2" rx="0.6" fill="currentColor" stroke="none" />
+            break;
+        case "align-left":
+            <path d="M4 6h16M4 10h10M4 14h16M4 18h10" />
+            break;
+        case "align-center":
+            <path d="M4 6h16M7 10h10M4 14h16M7 18h10" />
+            break;
+        case "align-right":
+            <path d="M4 6h16M10 10h10M4 14h16M10 18h10" />
+            break;
+        case "align-justify":
+            <path d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+            break;
+        case "list-ul":
+            <path d="M9 6h11M9 12h11M9 18h11" />
+            <circle cx="4.5" cy="6" r="1.4" fill="currentColor" stroke="none" />
+            <circle cx="4.5" cy="12" r="1.4" fill="currentColor" stroke="none" />
+            <circle cx="4.5" cy="18" r="1.4" fill="currentColor" stroke="none" />
+            break;
+        case "list-ol":
+            <path d="M10 6h10M10 12h10M10 18h10" />
+            <path d="M4 5l1.5-1v4.5M3.8 10.8c.3-.6 1-1 1.7-.8 1.6.3 1 1.8.2 2.5L3.5 14h3M3.8 16.5h1.8c2 0 2 2.7 0 2.7 2 0 2 2.8 0 2.8H3.8" stroke-width="1.3" />
+            break;
+        case "indent":
+            <path d="M4 5h16M11 9.5h9M11 14.5h9M4 19h16" />
+            <path d="M4 9.5v5l3.5-2.5z" fill="currentColor" stroke="none" />
+            break;
+        case "outdent":
+            <path d="M4 5h16M11 9.5h9M11 14.5h9M4 19h16" />
+            <path d="M7.5 9.5v5L4 12z" fill="currentColor" stroke="none" />
+            break;
+        case "blockquote":
+            <path d="M10.5 8.5c0 3.5-1.8 5.6-4.8 6.7l-.7-1.4c1.7-.8 2.7-1.9 2.9-3.3H4.5V5h6zM20 8.5c0 3.5-1.8 5.6-4.8 6.7l-.7-1.4c1.7-.8 2.7-1.9 2.9-3.3H14V5h6z" fill="currentColor" stroke="none" />
+            <path d="M4.5 19h15" />
+            break;
+        case "code-block":
+            <rect x="3" y="4" width="18" height="16" rx="2" />
+            <path d="M9.5 9.5L7 12l2.5 2.5M14.5 9.5L17 12l-2.5 2.5" />
+            break;
+        case "link":
+            <path d="M10 14a5 5 0 0 0 7.1 0l2.4-2.4a5 5 0 1 0-7.1-7.1l-1.2 1.2" />
+            <path d="M14 10a5 5 0 0 0-7.1 0l-2.4 2.4a5 5 0 1 0 7.1 7.1l1.2-1.2" />
+            break;
+        case "unlink":
+            <path d="M13.5 6.5l1-1a5 5 0 1 1 7.1 7.1l-1 1M10.5 17.5l-1 1a5 5 0 1 1-7.1-7.1l1-1" />
+            <path d="M5 3l16 18" />
+            break;
+        case "image":
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none" />
+            <path d="M21 15l-5-5L5 21" />
+            break;
+        case "video":
+            <rect x="2" y="5" width="14" height="14" rx="2" />
+            <path d="M22 7.5l-6 4.5 6 4.5z" fill="currentColor" stroke="none" />
+            break;
+        case "hr":
+            <path d="M4 12h16" />
+            <path d="M8 6.5h8M8 17.5h8" stroke-opacity="0.45" />
+            break;
+        case "clear-format":
+            <path d="M4 5h12M10 5v14" />
+            <path d="M14.5 13.5l6 6M20.5 13.5l-6 6" />
+            break;
+        case "undo":
+            <path d="M4 5v6h6" />
+            <path d="M4.5 11a8 8 0 1 1 2.3 6.5" />
+            break;
+        case "redo":
+            <path d="M20 5v6h-6" />
+            <path d="M19.5 11a8 8 0 1 0-2.3 6.5" />
+            break;
+        case "code-view":
+            <path d="M8 6l-5.5 6L8 18M16 6l5.5 6L16 18" />
+            break;
+        case "fullscreen":
+            <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M16 21h3a2 2 0 0 0 2-2v-3M8 21H5a2 2 0 0 1-2-2v-3" />
+            break;
+        case "fullscreen-exit":
+            <path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7" />
+            break;
+        case "close":
+            <path d="M6 6l12 12M18 6L6 18" />
+            break;
+        case "check":
+            <path d="M4 12.5l5 5L20 7" />
+            break;
+    }
+</svg>
+
+@code {
+    /// <summary>Icon key, e.g. <c>bold</c>, <c>list-ul</c>, <c>code-view</c>.</summary>
+    [Parameter, EditorRequired] public string Name { get; set; } = string.Empty;
+}

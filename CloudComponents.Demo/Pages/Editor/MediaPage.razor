@@ -1,0 +1,98 @@
+@page "/editor/media"
+
+<PageTitle>CloudEditor — Media &amp; Uploads</PageTitle>
+
+<div class="page-header">
+    <h1>Media &amp; Uploads</h1>
+    <p>
+        Insert links (Ctrl+K), images from a URL or an uploaded file, videos from YouTube,
+        Vimeo or direct file URLs, and horizontal rules. Provide an <code>ImageUploadHandler</code>
+        to persist uploads yourself — without one, images are embedded inline as data URLs.
+    </p>
+</div>
+
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
+            <h2 class="card-title">Editor with upload handler</h2>
+            <p class="card-subtitle">
+                This demo's handler simulates an upload (it reads the stream, then returns a data
+                URL). In production return the URL of the stored blob instead. Upload limit here:
+                <strong>2 MB</strong>.
+            </p>
+
+            <CloudEditor @bind-Value="_html"
+                         MinHeight="280px"
+                         ImageUploadHandler="UploadImageAsync"
+                         MaxUploadSize="2 * 1024 * 1024" />
+
+            @if (_lastUpload is not null)
+            {
+                <div class="toolbar" style="margin-top:0.75rem;">
+                    <span class="badge">Last upload: @_lastUpload</span>
+                </div>
+            }
+
+            <h2 class="card-title" style="margin-top:1.5rem;">Try these video URLs</h2>
+            <ul style="font-size:13px;">
+                <li><code>https://www.youtube.com/watch?v=dQw4w9WgXcQ</code> → YouTube iframe (privacy-enhanced)</li>
+                <li><code>https://vimeo.com/76979871</code> → Vimeo iframe</li>
+                <li><code>https://example.com/clip.mp4</code> → native <code>&lt;video controls&gt;</code></li>
+            </ul>
+        </div>
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0;">
+                The upload handler receives a <code>CloudEditorFileUpload</code> with the file name,
+                content type, size and a stream factory. Return the stored file's URL, or
+                <code>null</code> to cancel the insertion.
+            </p>
+            <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
+
+@code {
+    private string? _html = """
+        <h2>Media playground</h2>
+        <p>Use the <strong>image</strong> and <strong>video</strong> toolbar buttons to embed media, or select text and press <strong>Ctrl+K</strong> to add a link.</p>
+        """;
+
+    private string? _lastUpload;
+
+    private async Task<string?> UploadImageAsync(CloudEditorFileUpload file)
+    {
+        // Demo implementation: read the stream and return an inline data URL.
+        // A real handler would push the stream to blob storage / an API
+        // and return the public URL of the stored file.
+        await using Stream stream = file.OpenReadStream();
+        using MemoryStream buffer = new();
+        await stream.CopyToAsync(buffer);
+
+        _lastUpload = $"{file.FileName} ({file.ContentType}, {file.Size / 1024.0:0.#} KB)";
+        StateHasChanged();
+
+        return $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer.ToArray())}";
+    }
+
+    private readonly string _usageSnippet = """
+        <CloudEditor @bind-Value="_html"
+                     ImageUploadHandler="UploadImageAsync"
+                     MaxUploadSize="2 * 1024 * 1024" />
+
+        @code {
+            private async Task<string?> UploadImageAsync(CloudEditorFileUpload file)
+            {
+                await using Stream stream = file.OpenReadStream();
+
+                // Persist to blob storage / your API…
+                string url = await _storage.SaveAsync(file.FileName, file.ContentType, stream);
+
+                return url; // inserted as <img src="…">; return null to cancel
+            }
+        }
+        """;
+}
