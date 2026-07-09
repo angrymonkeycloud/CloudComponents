@@ -1,4 +1,4 @@
-.cloudeditor {
+﻿.cloudeditor {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -67,9 +67,9 @@
   opacity: 0.4;
   cursor: default;
 }
-.cloudeditor-icon {
-  width: 18px;
-  height: 18px;
+.cloudeditor-btn > svg {
+  width: 16px;
+  height: 16px;
   display: block;
 }
 .cloudeditor-select {
@@ -305,7 +305,7 @@
   border-radius: 6px;
   cursor: pointer;
 }
-.cloudeditor-action .cloudeditor-icon {
+.cloudeditor-action > svg {
   width: 14px;
   height: 14px;
 }

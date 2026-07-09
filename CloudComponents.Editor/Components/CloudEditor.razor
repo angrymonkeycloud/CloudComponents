@@ -8,8 +8,8 @@
         @if (Toolbar.UndoRedo)
         {
             <div class="cloudeditor-group">
-                @ToolbarButton("undo", "Undo (Ctrl+Z)", UndoAsync)
-                @ToolbarButton("redo", "Redo (Ctrl+Y)", RedoAsync)
+                @ToolbarButton(@<EditorUndoIcon />, "Undo (Ctrl+Z)", UndoAsync)
+                @ToolbarButton(@<EditorRedoIcon />, "Redo (Ctrl+Y)", RedoAsync)
             </div>
         }
 
@@ -29,18 +29,18 @@
         @if (Toolbar.BasicFormatting)
         {
             <div class="cloudeditor-group">
-                @ToolbarButton("bold", "Bold (Ctrl+B)", () => ExecAsync("bold"), _selectionState.Bold)
-                @ToolbarButton("italic", "Italic (Ctrl+I)", () => ExecAsync("italic"), _selectionState.Italic)
-                @ToolbarButton("underline", "Underline (Ctrl+U)", () => ExecAsync("underline"), _selectionState.Underline)
-                @ToolbarButton("strikethrough", "Strikethrough", () => ExecAsync("strikeThrough"), _selectionState.Strikethrough)
+                @ToolbarButton(@<EditorBoldIcon />, "Bold (Ctrl+B)", () => ExecAsync("bold"), _selectionState.Bold)
+                @ToolbarButton(@<EditorItalicIcon />, "Italic (Ctrl+I)", () => ExecAsync("italic"), _selectionState.Italic)
+                @ToolbarButton(@<EditorUnderlineIcon />, "Underline (Ctrl+U)", () => ExecAsync("underline"), _selectionState.Underline)
+                @ToolbarButton(@<EditorStrikethroughIcon />, "Strikethrough", () => ExecAsync("strikeThrough"), _selectionState.Strikethrough)
             </div>
         }
 
         @if (Toolbar.Script)
         {
             <div class="cloudeditor-group">
-                @ToolbarButton("subscript", "Subscript", () => ExecAsync("subscript"), _selectionState.Subscript)
-                @ToolbarButton("superscript", "Superscript", () => ExecAsync("superscript"), _selectionState.Superscript)
+                @ToolbarButton(@<EditorSubscriptIcon />, "Subscript", () => ExecAsync("subscript"), _selectionState.Subscript)
+                @ToolbarButton(@<EditorSuperscriptIcon />, "Superscript", () => ExecAsync("superscript"), _selectionState.Superscript)
             </div>
         }
 
@@ -49,12 +49,12 @@
             <div class="cloudeditor-group">
                 @if (Toolbar.InlineCode)
                 {
-                    @ToolbarButton("inline-code", "Inline code", ToggleInlineCodeAsync, _selectionState.InlineCode)
+                    @ToolbarButton(@<EditorInlineCodeIcon />, "Inline code", ToggleInlineCodeAsync, _selectionState.InlineCode)
                 }
                 @if (Toolbar.TextColor)
                 {
                     <span class="cloudeditor-colorhost">
-                        @ToolbarButton("text-color", "Text color", () => ToggleColorPickerAsync("text"), _openColorPicker == "text")
+                        @ToolbarButton(@<EditorTextColorIcon />, "Text color", () => ToggleColorPickerAsync("text"), _openColorPicker == "text")
                         @if (_openColorPicker == "text")
                         {
                             @ColorPopover("foreColor")
@@ -64,7 +64,7 @@
                 @if (Toolbar.HighlightColor)
                 {
                     <span class="cloudeditor-colorhost">
-                        @ToolbarButton("highlight", "Highlight color", () => ToggleColorPickerAsync("highlight"), _openColorPicker == "highlight")
+                        @ToolbarButton(@<EditorHighlightIcon />, "Highlight color", () => ToggleColorPickerAsync("highlight"), _openColorPicker == "highlight")
                         @if (_openColorPicker == "highlight")
                         {
                             @ColorPopover("hiliteColor")
@@ -77,10 +77,10 @@
         @if (Toolbar.Alignment)
         {
             <div class="cloudeditor-group">
-                @ToolbarButton("align-left", "Align left", () => ExecAsync("justifyLeft"), _selectionState.Alignment == "left")
-                @ToolbarButton("align-center", "Align center", () => ExecAsync("justifyCenter"), _selectionState.Alignment == "center")
-                @ToolbarButton("align-right", "Align right", () => ExecAsync("justifyRight"), _selectionState.Alignment == "right")
-                @ToolbarButton("align-justify", "Justify", () => ExecAsync("justifyFull"), _selectionState.Alignment == "justify")
+                @ToolbarButton(@<EditorAlignLeftIcon />, "Align left", () => ExecAsync("justifyLeft"), _selectionState.Alignment == "left")
+                @ToolbarButton(@<EditorAlignCenterIcon />, "Align center", () => ExecAsync("justifyCenter"), _selectionState.Alignment == "center")
+                @ToolbarButton(@<EditorAlignRightIcon />, "Align right", () => ExecAsync("justifyRight"), _selectionState.Alignment == "right")
+                @ToolbarButton(@<EditorAlignJustifyIcon />, "Justify", () => ExecAsync("justifyFull"), _selectionState.Alignment == "justify")
             </div>
         }
 
@@ -89,13 +89,13 @@
             <div class="cloudeditor-group">
                 @if (Toolbar.Lists)
                 {
-                    @ToolbarButton("list-ul", "Bulleted list", () => ExecAsync("insertUnorderedList"), _selectionState.UnorderedList)
-                    @ToolbarButton("list-ol", "Numbered list", () => ExecAsync("insertOrderedList"), _selectionState.OrderedList)
+                    @ToolbarButton(@<EditorListBulletIcon />, "Bulleted list", () => ExecAsync("insertUnorderedList"), _selectionState.UnorderedList)
+                    @ToolbarButton(@<EditorListNumberedIcon />, "Numbered list", () => ExecAsync("insertOrderedList"), _selectionState.OrderedList)
                 }
                 @if (Toolbar.Indentation)
                 {
-                    @ToolbarButton("outdent", "Decrease indent", () => ExecAsync("outdent"))
-                    @ToolbarButton("indent", "Increase indent", () => ExecAsync("indent"))
+                    @ToolbarButton(@<EditorOutdentIcon />, "Decrease indent", () => ExecAsync("outdent"))
+                    @ToolbarButton(@<EditorIndentIcon />, "Increase indent", () => ExecAsync("indent"))
                 }
             </div>
         }
@@ -105,11 +105,11 @@
             <div class="cloudeditor-group">
                 @if (Toolbar.Blockquote)
                 {
-                    @ToolbarButton("blockquote", "Blockquote", () => ToggleBlockAsync("blockquote"), _selectionState.BlockTag == "blockquote")
+                    @ToolbarButton(@<EditorBlockquoteIcon />, "Blockquote", () => ToggleBlockAsync("blockquote"), _selectionState.BlockTag == "blockquote")
                 }
                 @if (Toolbar.CodeBlock)
                 {
-                    @ToolbarButton("code-block", "Code block", () => ToggleBlockAsync("pre"), _selectionState.BlockTag == "pre")
+                    @ToolbarButton(@<EditorCodeBlockIcon />, "Code block", () => ToggleBlockAsync("pre"), _selectionState.BlockTag == "pre")
                 }
             </div>
         }
@@ -119,20 +119,20 @@
             <div class="cloudeditor-group">
                 @if (Toolbar.Link)
                 {
-                    @ToolbarButton("link", "Insert link (Ctrl+K)", OpenLinkDialogAsync, _selectionState.Link)
-                    @ToolbarButton("unlink", "Remove link", UnlinkAsync, disabled: _commandsDisabled || !_selectionState.Link)
+                    @ToolbarButton(@<EditorLinkIcon />, "Insert link (Ctrl+K)", OpenLinkDialogAsync, _selectionState.Link)
+                    @ToolbarButton(@<EditorUnlinkIcon />, "Remove link", UnlinkAsync, disabled: _commandsDisabled || !_selectionState.Link)
                 }
                 @if (Toolbar.Image)
                 {
-                    @ToolbarButton("image", "Insert image", OpenImageDialogAsync)
+                    @ToolbarButton(@<EditorImageIcon />, "Insert image", OpenImageDialogAsync)
                 }
                 @if (Toolbar.Video)
                 {
-                    @ToolbarButton("video", "Insert video", OpenVideoDialogAsync)
+                    @ToolbarButton(@<EditorVideoIcon />, "Insert video", OpenVideoDialogAsync)
                 }
                 @if (Toolbar.HorizontalRule)
                 {
-                    @ToolbarButton("hr", "Horizontal rule", () => ExecAsync("insertHorizontalRule"))
+                    @ToolbarButton(@<EditorHorizontalRuleIcon />, "Horizontal rule", () => ExecAsync("insertHorizontalRule"))
                 }
             </div>
         }
@@ -140,7 +140,7 @@
         @if (Toolbar.ClearFormatting)
         {
             <div class="cloudeditor-group">
-                @ToolbarButton("clear-format", "Clear formatting", ClearFormattingAsync)
+                @ToolbarButton(@<EditorClearFormatIcon />, "Clear formatting", ClearFormattingAsync)
             </div>
         }
 
@@ -151,11 +151,18 @@
             <div class="cloudeditor-group">
                 @if (Toolbar.CodeView)
                 {
-                    @ToolbarButton("code-view", _isCodeView ? "Design view" : "Code view", ToggleCodeViewAsync, _isCodeView, ReadOnly)
+                    @ToolbarButton(@<EditorCodeViewIcon />, _isCodeView ? "Design view" : "Code view", ToggleCodeViewAsync, _isCodeView, ReadOnly)
                 }
                 @if (Toolbar.Fullscreen)
                 {
-                    @ToolbarButton(_isFullscreen ? "fullscreen-exit" : "fullscreen", _isFullscreen ? "Exit fullscreen" : "Fullscreen", ToggleFullscreenAsync, _isFullscreen, false)
+                    @if (_isFullscreen)
+                    {
+                        @ToolbarButton(@<EditorFullscreenExitIcon />, "Exit fullscreen", ToggleFullscreenAsync, true, false)
+                    }
+                    else
+                    {
+                        @ToolbarButton(@<EditorFullscreenIcon />, "Fullscreen", ToggleFullscreenAsync, false, false)
+                    }
                 }
             </div>
         }
@@ -205,7 +212,7 @@
                     <div class="cloudeditor-codeactions">
                         <button type="button" class="cloudeditor-action _secondary" @onclick="CancelCodeViewAsync">Cancel</button>
                         <button type="button" class="cloudeditor-action" disabled="@(_codeValidation?.IsValid != true)" @onclick="ApplyCodeViewAsync">
-                            <EditorIcon Name="check" /> Apply
+                            <EditorCheckIcon /> Apply
                         </button>
                     </div>
                 </div>
@@ -228,7 +235,7 @@
                         _ => string.Empty
                     })
                 </span>
-                <button type="button" class="cloudeditor-btn" title="Close" @onclick="CloseDialogAsync"><EditorIcon Name="close" /></button>
+                <button type="button" class="cloudeditor-btn" title="Close" @onclick="CloseDialogAsync"><EditorCloseIcon /></button>
             </div>
 
             @if (_activeDialog == EditorDialog.Link)
@@ -325,7 +332,7 @@
 </div>
 
 @code {
-    private RenderFragment ToolbarButton(string icon, string title, Func<Task> onClick, bool active = false, bool? disabled = null) =>
+    private RenderFragment ToolbarButton(RenderFragment icon, string title, Func<Task> onClick, bool active = false, bool? disabled = null) =>
         @<button type="button"
                  class="cloudeditor-btn @(active ? "_active" : null)"
                  title="@title"
@@ -333,7 +340,7 @@
                  disabled="@(disabled ?? _commandsDisabled)"
                  @onclick="onClick"
                  @onmousedown:preventDefault="true">
-            <EditorIcon Name="@icon" />
+            @icon
         </button>;
 
     private RenderFragment ColorPopover(string command) =>

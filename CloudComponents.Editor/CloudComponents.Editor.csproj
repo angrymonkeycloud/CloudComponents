@@ -45,6 +45,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\CloudComponents.Icons\CloudComponents.Icons.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Update="amc-logo.png">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
