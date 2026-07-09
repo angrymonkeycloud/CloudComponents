@@ -51,6 +51,8 @@
                 display: none;
             }
         }
+
+
     }
 
     &-scroll {
@@ -357,6 +359,104 @@
                 min-width: 160px;
                 max-width: min(280px, calc(100vw - 16px));
             }
+        }
+    }
+}
+
+::deep .cloudgridheader-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-sizing: border-box;
+    height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+    min-height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+    padding: 0 10px;
+    border: none;
+    border-radius: 3px;
+    background: none;
+    color: var(--cloudgridheader-color, var(--cloudgrid-color, #505050));
+    font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+
+    span {
+        line-height: 1;
+    }
+
+    &:hover {
+        background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, #e8e8e8));
+    }
+
+    svg {
+        flex: none;
+        width: 16px;
+        height: 16px;
+
+        path,
+        .amc-svg-fill {
+            fill: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+        }
+
+        line {
+            stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+            stroke-width: 2px;
+            stroke-linecap: round;
+        }
+
+        circle {
+            fill: none;
+            stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+            stroke-width: 2px;
+        }
+
+        polyline {
+            fill: none;
+            stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+            stroke-width: 2px;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+    }
+
+    &._bulk {
+        border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
+        background-color: var(--cloudgrid-background, #fff);
+        font-size: 12px;
+    }
+
+  
+
+    &._reorder-save {
+        color: #2a7d2e;
+        font-weight: 600;
+
+        svg line,
+        svg polyline {
+            stroke: #2a7d2e;
+        }
+
+        &:hover {
+            background-color: #e6f4e7;
+        }
+    }
+
+    &._reorder-cancel {
+        color: #b33;
+
+        svg line,
+        svg polyline {
+            stroke: #b33;
+        }
+
+        .amc-svg-stroke{
+            stroke: #b33;
+        }
+
+        &:hover {
+            background-color: #fdecea;
         }
     }
 }

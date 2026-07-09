@@ -302,3 +302,83 @@
     max-width: min(280px, calc(100vw - 16px));
   }
 }
+::deep .cloudgridheader-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-sizing: border-box;
+  height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+  min-height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+  padding: 0 10px;
+  border: none;
+  border-radius: 3px;
+  background: none;
+  color: var(--cloudgridheader-color, var(--cloudgrid-color, #505050));
+  font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+::deep .cloudgridheader-action span {
+  line-height: 1;
+}
+::deep .cloudgridheader-action:hover {
+  background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, #e8e8e8));
+}
+::deep .cloudgridheader-action svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+::deep .cloudgridheader-action svg path,
+::deep .cloudgridheader-action svg .amc-svg-fill {
+  fill: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+}
+::deep .cloudgridheader-action svg line {
+  stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+  stroke-width: 2px;
+  stroke-linecap: round;
+}
+::deep .cloudgridheader-action svg circle {
+  fill: none;
+  stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+  stroke-width: 2px;
+}
+::deep .cloudgridheader-action svg polyline {
+  fill: none;
+  stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+  stroke-width: 2px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+::deep .cloudgridheader-action._bulk {
+  border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
+  background-color: var(--cloudgrid-background, #fff);
+  font-size: 12px;
+}
+::deep .cloudgridheader-action._reorder-save {
+  color: #2a7d2e;
+  font-weight: 600;
+}
+::deep .cloudgridheader-action._reorder-save svg line,
+::deep .cloudgridheader-action._reorder-save svg polyline {
+  stroke: #2a7d2e;
+}
+::deep .cloudgridheader-action._reorder-save:hover {
+  background-color: #e6f4e7;
+}
+::deep .cloudgridheader-action._reorder-cancel {
+  color: #b33;
+}
+::deep .cloudgridheader-action._reorder-cancel svg line,
+::deep .cloudgridheader-action._reorder-cancel svg polyline {
+  stroke: #b33;
+}
+::deep .cloudgridheader-action._reorder-cancel .amc-svg-stroke {
+  stroke: #b33;
+}
+::deep .cloudgridheader-action._reorder-cancel:hover {
+  background-color: #fdecea;
+}
