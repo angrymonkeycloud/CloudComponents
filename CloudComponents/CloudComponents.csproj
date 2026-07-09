@@ -17,7 +17,7 @@
 
     <AssemblyVersion>$(PackageVersion)</AssemblyVersion>
     <FileVersion>$(PackageVersion)</FileVersion>
-    <Version>4.1.4</Version>
+    <Version>4.1.6</Version>
     <PackageIcon>amc-logo.png</PackageIcon>
     <PackageOutputPath>..\NugetPackage\</PackageOutputPath>
 

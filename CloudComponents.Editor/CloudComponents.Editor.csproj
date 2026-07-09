@@ -19,7 +19,7 @@
 		<PackageProjectUrl>https://www.angrymonkeycloud.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/angrymonkeycloud/CloudComponents</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<Version>4.1.4</Version>
+		<Version>4.1.6</Version>
 		<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
 		<FileVersion>$(PackageVersion)</FileVersion>
 		<PackageOutputPath>..\NugetPackage\</PackageOutputPath>
