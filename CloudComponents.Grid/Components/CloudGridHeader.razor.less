@@ -11,7 +11,8 @@
     min-height: var(--cloudgrid-header-height, 40px);
     padding: 4px 8px;
     overflow: visible;
-    position:relative;
+    position: relative;
+
     h2 {
         flex: 0 0 auto;
         min-width: 0;
@@ -24,10 +25,10 @@
         text-overflow: ellipsis;
     }
 
-    .right{
-        margin-left:auto;
-        display:flex;
-
+    .right {
+        margin-left: auto;
+        display: flex;
+        gap: 5px;
     }
 
     &-bulkactions,
@@ -51,8 +52,6 @@
                 display: none;
             }
         }
-
-
     }
 
     &-scroll {
@@ -281,7 +280,6 @@
             }
         }
     }
-
     // ── Export focus panel (rendered as ChildContent of the built-in Export action) ──
 
     ::deep .cloudgrid-export-panel {
@@ -427,7 +425,7 @@
         font-size: 12px;
     }
 
-  
+
 
     &._reorder-save {
         color: #2a7d2e;
@@ -451,7 +449,7 @@
             stroke: #b33;
         }
 
-        .amc-svg-stroke{
+        .amc-svg-stroke {
             stroke: #b33;
         }
 
@@ -459,4 +457,9 @@
             background-color: #fdecea;
         }
     }
+}
+
+::deep .admin-grid-filters {
+    display: flex;
+    gap: 5px;
 }
