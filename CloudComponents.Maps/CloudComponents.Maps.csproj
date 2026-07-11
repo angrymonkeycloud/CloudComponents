@@ -15,14 +15,6 @@
 		<PackageIcon>amc-logo.png</PackageIcon>
 	<AssemblyVersion>$(PackageVersion)</AssemblyVersion></PropertyGroup>
 
-	<ItemGroup>
-		<Content Remove="compilerconfig.json" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Include="compilerconfig.json" />
-	</ItemGroup>
-
 
 	<ItemGroup>
 		<SupportedPlatform Include="browser" />

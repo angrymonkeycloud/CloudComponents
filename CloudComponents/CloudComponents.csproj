@@ -40,7 +40,6 @@
 
   <ItemGroup>
     <Content Remove=".mateconfig.json" />
-    <Content Remove="compilerconfig.json" />
     <Content Remove="tsconfig.json" />
     <Content Remove="wwwroot\cloud.css" />
   </ItemGroup>
@@ -66,7 +65,6 @@
     <None Include=".mateconfig.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <None Include="compilerconfig.json" />
     <None Include="tsconfig.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
