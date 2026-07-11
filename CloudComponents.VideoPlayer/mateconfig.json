@@ -1,0 +1,8 @@
+{
+  "files": [
+    {
+      "input": "VideoPlayer.razor.less",
+      "output": "VideoPlayer.razor.css"
+    }
+  ]
+}

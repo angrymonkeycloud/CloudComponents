@@ -1,0 +1,8 @@
+{
+  "files": [
+    {
+      "input": "Components/CloudEditor.razor.less",
+      "output": "Components/CloudEditor.razor.css"
+    }
+  ]
+}

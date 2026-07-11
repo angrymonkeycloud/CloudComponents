@@ -1,4 +1,4 @@
-﻿.cloudeditor {
+.cloudeditor {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -230,7 +230,7 @@
 .cloudeditor-content ::deep figure.cloudeditor-embed {
   position: relative;
   margin: 0.8em 0;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 1.77777778;
   max-width: 720px;
 }
 .cloudeditor-content ::deep figure.cloudeditor-embed iframe,
@@ -333,7 +333,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1020;
-  width: min(430px, calc(100vw - 32px));
+  width: 430px;
   background: var(--cloudeditor-bg, #fff);
   border-radius: 10px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);

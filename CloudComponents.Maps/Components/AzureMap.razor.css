@@ -1,4 +1,4 @@
-﻿.map-host {
+.map-host {
   position: relative;
   overflow: hidden;
   border-radius: 12px;
@@ -67,7 +67,7 @@
   top: 12px;
   left: 12px;
   z-index: 6;
-  width: min(320px, calc(100% - 24px));
+  width: 320px;
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 .map-search-box {
@@ -181,7 +181,7 @@
   font-weight: 500;
   border-radius: 8px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
-  max-width: min(360px, calc(100% - 24px));
+  max-width: 360px;
   text-align: center;
   animation: lockToastIn 0.18s ease both;
 }

@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
 	<PropertyGroup>
@@ -24,6 +25,6 @@
 		<ProjectReference Include="..\CloudComponents.Editor\CloudComponents.Editor.csproj" />
 		<ProjectReference Include="..\CloudComponents.Icons\CloudComponents.Icons.csproj" />
 		<ProjectReference Include="..\CloudComponents\CloudComponents.csproj" />
-	</ItemGroup>
+	<Content Remove="mateconfig.json" /><None Include="mateconfig.json"><CopyToOutputDirectory>Never</CopyToOutputDirectory><CopyToPublishDirectory>Never</CopyToPublishDirectory></None></ItemGroup>
 
 </Project>

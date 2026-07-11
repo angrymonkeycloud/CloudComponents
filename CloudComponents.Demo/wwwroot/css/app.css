@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --color-bg: #0f0f17;
   --color-surface: #16161f;
   --color-surface-2: #1e1e2a;
@@ -512,7 +512,7 @@ select.input {
 .player-wrapper {
   border-radius: var(--radius);
   overflow: hidden;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 1.77777778;
   background: #000;
 }
 .controls-bar {
