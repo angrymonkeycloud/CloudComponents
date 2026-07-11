@@ -23,6 +23,7 @@
 .cloudgridheader .right {
   margin-left: auto;
   display: flex;
+  gap: 5px;
 }
 .cloudgridheader-bulkactions,
 .cloudgridheader-actions {
@@ -381,4 +382,8 @@
 }
 ::deep .cloudgridheader-action._reorder-cancel:hover {
   background-color: #fdecea;
+}
+::deep .admin-grid-filters {
+  display: flex;
+  gap: 5px;
 }
