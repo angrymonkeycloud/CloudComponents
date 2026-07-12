@@ -1,12 +1,12 @@
 @page "/grid/height"
-@using AngryMonkey.CloudComponents.Grid
-@using AngryMonkey.CloudComponents.Grid.Models
+@using AngryMonkey.CloudComponents.DataGrid
+@using AngryMonkey.CloudComponents.DataGrid.Models
 @using CloudComponents.Demo.Models
 @using CloudComponents.Demo.Services
 @using CloudComponents.Demo.Shared
 @inject SampleDataService Data
 
-<PageTitle>CloudGrid — Height Modes</PageTitle>
+<PageTitle>CloudDataGrid — Height Modes</PageTitle>
 
 <div class="page-header">
     <h1>Height Modes</h1>
@@ -38,13 +38,13 @@
             </div>
 
             <div class="grid-host" style="height: 500px; border: 2px dashed var(--border-color);">
-                <CloudGrid @key="_fullHeightKey"
+                <CloudDataGrid @key="_fullHeightKey"
                            Columns="_columns"
                            DataProvider="LoadAsync"
-                           HeightMode="CloudGridHeightMode.FullHeight"
+                           HeightMode="CloudDataGridHeightMode.FullHeight"
                            RowsPerPage="_fullHeightRowsPerPage"
                            RowHeight="40"
-                           PagingMode="CloudGridPagingMode.Pages" />
+                           PagingMode="CloudDataGridPagingMode.Pages" />
             </div>
         </div>
 
@@ -66,13 +66,13 @@
             </div>
 
             <div class="grid-host" style="border: 2px dashed var(--border-color);">
-                <CloudGrid @key="_rowHeightKey"
+                <CloudDataGrid @key="_rowHeightKey"
                            Columns="_columns"
                            DataProvider="LoadAsync"
-                           HeightMode="CloudGridHeightMode.RowHeight"
+                           HeightMode="CloudDataGridHeightMode.RowHeight"
                            RowsPerPage="_rowHeightRowsPerPage"
                            RowHeight="40"
-                           PagingMode="CloudGridPagingMode.Pages" />
+                           PagingMode="CloudDataGridPagingMode.Pages" />
             </div>
         </div>
 
@@ -102,13 +102,13 @@
             </div>
 
             <div class="grid-host" style="border: 2px dashed var(--border-color);">
-                <CloudGrid @key="_autoKey"
+                <CloudDataGrid @key="_autoKey"
                            Columns="_columns"
                            DataProvider="LoadAutoAsync"
-                           HeightMode="CloudGridHeightMode.Auto"
+                           HeightMode="CloudDataGridHeightMode.Auto"
                            MaxHeight="@ParseMaxHeight()"
                            RowHeight="40"
-                           PagingMode="CloudGridPagingMode.Pages" />
+                           PagingMode="CloudDataGridPagingMode.Pages" />
             </div>
         </div>
     </ResultContent>
@@ -135,7 +135,7 @@
     private string _autoMaxHeight = "500";
     private int _autoKey;
 
-    private readonly List<CloudGridColumn> _columns =
+    private readonly List<CloudDataGridColumn> _columns =
     [
         new() { Label = "Name", Key = "name", Width = 200 },
         new() { Label = "Email", Key = "email", Width = 250 },
@@ -143,12 +143,12 @@
         new() { Label = "Country", Key = "country", Width = 130 }
     ];
 
-    private async Task<CloudGridDataResult?> LoadAsync(CloudGridDataRequest request)
+    private async Task<CloudDataGridDataResult?> LoadAsync(CloudDataGridDataRequest request)
         => await Data.QueryAsync(request, ToRow);
 
-    private async Task<CloudGridDataResult?> LoadAutoAsync(CloudGridDataRequest request)
+    private async Task<CloudDataGridDataResult?> LoadAutoAsync(CloudDataGridDataRequest request)
     {
-        CloudGridDataRequest modified = new()
+        CloudDataGridDataRequest modified = new()
         {
             Page = request.Page,
             PageSize = _autoRowsPerPage,
@@ -160,7 +160,7 @@
         return await Data.QueryAsync(modified, ToRow);
     }
 
-    private static CloudGridRow ToRow(Person p) => new()
+    private static CloudDataGridRow ToRow(Person p) => new()
     {
         Id = p.Id,
         Cells = [p.FullName, p.Email, p.Department, p.Country]
@@ -175,18 +175,18 @@
     private readonly string _usageSnippet = """
 <!-- FullHeight: fills parent, header/footer fixed, rows scroll -->
 <div style="height: 600px;">
-    <CloudGrid HeightMode="CloudGridHeightMode.FullHeight"
+    <CloudDataGrid HeightMode="CloudDataGridHeightMode.FullHeight"
                RowsPerPage="10"
                DataProvider="@LoadAsync" ... />
 </div>
 
 <!-- RowHeight: exactly RowsPerPage rows tall, no parent height needed -->
-<CloudGrid HeightMode="CloudGridHeightMode.RowHeight"
+<CloudDataGrid HeightMode="CloudDataGridHeightMode.RowHeight"
            RowsPerPage="10"
            DataProvider="@LoadAsync" ... />
 
 <!-- Auto: grows with content, optional MaxHeight cap -->
-<CloudGrid HeightMode="CloudGridHeightMode.Auto"
+<CloudDataGrid HeightMode="CloudDataGridHeightMode.Auto"
            MaxHeight="500"
            DataProvider="@LoadAsync" ... />
 """;

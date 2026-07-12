@@ -1,6 +1,6 @@
 @page "/editor/media"
 
-<PageTitle>CloudEditor — Media &amp; Uploads</PageTitle>
+<PageTitle>CloudTextEditor — Media &amp; Uploads</PageTitle>
 
 <div class="page-header">
     <h1>Media &amp; Uploads</h1>
@@ -21,7 +21,7 @@
                 <strong>2 MB</strong>.
             </p>
 
-            <CloudEditor @bind-Value="_html"
+            <CloudTextEditor @bind-Value="_html"
                          MinHeight="280px"
                          ImageUploadHandler="UploadImageAsync"
                          MaxUploadSize="2 * 1024 * 1024" />
@@ -46,7 +46,7 @@
         <div class="card">
             <h2 class="card-title">How it works</h2>
             <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0;">
-                The upload handler receives a <code>CloudEditorFileUpload</code> with the file name,
+                The upload handler receives a <code>CloudTextEditorFileUpload</code> with the file name,
                 content type, size and a stream factory. Return the stored file's URL, or
                 <code>null</code> to cancel the insertion.
             </p>
@@ -63,7 +63,7 @@
 
     private string? _lastUpload;
 
-    private async Task<string?> UploadImageAsync(CloudEditorFileUpload file)
+    private async Task<string?> UploadImageAsync(CloudTextEditorFileUpload file)
     {
         // Demo implementation: read the stream and return an inline data URL.
         // A real handler would push the stream to blob storage / an API
@@ -79,12 +79,12 @@
     }
 
     private readonly string _usageSnippet = """
-        <CloudEditor @bind-Value="_html"
+        <CloudTextEditor @bind-Value="_html"
                      ImageUploadHandler="UploadImageAsync"
                      MaxUploadSize="2 * 1024 * 1024" />
 
         @code {
-            private async Task<string?> UploadImageAsync(CloudEditorFileUpload file)
+            private async Task<string?> UploadImageAsync(CloudTextEditorFileUpload file)
             {
                 await using Stream stream = file.OpenReadStream();
 

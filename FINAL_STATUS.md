@@ -121,8 +121,8 @@ CloudComponents/
 │   ├── deploy-maps-demo.yml
 │   └── deploy-icons-demo.yml
 │
-├── CloudComponents.Grid/
-├── CloudComponents.Grid.Demo/
+├── CloudComponents.DataGrid/
+├── CloudComponents.DataGrid.Demo/
 │
 ├── CloudComponents.VideoPlayer/
 ├── CloudComponents.VideoPlayer.Demo/

@@ -1,12 +1,12 @@
 @page "/grid/basic"
-@using AngryMonkey.CloudComponents.Grid
-@using AngryMonkey.CloudComponents.Grid.Models
+@using AngryMonkey.CloudComponents.DataGrid
+@using AngryMonkey.CloudComponents.DataGrid.Models
 @using CloudComponents.Demo.Models
 @using CloudComponents.Demo.Services
 @using CloudComponents.Demo.Shared
 @inject SampleDataService Data
 
-<PageTitle>CloudGrid — Basic &amp; Sorting</PageTitle>
+<PageTitle>CloudDataGrid — Basic &amp; Sorting</PageTitle>
 
 <div class="page-header">
     <h1>Basic &amp; Sorting</h1>
@@ -29,12 +29,12 @@
             </p>
 
             <div class="grid-host">
-                <CloudGrid Header="_header"
+                <CloudDataGrid Header="_header"
                            Columns="_columns"
                            DataProvider="LoadAsync"
                            RowHeight="40"
                            RowsPerPage="10"
-                           HeightMode="CloudGridHeightMode.RowHeight"
+                           HeightMode="CloudDataGridHeightMode.RowHeight"
                            LinkTarget="_self" />
             </div>
 
@@ -61,14 +61,14 @@
 @code {
     private const int RowsPerPage = 10;
 
-    private readonly CloudGridHeaderOptions _header = new()
+    private readonly CloudDataGridHeaderOptions _header = new()
     {
         Label = "Employees",
         AllowSearch = true,
         AllowRefresh = true
     };
 
-    private readonly List<CloudGridColumn> _columns =
+    private readonly List<CloudDataGridColumn> _columns =
     [
         new() { Label = "Photo", IsImage = true, Sortable = false, Resizable = false, Width = 56 },
         new() { Label = "Name", Key = "name", Width = 180 },
@@ -81,10 +81,10 @@
         new() { Label = "Notes", Sortable = false, Resizable = false, Width = 140 }
     ];
 
-    private async Task<CloudGridDataResult?> LoadAsync(CloudGridDataRequest request)
+    private async Task<CloudDataGridDataResult?> LoadAsync(CloudDataGridDataRequest request)
         => await Data.QueryAsync(request, ToRow);
 
-    private static CloudGridRow ToRow(Person p) => new()
+    private static CloudDataGridRow ToRow(Person p) => new()
     {
         Id = p.Id,
         Link = $"#person-{p.Id}",
@@ -103,22 +103,22 @@
     };
 
     private readonly string _usageSnippet = """
-<CloudGrid Header="_header"
+<CloudDataGrid Header="_header"
            Columns="_columns"
            DataProvider="LoadAsync"
            RowHeight="40"
            RowsPerPage="10"
-           HeightMode="CloudGridHeightMode.RowHeight" />
+           HeightMode="CloudDataGridHeightMode.RowHeight" />
 
 @code {
-    private readonly CloudGridHeaderOptions _header = new()
+    private readonly CloudDataGridHeaderOptions _header = new()
     {
         Label = "Employees",
         AllowSearch = true,
         AllowRefresh = true
     };
 
-    private readonly List<CloudGridColumn> _columns =
+    private readonly List<CloudDataGridColumn> _columns =
     [
         new() { Label = "Photo", IsImage = true, Sortable = false, Width = 56 },
         new() { Label = "Name", Key = "name", Width = 180 },
@@ -126,10 +126,10 @@
         // ... more columns
     ];
 
-    private async Task<CloudGridDataResult?> LoadAsync(CloudGridDataRequest request)
+    private async Task<CloudDataGridDataResult?> LoadAsync(CloudDataGridDataRequest request)
         => await DataService.QueryAsync(request, ToRow);
 
-    private static CloudGridRow ToRow(Person p) => new()
+    private static CloudDataGridRow ToRow(Person p) => new()
     {
         Id = p.Id,
         Link = $"#person-{p.Id}",

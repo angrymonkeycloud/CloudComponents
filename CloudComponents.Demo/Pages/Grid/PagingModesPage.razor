@@ -1,12 +1,12 @@
 @page "/grid/paging"
-@using AngryMonkey.CloudComponents.Grid
-@using AngryMonkey.CloudComponents.Grid.Models
+@using AngryMonkey.CloudComponents.DataGrid
+@using AngryMonkey.CloudComponents.DataGrid.Models
 @using CloudComponents.Demo.Models
 @using CloudComponents.Demo.Services
 @using CloudComponents.Demo.Shared
 @inject SampleDataService Data
 
-<PageTitle>CloudGrid — Paging Modes</PageTitle>
+<PageTitle>CloudDataGrid — Paging Modes</PageTitle>
 
 <div class="page-header">
     <h1>Paging Modes</h1>
@@ -26,12 +26,12 @@
             <div class="toolbar">
                 <label>Paging mode:</label>
                 <div class="segmented">
-                    <button class="@(_mode == CloudGridPagingMode.Pages ? "active" : "")"
-                            @onclick="() => SetMode(CloudGridPagingMode.Pages)">Pages</button>
-                    <button class="@(_mode == CloudGridPagingMode.LoadMore ? "active" : "")"
-                            @onclick="() => SetMode(CloudGridPagingMode.LoadMore)">Load more</button>
-                    <button class="@(_mode == CloudGridPagingMode.InfiniteScroll ? "active" : "")"
-                            @onclick="() => SetMode(CloudGridPagingMode.InfiniteScroll)">Infinite scroll</button>
+                    <button class="@(_mode == CloudDataGridPagingMode.Pages ? "active" : "")"
+                            @onclick="() => SetMode(CloudDataGridPagingMode.Pages)">Pages</button>
+                    <button class="@(_mode == CloudDataGridPagingMode.LoadMore ? "active" : "")"
+                            @onclick="() => SetMode(CloudDataGridPagingMode.LoadMore)">Load more</button>
+                    <button class="@(_mode == CloudDataGridPagingMode.InfiniteScroll ? "active" : "")"
+                            @onclick="() => SetMode(CloudDataGridPagingMode.InfiniteScroll)">Infinite scroll</button>
                 </div>
 
                 <label style="margin-left:1rem;">Rows per page:</label>
@@ -45,13 +45,13 @@
             </div>
 
             <div class="grid-host">
-                <CloudGrid @key="_gridKey"
+                <CloudDataGrid @key="_gridKey"
                            Columns="_columns"
                            DataProvider="LoadAsync"
                            PagingMode="_mode"
                            RowHeight="40"
                            RowsPerPage="_pageSize"
-                           HeightMode="CloudGridHeightMode.RowHeight"
+                           HeightMode="CloudDataGridHeightMode.RowHeight"
                            LoadMoreText="Load more employees" />
             </div>
         </div>
@@ -71,11 +71,11 @@
 </DemoResultCodeTabs>
 
 @code {
-    private CloudGridPagingMode _mode = CloudGridPagingMode.Pages;
+    private CloudDataGridPagingMode _mode = CloudDataGridPagingMode.Pages;
     private int _pageSize = 8;
     private int _gridKey;
 
-    private readonly List<CloudGridColumn> _columns =
+    private readonly List<CloudDataGridColumn> _columns =
     [
         new() { Label = "Name", Key = "name", Width = 200 },
         new() { Label = "Email", Key = "email", Width = 250 },
@@ -83,7 +83,7 @@
         new() { Label = "Country", Key = "country", Width = 130 }
     ];
 
-    private void SetMode(CloudGridPagingMode mode)
+    private void SetMode(CloudDataGridPagingMode mode)
     {
         if (_mode == mode) return;
         _mode = mode;
@@ -92,10 +92,10 @@
 
     private void ReloadGrid() => _gridKey++;
 
-    private async Task<CloudGridDataResult?> LoadAsync(CloudGridDataRequest request)
+    private async Task<CloudDataGridDataResult?> LoadAsync(CloudDataGridDataRequest request)
         => await Data.QueryAsync(request, ToRow);
 
-    private static CloudGridRow ToRow(Person p) => new()
+    private static CloudDataGridRow ToRow(Person p) => new()
     {
         Id = p.Id,
         Cells = [p.FullName, p.Email, p.Department, p.Country]
@@ -103,23 +103,23 @@
 
     private readonly string _usageSnippet = """
 <!-- Pages: footer shows prev/next arrows, each page replaces rows -->
-<CloudGrid PagingMode="CloudGridPagingMode.Pages"
+<CloudDataGrid PagingMode="CloudDataGridPagingMode.Pages"
            RowsPerPage="10"
            DataProvider="@LoadAsync" ... />
 
 <!-- LoadMore: button appends next page, grid auto-scrolls -->
-<CloudGrid PagingMode="CloudGridPagingMode.LoadMore"
+<CloudDataGrid PagingMode="CloudDataGridPagingMode.LoadMore"
            RowsPerPage="10"
            LoadMoreText="Load more employees"
            DataProvider="@LoadAsync" ... />
 
 <!-- InfiniteScroll: auto-loads next page near scroll end -->
-<CloudGrid PagingMode="CloudGridPagingMode.InfiniteScroll"
+<CloudDataGrid PagingMode="CloudDataGridPagingMode.InfiniteScroll"
            RowsPerPage="10"
            DataProvider="@LoadAsync" ... />
 
 @code {
-    private async Task<CloudGridDataResult?> LoadAsync(CloudGridDataRequest request)
+    private async Task<CloudDataGridDataResult?> LoadAsync(CloudDataGridDataRequest request)
     {
         // request.IsAppend is true in LoadMore/InfiniteScroll modes
         return await DataService.QueryAsync(request, ToRow);

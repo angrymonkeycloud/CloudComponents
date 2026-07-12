@@ -1,6 +1,6 @@
 @page "/editor/codeview"
 
-<PageTitle>CloudEditor — Code View &amp; Validation</PageTitle>
+<PageTitle>CloudTextEditor — Code View &amp; Validation</PageTitle>
 
 <div class="page-header">
     <h1>Code View &amp; Validation</h1>
@@ -22,13 +22,13 @@
                 event handlers or <code>&lt;font&gt;</code> tags) don't block applying; errors do.
             </p>
 
-            <CloudEditor @bind-Value="_html" MinHeight="260px" />
+            <CloudTextEditor @bind-Value="_html" MinHeight="260px" />
         </div>
 
         <div class="card" style="margin-top:1rem;">
             <h2 class="card-title">Standalone validator</h2>
             <p class="card-subtitle">
-                <code>CloudEditorHtmlValidator</code> can also be used directly. Paste any HTML
+                <code>CloudTextEditorHtmlValidator</code> can also be used directly. Paste any HTML
                 fragment below to validate it.
             </p>
 
@@ -77,28 +77,28 @@
         """;
 
     private string _validatorInput = "";
-    private CloudEditorHtmlValidationResult? _validationResult;
+    private CloudTextEditorHtmlValidationResult? _validationResult;
 
     private void ValidateInput(ChangeEventArgs e)
     {
         _validatorInput = e.Value?.ToString() ?? "";
         _validationResult = string.IsNullOrWhiteSpace(_validatorInput)
             ? null
-            : CloudEditorHtmlValidator.Validate(_validatorInput);
+            : CloudTextEditorHtmlValidator.Validate(_validatorInput);
     }
 
     private readonly string _usageSnippet = """
         <!-- Code view is enabled by default; disable it with Toolbar options -->
-        <CloudEditor @bind-Value="_html" />
+        <CloudTextEditor @bind-Value="_html" />
 
         @code {
             private void ValidateSomething(string html)
             {
-                CloudEditorHtmlValidationResult result = CloudEditorHtmlValidator.Validate(html);
+                CloudTextEditorHtmlValidationResult result = CloudTextEditorHtmlValidator.Validate(html);
 
                 if (!result.IsValid)
                 {
-                    foreach (CloudEditorHtmlValidationMessage error in result.Errors)
+                    foreach (CloudTextEditorHtmlValidationMessage error in result.Errors)
                         Console.WriteLine(error); // "Line 3, Col 8: Unclosed tag <div>."
                 }
             }

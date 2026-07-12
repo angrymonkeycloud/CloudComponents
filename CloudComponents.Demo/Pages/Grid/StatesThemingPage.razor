@@ -1,12 +1,12 @@
 @page "/grid/states"
-@using AngryMonkey.CloudComponents.Grid
-@using AngryMonkey.CloudComponents.Grid.Models
+@using AngryMonkey.CloudComponents.DataGrid
+@using AngryMonkey.CloudComponents.DataGrid.Models
 @using CloudComponents.Demo.Models
 @using CloudComponents.Demo.Services
 @using CloudComponents.Demo.Shared
 @inject SampleDataService Data
 
-<PageTitle>CloudGrid — States &amp; Theming</PageTitle>
+<PageTitle>CloudDataGrid — States &amp; Theming</PageTitle>
 
 <div class="page-header">
     <h1>States &amp; Theming</h1>
@@ -38,14 +38,14 @@
             </div>
 
             <div class="grid-host">
-                <CloudGrid @key="_gridKey"
+                <CloudDataGrid @key="_gridKey"
                            Columns="_columns"
                            DataProvider="LoadAsync"
                            LoadingText="Fetching employees, please wait…"
                            EmptyCellText="—"
                            RowHeight="40"
                            RowsPerPage="8"
-                           HeightMode="CloudGridHeightMode.RowHeight" />
+                           HeightMode="CloudDataGridHeightMode.RowHeight" />
             </div>
         </div>
 
@@ -58,13 +58,13 @@
             </p>
 
             <div class="grid-host themed-grid">
-                <CloudGrid Header="_themedHeader"
+                <CloudDataGrid Header="_themedHeader"
                            Columns="_columns"
                            DataProvider="LoadThemedAsync"
                            AllowSelection="true"
                            @bind-SelectedRecords="_themedSelection"
                            RowsPerPage="6"
-                           HeightMode="CloudGridHeightMode.RowHeight" />
+                           HeightMode="CloudDataGridHeightMode.RowHeight" />
             </div>
         </div>
     </ResultContent>
@@ -88,14 +88,14 @@
     private int _gridKey;
     private List<Guid> _themedSelection = [];
 
-    private readonly CloudGridHeaderOptions _themedHeader = new()
+    private readonly CloudDataGridHeaderOptions _themedHeader = new()
     {
         Label = "Themed grid",
         AllowSearch = true,
         AllowRefresh = true
     };
 
-    private readonly List<CloudGridColumn> _columns =
+    private readonly List<CloudDataGridColumn> _columns =
     [
         new() { Label = "Name", Key = "name", Width = 200 },
         new() { Label = "Department", Key = "department", Width = 160 },
@@ -110,17 +110,17 @@
         _gridKey++;
     }
 
-    private async Task<CloudGridDataResult?> LoadAsync(CloudGridDataRequest request)
+    private async Task<CloudDataGridDataResult?> LoadAsync(CloudDataGridDataRequest request)
     {
         switch (_scenario)
         {
             case Scenario.Empty:
                 await Task.Delay(250);
-                return new CloudGridDataResult { Page = 1, PageSize = request.PageSize, Total = 0 };
+                return new CloudDataGridDataResult { Page = 1, PageSize = request.PageSize, Total = 0 };
 
             case Scenario.Error:
                 await Task.Delay(250);
-                return new CloudGridDataResult { ErrorMessage = "Could not reach the server. Please try again." };
+                return new CloudDataGridDataResult { ErrorMessage = "Could not reach the server. Please try again." };
 
             case Scenario.Slow:
                 return await Data.QueryAsync(request, ToRow, simulatedDelayMs: 2000);
@@ -130,10 +130,10 @@
         }
     }
 
-    private async Task<CloudGridDataResult?> LoadThemedAsync(CloudGridDataRequest request)
+    private async Task<CloudDataGridDataResult?> LoadThemedAsync(CloudDataGridDataRequest request)
         => await Data.QueryAsync(request, ToRow);
 
-    private static CloudGridRow ToRow(Person p) => new()
+    private static CloudDataGridRow ToRow(Person p) => new()
     {
         Id = p.Id,
         Cells = [p.FullName, p.Department, p.Country, p.Age]
@@ -141,7 +141,7 @@
 
     private readonly string _usageSnippet = """
 <!-- Return ErrorMessage for soft errors -->
-private async Task<CloudGridDataResult?> LoadAsync(CloudGridDataRequest request)
+private async Task<CloudDataGridDataResult?> LoadAsync(CloudDataGridDataRequest request)
 {
     try
     {
@@ -149,7 +149,7 @@ private async Task<CloudGridDataResult?> LoadAsync(CloudGridDataRequest request)
     }
     catch
     {
-        return new CloudGridDataResult
+        return new CloudDataGridDataResult
         {
             ErrorMessage = "Could not reach the server. Please try again."
         };
@@ -169,7 +169,7 @@ private async Task<CloudGridDataResult?> LoadAsync(CloudGridDataRequest request)
 </style>
 
 <div class="themed-grid">
-    <CloudGrid ... />
+    <CloudDataGrid ... />
 </div>
 """;
 }

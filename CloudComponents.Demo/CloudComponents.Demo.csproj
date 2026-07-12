@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
 	<PropertyGroup>
@@ -18,11 +18,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\CloudComponents.Grid\CloudComponents.Grid.csproj" />
+		<ProjectReference Include="..\CloudComponents.DataGrid\CloudComponents.DataGrid.csproj" />
 		<ProjectReference Include="..\CloudComponents.VideoPlayer\CloudComponents.VideoPlayer.csproj" />
 		<ProjectReference Include="..\CloudComponents.Maps\CloudComponents.Maps.csproj" />
-		<ProjectReference Include="..\CloudComponents.Maps.Web\CloudComponents.Maps.Web.csproj" />
-		<ProjectReference Include="..\CloudComponents.Editor\CloudComponents.Editor.csproj" />
+		<ProjectReference Include="..\CloudComponents.TextEditor\CloudComponents.TextEditor.csproj" />
 		<ProjectReference Include="..\CloudComponents.Icons\CloudComponents.Icons.csproj" />
 		<ProjectReference Include="..\CloudComponents\CloudComponents.csproj" />
 	<Content Remove="mateconfig.json" /><None Include="mateconfig.json"><CopyToOutputDirectory>Never</CopyToOutputDirectory><CopyToPublishDirectory>Never</CopyToPublishDirectory></None></ItemGroup>

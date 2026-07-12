@@ -31,7 +31,7 @@
 - [x] IMPLEMENTATION_SUMMARY.md
 
 ### Updated Files
-- [x] CloudComponents.Grid.Demo/wwwroot/index.html (base href)
+- [x] CloudComponents.DataGrid.Demo/wwwroot/index.html (base href)
 - [x] CloudComponents.VideoPlayer.Demo/wwwroot/index.html (base href)
 - [x] CloudComponents.Maps.Demo/wwwroot/index.html (base href)
 - [x] CloudComponents.sln (Icons.Demo added)

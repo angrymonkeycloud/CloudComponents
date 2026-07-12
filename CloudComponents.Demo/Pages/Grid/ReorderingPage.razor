@@ -1,12 +1,12 @@
 @page "/grid/reordering"
-@using AngryMonkey.CloudComponents.Grid
-@using AngryMonkey.CloudComponents.Grid.Models
+@using AngryMonkey.CloudComponents.DataGrid
+@using AngryMonkey.CloudComponents.DataGrid.Models
 @using CloudComponents.Demo.Models
 @using CloudComponents.Demo.Services
 @using CloudComponents.Demo.Shared
 @inject SampleDataService Data
 
-<PageTitle>CloudGrid — Row Reordering</PageTitle>
+<PageTitle>CloudDataGrid — Row Reordering</PageTitle>
 
 <div class="page-header">
     <h1>Row Reordering</h1>
@@ -27,7 +27,7 @@
             </div>
 
             <div class="grid-host">
-                <CloudGrid @key="_gridKey"
+                <CloudDataGrid @key="_gridKey"
                            Header="_header"
                            Columns="_columns"
                            DataProvider="LoadAsync"
@@ -35,7 +35,7 @@
                            OnRowsReordered="OnReordered"
                            RowHeight="40"
                            RowsPerPage="12"
-                           HeightMode="CloudGridHeightMode.RowHeight" />
+                           HeightMode="CloudDataGridHeightMode.RowHeight" />
             </div>
         </div>
 
@@ -74,30 +74,30 @@
     private int _gridKey;
     private readonly List<(string Time, string Message)> _log = [];
 
-    private readonly CloudGridHeaderOptions _header = new()
+    private readonly CloudDataGridHeaderOptions _header = new()
     {
         Label = "Priority order",
         AllowSearch = false,
         AllowRefresh = false
     };
 
-    private readonly List<CloudGridColumn> _columns =
+    private readonly List<CloudDataGridColumn> _columns =
     [
         new() { Label = "Name", Key = "name", Width = 200, Sortable = false },
         new() { Label = "Department", Key = "department", Width = 160, Sortable = false },
         new() { Label = "Country", Key = "country", Width = 140, Sortable = false }
     ];
 
-    private async Task<CloudGridDataResult?> LoadAsync(CloudGridDataRequest request)
+    private async Task<CloudDataGridDataResult?> LoadAsync(CloudDataGridDataRequest request)
         => await Data.QueryAsync(request, ToRow, simulatedDelayMs: 0);
 
-    private static CloudGridRow ToRow(Person p) => new()
+    private static CloudDataGridRow ToRow(Person p) => new()
     {
         Id = p.Id,
         Cells = [p.FullName, p.Department, p.Country]
     };
 
-    private void OnReordered(CloudGridRowReorder reorder)
+    private void OnReordered(CloudDataGridRowReorder reorder)
     {
         Data.ApplyReorder(reorder);
 
@@ -113,12 +113,12 @@
     private void ReloadGrid() => _gridKey++;
 
     private readonly string _usageSnippet = """
-<CloudGrid AllowReordering="true"
+<CloudDataGrid AllowReordering="true"
            OnRowsReordered="OnReordered"
            ... />
 
 @code {
-    private void OnReordered(CloudGridRowReorder reorder)
+    private void OnReordered(CloudDataGridRowReorder reorder)
     {
         // reorder.RecordId:        the moved row's id
         // reorder.OldIndex:        original position

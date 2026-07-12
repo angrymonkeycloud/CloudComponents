@@ -1,0 +1,8 @@
+{
+  "files": [
+    {
+      "input": "Components/CloudTextEditor.razor.less",
+      "output": "Components/CloudTextEditor.razor.css"
+    }
+  ]
+}

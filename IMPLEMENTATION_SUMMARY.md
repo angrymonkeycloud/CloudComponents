@@ -70,7 +70,7 @@ Orchestrates deployment of all four demos in one unified workflow.
 All demo projects configured for subdirectory deployment:
 
 ```
-CloudComponents.Grid.Demo        → /CloudGrid/
+CloudComponents.DataGrid.Demo        → /CloudGrid/
 CloudComponents.VideoPlayer.Demo → /CloudVideo/
 CloudComponents.Maps.Demo        → /CloudMap/
 CloudComponents.Icons.Demo       → /Icons/
@@ -163,7 +163,7 @@ Icons Demo:        https://angrymonkeycloud.github.io/CloudComponents/Icons/
 - `IMPLEMENTATION_SUMMARY.md` (this file)
 
 ### Modified Files
-- `CloudComponents.Grid.Demo/wwwroot/index.html` (base href update)
+- `CloudComponents.DataGrid.Demo/wwwroot/index.html` (base href update)
 - `CloudComponents.VideoPlayer.Demo/wwwroot/index.html` (base href update)
 - `CloudComponents.Maps.Demo/wwwroot/index.html` (base href update)
 - `CloudComponents.sln` (added Icons.Demo project)

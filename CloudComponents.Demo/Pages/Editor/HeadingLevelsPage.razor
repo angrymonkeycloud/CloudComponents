@@ -1,13 +1,13 @@
 @page "/editor/headings"
 
-<PageTitle>CloudEditor — Heading Levels</PageTitle>
+<PageTitle>CloudTextEditor — Heading Levels</PageTitle>
 
 <div class="page-header">
     <h1>Heading Levels &amp; Toolbar Options</h1>
     <p>
         Control which HTML heading the first "Heading" entry produces with
         <code>FirstHeadingLevel</code> — useful when the page already owns its <code>&lt;h1&gt;</code>.
-        Toolbar groups can be switched off individually through <code>CloudEditorToolbarOptions</code>.
+        Toolbar groups can be switched off individually through <code>CloudTextEditorToolbarOptions</code>.
     </p>
 </div>
 
@@ -44,7 +44,7 @@
                 </label>
             </div>
 
-            <CloudEditor @bind-Value="_offsetHtml"
+            <CloudTextEditor @bind-Value="_offsetHtml"
                          FirstHeadingLevel="_firstHeadingLevel"
                          HeadingCount="_headingCount"
                          MinHeight="200px" />
@@ -59,7 +59,7 @@
                 switched off via <code>Toolbar</code>.
             </p>
 
-            <CloudEditor @bind-Value="_minimalHtml"
+            <CloudTextEditor @bind-Value="_minimalHtml"
                          Placeholder="Bold, italic, underline, strikethrough, lists and undo/redo only…"
                          MinHeight="160px"
                          Toolbar="_minimalToolbar" />
@@ -71,7 +71,7 @@
             <h2 class="card-title">How it works</h2>
             <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0;">
                 <code>FirstHeadingLevel</code> remaps the heading dropdown; heading entries never map
-                beyond <code>&lt;h6&gt;</code>. <code>CloudEditorToolbarOptions</code> exposes a boolean
+                beyond <code>&lt;h6&gt;</code>. <code>CloudTextEditorToolbarOptions</code> exposes a boolean
                 per tool group.
             </p>
             <pre class="code-snippet"><code>@_usageSnippet</code></pre>
@@ -86,7 +86,7 @@
     private string? _offsetHtml = "<p>Select this line and choose <strong>Heading 1</strong> from the dropdown.</p>";
     private string? _minimalHtml;
 
-    private readonly CloudEditorToolbarOptions _minimalToolbar = new()
+    private readonly CloudTextEditorToolbarOptions _minimalToolbar = new()
     {
         Headings = false,
         Script = false,
@@ -108,13 +108,13 @@
 
     private readonly string _usageSnippet = """
         <!-- "Heading 1" produces <h2>, "Heading 2" produces <h3>, "Heading 3" produces <h4> -->
-        <CloudEditor @bind-Value="_html"
+        <CloudTextEditor @bind-Value="_html"
                      FirstHeadingLevel="2"
                      HeadingCount="3" />
 
         <!-- Minimal toolbar: only basic formatting, lists and undo/redo -->
-        <CloudEditor @bind-Value="_html"
-                     Toolbar="new CloudEditorToolbarOptions
+        <CloudTextEditor @bind-Value="_html"
+                     Toolbar="new CloudTextEditorToolbarOptions
                      {
                          Headings = false,
                          TextColor = false,

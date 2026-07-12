@@ -2,7 +2,6 @@ using CloudComponents.Demo;
 using CloudComponents.Demo.Services;
 using AngryMonkey.CloudComponents.Maps.Extensions;
 using AngryMonkey.CloudComponents.Maps.Services;
-using AngryMonkey.CloudComponents.Maps.Web.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 

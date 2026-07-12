@@ -1,5 +1,5 @@
 using CloudComponents.Demo.Models;
-using AngryMonkey.CloudComponents.Grid.Models;
+using AngryMonkey.CloudComponents.DataGrid.Models;
 
 namespace CloudComponents.Demo.Services;
 
@@ -73,9 +73,9 @@ public sealed class SampleDataService
         return people;
     }
 
-    public async Task<CloudGridDataResult> QueryAsync(
-        CloudGridDataRequest request,
-        Func<Person, CloudGridRow> rowFactory,
+    public async Task<CloudDataGridDataResult> QueryAsync(
+        CloudDataGridDataRequest request,
+        Func<Person, CloudDataGridRow> rowFactory,
         int simulatedDelayMs = 250)
     {
         if (simulatedDelayMs > 0)
@@ -95,7 +95,7 @@ public sealed class SampleDataService
 
         if (request.Sort != null && SortSelectors.TryGetValue(request.Sort.Key, out var selector))
         {
-            query = request.Sort.Direction == CloudGridSortDirection.Ascending
+            query = request.Sort.Direction == CloudDataGridSortDirection.Ascending
                 ? query.OrderBy(selector)
                 : query.OrderByDescending(selector);
         }
@@ -108,7 +108,7 @@ public sealed class SampleDataService
             .Take(pageSize)
             .ToList();
 
-        return new CloudGridDataResult
+        return new CloudDataGridDataResult
         {
             Page = request.Page,
             PageSize = pageSize,
@@ -123,7 +123,7 @@ public sealed class SampleDataService
         return ids.Where(lookup.ContainsKey).Select(id => lookup[id]).ToList();
     }
 
-    public void ApplyReorder(CloudGridRowReorder reorder)
+    public void ApplyReorder(CloudDataGridRowReorder reorder)
     {
         int oldIndex = _people.FindIndex(p => p.Id == reorder.RecordId);
         if (oldIndex < 0) return;

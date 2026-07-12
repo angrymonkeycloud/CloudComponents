@@ -14,7 +14,7 @@
 
 <div class="card-grid">
     <div class="card">
-        <h3>CloudGrid</h3>
+        <h3>CloudDataGrid</h3>
         <p>
             Data grid with sorting, search, selection, paging modes, row reordering,
             height modes, and CSS variable theming. Backed by a server-like async data provider.
@@ -126,6 +126,6 @@
     </p>
     <pre><code>DataProvider="LoadAsync"
 
-private async Task&lt;CloudGridDataResult?&gt; LoadAsync(CloudGridDataRequest request)
+private async Task&lt;CloudDataGridDataResult?&gt; LoadAsync(CloudDataGridDataRequest request)
     =&gt; await Data.QueryAsync(request, ToRow);</code></pre>
 </div>

@@ -23,13 +23,12 @@ await new CloudPack(new CloudPackConfig() { NugetApiKey = apiKey })
     [
         new CloudPackProject("CloudComponents"),
         new CloudPackProject("CloudComponents.Icons"),
-        new CloudPackProject("CloudComponents.Grid"),
+        new CloudPackProject("CloudComponents.DataGrid"),
         new CloudPackProject("CloudComponents.VideoPlayer"),
 
-        new CloudPackProject("CloudComponents.Editor"),
+        new CloudPackProject("CloudComponents.TextEditor"),
 
         new CloudPackProject("CloudComponents.Maps"),
-        new CloudPackProject("CloudComponents.Maps.Web"),
-        new CloudPackProject("CloudComponents.Maps.Mobile"),
+        new CloudPackProject("CloudComponents.Maps.Maui"),
     ]
 }.Pack();

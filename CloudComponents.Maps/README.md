@@ -454,8 +454,8 @@ The search box debounces keystrokes (`SearchDebounceMs`), queries the Azure Maps
 
 "Pin my location" is available two ways: the built-in floating locate button (`ShowCurrentLocationButton`) or calling `PinMyLocationAsync()` directly (e.g. from your own button). Both call through the registered `ILocationService`, which prompts for permission via the component's consent popup when needed, then recenters the map and raises `OnMyLocationFound`. Register the implementation that matches your host:
 
-- **Blazor WebAssembly / Server (browser)** — `CloudComponents.Maps.Web`'s `WebLocationService`, using `navigator.geolocation` through JS isolation.
-- **.NET MAUI Blazor Hybrid** — `CloudComponents.Maps.Mobile`'s `MauiLocationService`, using the native `Geolocation`/`Permissions` MAUI Essentials APIs.
+- **Blazor WebAssembly / Server (browser)** — `CloudComponents.Maps`'s `WebLocationService`, using `navigator.geolocation` through JS isolation.
+- **.NET MAUI Blazor Hybrid** — `CloudComponents.Maps.Maui`'s `MauiLocationService`, using the native `Geolocation`/`Permissions` MAUI Essentials APIs.
 
 ```csharp
 // Web / WebAssembly
@@ -601,7 +601,7 @@ Use valid `MapStyle` enum values and verify base map tiles are permitted by your
 
 ### “Pin my location does nothing on mobile”
 
-Ensure `CloudComponents.Maps.Mobile`'s `MauiLocationService` is registered as `ILocationService` and the app has requested the `LocationWhenInUse` permission in its platform manifest (`AndroidManifest.xml` / `Info.plist`).
+Ensure `CloudComponents.Maps.Maui`'s `MauiLocationService` is registered as `ILocationService` and the app has requested the `LocationWhenInUse` permission in its platform manifest (`AndroidManifest.xml` / `Info.plist`).
 
 ### “Search box shows no results”
 

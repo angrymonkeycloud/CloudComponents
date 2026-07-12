@@ -1,0 +1,263 @@
+@namespace AngryMonkey.CloudComponents.DataGrid.Components
+@using AngryMonkey.CloudComponents.DataGrid.Models
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+
+@*
+    CloudDataGridBody — table head, rows, load-more button and the pointer-capture shields
+    for column resizing and row drag-and-drop.
+
+    Markup follows the Angry Monkey CSS naming convention; styles live inside
+    CloudDataGridBody.razor.less / CloudDataGridBody.razor.css.
+
+    All behavior lives in CloudDataGridBody.razor.cs.
+*@
+
+<div class="cloudgrid-table" style="@TableStyle">
+
+    <div class="cloudgrid-head">
+
+        @if (AllowReordering)
+        {
+            <div class="cloudgrid-draghandle"></div>
+        }
+
+        @if (AllowSelection)
+        {
+            <div class="cloudgrid-check">
+                <input type="checkbox" title="Select all" checked="@AllRowsSelected" @onchange="ToggleSelectAllAsync" />
+            </div>
+        }
+
+        @for (int i = 0; i < Columns.Count; i++)
+        {
+            int columnIndex = i;
+            CloudDataGridColumn column = Columns[columnIndex];
+
+            <div class="cloudgrid-headcell @HeadCellClasses(columnIndex)"
+                 style="width: @Px(GetColumnWidth(columnIndex))"
+                 @onclick="() => SortByAsync(columnIndex)">
+
+                <span>@column.Label</span>
+
+                @if (_sortIndex == columnIndex)
+                {
+                    <SortIcon Down="@(_sortDirection == CloudDataGridSortDirection.Descending)" />
+                }
+
+                @if (column.Resizable)
+                {
+                    <div class="cloudgrid-resizer"
+                         @onclick:stopPropagation
+                         @onpointerdown="e => BeginResize(columnIndex, e)"
+                         @onpointerdown:preventDefault
+                         @onpointerdown:stopPropagation></div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="cloudgrid-body @BodyClasses" style="@BodyStyle">
+
+        @if (IsLoading)
+        {
+            <div class="cloudgrid-status _loading">@LoadingText</div>
+        }
+        else if (IsSearching)
+        {
+            <div class="cloudgrid-status _searching">@SearchingText</div>
+        }
+        else if (!string.IsNullOrEmpty(Message))
+        {
+            <div class="cloudgrid-status _message">@Message</div>
+        }
+        else if (Data != null)
+        {
+            @if (PagingMode == CloudDataGridPagingMode.InfiniteScroll)
+            {
+                @* Blazor's built-in Virtualize detects scrolling near the end of
+                   the loaded rows and asks the provider for the missing range,
+                   which triggers loading the next page — no custom JavaScript. *@
+                <Virtualize @ref="_virtualize" TItem="CloudDataGridRow" ItemsProvider="ProvideRowsAsync" ItemSize="@((float)EffectiveRowHeight)" OverscanCount="5">
+                    <ItemContent>@RenderRow(context)</ItemContent>
+                    <Placeholder>
+                        <div class="cloudgrid-row _placeholder"></div>
+                    </Placeholder>
+                </Virtualize>
+            }
+            else
+            {
+                foreach (CloudDataGridRow row in DisplayRows)
+                {
+                    @RenderRow(row)
+                }
+
+                @if (PagingMode == CloudDataGridPagingMode.LoadMore && HasMoreRows)
+                {
+                    <button type="button" class="cloudgrid-loadmore" disabled="@_loadMorePending" @onclick="LoadMoreAsync">
+                        @(_loadMorePending ? LoadingText : LoadMoreText)
+                    </button>
+                }
+            }
+        }
+    </div>
+</div>
+
+@if (_resizeIndex.HasValue)
+{
+    @* Transparent overlay capturing pointer events while a column is being
+       resized, so dragging works without any JavaScript interop. *@
+    <div class="cloudgrid-shield"
+         @onpointermove="ResizeMove"
+         @onpointerup="EndResize"
+         @onpointercancel="EndResize"
+         @onpointerleave="EndResize"></div>
+}
+
+@if (_dragRowId.HasValue)
+{
+    @* Same trick for row drag & drop: the shield tracks pointer movement
+       while a row is being re-arranged — no JavaScript interop needed. *@
+    <div class="cloudgrid-shield _rowdrag"
+         @onpointermove="RowDragMove"
+         @onpointerup="EndRowDrag"
+         @onpointercancel="EndRowDrag"
+         @onpointerleave="EndRowDrag"></div>
+}
+
+@code {
+    // Markup-only helpers stay in the .razor file; all behavior lives in CloudDataGridBody.razor.cs.
+
+    private RenderFragment<CloudDataGridRow> RenderRow => row => @<text>
+        <div class="cloudgrid-row @RowClasses(row)" data-id="@row.Id" @attributes="row.Attributes">
+
+            @if (AllowReordering)
+            {
+                <div class="cloudgrid-draghandle"
+                     title="Drag to re-arrange"
+                     @onpointerdown="e => BeginRowDrag(row, e)"
+                     @onpointerdown:preventDefault
+                     @onpointerdown:stopPropagation>
+                  <DragIcon />
+                </div>
+            }
+
+            @if (AllowSelection)
+            {
+                <div class="cloudgrid-check">
+                    <input type="checkbox" checked="@IsRowSelected(row)" @onchange="() => ToggleRowAsync(row)" />
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(row.Link))
+            {
+                <a href="@row.Link" target="@LinkTarget">@RowCells(row)</a>
+            }
+            else
+            {
+                @RowCells(row)
+            }
+
+            @{
+                List<CloudDataGridAction> rowActions = [.. RowVisibleActions(row)];
+            }
+
+            @if (rowActions.Count > 0)
+            {
+                <div class="cloudgrid-rowactions" @onclick:stopPropagation @onclick:preventDefault>
+                    @foreach (CloudDataGridAction action in rowActions)
+                    {
+                        @RenderRowAction((action, row))
+                    }
+                </div>
+            }
+        </div>
+    </text>;
+
+    /// <summary>Renders a single action inside a row's action cell.</summary>
+    private RenderFragment<(CloudDataGridAction Action, CloudDataGridRow Row)> RenderRowAction => ctx => @<text>
+        @if (ctx.Action.Type == CloudDataGridActionType.Link)
+        {
+            <a class="cloudgrid-action @ctx.Action.CssClass"
+               href="@ctx.Action.Href"
+               target="@ctx.Action.Target"
+               title="@(ctx.Action.Tooltip ?? ctx.Action.Text)">
+                @RowActionIconAndText(ctx.Action)
+            </a>
+        }
+        else if (ctx.Action.Type == CloudDataGridActionType.Button)
+        {
+            <button type="button"
+                    class="cloudgrid-action @ctx.Action.CssClass"
+                    title="@(ctx.Action.Tooltip ?? ctx.Action.Text)"
+                    @onclick="() => RowActionClickAsync(ctx.Action, ctx.Row)"
+                    @onclick:stopPropagation
+                    @onclick:preventDefault>
+                @RowActionIconAndText(ctx.Action)
+            </button>
+        }
+        else if (ctx.Action.Type == CloudDataGridActionType.Element)
+        {
+            bool isActive = IsRowElementActive(ctx.Row, ctx.Action);
+
+            @if (isActive && ctx.Action.ChildContent != null)
+            {
+                @ctx.Action.ChildContent
+                <button type="button"
+                        class="cloudgrid-action _cancel"
+                        @onclick="CancelRowElementAsync"
+                        @onclick:stopPropagation
+                        @onclick:preventDefault>
+                    cancel
+                </button>
+            }
+            else
+            {
+                <button type="button"
+                        class="cloudgrid-action @ctx.Action.CssClass"
+                        title="@(ctx.Action.Tooltip ?? ctx.Action.Text)"
+                        @onclick="() => ToggleRowElementAsync(ctx.Row, ctx.Action)"
+                        @onclick:stopPropagation
+                        @onclick:preventDefault>
+                    @RowActionIconAndText(ctx.Action)
+                </button>
+            }
+        }
+    </text>;
+
+    private RenderFragment RowActionIconAndText(CloudDataGridAction action) => @<text>
+        @{
+            string? text = string.IsNullOrWhiteSpace(action.Text) ? action.Tooltip : action.Text;
+        }
+        @if (action.Icon != null)
+        {
+            @action.Icon
+        }
+        else if (!string.IsNullOrEmpty(action.IconSvg))
+        {
+            @((MarkupString)action.IconSvg)
+        }
+        @if (!string.IsNullOrWhiteSpace(text))
+        {
+            <span>@text</span>
+        }
+    </text>;
+
+    private RenderFragment<CloudDataGridRow> RowCells => row => @<text>
+        @for (int c = 0; c < row.Cells.Count; c++)
+        {
+            object? cell = row.Cells[c];
+            bool isImage = c < Columns.Count && Columns[c].IsImage;
+
+            <div class="cloudgrid-cell" style="width: @Px(GetColumnWidth(c))">
+                @if (isImage && cell is string imageUrl && !string.IsNullOrWhiteSpace(imageUrl))
+                {
+                    <img src="@imageUrl" alt="" loading="lazy" />
+                }
+                else
+                {
+                    <span>@(cell ?? EmptyCellText)</span>
+                }
+            </div>
+        }
+    </text>;
+}

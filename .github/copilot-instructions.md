@@ -14,13 +14,13 @@ Multi-project Blazor Razor Class Library solution targeting **net10.0**. Each co
 
 | Library | Entry Component | Demo |
 |---------|----------------|------|
-| `CloudComponents.Grid` | `CloudGrid` | `CloudComponents.Grid.Demo` |
+| `CloudComponents.DataGrid` | `CloudGrid` | `CloudComponents.DataGrid.Demo` |
 | `CloudComponents.VideoPlayer` | `VideoPlayer` | `CloudComponents.VideoPlayer.Demo` |
 | `CloudComponents.Maps` | `AzureMap` | `CloudComponents.Maps.Demo` |
 
-See per-project READMEs for API details: [Grid](../CloudComponents.Grid/README.md), [VideoPlayer](../CloudComponents.VideoPlayer/README.md), [Maps](../CloudComponents.Maps/README.md).
+See per-project READMEs for API details: [Grid](../CloudComponents.DataGrid/README.md), [VideoPlayer](../CloudComponents.VideoPlayer/README.md), [Maps](../CloudComponents.Maps/README.md).
 
-**Active vs. legacy**: `CloudComponents.Grid`, `CloudComponents.VideoPlayer`, `CloudComponents.Maps` are the current libraries. The `Components/` folder is a legacy multi-component library (GridView, Dialog, Tabs, etc.) — maintained separately, not the target for new work. `BlazorApp1/`, `Demo/`, `ServerDemo/` are sample/template projects.
+**Active vs. legacy**: `CloudComponents.DataGrid`, `CloudComponents.VideoPlayer`, `CloudComponents.Maps` are the current libraries. The `Components/` folder is a legacy multi-component library (GridView, Dialog, Tabs, etc.) — maintained separately, not the target for new work. `BlazorApp1/`, `Demo/`, `ServerDemo/` are sample/template projects.
 
 ## Build
 

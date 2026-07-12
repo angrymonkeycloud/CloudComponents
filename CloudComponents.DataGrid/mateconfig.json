@@ -1,0 +1,20 @@
+{
+  "files": [
+    {
+      "input": "Components/CloudDataGridHeader.razor.less",
+      "output": "Components/CloudDataGridHeader.razor.css"
+    },
+    {
+      "input": "Components/CloudDataGridFooter.razor.less",
+      "output": "Components/CloudDataGridFooter.razor.css"
+    },
+    {
+      "input": "Components/CloudDataGrid.razor.less",
+      "output": "Components/CloudDataGrid.razor.css"
+    },
+    {
+      "input": "Components/CloudDataGridBody.razor.less",
+      "output": "Components/CloudDataGridBody.razor.css"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 @page "/editor/basic"
 
-<PageTitle>CloudEditor — Basic</PageTitle>
+<PageTitle>CloudTextEditor — Basic</PageTitle>
 
 <div class="page-header">
     <h1>Basic Editor</h1>
@@ -22,7 +22,7 @@
                 horizontal rule, clear formatting, undo/redo, code view and fullscreen.
             </p>
 
-            <CloudEditor @bind-Value="_html"
+            <CloudTextEditor @bind-Value="_html"
                          Placeholder="Start writing something great…"
                          MinHeight="280px"
                          OnChanged="HandleChanged" />
@@ -55,7 +55,7 @@
     private int _changeCount;
 
     private const string SampleContent = """
-        <h1>Welcome to CloudEditor</h1>
+        <h1>Welcome to CloudTextEditor</h1>
         <p>This is a <strong>rich text editor</strong> for Blazor with <em>semantic HTML</em> output. It supports <u>underline</u>, <s>strikethrough</s>, <code>inline code</code>, and much more.</p>
         <blockquote>Select some text and try the toolbar — or use Ctrl+B, Ctrl+I, Ctrl+U and Ctrl+K.</blockquote>
         <ul><li>Bulleted lists</li><li>Numbered lists</li><li>Indentation with Tab / Shift+Tab</li></ul>
@@ -73,7 +73,7 @@
     }
 
     private readonly string _usageSnippet = """
-        <CloudEditor @bind-Value="_html"
+        <CloudTextEditor @bind-Value="_html"
                      Placeholder="Start writing something great…"
                      MinHeight="280px"
                      OnChanged="HandleChanged" />

@@ -73,7 +73,7 @@ For independent deployments:
 
 ## Projects
 
-### CloudComponents.Grid.Demo
+### CloudComponents.DataGrid.Demo
 **Base Href**: `/CloudGrid/`
 
 Professional data grid showcase with:
@@ -149,7 +149,7 @@ The `deploy-all-demos.yml` additionally:
 
 ### Run Grid Demo
 ```bash
-cd CloudComponents.Grid.Demo
+cd CloudComponents.DataGrid.Demo
 dotnet run
 # http://localhost:5000
 ```
@@ -182,7 +182,7 @@ dotnet build CloudComponents.sln
 
 ### Publish Individual Demo
 ```bash
-dotnet publish CloudComponents.Grid.Demo/CloudComponents.Grid.Demo.csproj -c Release -o ./publish-grid
+dotnet publish CloudComponents.DataGrid.Demo/CloudComponents.DataGrid.Demo.csproj -c Release -o ./publish-grid
 ```
 
 ---
@@ -201,8 +201,8 @@ CloudComponents/
 │       ├── deploy-maps-demo.yml
 │       └── deploy-icons-demo.yml
 │
-├── CloudComponents.Grid/
-├── CloudComponents.Grid.Demo/
+├── CloudComponents.DataGrid/
+├── CloudComponents.DataGrid.Demo/
 │   └── wwwroot/
 │       ├── index.html                   (base href: /CloudGrid/)
 │       └── css/app.css
@@ -368,7 +368,7 @@ For issues:
 - `.github/workflows/deploy-all-demos.yml`
 
 ### Modified Files
-- `CloudComponents.Grid.Demo/wwwroot/index.html` - Updated base href
+- `CloudComponents.DataGrid.Demo/wwwroot/index.html` - Updated base href
 - `CloudComponents.VideoPlayer.Demo/wwwroot/index.html` - Updated base href
 - `CloudComponents.Maps.Demo/wwwroot/index.html` - Updated base href
 - `CloudComponents.sln` - Added Icons.Demo project

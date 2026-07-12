@@ -7,7 +7,7 @@ on:
     paths:
       - '.github/workflows/deploy.yml'
       - 'CloudComponents.Demo/**'
-      - 'CloudComponents.Grid/**'
+      - 'CloudComponents.DataGrid/**'
       - 'CloudComponents.VideoPlayer/**'
       - 'CloudComponents.Maps/**'
       - 'CloudComponents.Maps.Web/**'

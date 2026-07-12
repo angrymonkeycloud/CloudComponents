@@ -1,4 +1,4 @@
-ï»¿# AngryMonkey CloudComponents
+# AngryMonkey CloudComponents
 
 Free, open-source Blazor component libraries for **.NET 10**.
 
@@ -6,7 +6,7 @@ Free, open-source Blazor component libraries for **.NET 10**.
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![Blazor](https://img.shields.io/badge/UI-Blazor-5C2D91?logo=blazor)](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor)
 
-> **[Live Demo](https://angrymonkeycloud.github.io/CloudComponents/)** â€” showcases every feature with interactive examples and light/dark mode.
+> **[Live Demo](https://angrymonkeycloud.github.io/CloudComponents/)** — showcases every feature with interactive examples and light/dark mode.
 
 ---
 
@@ -15,10 +15,10 @@ Free, open-source Blazor component libraries for **.NET 10**.
 | Package | NuGet | Description |
 |---------|-------|-------------|
 | `AngryMonkey.CloudComponents` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents) | Core UI primitives: Popup, Dialog, Switch, Tabs, ProgressBar, VolumeBar |
-| `AngryMonkey.CloudComponents.Grid` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.Grid?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.Grid) | Feature-rich data grid with sorting, paging, selection, actions, reordering, and export |
+| `AngryMonkey.CloudComponents.DataGrid` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.DataGrid?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.DataGrid) | Feature-rich data grid with sorting, paging, selection, actions, reordering, and export |
 | `AngryMonkey.CloudComponents.VideoPlayer` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.VideoPlayer?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.VideoPlayer) | HTML5 / HLS video player with full controls, casting, and settings |
 | `AngryMonkey.CloudComponents.Maps` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.Maps?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.Maps) | Azure Maps wrapper with markers, regions, geocoding, search, and location-lock |
-| `AngryMonkey.CloudComponents.Editor` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.Editor?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.Editor) | Rich text editor with formatting toolbar, media embeds, and HTML code view validation |
+| `AngryMonkey.CloudComponents.TextEditor` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.TextEditor?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.TextEditor) | Rich text editor with formatting toolbar, media embeds, and HTML code view validation |
 | `AngryMonkey.CloudComponents.Icons` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.Icons?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.Icons) | SVG icon and logo Razor components |
 
 ---
@@ -29,10 +29,10 @@ Free, open-source Blazor component libraries for **.NET 10**.
 
 ```bash
 dotnet add package AngryMonkey.CloudComponents
-dotnet add package AngryMonkey.CloudComponents.Grid
+dotnet add package AngryMonkey.CloudComponents.DataGrid
 dotnet add package AngryMonkey.CloudComponents.VideoPlayer
 dotnet add package AngryMonkey.CloudComponents.Maps
-dotnet add package AngryMonkey.CloudComponents.Editor
+dotnet add package AngryMonkey.CloudComponents.TextEditor
 dotnet add package AngryMonkey.CloudComponents.Icons
 ```
 
@@ -40,15 +40,15 @@ dotnet add package AngryMonkey.CloudComponents.Icons
 
 ```razor
 @using CloudComponents.Basic
-@using CloudComponents.Grid.Components
-@using CloudComponents.Grid.Models
+@using CloudComponents.DataGrid.Components
+@using CloudComponents.DataGrid.Models
 @using CloudComponents.VideoPlayer
 @using CloudComponents.Maps.Components
 @using CloudComponents.Maps.Models
 @using CloudComponents.Maps.Services
-@using AngryMonkey.CloudComponents.Editor.Components
-@using AngryMonkey.CloudComponents.Editor.Models
-@using AngryMonkey.CloudComponents.Editor.Services
+@using AngryMonkey.CloudComponents.TextEditor.Components
+@using AngryMonkey.CloudComponents.TextEditor.Models
+@using AngryMonkey.CloudComponents.TextEditor.Services
 @using CloudIcons
 @using CloudIcons.Icons
 @using CloudIcons.Logos
@@ -83,18 +83,18 @@ dotnet add package AngryMonkey.CloudComponents.Icons
 | `ProgressBar` | `<ProgressBar Style="ProgressBarStyle.Flat" Value="@_v" Total="100" OnChanged="OnChanged" />` |
 | `VolumeBar` | `<VolumeBar Value="@_vol" Extended="true" OnChanged="OnChanged" />` |
 
-### CloudGrid (`AngryMonkey.CloudComponents.Grid`)
+### CloudGrid (`AngryMonkey.CloudComponents.DataGrid`)
 
 ```razor
 <CloudGrid TItem="MyModel" DataProvider="LoadData" Columns="@_columns" />
 ```
 
-- `DataProvider` â€” async callback for server-driven load, sort, and page
-- `CloudGridHeaderOptions` â€” adds search, refresh, export toolbar
+- `DataProvider` — async callback for server-driven load, sort, and page
+- `CloudGridHeaderOptions` — adds search, refresh, export toolbar
 - Paging modes: `None`, `LoadMore`, `Pager`
 - Row actions, bulk selection, column reordering, drag-and-drop row reordering
 
-See [CloudComponents.Grid/README.md](CloudComponents.Grid/README.md) for the full API.
+See [CloudComponents.DataGrid/README.md](CloudComponents.DataGrid/README.md) for the full API.
 
 ### VideoPlayer (`AngryMonkey.CloudComponents.VideoPlayer`)
 
@@ -120,14 +120,14 @@ builder.Services.AddAzureMaps(options => options.SubscriptionKey = "YOUR_AZURE_M
 Features: markers, regions, polygon boundaries, geocoding, reverse geocoding, place search, pin-my-location, location lock, camera and style updates at runtime.
 See [CloudComponents.Maps/README.md](CloudComponents.Maps/README.md) for the full API.
 
-### CloudEditor (`AngryMonkey.CloudComponents.Editor`)
+### CloudEditor (`AngryMonkey.CloudComponents.TextEditor`)
 
 ```razor
-<CloudEditor @bind-Value="_html" Placeholder="Start writingâ€¦" FirstHeadingLevel="2" />
+<CloudEditor @bind-Value="_html" Placeholder="Start writing…" FirstHeadingLevel="2" />
 ```
 
 Rich text editor with headings, bold/italic/strikethrough, colors, alignment, lists, links, image/video insertion, fullscreen mode, and HTML code view with validation.
-See [CloudComponents.Editor/README.md](CloudComponents.Editor/README.md) for the full API.
+See [CloudComponents.TextEditor/README.md](CloudComponents.TextEditor/README.md) for the full API.
 
 ### CloudIcons (`AngryMonkey.CloudComponents.Icons`)
 
@@ -135,7 +135,7 @@ See [CloudComponents.Editor/README.md](CloudComponents.Editor/README.md) for the
 <PlayIcon />  <PauseIcon />  <SearchIcon />  <GoogleLogo />  <MicrosoftLogo />
 ```
 
-SVG icon and logo Razor components â€” no extra CSS class or import required.
+SVG icon and logo Razor components — no extra CSS class or import required.
 
 ---
 
@@ -144,11 +144,11 @@ SVG icon and logo Razor components â€” no extra CSS class or import required.
 ```
 CloudComponents/
 +-- CloudComponents.Basic/         # Core UI primitives package
-+-- CloudComponents.Grid/          # Data grid library
++-- CloudComponents.DataGrid/          # Data grid library
 +-- CloudComponents.VideoPlayer/   # Video player library
 +-- CloudComponents.Maps/          # Azure Maps library
 +-- CloudComponents.Maps.Web/      # Maps web helpers
-+-- CloudComponents.Editor/        # Rich text editor library
++-- CloudComponents.TextEditor/        # Rich text editor library
 +-- CloudComponents.Icons/         # SVG icon components
 +-- CloudComponents.Demo/          # Unified demo app (deployed to GitHub Pages)
 +-- archived/                      # Legacy standalone demo projects (reference only)

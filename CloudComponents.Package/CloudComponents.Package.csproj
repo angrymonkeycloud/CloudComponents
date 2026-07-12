@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
@@ -7,7 +7,7 @@
 		<Nullable>enable</Nullable>
 		<Authors>Angry Monkey</Authors>
 		<Company>Angry Monkey</Company>
-		<Version>4.1.6</Version>
+		<Version>4.2.0</Version>
 		<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
 		<FileVersion>$(PackageVersion)</FileVersion>
 		<PackageIcon>amc-logo.png</PackageIcon>
