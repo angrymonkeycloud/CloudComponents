@@ -56,9 +56,11 @@
             </div>
         </div>
 
-        <div class="card">
-            <h2 class="card-title">📍 Map</h2>
-            <div class="toolbar" style="margin-bottom: 12px;">
+        <div class="map-page-layout">
+            <div>
+                <div class="card">
+                    <h2 class="card-title">📍 Map</h2>
+                    <div class="toolbar" style="margin-bottom: 12px;">
                 <span style="font-size: 13px; font-weight: 600;">Selection mode:</span>
                 <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px;">
                     <input type="radio" name="selectionMode"
@@ -106,10 +108,14 @@
                     </span>
                 }
             </div>
+            </div>
         </div>
 
-        @if (_lastSearchResult is { } searchResult)
-        {
+        <div class="map-page-splitter" title="Drag to resize"></div>
+
+        <div class="results-col">
+            @if (_lastSearchResult is { } searchResult)
+            {
             <div class="card">
                 <h2 class="card-title">🔎 Search Result</h2>
                 <div class="info-card" style="max-width: 440px;">
@@ -125,9 +131,10 @@
                     </p>
                 </div>
             </div>
-        }
-
-    </ResultContent>
+                    }
+                </div>
+            </div>
+        </ResultContent>
 
     <CodeContent>
         <div class="card">

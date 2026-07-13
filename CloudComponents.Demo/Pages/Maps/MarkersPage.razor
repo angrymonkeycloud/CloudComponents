@@ -15,9 +15,11 @@
 <MapsKeyGuard>
 <DemoResultCodeTabs>
     <ResultContent>
-        <div class="card">
-            <h2 class="card-title">Map</h2>
-            <div class="map-host">
+        <div class="map-page-layout">
+            <div>
+                <div class="card">
+                    <h2 class="card-title">Map</h2>
+                    <div class="map-host">
                 <AzureMap Height="500px"
                           Width="100%"
                           SubscriptionKey="@GetKey()"
@@ -39,11 +41,15 @@
                 <button class="btn btn-primary" @onclick="ClearAllMarkers">Clear All Markers</button>
                 <button class="btn" @onclick="AddSampleMarkers">Add Sample Markers</button>
                 <span class="badge">Markers: @_markers.Count</span>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class="card">
-            <h2 class="card-title">Marker Details</h2>
+            <div class="map-page-splitter" title="Drag to resize"></div>
+
+            <div class="results-col">
+                <div class="card">
+                    <h2 class="card-title">Marker Details</h2>
             @if (_markers.Count == 0)
             {
                 <p style="color: var(--text-secondary); font-size: 13px;">No markers yet. Double-click on the map to add markers.</p>
@@ -64,8 +70,10 @@
                     }
                 </div>
             }
-        </div>
-    </ResultContent>
+                    </div>
+                </div>
+            </div>
+        </ResultContent>
 
     <CodeContent>
         <div class="card">

@@ -18,9 +18,11 @@
 <DemoResultCodeTabs>
     <ResultContent>
 
-        <div class="card">
-            <h2 class="card-title">📍 Map</h2>
-            <div class="map-host">
+        <div class="map-page-layout">
+            <div>
+                <div class="card">
+                    <h2 class="card-title">📍 Map</h2>
+                    <div class="map-host">
                 <AzureMap Height="500px"
                           Width="100%"
                           SubscriptionKey="@GetKey()"
@@ -44,10 +46,14 @@
                 <button @onclick="ClearSavedLocation" class="button" disabled="@(_savedLocation is null)">Clear Saved</button>
                 <span class="badge" style="@(_statusIsError ? "background:#fde7e9;color:#a80000;" : "")">@_status</span>
             </div>
+            </div>
         </div>
 
-        <div class="card">
-            <h2 class="card-title">Selection</h2>
+        <div class="map-page-splitter" title="Drag to resize"></div>
+
+        <div class="results-col">
+            <div class="card">
+                <h2 class="card-title">Selection</h2>
             @if (_selectedCoordinate is { } selected)
             {
                 <div class="info-grid-2">
@@ -74,9 +80,11 @@
             {
                 <p style="color: var(--color-text-muted); font-size: 13px;">Pan the map to position the pin over a location.</p>
             }
-        </div>
+                    </div>
+                </div>
+            </div>
 
-    </ResultContent>
+        </ResultContent>
 
     <CodeContent>
         <div class="card">

@@ -1,4 +1,4 @@
-@page "/maps/search"
+﻿@page "/maps/search"
 @inject IOptions<AzureMapsOptions> Options
 @inject AzureMapsConfigurationService ConfigService
 
@@ -14,74 +14,137 @@
 </div>
 
 <MapsKeyGuard>
-<DemoResultCodeTabs>
-    <ResultContent>
-        <div class="card">
-            <h2 class="card-title">Map</h2>
-            <div class="map-host">
-                <AzureMap Height="500px"
-                          Width="100%"
-                          SubscriptionKey="@GetKey()"
-                          InitialView="_initialView"
-                          Style="MapStyle.Road"
-                          ShowSearchBox="true"
-                          SearchPlaceholder="Search for a city, address, or landmark…"
-                          SearchResultLimit="6"
-                          ShowCurrentLocationButton="true"
-                          OnMapReady="HandleMapReady"
-                          OnSearchResultSelected="HandleSearchResultSelected"
-                          OnMyLocationFound="HandleMyLocationFound"
-                          @ref="_map" />
-            </div>
-
-            <div class="toolbar" style="margin-top: 1rem;">
-                <button class="btn btn-primary" @onclick="PinMyLocation">📌 Pin My Location</button>
-                <button class="btn" @onclick="ClearSearch">Clear Search</button>
-                <span class="badge">@_status</span>
-            </div>
-        </div>
-
-        @if (_lastSearchResult is not null || _lastCoordinate is not null)
-        {
+    <DemoResultCodeTabs>
+        <ResultContent>
             <div class="card">
-                <h2 class="card-title">Last Result</h2>
-                <div class="markers-grid">
+                <h2 class="card-title">Options</h2>
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer;">
+                    <input type="checkbox" @bind="_showBoundary" style="width: 16px; height: 16px;" />
+                    Show boundary &amp; CloudGeography match when a city or area is found
+                </label>
+            </div>
+
+            <div class="map-page-layout">
+                <div>
+                    <div class="card">
+                        <h2 class="card-title">Map</h2>
+                        <div class="map-host">
+                            <AzureMap Height="500px"
+                                      Width="100%"
+                                      SubscriptionKey="@GetKey()"
+                                      InitialView="_initialView"
+                                      Style="MapStyle.Road"
+                                      ShowSearchBox="true"
+                                      SearchPlaceholder="Search for a city, address, or landmark…"
+                                      SearchResultLimit="6"
+                                      ShowCurrentLocationButton="true"
+                                      Regions="_searchRegions"
+                                      OnMapReady="HandleMapReady"
+                                      OnSearchResultSelected="HandleSearchResultSelected"
+                                      OnMyLocationFound="HandleMyLocationFound"
+                                      @ref="_map" />
+                        </div>
+
+                        <div class="toolbar" style="margin-top: 1rem;">
+                            <button class="btn btn-primary" @onclick="PinMyLocation">📌 Pin My Location</button>
+                            <button class="btn" @onclick="ClearSearch">Clear Search</button>
+                            <span class="badge">@_status</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="map-page-splitter" title="Drag to resize"></div>
+
+                <div class="results-col">
                     @if (_lastSearchResult is { } r)
                     {
-                        <div class="marker-card">
-                            <div class="marker-card-title">🔎 Search Result</div>
-                            <div><strong>Address:</strong> @r.Address</div>
-                            @if (!string.IsNullOrEmpty(r.Description))
-                            { <div><strong>Description:</strong> @r.Description</div> }
-                            <div><strong>Latitude:</strong> @r.Latitude.ToString("F5")</div>
-                            <div><strong>Longitude:</strong> @r.Longitude.ToString("F5")</div>
+                        <div class="card">
+                            <h2 class="card-title">🔎 Search Result</h2>
+                            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
+                                <div><strong>Address:</strong> @r.Address</div>
+                                @if (!string.IsNullOrEmpty(r.Description))
+                                {
+                                    <div><strong>Description:</strong> @r.Description</div>
+                                }
+                                <div><strong>Latitude:</strong> @r.Latitude.ToString("F5")</div>
+                                <div><strong>Longitude:</strong> @r.Longitude.ToString("F5")</div>
+                                @if (_showBoundary)
+                                {
+                                    <div style="margin-top: 4px;">
+                                        @if (_boundaryShown)
+                                        {
+                                            <span class="badge" style="background: #0078d426; color: #0078d4; border: 1px solid #0078d4;">🗺 Boundary shown on map</span>
+                                        }
+                                        else
+                                        {
+
+                                            <span class="badge" style="background: var(--color-surface-2); color: var(--color-text-muted);">No boundary available for this result</span>
+                                        }
+                                    </div>
+                                }
+                            </div>
                         </div>
                     }
+
                     @if (_lastCoordinate is { } c)
                     {
-                        <div class="marker-card">
-                            <div class="marker-card-title">📌 My Location</div>
-                            <div><strong>Latitude:</strong> @c.Latitude.ToString("F5")</div>
-                            <div><strong>Longitude:</strong> @c.Longitude.ToString("F5")</div>
+                        <div class="card">
+                            <h2 class="card-title">📌 My Location</h2>
+                            <div style="font-size: 13px; display: flex; flex-direction: column; gap: 4px;">
+                                <div><strong>Latitude:</strong> @c.Latitude.ToString("F5")</div>
+                                <div><strong>Longitude:</strong> @c.Longitude.ToString("F5")</div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (_showBoundary && _geoFieldMatches is not null)
+                    {
+                        <div class="card">
+                            <h2 class="card-title">CloudGeography Match — @(_geoCountryName ?? "Unknown Country")</h2>
+                            @if (_geoFieldMatches.Count == 0)
+                            {
+                                <p style="font-size: 13px; color: var(--color-text-muted);">No CloudGeography match found for this result.</p>
+                            }
+                            else
+                            {
+                                <div style="display: flex; flex-direction: column; gap: 10px;">
+                                    @foreach (var (field, value, matchedName) in _geoFieldMatches)
+                                    {
+                                        <div style="font-size: 13px;">
+                                            <div style="font-weight: 600; color: var(--color-accent); margin-bottom: 3px;">@field</div>
+                                            <div style="margin-bottom: 4px; color: var(--color-text);">@value</div>
+                                            @if (matchedName is not null)
+                                            {
+                                                <span class="badge" style="background: #0078d426; color: #0078d4; border: 1px solid #0078d4;">✓ @matchedName</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge" style="background: var(--color-surface-2); color: var(--color-text-muted);">No match with CloudGeography</span>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
                         </div>
                     }
                 </div>
             </div>
-        }
-    </ResultContent>
+        </ResultContent>
 
-    <CodeContent>
-        <div class="card">
-            <h2 class="card-title">How it works</h2>
-            <ul style="font-size: 13px; color: var(--text-secondary);">
-                <li><strong>Search:</strong> Debounced Azure Maps fuzzy search with a keyboard-navigable dropdown. Selecting a result flies the camera to it.</li>
-                <li><strong>Pin my location (web):</strong> Uses <code>navigator.geolocation</code> through JS isolation (<code>AngryMonkey.CloudComponents.Maps.Web</code>'s <code>WebLocationService</code>), registered in <code>Program.cs</code>.</li>
-                <li><strong>Pin my location (mobile):</strong> A .NET MAUI Blazor Hybrid host would instead register <code>AngryMonkey.CloudComponents.Maps.Maui</code>'s <code>MauiLocationService</code> — no component code changes required.</li>
-            </ul>
-            <pre class="code-snippet"><code>@_snippet</code></pre>
-        </div>
-    </CodeContent>
-</DemoResultCodeTabs>
+        <CodeContent>
+            <div class="card">
+                <h2 class="card-title">How it works</h2>
+                <ul style="font-size: 13px; color: var(--color-text-muted);">
+                    <li><strong>Search:</strong> Debounced Azure Maps fuzzy search with a keyboard-navigable dropdown. Selecting a result flies the camera to it.</li>
+                    <li><strong>Boundary:</strong> When the option is on and the result has a geometry ID, the actual administrative boundary polygon is fetched via <code>GetPolygonAsync</code> and drawn on the map via <code>AddRegionsAsync</code>.</li>
+                    <li><strong>CloudGeography:</strong> Each result field (Address, Description) is checked against <code>CloudGeographyClient</code> countries and subdivisions. Fields that match a CloudGeography entry are labelled; unmatched fields show "No match with CloudGeography".</li>
+                    <li><strong>Pin my location (web):</strong> Uses <code>navigator.geolocation</code> through JS isolation (<code>WebLocationService</code>), registered in <code>Program.cs</code>.</li>
+                    <li><strong>Pin my location (mobile):</strong> A .NET MAUI Blazor Hybrid host registers <code>MauiLocationService</code> instead — no component code changes required.</li>
+                </ul>
+                <pre class="code-snippet"><code>@_snippet</code></pre>
+            </div>
+        </CodeContent>
+    </DemoResultCodeTabs>
 </MapsKeyGuard>
 
 @code {
@@ -90,15 +153,100 @@
     private MapSearchResult? _lastSearchResult;
     private MapCoordinate? _lastCoordinate;
     private string _status = "Ready";
+    private bool _showBoundary;
+    private bool _boundaryShown;
+    private List<MapRegion> _searchRegions = [];
+    private List<(string field, string value, string? matchedName)>? _geoFieldMatches;
+    private string? _geoCountryName;
 
     private Task HandleMapReady() => Task.CompletedTask;
 
-    private Task HandleSearchResultSelected(MapSearchResult result)
+    private async Task HandleSearchResultSelected(MapSearchResult result)
     {
         _lastSearchResult = result;
         _status = "Search result selected";
+
+        if (_showBoundary)
+            await ApplyBoundaryAndGeoAsync(result);
+        else
+        {
+            _geoFieldMatches = null;
+            _geoCountryName = null;
+            _boundaryShown = false;
+        }
+
         StateHasChanged();
-        return Task.CompletedTask;
+    }
+
+    private async Task ApplyBoundaryAndGeoAsync(MapSearchResult result)
+    {
+        if (_map is not null)
+            await _map.ClearRegionsAsync();
+        _searchRegions.Clear();
+        _boundaryShown = false;
+
+        // Fetch the actual administrative boundary polygon (never a rectangle)
+        if (_map is not null && result.GeometryId is { Length: > 0 } geometryId)
+        {
+            try
+            {
+                var polygon = await _map.GetPolygonAsync(geometryId);
+                if (polygon is { Length: > 0 })
+                {
+                    _searchRegions = [new MapRegion(polygon, FillColor: "#0078d426", StrokeColor: "#0078d4", StrokeWidth: 2)];
+                    await _map.AddRegionsAsync(_searchRegions);
+                    _boundaryShown = true;
+                }
+            }
+            catch { /* polygon not available for this result */ }
+        }
+
+        _geoFieldMatches = null;
+        _geoCountryName = null;
+
+        try
+        {
+            var geo = new CloudGeographyClient();
+            var allCountries = geo.Countries.Get();
+
+            var matchedCountry = allCountries
+                .OrderByDescending(c => c.Name.Length)
+                .FirstOrDefault(c => (result.Address + " " + result.Description).Contains(c.Name, StringComparison.OrdinalIgnoreCase));
+
+            if (matchedCountry is null)
+                return;
+
+            _geoCountryName = matchedCountry.Name;
+            var subdivisions = geo.Subdivisions.Get(matchedCountry.Code);
+
+            string? FindMatch(string text)
+            {
+                // Check subdivisions first (more specific)
+                var sub = subdivisions
+                    .OrderByDescending(s => s.Name.Length)
+                    .FirstOrDefault(s => text.Contains(s.Name, StringComparison.OrdinalIgnoreCase));
+
+                if (sub is not null)
+                    return sub.Name;
+
+                // Fallback to country name
+                if (text.Contains(matchedCountry.Name, StringComparison.OrdinalIgnoreCase))
+                    return matchedCountry.Name;
+
+                return null;
+            }
+
+            var entries = new List<(string, string, string?)>
+            {
+                ("Address", result.Address, FindMatch(result.Address))
+            };
+
+            if (!string.IsNullOrEmpty(result.Description))
+                entries.Add(("Description", result.Description, FindMatch(result.Description)));
+
+            _geoFieldMatches = entries;
+        }
+        catch { /* best-effort */ }
     }
 
     private Task HandleMyLocationFound(MapCoordinate coordinate)
@@ -106,23 +254,34 @@
         _lastCoordinate = coordinate;
         _status = "Location pinned";
         StateHasChanged();
+
         return Task.CompletedTask;
     }
 
     private async Task PinMyLocation()
     {
-        if (_map is null) return;
+        if (_map is null)
+            return;
+
         _status = "Locating…";
         StateHasChanged();
         var found = await _map.PinMyLocationAsync();
-        if (!found) _status = "Location unavailable";
+
+        if (!found)
+            _status = "Location unavailable";
+
         StateHasChanged();
     }
 
-    private void ClearSearch()
+    private async Task ClearSearch()
     {
         _map?.ClearSearch();
         _lastSearchResult = null;
+        _geoFieldMatches = null;
+        _geoCountryName = null;
+        _searchRegions.Clear();
+        if (_map is not null)
+            await _map.ClearRegionsAsync();
         _status = "Search cleared";
     }
 
@@ -137,14 +296,26 @@
           SearchPlaceholder="Search for a city, address, or landmark…"
           SearchResultLimit="6"
           ShowCurrentLocationButton="true"
+          Regions="@_searchRegions"
           OnSearchResultSelected="HandleSearchResultSelected"
           OnMyLocationFound="HandleMyLocationFound"
           @ref="_map" />
 
+// Draw the actual boundary polygon when the result has a geometry ID:
+if (result.GeometryId is { Length: > 0 } geometryId)
+{
+    var polygon = await _map.GetPolygonAsync(geometryId);
+    if (polygon is { Length: > 0 })
+        await _map.AddRegionsAsync([new MapRegion(polygon)]);
+}
+
+// Match CloudGeography per field:
+var geo = new CloudGeographyClient();
+var country = geo.Countries.Get()
+    .FirstOrDefault(c => addressText.Contains(c.Name));
+var subdivisions = geo.Subdivisions.Get(country.Code);
+
 // In Program.cs (web):
 builder.Services.AddScoped<ILocationService, WebLocationService>();
-
-// In Program.cs (MAUI Blazor Hybrid):
-builder.Services.AddScoped<ILocationService, MauiLocationService>();
 """;
 }

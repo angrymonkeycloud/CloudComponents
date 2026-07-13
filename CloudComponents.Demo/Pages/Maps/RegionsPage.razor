@@ -47,9 +47,11 @@
             </div>
         </div>
 
-        <div class="card">
-            <h2 class="card-title">📍 Map</h2>
-            <div class="map-host">
+        <div class="map-page-layout">
+            <div>
+                <div class="card">
+                    <h2 class="card-title">📍 Map</h2>
+                    <div class="map-host">
                 <AzureMap Height="500px"
                           Width="100%"
                           SubscriptionKey="@GetKey()"
@@ -60,10 +62,14 @@
                           OnMapReady="HandleMapReady"
                           @ref="_map" />
             </div>
+            </div>
         </div>
 
-        @if (_subdivisions is { Count: > 0 })
-        {
+        <div class="map-page-splitter" title="Drag to resize"></div>
+
+        <div class="results-col">
+            @if (_subdivisions is { Count: > 0 })
+            {
             <div class="card">
                 <h2 class="card-title">Subdivision Details</h2>
                 <div class="markers-grid">
@@ -89,8 +95,10 @@
                     }
                 </div>
             </div>
-        }
-    </ResultContent>
+                    }
+                </div>
+            </div>
+        </ResultContent>
 
     <CodeContent>
         <div class="card">
@@ -170,10 +178,11 @@
                 try
                 {
                     var result = await _map.GeocodeAsync($"{sub.Name}, {_selectedCode}");
-                    if (result != null)
+                    if (result?.GeometryId is { Length: > 0 } geometryId)
                     {
-                        var polygon = BuildPolygon(result.South, result.West, result.North, result.East);
-                        _regions.Add(new MapRegion(polygon, FillColor: fillWithOpacity, StrokeColor: fillHex, StrokeWidth: 2) { Label = sub.Code });
+                        var polygon = await _map.GetPolygonAsync(geometryId);
+                        if (polygon is { Length: > 0 })
+                            _regions.Add(new MapRegion(polygon, FillColor: fillWithOpacity, StrokeColor: fillHex, StrokeWidth: 2) { Label = sub.Code });
                     }
                 }
                 catch { }
@@ -208,21 +217,6 @@
         _regionCount = 0;
         _status = "Cleared";
         StateHasChanged();
-    }
-
-    private static double[][][] BuildPolygon(double south, double west, double north, double east)
-    {
-        double[][] ring =
-        [
-            [west, south], [east, south], [east, north], [west, north], [west, south]
-        ];
-        var rng = new Random();
-        for (int i = 0; i < ring.Length - 1; i++)
-        {
-            ring[i][0] += (rng.NextDouble() - 0.5) * 0.1;
-            ring[i][1] += (rng.NextDouble() - 0.5) * 0.1;
-        }
-        return [ring];
     }
 
     private string GetKey()

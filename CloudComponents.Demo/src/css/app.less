@@ -951,6 +951,44 @@ select.input { appearance: auto; }
 // ── Map host ──────────────────────────────────────────────────────────────────
 .map-host { height: 500px; border-radius: var(--radius); overflow: hidden; }
 
+// ── Map page layout (map left, results right on desktop, resizable) ──────────
+.content-inner:has(.map-page-layout) {
+    max-width: none;
+}
+
+.map-page-layout {
+    display: grid;
+    grid-template-columns: minmax(320px, 1fr) 6px minmax(280px, 420px);
+    gap: 12px;
+    align-items: start;
+}
+
+.map-page-splitter {
+    align-self: stretch;
+    width: 6px;
+    border-radius: 3px;
+    background: var(--color-border);
+    cursor: col-resize;
+    transition: background .15s ease;
+
+    &:hover,
+    &.dragging {
+        background: var(--color-accent);
+    }
+}
+
+.results-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+}
+
+@media (max-width: 900px) {
+    .map-page-layout { grid-template-columns: 1fr !important; }
+    .map-page-splitter { display: none; }
+}
+
 // ── Marker cards ──────────────────────────────────────────────────────────────
 .markers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
 

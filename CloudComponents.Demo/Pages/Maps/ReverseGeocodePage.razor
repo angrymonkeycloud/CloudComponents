@@ -17,9 +17,11 @@
 <MapsKeyGuard>
 <DemoResultCodeTabs>
     <ResultContent>
-        <div class="card">
-            <h2 class="card-title">Interactive Map</h2>
-            <div class="map-host">
+        <div class="map-page-layout">
+            <div>
+                <div class="card">
+                    <h2 class="card-title">Interactive Map</h2>
+                    <div class="map-host">
                 <AzureMap Height="500px"
                           Width="100%"
                           SubscriptionKey="@GetKey()"
@@ -44,12 +46,16 @@
             {
                 <div class="error-banner">⚠️ @_errorMessage</div>
             }
+            </div>
         </div>
 
-        @if (_currentAddress != null)
-        {
-            <div class="card">
-                <h2 class="card-title">📍 Full Address</h2>
+        <div class="map-page-splitter" title="Drag to resize"></div>
+
+        <div class="results-col">
+            @if (_currentAddress != null)
+            {
+                <div class="card">
+                    <h2 class="card-title">📍 Full Address</h2>
 
                 <div class="info-grid-2">
                     <div>
@@ -152,6 +158,8 @@
                 </div>
             </div>
         }
+            </div>
+        </div>
     </ResultContent>
 
     <CodeContent>
