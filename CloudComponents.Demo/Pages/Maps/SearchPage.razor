@@ -38,7 +38,6 @@
                                       SearchPlaceholder="Search for a city, address, or landmark…"
                                       SearchResultLimit="6"
                                       ShowCurrentLocationButton="true"
-                                      Regions="_searchRegions"
                                       OnMapReady="HandleMapReady"
                                       OnSearchResultSelected="HandleSearchResultSelected"
                                       OnMyLocationFound="HandleMyLocationFound"
@@ -136,7 +135,7 @@
                 <h2 class="card-title">How it works</h2>
                 <ul style="font-size: 13px; color: var(--color-text-muted);">
                     <li><strong>Search:</strong> Debounced Azure Maps fuzzy search with a keyboard-navigable dropdown. Selecting a result flies the camera to it.</li>
-                    <li><strong>Boundary:</strong> When the option is on and the result has a geometry ID, the actual administrative boundary polygon is fetched via <code>GetPolygonAsync</code> and drawn on the map via <code>AddRegionsAsync</code>.</li>
+                    <li><strong>Boundary:</strong> When the option is on, selecting a result creates a <code>MapZone</code> with the result address and calls <code>AddZonesAsync</code> — CloudMaps resolves the address to its administrative boundary polygon automatically. No manual geocoding or polygon-fetching required.</li>
                     <li><strong>CloudGeography:</strong> Each result field (Address, Description) is checked against <code>CloudGeographyClient</code> countries and subdivisions. Fields that match a CloudGeography entry are labelled; unmatched fields show "No match with CloudGeography".</li>
                     <li><strong>Pin my location (web):</strong> Uses <code>navigator.geolocation</code> through JS isolation (<code>WebLocationService</code>), registered in <code>Program.cs</code>.</li>
                     <li><strong>Pin my location (mobile):</strong> A .NET MAUI Blazor Hybrid host registers <code>MauiLocationService</code> instead — no component code changes required.</li>
@@ -155,7 +154,7 @@
     private string _status = "Ready";
     private bool _showBoundary;
     private bool _boundaryShown;
-    private List<MapRegion> _searchRegions = [];
+    private string? _activeZoneId;
     private List<(string field, string value, string? matchedName)>? _geoFieldMatches;
     private string? _geoCountryName;
 
@@ -166,44 +165,40 @@
         _lastSearchResult = result;
         _status = "Search result selected";
 
-        if (_showBoundary)
-            await ApplyBoundaryAndGeoAsync(result);
-        else
+        // Remove the previous zone before adding the new one.
+        if (_activeZoneId is not null && _map is not null)
         {
-            _geoFieldMatches = null;
-            _geoCountryName = null;
-            _boundaryShown = false;
+            await _map.RemoveZoneAsync(_activeZoneId);
+            _activeZoneId = null;
+        }
+
+        _boundaryShown = false;
+        _geoFieldMatches = null;
+        _geoCountryName = null;
+
+        if (_showBoundary && _map is not null)
+        {
+            var zone = new MapZone
+            {
+                Addresses = [result.Address],
+                Label = result.Address,
+                FillColor = "#0078d426",
+                StrokeColor = "#0078d4",
+                StrokeWidth = 2
+            };
+
+            await _map.AddZonesAsync([zone]);
+            _activeZoneId = zone.Id;
+            _boundaryShown = true;
+
+            await ResolveCloudGeographyAsync(result);
         }
 
         StateHasChanged();
     }
 
-    private async Task ApplyBoundaryAndGeoAsync(MapSearchResult result)
+    private async Task ResolveCloudGeographyAsync(MapSearchResult result)
     {
-        if (_map is not null)
-            await _map.ClearRegionsAsync();
-        _searchRegions.Clear();
-        _boundaryShown = false;
-
-        // Fetch the actual administrative boundary polygon (never a rectangle)
-        if (_map is not null && result.GeometryId is { Length: > 0 } geometryId)
-        {
-            try
-            {
-                var polygon = await _map.GetPolygonAsync(geometryId);
-                if (polygon is { Length: > 0 })
-                {
-                    _searchRegions = [new MapRegion(polygon, FillColor: "#0078d426", StrokeColor: "#0078d4", StrokeWidth: 2)];
-                    await _map.AddRegionsAsync(_searchRegions);
-                    _boundaryShown = true;
-                }
-            }
-            catch { /* polygon not available for this result */ }
-        }
-
-        _geoFieldMatches = null;
-        _geoCountryName = null;
-
         try
         {
             var geo = new CloudGeographyClient();
@@ -211,7 +206,8 @@
 
             var matchedCountry = allCountries
                 .OrderByDescending(c => c.Name.Length)
-                .FirstOrDefault(c => (result.Address + " " + result.Description).Contains(c.Name, StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefault(c => (result.Address + " " + result.Description)
+                    .Contains(c.Name, StringComparison.OrdinalIgnoreCase));
 
             if (matchedCountry is null)
                 return;
@@ -221,18 +217,12 @@
 
             string? FindMatch(string text)
             {
-                // Check subdivisions first (more specific)
                 var sub = subdivisions
                     .OrderByDescending(s => s.Name.Length)
                     .FirstOrDefault(s => text.Contains(s.Name, StringComparison.OrdinalIgnoreCase));
-
-                if (sub is not null)
-                    return sub.Name;
-
-                // Fallback to country name
+                if (sub is not null) return sub.Name;
                 if (text.Contains(matchedCountry.Name, StringComparison.OrdinalIgnoreCase))
                     return matchedCountry.Name;
-
                 return null;
             }
 
@@ -254,22 +244,16 @@
         _lastCoordinate = coordinate;
         _status = "Location pinned";
         StateHasChanged();
-
         return Task.CompletedTask;
     }
 
     private async Task PinMyLocation()
     {
-        if (_map is null)
-            return;
-
+        if (_map is null) return;
         _status = "Locating…";
         StateHasChanged();
         var found = await _map.PinMyLocationAsync();
-
-        if (!found)
-            _status = "Location unavailable";
-
+        if (!found) _status = "Location unavailable";
         StateHasChanged();
     }
 
@@ -279,9 +263,15 @@
         _lastSearchResult = null;
         _geoFieldMatches = null;
         _geoCountryName = null;
-        _searchRegions.Clear();
+        _boundaryShown = false;
         if (_map is not null)
-            await _map.ClearRegionsAsync();
+        {
+            if (_activeZoneId is not null)
+                await _map.RemoveZoneAsync(_activeZoneId);
+            else
+                await _map.ClearZonesAsync();
+        }
+        _activeZoneId = null;
         _status = "Search cleared";
     }
 
@@ -296,26 +286,35 @@
           SearchPlaceholder="Search for a city, address, or landmark…"
           SearchResultLimit="6"
           ShowCurrentLocationButton="true"
-          Regions="@_searchRegions"
           OnSearchResultSelected="HandleSearchResultSelected"
           OnMyLocationFound="HandleMyLocationFound"
           @ref="_map" />
 
-// Draw the actual boundary polygon when the result has a geometry ID:
-if (result.GeometryId is { Length: > 0 } geometryId)
+// Show the boundary of the selected result as a MapZone (one call, no manual geocoding):
+private async Task HandleSearchResultSelected(MapSearchResult result)
 {
-    var polygon = await _map.GetPolygonAsync(geometryId);
-    if (polygon is { Length: > 0 })
-        await _map.AddRegionsAsync([new MapRegion(polygon)]);
+    var zone = new MapZone
+    {
+        Addresses = [result.Address],
+        Label    = result.Address,
+        FillColor  = "#0078d426",
+        StrokeColor = "#0078d4"
+    };
+    await _map.AddZonesAsync([zone]);
 }
 
-// Match CloudGeography per field:
-var geo = new CloudGeographyClient();
-var country = geo.Countries.Get()
-    .FirstOrDefault(c => addressText.Contains(c.Name));
-var subdivisions = geo.Subdivisions.Get(country.Code);
+// Multiple addresses share one zone / one color:
+var zone = new MapZone
+{
+    Addresses = ["Lyon, France", "Marseille, France"],
+    Label     = "Southern France",
+    FillColor   = "#e8420026",
+    StrokeColor = "#e84200"
+};
+await _map.AddZonesAsync([zone]);
 
 // In Program.cs (web):
 builder.Services.AddScoped<ILocationService, WebLocationService>();
 """;
 }
+

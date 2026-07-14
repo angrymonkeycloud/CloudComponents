@@ -94,7 +94,8 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
 
     [Parameter] public IReadOnlyList<MapMarker>? Markers { get; set; }
 
-    /// <summary>Optional region overlays rendered on the map as colored bounding-box rectangles.</summary>
+    /// <summary>Optional region overlays rendered directly on the map as boundary polygons.
+    /// For address-based zones that are resolved and rendered automatically, use <see cref="Zones"/> instead.</summary>
     [Parameter] public IReadOnlyList<MapRegion>? Regions { get; set; }
 
     /// <summary>
@@ -583,6 +584,9 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
 
         if (Regions is { Count: > 0 })
             await AddRegionsAsync(Regions);
+
+        if (Zones is { Count: > 0 })
+            _ = SyncZonesAsync();
 
         if (LocateOnOpen)
             await LocateMeAsync();

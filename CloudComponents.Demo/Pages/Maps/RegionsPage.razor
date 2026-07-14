@@ -58,7 +58,6 @@
                           InitialView="_initialView"
                           Style="MapStyle.Road"
                           ShowCurrentLocationButton="false"
-                          Regions="_regions"
                           OnMapReady="HandleMapReady"
                           @ref="_map" />
             </div>
@@ -120,7 +119,7 @@
 
     private string _selectedCode = "";
     private string _fillColor = "#0078d4";
-    private List<MapRegion> _regions = new();
+    private List<string> _zoneIds = [];
     private List<Subdivision>? _subdivisions;
     private int _regionCount;
     private bool _isLoading;
@@ -142,10 +141,13 @@
     private async Task HandleCountrySelected(ChangeEventArgs e)
     {
         _selectedCode = e.Value?.ToString() ?? "";
-        _regions.Clear();
         _regionCount = 0;
-        if (_selectedCode != "" && _map != null && _countryViews.TryGetValue(_selectedCode, out var v))
-            await _map.SetCenterAsync(v.lat, v.lng, (int)v.zoom);
+        if (_selectedCode != "" && _map != null)
+        {
+            await ClearRegions();
+            if (_countryViews.TryGetValue(_selectedCode, out var v))
+                await _map.SetCenterAsync(v.lat, v.lng, (int)v.zoom);
+        }
     }
 
     private async Task LoadRegions()
@@ -166,38 +168,27 @@
                 return;
             }
 
-            await _map.ClearRegionsAsync();
-            _regions.Clear();
+            await ClearRegions();
 
-            // Use a hex color with opacity overlay
-            var fillHex = _fillColor;
-            var fillWithOpacity = fillHex.Length == 7 ? fillHex + "26" : fillHex; // ~15% opacity
+            var fillWithOpacity = _fillColor.Length == 7 ? _fillColor + "26" : _fillColor;
 
-            foreach (var sub in _subdivisions.Take(5))
+            // Each subdivision becomes its own MapZone — CloudMaps handles
+            // geocoding + polygon resolution automatically.
+            var zones = _subdivisions.Take(5).Select(sub => new MapZone
             {
-                try
-                {
-                    var result = await _map.GeocodeAsync($"{sub.Name}, {_selectedCode}");
-                    if (result?.GeometryId is { Length: > 0 } geometryId)
-                    {
-                        var polygon = await _map.GetPolygonAsync(geometryId);
-                        if (polygon is { Length: > 0 })
-                            _regions.Add(new MapRegion(polygon, FillColor: fillWithOpacity, StrokeColor: fillHex, StrokeWidth: 2) { Label = sub.Code });
-                    }
-                }
-                catch { }
-            }
+                Addresses = [$"{sub.Name}, {_selectedCode}"],
+                Label = sub.Code,
+                FillColor = fillWithOpacity,
+                StrokeColor = _fillColor,
+                StrokeWidth = 2
+            }).ToList();
 
-            if (_regions.Count > 0)
-            {
-                await _map.AddRegionsAsync(_regions);
-                _regionCount = _regions.Count;
-                _status = $"Loaded {_regionCount} regions";
-            }
-            else
-            {
-                _status = "Could not load region boundaries";
-            }
+            await _map.AddZonesAsync(zones);
+            _zoneIds = zones.Select(z => z.Id).ToList();
+            _regionCount = zones.Count;
+            _status = _regionCount > 0
+                ? $"Loaded {_regionCount} regions"
+                : "Could not load region boundaries";
         }
         catch (Exception ex)
         {
@@ -212,8 +203,8 @@
 
     private async Task ClearRegions()
     {
-        if (_map != null) await _map.ClearRegionsAsync();
-        _regions.Clear();
+        if (_map != null) await _map.ClearZonesAsync();
+        _zoneIds.Clear();
         _regionCount = 0;
         _status = "Cleared";
         StateHasChanged();

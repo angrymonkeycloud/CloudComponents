@@ -5,7 +5,7 @@
 [![Azure Maps](https://img.shields.io/badge/Maps-Azure%20Maps-0078D4?logo=microsoftazure)](https://azure.microsoft.com/products/azure-maps)
 [![JS Interop](https://img.shields.io/badge/Interop-JS%20Isolation-0EA5E9)](https://learn.microsoft.com/aspnet/core/blazor/javascript-interoperability/call-javascript-from-dotnet)
 
-Blazor Azure Maps component for .NET 10 with typed C# APIs for map initialization, controls, markers, regions, geocoding, polygon boundaries, place search, pin-my-location, geographic location lock, location consent flow, and runtime camera/style updates.
+Blazor Azure Maps component for .NET 10 with typed C# APIs for map initialization, controls, markers, regions, address-driven zones, geocoding, polygon boundaries, place search, pin-my-location, geographic location lock, location consent flow, and runtime camera/style updates.
 
 > Main component: `AzureMap` (`CloudComponents.Maps.Components.AzureMap`)
 
@@ -28,7 +28,8 @@ Blazor Azure Maps component for .NET 10 with typed C# APIs for map initializatio
   - [Marker interaction](#marker-interaction)
   - [Center-pin location picker](#center-pin-location-picker)
   - [Regions and legend overlays](#regions-and-legend-overlays)
-  - [Geocode + polygon boundary flow](#geocode--polygon-boundary-flow)
+  - [Map zones (address-driven boundaries)](#map-zones-address-driven-boundaries)
+  - [Geocode + polygon boundary flow (advanced)](#geocode--polygon-boundary-flow-advanced)
   - [Built-in place search](#built-in-place-search)
   - [Pin my location](#pin-my-location)
   - [Set and save a location](#set-and-save-a-location)
@@ -54,6 +55,7 @@ Blazor Azure Maps component for .NET 10 with typed C# APIs for map initializatio
   - click callbacks
   - user-added marker triggers (`SingleClick`, `DoubleClick`, `CenterPin`, `Disabled`) with opt-in defaults (`Disabled` + `AllowMarkerRemoval=false`)
 - Region overlays (polygon GeoJSON rings) with optional legend labels
+- Address-driven zone overlays (`MapZone`) with per-zone label/color and automatic geocode → polygon resolution
 - Geocoding and polygon retrieval (Azure Maps Search API)
 - Built-in place search box with debounced fuzzy search, keyboard navigation, and result selection
 - Pin-my-location: one call/button requests device geolocation (with permission consent) and recenters the map — same API on web (browser geolocation) and .NET MAUI (native `Geolocation`), each with its own `ILocationService` implementation
@@ -189,7 +191,8 @@ In component/page:
 | `KeyboardInteraction` | `bool` | `true` | Enables keyboard map interaction. |
 | `TouchInteraction` | `bool` | `true` | Enables touch interactions. |
 | `Markers` | `IReadOnlyList<MapMarker>?` | `null` | Initial markers to add after map ready. |
-| `Regions` | `IReadOnlyList<MapRegion>?` | `null` | Initial region overlays. |
+| `Regions` | `IReadOnlyList<MapRegion>?` | `null` | Initial region overlays rendered directly from supplied polygon coordinates. |
+| `Zones` | `IReadOnlyList<MapZone>?` | `null` | Initial address-driven zones. Each zone resolves one or more addresses to real administrative boundary polygons automatically. |
 | `AddMarkerTrigger` | `MarkerAddTrigger` | `Disabled` | User marker-add interaction mode (opt-in). |
 | `AllowMarkerRemoval` | `bool` | `false` | Allows marker removal by double-clicking marker (opt-in). |
 | `ShowCurrentLocationButton` | `bool` | `true` | Shows locate-me floating button when location service is available. |
@@ -254,6 +257,37 @@ public sealed record MapRegion(double[][][] Coordinates, string FillColor = "rgb
 - `Id`
 - optional `Label` (rendered in legend/UI flow)
 
+### `MapZone`
+
+```csharp
+public sealed record MapZone
+{
+    public required IReadOnlyList<string> Addresses { get; init; }
+    public string Id { get; init; }
+    public string? Label { get; init; }
+    public string FillColor { get; init; }
+    public string StrokeColor { get; init; }
+    public double StrokeWidth { get; init; }
+    public string? CountrySet { get; init; }  // optional ISO 3166-1 alpha-2, e.g. "LB" or "US,CA"
+}
+```
+
+Use `MapZone` when you want CloudMaps to resolve address/place text to boundary polygons for you. A zone can contain one address or multiple addresses that should share the same visual style and label.
+
+### `ZoneCheckResult`
+
+```csharp
+public sealed record ZoneCheckResult
+{
+    public required bool CanZone { get; init; }      // address has a boundary polygon
+    public required bool Found { get; init; }         // address was geocoded successfully
+    public MapCoordinate? Coordinate { get; init; }  // resolved position (or null)
+    public string? GeometryId { get; init; }         // Azure Maps geometry ID (or null)
+
+    public static readonly ZoneCheckResult NotFound; // address could not be geocoded
+}
+```
+
 ### `GeocodeResult`
 
 Contains center and viewport bounds plus optional geometry ID:
@@ -315,6 +349,11 @@ public Task ClearMarkersAsync()
 
 public Task AddRegionsAsync(IEnumerable<MapRegion> regions)
 public Task ClearRegionsAsync()
+
+public Task AddZonesAsync(IEnumerable<MapZone> zones)
+public Task RemoveZoneAsync(string zoneId)
+public Task ClearZonesAsync()
+public Task<ZoneCheckResult> CanZoneAsync(string address, string? countrySet = null)
 
 public Task<GeocodeResult?> GeocodeAsync(string query)
 public Task<double[][][]?> GetPolygonAsync(string geometryId)
@@ -396,7 +435,70 @@ var region = new MapRegion(coordinates)
 await _map.AddRegionsAsync(new[] { region });
 ```
 
-### Geocode + polygon boundary flow
+### Map zones (address-driven boundaries)
+
+Use zones when you want boundary rendering out of the box with full control over labels and colors.
+
+> **Location pin behaviour**: when a zone boundary is successfully drawn, the blue location dot is automatically hidden — the boundary already communicates the resolved area. The pin is restored when all zones are removed.
+
+```csharp
+// Single address — locked to Germany so "Berlin" never resolves to an unrelated place
+var berlinZone = new MapZone
+{
+	Addresses = ["Berlin"],
+	Label = "Berlin",
+	FillColor = "#0078d426",
+	StrokeColor = "#0078d4",
+	StrokeWidth = 2,
+	CountrySet = "DE"   // ISO 3166-1 alpha-2
+};
+await _map.AddZonesAsync([berlinZone]);
+
+// Multiple addresses in one shared zone style
+var majorCities = new MapZone
+{
+	Addresses = ["Lyon", "Marseille"],
+	Label = "Southern France",
+	FillColor = "#e8420026",
+	StrokeColor = "#e84200",
+	CountrySet = "FR"
+};
+await _map.AddZonesAsync([majorCities]);
+
+// Remove one zone or clear all zone overlays
+await _map.RemoveZoneAsync(berlinZone.Id);
+await _map.ClearZonesAsync();
+```
+
+### Check if an address can be zoned
+
+Use `CanZoneAsync` before drawing to validate input, show feedback, or decide whether to fall back to a marker.
+Pass `countrySet` to lock the check to the same country you will use when actually zoning.
+
+```csharp
+// "Lebanon" could match Lebanon, Pennsylvania without a country lock.
+var check = await _map.CanZoneAsync("Lebanon", countrySet: "LB");
+
+if (check.CanZone)
+{
+	// Safe to call AddZonesAsync — a boundary polygon is available.
+	await _map.AddZonesAsync([new MapZone { Addresses = ["Lebanon"], Label = "Lebanon", CountrySet = "LB" }]);
+}
+else if (check.Found)
+{
+	// Address geocoded but no polygon boundary exists (e.g. a street address or POI).
+	// You could fall back to a marker at check.Coordinate.
+	StatusMessage = "No boundary available for this location.";
+}
+else
+{
+	StatusMessage = "Address not recognised.";
+}
+```
+
+### Geocode + polygon boundary flow (advanced)
+
+Use this lower-level flow when you need manual control of geocoding/polygon retrieval.
 
 ```csharp
 var geocode = await _map.GeocodeAsync("Berlin, Germany");

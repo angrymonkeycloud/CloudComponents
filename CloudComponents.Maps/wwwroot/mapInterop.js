@@ -1,4 +1,4 @@
-﻿// ES module — loaded via Blazor JS isolation:
+// ES module � loaded via Blazor JS isolation:
 // import('./_content/CloudComponents.Maps/mapInterop.js')
 // The Azure Maps Web SDK (atlas) is loaded on-demand by this module.
 
@@ -10,7 +10,7 @@ const ATLAS_JS_URL = `https://atlas.microsoft.com/sdk/javascript/mapcontrol/${AT
 // thousands of vertices per ring (e.g. detailed coastlines). Running a
 // synchronous point-in-polygon ray-cast against that many points blocks the
 // single UI thread shared by the browser and Blazor WebAssembly, which can
-// make the entire page appear frozen — not just the map. Rings are
+// make the entire page appear frozen � not just the map. Rings are
 // decimated to at most this many vertices before being used for
 // interactive location-lock checks or region-overlay rendering.
 const MAX_LOCK_RING_VERTICES = 500;
@@ -125,7 +125,7 @@ class AzureMapController {
         this._trafficFlow = !!options.showTrafficFlow;
         this._trafficIncidents = !!options.showTrafficIncidents;
         this._addTrigger = options.addMarkerTrigger || 'double';   // 'disabled' | 'single' | 'double'
-        this._controlInstances = {};   // key -> { control, position } — lets setControls() diff/re-apply at runtime
+        this._controlInstances = {};   // key -> { control, position } � lets setControls() diff/re-apply at runtime
         this._scrollHintEl = null;
         this._scrollHintTimer = null;
 
@@ -171,13 +171,13 @@ class AzureMapController {
         this._map.events.add('error', (e) => this._onMapSdkError(e));
     }
 
-    // ── Lifecycle ────────────────────────────────────────────────────────
+    // -- Lifecycle --------------------------------------------------------
 
     _onReady() {
         this._addControls();
         this._applyTraffic();
 
-        // Maps clicks → notify .NET; optionally drop a pin on single-click.
+        // Maps clicks ? notify .NET; optionally drop a pin on single-click.
         this._map.events.add('click', (e) => {
             if (!e?.position) return;
             const [lng, lat] = e.position;
@@ -188,7 +188,7 @@ class AzureMapController {
             if (this._suppressNextMapClick) {
                 this._suppressNextMapClick = false;
             } else if (!this._wasOnMarker(e)) {
-                // Plain background click → dismiss any open marker popup.
+                // Plain background click ? dismiss any open marker popup.
                 this._closeActivePopup();
             }
 
@@ -203,7 +203,7 @@ class AzureMapController {
             }
         });
 
-        // Native dblclick → drop a pin (when configured).
+        // Native dblclick ? drop a pin (when configured).
         this._map.events.add('dblclick', (e) => {
             if (this._addTrigger !== 'double') return;
             if (!e?.position) return;
@@ -216,10 +216,10 @@ class AzureMapController {
             }
         });
 
-        // Center-pin mode → broadcast the camera-center coordinate whenever the
+        // Center-pin mode ? broadcast the camera-center coordinate whenever the
         // camera finishes moving for any reason (drag, search fly-to, "pin my
         // location", setCenter/setBounds from C#, etc.), but not while a
-        // zoom-driven camera animation is still in flight — zooming is always
+        // zoom-driven camera animation is still in flight � zooming is always
         // anchored to the map center (pin position) regardless of cursor location.
         // These listeners are always registered (not just when the map starts in
         // center-pin mode) so that switching AddMarkerTrigger to CenterPin at
@@ -237,7 +237,7 @@ class AzureMapController {
             if (!this._isPointAllowed(c[0], c[1])) {
                 // Only snap back when the last known-good center is itself inside the
                 // locked area. If it is outside (e.g. the map loaded with the pin
-                // outside the lock), do NOT snap — the user must be able to drag the
+                // outside the lock), do NOT snap � the user must be able to drag the
                 // pin into the allowed area from its current position.
                 const revertTo = this._lastAllowedCenter;
                 if (revertTo && this._isPointAllowed(revertTo[0], revertTo[1])) {
@@ -255,8 +255,8 @@ class AzureMapController {
         this._map.events.add('zoomstart', () => { _isZooming = true; });
         this._map.events.add('zoomend', () => { _isZooming = false; });
 
-        // 'moveend' fires after ANY settled camera change — drag, search
-        // fly-to (setBounds/setCenter), "pin my location", etc. — so the
+        // 'moveend' fires after ANY settled camera change � drag, search
+        // fly-to (setBounds/setCenter), "pin my location", etc. � so the
         // tracked center coordinate (and .NET) always reflects where the
         // fixed pin visually ends up, not just manual drags.
         this._map.events.add('moveend', this._firePan);
@@ -267,8 +267,8 @@ class AzureMapController {
         //     cursor) so the fixed pin never visually drifts.
         //  2) When ScrollZoomInteraction is disabled, a plain wheel/trackpad
         //     gesture is left alone (so the page can scroll normally past an
-        //     embedded map) unless the user holds Ctrl/⌘/Shift, in which case we
-        //     zoom anyway — the common "hold a modifier to zoom" pattern — and
+        //     embedded map) unless the user holds Ctrl/?/Shift, in which case we
+        //     zoom anyway � the common "hold a modifier to zoom" pattern � and
         //     show a brief one-time hint the first time a bare scroll is ignored.
         this._setupScrollZoomGate();
 
@@ -310,16 +310,16 @@ class AzureMapController {
         this._dotNetRef?.invokeMethodAsync('NotifyMapErrorAsync', msg);
     }
 
-    // ── Scroll-wheel zoom gate ───────────────────────────────────────────
+    // -- Scroll-wheel zoom gate -------------------------------------------
     //
     // Handles two behaviors with a single wheel listener registered at the DOM
-    // capture phase (BEFORE Azure Maps' own listener runs — see note on the
+    // capture phase (BEFORE Azure Maps' own listener runs � see note on the
     // element hierarchy below):
     //   1) Center-pin mode always zooms anchored to the map center (not the
     //      cursor) so the fixed pin never visually drifts.
     //   2) When ScrollZoomInteraction is off, a bare wheel/trackpad gesture is
-    //      left alone so the page can scroll past an embedded map — unless the
-    //      user holds Ctrl/⌘/Shift, the common "modifier + scroll to zoom"
+    //      left alone so the page can scroll past an embedded map � unless the
+    //      user holds Ctrl/?/Shift, the common "modifier + scroll to zoom"
     //      pattern, in which case we hand the gesture to the SDK's native
     //      (cursor-anchored) zoom for one gesture. A brief hint is shown the
     //      first time a bare scroll is ignored.
@@ -387,7 +387,7 @@ class AzureMapController {
 
         try {
             const el = document.createElement('div');
-            el.textContent = 'Hold Ctrl (⌘) or Shift + scroll to zoom the map';
+            el.textContent = 'Hold Ctrl (?) or Shift + scroll to zoom the map';
             el.style.cssText =
                 'position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:8;' +
                 'padding:8px 14px;background:rgba(32,32,32,0.92);color:#fff;' +
@@ -511,7 +511,7 @@ class AzureMapController {
         this._map.markers.add(this._currentLocationMarker);
     }
 
-    // ── Public API (called from C#) ──────────────────────────────────────
+    // -- Public API (called from C#) --------------------------------------
 
     addMarker(info) {
         if (!info || !info.id || this._markers.has(info.id)) return;
@@ -532,7 +532,7 @@ class AzureMapController {
         const entry = { marker, popup };
         this._markers.set(info.id, entry);
 
-        // Single click → close any other open popup, open this one, notify .NET
+        // Single click ? close any other open popup, open this one, notify .NET
         this._map.events.add('click', marker, () => {
             // Prevent the map-level 'click' that fires for the same gesture
             // from closing the popup we are about to open.
@@ -547,7 +547,7 @@ class AzureMapController {
             if (this._activePopupId === info.id) this._activePopupId = null;
         });
 
-        // Double-click on a marker → remove it (when enabled)
+        // Double-click on a marker ? remove it (when enabled)
         // HtmlMarker doesn't expose 'dblclick' directly; bind via its DOM element.
         const el = marker.getOptions().htmlContent ? null : marker.getElement?.();
         const domNode = el || marker.getElement?.();
@@ -587,7 +587,7 @@ class AzureMapController {
         this._activePopupId = null;
     }
 
-    // ── Circle overlay API ───────────────────────────────────────────────
+    // -- Circle overlay API -----------------------------------------------
 
     addRegion(info) {
         if (!info) return;
@@ -602,17 +602,6 @@ class AzureMapController {
                 strokeColor: ['get', 'strokeColor'],
                 strokeWidth: ['get', 'strokeWidth']
             }));
-            //this._map.layers.add(new atlas.layer.SymbolLayer(this._regionDataSource, null, {
-            //    textOptions: {
-            //        textField: ['get', 'label'],
-            //        offset: [0, 0],
-            //        size: 13,
-            //        color: '#333',
-            //        haloColor: '#fff',
-            //        haloWidth: 1.5
-            //    },
-            //    filter: ['has', 'label']
-            //}));
         }
 
         const props = {
@@ -626,6 +615,18 @@ class AzureMapController {
         this._regions.push(info.id);
     }
 
+    removeRegion(regionId) {
+        if (!this._regionDataSource || !regionId) return;
+        const shapes = this._regionDataSource.getShapes();
+        for (const shape of shapes) {
+            if (shape.getId() === regionId) {
+                this._regionDataSource.remove(shape);
+                break;
+            }
+        }
+        this._regions = this._regions.filter(id => id !== regionId);
+    }
+
     clearRegions() {
         if (this._regionDataSource) {
             this._regionDataSource.clear();
@@ -633,7 +634,7 @@ class AzureMapController {
         this._regions = [];
     }
 
-    // ── Location lock ────────────────────────────────────────────────────
+    // -- Location lock ----------------------------------------------------
 
     /// Set the polygons that constrain interactive marker/center-pin selection.
     /// `polygons` is an array of GeoJSON Polygon coordinate rings (double[][][]).
@@ -870,7 +871,7 @@ class AzureMapController {
             const data = await resp.json();
 
             // Try to extract polygon coordinates from various response formats,
-            // then decimate large rings — see MAX_LOCK_RING_VERTICES above.
+            // then decimate large rings � see MAX_LOCK_RING_VERTICES above.
             const coords = this._extractPolygonCoords(data);
             return coords ? this._simplifyRings(coords) : null;
         } catch {
@@ -885,7 +886,7 @@ class AzureMapController {
         // Direct Polygon
         if (obj.type === 'Polygon' && obj.coordinates) return obj.coordinates;
 
-        // MultiPolygon — pick the largest sub-polygon
+        // MultiPolygon � pick the largest sub-polygon
         if (obj.type === 'MultiPolygon' && obj.coordinates) {
             let best = obj.coordinates[0];
             for (const poly of obj.coordinates) {
@@ -894,7 +895,7 @@ class AzureMapController {
             return best;
         }
 
-        // FeatureCollection → iterate features
+        // FeatureCollection ? iterate features
         if (obj.type === 'FeatureCollection' && Array.isArray(obj.features)) {
             for (const f of obj.features) {
                 const c = this._extractPolygonCoords(f.geometry || f);
@@ -902,12 +903,12 @@ class AzureMapController {
             }
         }
 
-        // Feature → unwrap geometry
+        // Feature ? unwrap geometry
         if (obj.type === 'Feature' && obj.geometry) {
             return this._extractPolygonCoords(obj.geometry);
         }
 
-        // GeometryCollection → iterate geometries
+        // GeometryCollection ? iterate geometries
         if (obj.type === 'GeometryCollection' && Array.isArray(obj.geometries)) {
             for (const g of obj.geometries) {
                 const c = this._extractPolygonCoords(g);
@@ -956,7 +957,7 @@ class AzureMapController {
 
     /// Runtime sync for AddMarkerTrigger ('disabled' | 'single' | 'double' | 'center'),
     /// called from C# (AzureMap.razor.cs OnParametersSetAsync) whenever the parameter
-    /// changes after the map was already created — e.g. a demo page letting the user
+    /// changes after the map was already created � e.g. a demo page letting the user
     /// switch between click-to-place and always-visible center-pin selection.
     setAddMarkerTrigger(trigger) {
         this._addTrigger = trigger || 'disabled';
@@ -983,7 +984,7 @@ class AzureMapController {
     setStyle(style) {
         if (!style) return;
         try {
-            // Push to the SDK unconditionally — Azure Maps is idempotent here
+            // Push to the SDK unconditionally � Azure Maps is idempotent here
             // and this guarantees the map matches the requested value even
             // when the user changed it via the in-map StyleControl.
             this._map.setStyle({ style });
@@ -1060,7 +1061,7 @@ class AzureMapController {
         this._dotNetRef = null;
     }
 
-    // ── Helpers ──────────────────────────────────────────────────────────
+    // -- Helpers ----------------------------------------------------------
 
     _buildPopupContent(info) {
         const esc = (s) => (s == null ? '' : this._escapeHtml(s));
@@ -1084,7 +1085,7 @@ class AzureMapController {
             ? `<a href="${esc(info.detailsUrl)}"
                   style="display:inline-block;margin-top:8px;padding:6px 14px;border-radius:6px;
                          background:#0078d4;color:#fff;text-decoration:none;font-weight:500;font-size:12px;">
-                   ${esc(info.detailsLabel || 'Open')} →
+                   ${esc(info.detailsLabel || 'Open')} ?
                </a>`
             : '';
 
@@ -1094,9 +1095,9 @@ class AzureMapController {
                 <div style="padding:10px 14px 12px;">
                     ${title ? `<div style="font-weight:600;margin-bottom:6px;color:#111;font-size:14px;word-break:break-word;">${esc(title)}</div>` : ''}
                     <div style="display:flex;flex-direction:column;gap:3px;">
-                        ${detailRow('📍', info.city)}
-                        ${detailRow('📐', info.area)}
-                        ${detailRow('💰', info.price)}
+                        ${detailRow('??', info.city)}
+                        ${detailRow('??', info.area)}
+                        ${detailRow('??', info.price)}
                     </div>
                     <div style="margin-top:6px;font-variant-numeric:tabular-nums;font-size:11px;color:#888;">
                         ${info.latitude.toFixed(5)}, ${info.longitude.toFixed(5)}
