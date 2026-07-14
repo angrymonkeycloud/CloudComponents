@@ -7,5 +7,6 @@ namespace AngryMonkey.CloudComponents
 		public required string Text { get; set; }
 		public Action? OnReply { get; set; }
 		public bool AutoClose { get; set; } = true;
+		public string? ClassCss { get; set; }
     }
 }
