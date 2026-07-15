@@ -1,10 +1,11 @@
-# CloudComponents.Editor
-
-[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
-[![Blazor](https://img.shields.io/badge/UI-Blazor-5C2D91?logo=blazor)](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor)
-[![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.TextEditor?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.TextEditor)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/AngryMonkey.CloudComponents.TextEditor?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.TextEditor)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+# CloudComponents TextEditor
+[![Website](https://img.shields.io/badge/Website-angrymonkeycloud.com-0B5FFF?style=flat-square&logo=googlechrome&logoColor=white)](https://angrymonkeycloud.com/cloudcomponents)
+[![GitHub repository](https://img.shields.io/badge/GitHub-CloudComponents-181717?style=flat-square&logo=github)](https://github.com/angrymonkeycloud/CloudComponents)
+[![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.TextEditor?style=flat-square&logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.TextEditor)
+[![NuGet downloads](https://img.shields.io/nuget/dt/AngryMonkey.CloudComponents.TextEditor?style=flat-square&logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.TextEditor)
+[![.NET](https://img.shields.io/badge/.NET-10-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![Blazor](https://img.shields.io/badge/UI-Blazor-5C2D91?style=flat-square&logo=blazor&logoColor=white)](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor)
+[![License](https://img.shields.io/badge/License-MIT-2F855A?style=flat-square)](../LICENSE)
 
 Rich text editor for Blazor on .NET 10. Semantic HTML output, configurable toolbar, media embedding (images, YouTube/Vimeo/file video), and an HTML code view with built-in validation — all without JavaScript dependencies beyond the bundled module.
 
@@ -415,3 +416,9 @@ Additional variables: `--cloudeditor-font-size`, `--cloudeditor-radius`, `--clou
 - **Pasted markup loses styling** — paste sanitization keeps semantic tags only. Set `SanitizePaste="false"` to keep the original clipboard HTML.
 - **Apply is disabled in code view** — the HTML source contains validation errors; fix the reported lines or press Cancel.
 - **Uploaded images bloat the document** — provide an `ImageUploadHandler` so images are stored externally instead of inlined as data URLs.
+
+---
+
+## Angry Monkey Cloud
+
+This project is part of the [Angry Monkey Cloud](https://angrymonkeycloud.com) open-source ecosystem. Follow the shared [AI development instructions](https://github.com/angrymonkeycloud/CloudDocs/blob/main/docs/ai/instructions.md) and browse the [project catalog](https://angrymonkeycloud.com) and [GitHub organization](https://github.com/angrymonkeycloud).

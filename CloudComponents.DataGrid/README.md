@@ -1,9 +1,11 @@
 # CloudComponents.DataGrid
-
-[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
-[![Blazor](https://img.shields.io/badge/UI-Blazor-5C2D91?logo=blazor)](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor)
-[![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.DataGrid?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.DataGrid)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/AngryMonkey.CloudComponents.DataGrid?logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.DataGrid)
+[![Website](https://img.shields.io/badge/Website-angrymonkeycloud.com-0B5FFF?style=flat-square&logo=googlechrome&logoColor=white)](https://angrymonkeycloud.com/cloudcomponents)
+[![GitHub repository](https://img.shields.io/badge/GitHub-CloudComponents-181717?style=flat-square&logo=github)](https://github.com/angrymonkeycloud/CloudComponents)
+[![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.DataGrid?style=flat-square&logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.DataGrid)
+[![NuGet downloads](https://img.shields.io/nuget/dt/AngryMonkey.CloudComponents.DataGrid?style=flat-square&logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.DataGrid)
+[![.NET](https://img.shields.io/badge/.NET-10-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![Blazor](https://img.shields.io/badge/UI-Blazor-5C2D91?style=flat-square&logo=blazor&logoColor=white)](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor)
+[![License](https://img.shields.io/badge/License-MIT-2F855A?style=flat-square)](../LICENSE)
 
 Production-ready Blazor data grid for .NET 10 with strongly typed models, server-driven data loading, paging modes, sorting, selection, row actions, reordering, export, and theme-friendly CSS variables.
 
@@ -456,3 +458,9 @@ Example:
 ## License
 
 See repository licensing terms.
+
+---
+
+## Angry Monkey Cloud
+
+This project is part of the [Angry Monkey Cloud](https://angrymonkeycloud.com) open-source ecosystem. Follow the shared [AI development instructions](https://github.com/angrymonkeycloud/CloudDocs/blob/main/docs/ai/instructions.md) and browse the [project catalog](https://angrymonkeycloud.com) and [GitHub organization](https://github.com/angrymonkeycloud).

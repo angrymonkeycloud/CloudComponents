@@ -1,9 +1,12 @@
 # CloudComponents.Maps
-
-[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
-[![Blazor](https://img.shields.io/badge/UI-Blazor-5C2D91?logo=blazor)](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor)
-[![Azure Maps](https://img.shields.io/badge/Maps-Azure%20Maps-0078D4?logo=microsoftazure)](https://azure.microsoft.com/products/azure-maps)
-[![JS Interop](https://img.shields.io/badge/Interop-JS%20Isolation-0EA5E9)](https://learn.microsoft.com/aspnet/core/blazor/javascript-interoperability/call-javascript-from-dotnet)
+[![Website](https://img.shields.io/badge/Website-angrymonkeycloud.com-0B5FFF?style=flat-square&logo=googlechrome&logoColor=white)](https://angrymonkeycloud.com/cloudcomponents)
+[![GitHub repository](https://img.shields.io/badge/GitHub-CloudComponents-181717?style=flat-square&logo=github)](https://github.com/angrymonkeycloud/CloudComponents)
+[![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.Maps?style=flat-square&logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.Maps)
+[![NuGet downloads](https://img.shields.io/nuget/dt/AngryMonkey.CloudComponents.Maps?style=flat-square&logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.Maps)
+[![.NET](https://img.shields.io/badge/.NET-10-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![Blazor](https://img.shields.io/badge/UI-Blazor-5C2D91?style=flat-square&logo=blazor&logoColor=white)](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor)
+[![Azure Maps](https://img.shields.io/badge/Maps-Azure%20Maps-0078D4?style=flat-square&logo=microsoftazure)](https://azure.microsoft.com/products/azure-maps)
+[![License](https://img.shields.io/badge/License-MIT-2F855A?style=flat-square)](../LICENSE)
 
 Blazor Azure Maps component for .NET 10 with typed C# APIs for map initialization, controls, markers, regions, address-driven zones, geocoding, polygon boundaries, place search, pin-my-location, geographic location lock, location consent flow, and runtime camera/style updates.
 
@@ -722,3 +725,9 @@ Confirm the `CountryCode`/`SubdivisionCodes` in `LocationLockOptions` are valid 
 ## License
 
 See repository licensing terms.
+
+---
+
+## Angry Monkey Cloud
+
+This project is part of the [Angry Monkey Cloud](https://angrymonkeycloud.com) open-source ecosystem. Follow the shared [AI development instructions](https://github.com/angrymonkeycloud/CloudDocs/blob/main/docs/ai/instructions.md) and browse the [project catalog](https://angrymonkeycloud.com) and [GitHub organization](https://github.com/angrymonkeycloud).
