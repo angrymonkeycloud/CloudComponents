@@ -16,7 +16,7 @@ function selectDialogNextButton() {
     let selected = document.querySelector(".amc-dialog-buttons button:focus");
 
     if (!selected) {
-        Dialog.FocusDefault();
+        FocusDefault();
         return;
     }
 
@@ -25,26 +25,30 @@ function selectDialogNextButton() {
     if (next) next.focus();
 }
 
-window.Dialog = {
+export function FocusDefault() {
+    document.querySelector(".amc-dialog-buttons button")?.focus();
+}
 
-    FocusDefault: () => {
-        document.querySelector(".amc-dialog-buttons button")?.focus();
-    },
+let keyboardHandler = null;
 
-    InitKeyboard: () => {
-        document.addEventListener('keydown', function (e) {
-            switch (e.key) {
-                case 'ArrowLeft':
-                    selectDialogPreviousButton();
-                    break;
+export function InitKeyboard() {
+    if (keyboardHandler)
+        return;
 
-                case 'ArrowRight':
-                    selectDialogNextButton();
-                    break;
+    keyboardHandler = function (e) {
+        switch (e.key) {
+            case 'ArrowLeft':
+                selectDialogPreviousButton();
+                break;
 
-                default:
-                    break;
-            }
-        });
-    }
-};
+            case 'ArrowRight':
+                selectDialogNextButton();
+                break;
+
+            default:
+                break;
+        }
+    };
+
+    document.addEventListener('keydown', keyboardHandler);
+}

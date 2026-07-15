@@ -1,70 +1,96 @@
 .ComponentsDefault {
-  user-select: none;
-  font-family: 'Segoe UI';
-  font-size: 0.9rem;
+    user-select: none;
+    font-family: 'Segoe UI';
+    font-size: 0.9rem;
 }
-.ComponentsDefault button,
-.ComponentsDefault button:active,
-.ComponentsDefault button:focus,
-.ComponentsDefault button:visited {
-  background: none;
-  outline: none !important;
-  border: none;
-  border-radius: 0;
-  cursor: pointer;
-}
-.ComponentsDefault,
-.ComponentsDefault * {
-  -webkit-tap-highlight-color: transparent;
-}
-.ComponentsDefault ::deep .--amc-iconbutton,
-.ComponentsDefault ::deep .--amc-iconbutton:active,
-.ComponentsDefault ::deep .--amc-iconbutton:focus,
-.ComponentsDefault ::deep .--amc-iconbutton:visited {
-  padding: 4px;
-  display: flex;
-}
-.ComponentsDefault ::deep .--amc-iconbutton svg {
-  height: 1.8em;
-}
-.ComponentsDefault ::deep .amc-svg-fill {
-  fill: var(--amc-accentColor);
-}
-.ComponentsDefault ::deep .amc-svg-stroke {
-  fill: none;
-  stroke: var(--amc-accentColor);
-  stroke-width: 0.5;
-  stroke-miterlimit: 10;
-}
-.ComponentsDefault ::deep .amc-svg-stroke._corner-rounded {
-  stroke-linecap: round;
-}
+
+    .ComponentsDefault button,
+    .ComponentsDefault button:active,
+    .ComponentsDefault button:focus,
+    .ComponentsDefault button:visited {
+        background: none;
+        outline: none !important;
+        border: none;
+        border-radius: 0;
+        cursor: pointer;
+    }
+
+    .ComponentsDefault,
+    .ComponentsDefault * {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+        .ComponentsDefault ::deep .--amc-iconbutton,
+        .ComponentsDefault ::deep .--amc-iconbutton:active,
+        .ComponentsDefault ::deep .--amc-iconbutton:focus,
+        .ComponentsDefault ::deep .--amc-iconbutton:visited {
+            padding: 4px;
+            display: flex;
+        }
+
+            .ComponentsDefault ::deep .--amc-iconbutton svg {
+                height: 1.8em;
+            }
+
+        .ComponentsDefault ::deep .amc-svg-fill {
+            fill: var(--amc-accentColor);
+        }
+
+        .ComponentsDefault ::deep .amc-svg-stroke {
+            fill: none;
+            stroke: var(--amc-accentColor);
+            stroke-width: 0.5;
+            stroke-miterlimit: 10;
+        }
+
+            .ComponentsDefault ::deep .amc-svg-stroke._corner-rounded {
+                stroke-linecap: round;
+            }
+
 ::deep .amc-dialog-message {
-  color: inherit;
+    color: inherit;
 }
-::deep .amc-dialog-buttons {
-  display: flex;
-  justify-content: right;
-  gap: 5px;
+
+.amc-dialog-buttons {
+    display: flex;
+    justify-content: right;
+    gap: 5px;
 }
-::deep .amc-dialog-buttons button,
-::deep .amc-dialog-buttons button:focus,
-::deep .amc-dialog-buttons button:hover {
-  padding: 0.4em 0.6em;
-  color: var(--amc-accentColor);
-  background-color: #fff;
-  border-radius: 4px;
-  border: 1px solid transparent;
-}
-::deep .amc-dialog-buttons button:focus,
-::deep .amc-dialog-buttons button:focus:focus,
-::deep .amc-dialog-buttons button:hover:focus {
-  border-color: var(--amc-accentColor);
-}
-::deep .amc-dialog-buttons button:hover,
-::deep .amc-dialog-buttons button:focus:hover,
-::deep .amc-dialog-buttons button:hover:hover {
-  color: #fff;
-  background-color: var(--amc-accentColor);
-  border-color: var(--amc-accentColor);
-}
+
+    .amc-dialog-buttons button,
+    .amc-dialog-buttons button:focus,
+    .amc-dialog-buttons button:hover {
+        padding: 0.4em 0.6em;
+        color: var(--amc-accentColor);
+        background-color: #fff;
+        border-radius: 4px;
+        border: 1px solid var(--amc-accentColor);
+    }
+
+        .amc-dialog-buttons button:focus,
+        .amc-dialog-buttons button:focus:focus,
+        .amc-dialog-buttons button:hover:focus {
+            border-color: var(--amc-accentColor);
+        }
+
+            .amc-dialog-buttons button:hover,
+            .amc-dialog-buttons button:focus:hover,
+            .amc-dialog-buttons button:hover:hover {
+                color: #fff;
+                background-color: var(--amc-accentColor);
+                border-color: var(--amc-accentColor);
+            }
+
+        .amc-dialog-buttons button._delete {
+            background-color: red;
+            color: #fff;
+            border-color: red;
+        }
+
+            .amc-dialog-buttons button._delete:hover,
+            .amc-dialog-buttons button._delete:focus:hover,
+            .amc-dialog-buttons button._delete:hover:hover {
+                background-color: #fff;
+                border-color: red;
+                color: red;
+            }

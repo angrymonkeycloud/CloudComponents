@@ -19,7 +19,7 @@
 			<div class="amc-dialog-buttons">
 				@foreach (DialogButton button in Buttons)
 				{
-					<button @onclick="async () => { await ButtonClicked(button); }">@button.Text</button>
+					<button class="@button.ClassCss" @onclick="async () => { await ButtonClicked(button); }">@button.Text</button>
 				}
 			</div>
 		}

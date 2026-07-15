@@ -1,14 +1,16 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace AngryMonkey.CloudComponents
 {
-    public partial class Dialog : IClosable
+    public partial class Dialog : IClosable, IAsyncDisposable
     {
         private PopupComp? _popup;
         private bool _keyboardInitialized = false;
+        private IJSObjectReference? _jsModule;
 
         [Parameter] public RenderFragment? ChildContent { get; set; }
         [Parameter] public required string Title { get; set; }
@@ -25,6 +27,9 @@ namespace AngryMonkey.CloudComponents
                 await Close();
         }
 
+        private async Task<IJSObjectReference> GetJsModuleAsync()
+            => _jsModule ??= await GeneralMethods.GetIJSObjectReference(_js, "js/dialog.js");
+
         public async Task Open()
         {
             if (_popup is null)
@@ -32,13 +37,15 @@ namespace AngryMonkey.CloudComponents
 
             await _popup.Open();
 
+            IJSObjectReference module = await GetJsModuleAsync();
+
             if (!_keyboardInitialized)
             {
-                await _js.InvokeVoidAsync("Dialog.InitKeyboard");
+                await module.InvokeVoidAsync("InitKeyboard");
                 _keyboardInitialized = true;
             }
 
-            await _js.InvokeVoidAsync("Dialog.FocusDefault");
+            await module.InvokeVoidAsync("FocusDefault");
             await OnOpened.InvokeAsync();
         }
 
@@ -49,6 +56,20 @@ namespace AngryMonkey.CloudComponents
 
             await _popup.Close();
             await OnClosed.InvokeAsync();
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (_jsModule is not null)
+            {
+                try
+                {
+                    await _jsModule.DisposeAsync();
+                }
+                catch (JSDisconnectedException)
+                {
+                }
+            }
         }
     }
 }
