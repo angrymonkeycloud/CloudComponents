@@ -20,6 +20,7 @@
 		<PackageOutputPath>..\NugetPackage\</PackageOutputPath>
 		<Configurations>Debug;Release;Release_Server</Configurations>
 		<PackageIcon>amc-logo.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -40,5 +41,6 @@
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
+		<None Update="README.md" Pack="True" PackagePath="\" />
 	<Content Remove="mateconfig.json" /><None Include="mateconfig.json"><CopyToOutputDirectory>Never</CopyToOutputDirectory><CopyToPublishDirectory>Never</CopyToPublishDirectory></None></ItemGroup>
 </Project>

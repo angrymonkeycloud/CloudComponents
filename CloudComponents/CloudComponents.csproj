@@ -1,4 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -19,6 +20,7 @@
     <FileVersion>$(PackageVersion)</FileVersion>
     <Version>4.2.0</Version>
     <PackageIcon>amc-logo.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageOutputPath>..\NugetPackage\</PackageOutputPath>
 
     <Configurations>Debug;Release;Release_Server</Configurations>
@@ -50,6 +52,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.8" />
+    <PackageReference Include="Markdig" Version="1.3.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -62,9 +66,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include=".mateconfig.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
     <None Include="tsconfig.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
@@ -77,4 +78,4 @@
     </Content>
   </ItemGroup>
 
-<ItemGroup><None Update="amc-logo.png"><Pack>True</Pack><PackagePath>\</PackagePath></None></ItemGroup></Project>
+<ItemGroup><None Update="amc-logo.png"><Pack>True</Pack><PackagePath>\</PackagePath></None><None Update="README.md"><Pack>True</Pack><PackagePath>\</PackagePath></None><Content Remove="mateconfig.json" /><None Include="mateconfig.json"><CopyToOutputDirectory>Never</CopyToOutputDirectory><CopyToPublishDirectory>Never</CopyToPublishDirectory></None></ItemGroup></Project>

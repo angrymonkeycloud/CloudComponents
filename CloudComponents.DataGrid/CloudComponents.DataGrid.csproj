@@ -20,7 +20,8 @@
     <FileVersion>$(PackageVersion)</FileVersion>
     <PackageOutputPath>..\NugetPackage\</PackageOutputPath>
     <Configurations>Debug;Release;Release_Server</Configurations>
-  <PackageIcon>amc-logo.png</PackageIcon></PropertyGroup>
+  <PackageIcon>amc-logo.png</PackageIcon>
+  <PackageReadmeFile>README.md</PackageReadmeFile></PropertyGroup>
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />
@@ -34,4 +35,4 @@
     <ProjectReference Include="..\CloudComponents.Icons\CloudComponents.Icons.csproj" />
   </ItemGroup>
 
-<ItemGroup><None Update="amc-logo.png"><Pack>True</Pack><PackagePath>\</PackagePath></None><Content Remove="mateconfig.json" /><None Include="mateconfig.json"><CopyToOutputDirectory>Never</CopyToOutputDirectory><CopyToPublishDirectory>Never</CopyToPublishDirectory></None></ItemGroup></Project>
+<ItemGroup><None Update="amc-logo.png"><Pack>True</Pack><PackagePath>\</PackagePath></None><None Update="README.md"><Pack>True</Pack><PackagePath>\</PackagePath></None><Content Remove="mateconfig.json" /><None Include="mateconfig.json"><CopyToOutputDirectory>Never</CopyToOutputDirectory><CopyToPublishDirectory>Never</CopyToPublishDirectory></None></ItemGroup></Project>

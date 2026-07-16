@@ -20,6 +20,7 @@
 		<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
 		<FileVersion>$(PackageVersion)</FileVersion>
 		<PackageIcon>amc-logo.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 
@@ -36,5 +37,6 @@
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
+		<None Update="README.md" Pack="True" PackagePath="\" />
 	</ItemGroup>
 </Project>

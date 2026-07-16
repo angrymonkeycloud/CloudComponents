@@ -1,0 +1,279 @@
+@namespace AngryMonkey.CloudComponents.Markdown
+@using System.IO
+@using System.Net.Http
+@using Markdig
+@using Markdig.Renderers
+@using Markdig.Syntax
+@using Markdig.Syntax.Inlines
+@implements IAsyncDisposable
+@inject IHttpClientFactory HttpClientFactory
+@inject IJSRuntime JS
+
+<div class="cloud-markdown @Class" style="@Style" @ref="MarkdownRoot">
+    @if (IsLoading)
+    {
+        @if (LoadingTemplate is not null)
+        {
+            @LoadingTemplate
+        }
+        else
+        {
+            <div class="cloud-markdown__status" role="status">Loading documentation...</div>
+        }
+    }
+    else if (!string.IsNullOrWhiteSpace(Html))
+    {
+        <article class="cloud-markdown__document">
+            @((MarkupString)Html)
+        </article>
+    }
+    else if (HasLoadError)
+    {
+        @if (ErrorTemplate is not null)
+        {
+            @ErrorTemplate
+        }
+        else
+        {
+            <div class="cloud-markdown__status" role="status">
+                <p>Documentation is temporarily unavailable.</p>
+                @if (!string.IsNullOrWhiteSpace(SourceFallbackUrl))
+                {
+                    <a href="@SourceFallbackUrl" target="_blank" rel="noopener noreferrer">View the source document</a>
+                }
+            </div>
+        }
+    }
+    else if (EmptyTemplate is not null)
+    {
+        @EmptyTemplate
+    }
+</div>
+
+@code {
+    private static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder()
+        .UseAdvancedExtensions()
+        .DisableHtml()
+        .Build();
+
+    /// <summary>Gets or sets the absolute URL of a Markdown document to load.</summary>
+    [Parameter] public string? SourceUrl { get; set; }
+
+    /// <summary>Gets or sets Markdown supplied directly by the consuming application. This takes precedence over <see cref="SourceUrl"/>.</summary>
+    [Parameter] public string? Content { get; set; }
+
+    /// <summary>Gets or sets the document URL used to resolve relative links when <see cref="Content"/> is supplied.</summary>
+    [Parameter] public string? DocumentUrl { get; set; }
+
+    /// <summary>Gets or sets a fallback source URL displayed when a remote document cannot be loaded.</summary>
+    [Parameter] public string? SourceFallbackUrl { get; set; }
+
+    /// <summary>Gets or sets the current application route. Fragment links are kept on this route and scrolled without retaining a hash in the address bar.</summary>
+    [Parameter] public string? DocumentRoute { get; set; }
+
+    /// <summary>Maps repository-relative Markdown file paths to application routes.</summary>
+    [Parameter] public IReadOnlyDictionary<string, string>? DocumentRoutes { get; set; }
+
+    /// <summary>Gets or sets a value that forces a reload when it changes.</summary>
+    [Parameter] public object? ReloadKey { get; set; }
+
+    /// <summary>Gets or sets additional CSS classes for the component root.</summary>
+    [Parameter] public string? Class { get; set; }
+
+    /// <summary>Gets or sets component-local CSS variables or layout styles. Use the documented --cloud-markdown-* variables to customize the isolated theme.</summary>
+    [Parameter] public string? Style { get; set; }
+
+    [Parameter] public RenderFragment? LoadingTemplate { get; set; }
+    [Parameter] public RenderFragment? ErrorTemplate { get; set; }
+    [Parameter] public RenderFragment? EmptyTemplate { get; set; }
+
+    private string? Html { get; set; }
+    private string? LoadedIdentity { get; set; }
+    private bool IsLoading { get; set; }
+    private bool HasLoadError { get; set; }
+    private bool RestoreAnchor { get; set; }
+    private ElementReference MarkdownRoot { get; set; }
+    private IJSObjectReference? Module { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        string identity = $"{SourceUrl}\u001f{Content}\u001f{DocumentUrl}\u001f{ReloadKey}";
+        if (string.Equals(LoadedIdentity, identity, StringComparison.Ordinal))
+            return;
+
+        LoadedIdentity = identity;
+        Html = null;
+        HasLoadError = false;
+
+        if (string.IsNullOrWhiteSpace(Content) && string.IsNullOrWhiteSpace(SourceUrl))
+            return;
+
+        IsLoading = true;
+
+        try
+        {
+            MarkdownSource source;
+            string markdown;
+
+            if (!string.IsNullOrWhiteSpace(Content))
+            {
+                source = MarkdownSource.Create(DocumentUrl ?? "https://localhost/");
+                markdown = Content;
+            }
+            else
+            {
+                source = MarkdownSource.Create(SourceUrl!);
+                markdown = await HttpClientFactory.CreateClient().GetStringAsync(source.FetchUri);
+            }
+
+            MarkdownDocument document = Markdown.Parse(markdown, Pipeline);
+            foreach (LinkInline link in document.Descendants<LinkInline>())
+            {
+                if (!string.IsNullOrWhiteSpace(link.Url))
+                    link.Url = source.Resolve(link.Url, link.IsImage, DocumentRoute, DocumentRoutes);
+            }
+
+            using StringWriter writer = new();
+            Markdig.Renderers.HtmlRenderer renderer = new(writer);
+            Pipeline.Setup(renderer);
+            renderer.Render(document);
+            Html = writer.ToString().Replace("<a ", "<a data-enhance-nav=\"false\" ", StringComparison.Ordinal);
+            RestoreAnchor = true;
+        }
+        catch
+        {
+            HasLoadError = true;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!RestoreAnchor)
+            return;
+
+        RestoreAnchor = false;
+        Module ??= await JS.InvokeAsync<IJSObjectReference>("import", "./_content/AngryMonkey.CloudComponents/cloud-markdown.js");
+        await Module.InvokeVoidAsync("bindAndRestore", MarkdownRoot);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Module is not null)
+            await Module.DisposeAsync();
+    }
+
+    private sealed record MarkdownSource(
+        Uri FetchUri,
+        Uri DocumentUri,
+        string? GitHubOwner,
+        string? GitHubRepository,
+        string? GitHubBranch)
+    {
+        public static MarkdownSource Create(string markdownUrl)
+        {
+            Uri suppliedUri = new(markdownUrl, UriKind.Absolute);
+            string[] segments = suppliedUri.AbsolutePath.Trim('/').Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+            if (suppliedUri.Host.Equals("github.com", StringComparison.OrdinalIgnoreCase) &&
+                segments.Length >= 5 &&
+                segments[2].Equals("blob", StringComparison.OrdinalIgnoreCase))
+            {
+                string owner = segments[0];
+                string repository = segments[1];
+                string branch = segments[3];
+                string filePath = string.Join('/', segments.Skip(4));
+                Uri fetchUri = new($"https://raw.githubusercontent.com/{owner}/{repository}/{branch}/{filePath}");
+                return new(fetchUri, suppliedUri, owner, repository, branch);
+            }
+
+            if (suppliedUri.Host.Equals("raw.githubusercontent.com", StringComparison.OrdinalIgnoreCase) && segments.Length >= 4)
+            {
+                string owner = segments[0];
+                string repository = segments[1];
+                string branch = segments[2];
+                string filePath = string.Join('/', segments.Skip(3));
+                Uri documentUri = new($"https://github.com/{owner}/{repository}/blob/{branch}/{filePath}");
+                return new(suppliedUri, documentUri, owner, repository, branch);
+            }
+
+            return new(suppliedUri, suppliedUri, null, null, null);
+        }
+
+        public string Resolve(string target, bool isImage, string? documentRoute, IReadOnlyDictionary<string, string>? documentRoutes)
+        {
+            if (target.StartsWith("data:", StringComparison.OrdinalIgnoreCase) ||
+                target.StartsWith("mailto:", StringComparison.OrdinalIgnoreCase) ||
+                target.StartsWith("tel:", StringComparison.OrdinalIgnoreCase))
+            {
+                return target;
+            }
+
+            if (target.StartsWith('#'))
+                return string.IsNullOrWhiteSpace(documentRoute) ? target : $"{documentRoute.TrimEnd('/')}{target}";
+
+            Uri resolvedUri;
+            if (Uri.TryCreate(target, UriKind.Absolute, out Uri? absoluteUri))
+            {
+                resolvedUri = absoluteUri;
+            }
+            else if (GitHubOwner is not null && GitHubRepository is not null && GitHubBranch is not null)
+            {
+                if (target.StartsWith('/'))
+                {
+                    string path = target.TrimStart('/');
+                    string host = isImage ? "raw.githubusercontent.com" : "github.com";
+                    string branchSegment = isImage ? GitHubBranch : $"blob/{GitHubBranch}";
+                    resolvedUri = new Uri($"https://{host}/{GitHubOwner}/{GitHubRepository}/{branchSegment}/{path}");
+                }
+                else
+                {
+                    resolvedUri = new Uri(isImage ? FetchUri : DocumentUri, target);
+                }
+            }
+            else
+            {
+                resolvedUri = new Uri(FetchUri, target);
+            }
+
+            if (!isImage && TryResolveApplicationRoute(resolvedUri, documentRoutes, out string? applicationRoute))
+                return applicationRoute!;
+
+            return resolvedUri.AbsoluteUri;
+        }
+
+        private bool TryResolveApplicationRoute(Uri uri, IReadOnlyDictionary<string, string>? documentRoutes, out string? applicationRoute)
+        {
+            applicationRoute = null;
+            if (documentRoutes is null || GitHubOwner is null || GitHubRepository is null)
+                return false;
+
+            string[] segments = uri.AbsolutePath.Trim('/').Split('/', StringSplitOptions.RemoveEmptyEntries);
+            string? markdownPath = null;
+            if (uri.Host.Equals("github.com", StringComparison.OrdinalIgnoreCase) &&
+                segments.Length >= 5 &&
+                segments[0].Equals(GitHubOwner, StringComparison.OrdinalIgnoreCase) &&
+                segments[1].Equals(GitHubRepository, StringComparison.OrdinalIgnoreCase) &&
+                segments[2].Equals("blob", StringComparison.OrdinalIgnoreCase))
+            {
+                markdownPath = string.Join('/', segments.Skip(4));
+            }
+            else if (uri.Host.Equals("raw.githubusercontent.com", StringComparison.OrdinalIgnoreCase) &&
+                     segments.Length >= 4 &&
+                     segments[0].Equals(GitHubOwner, StringComparison.OrdinalIgnoreCase) &&
+                     segments[1].Equals(GitHubRepository, StringComparison.OrdinalIgnoreCase))
+            {
+                markdownPath = string.Join('/', segments.Skip(3));
+            }
+
+            if (string.IsNullOrWhiteSpace(markdownPath) || !documentRoutes.TryGetValue(Uri.UnescapeDataString(markdownPath), out string? route))
+                return false;
+
+            applicationRoute = string.IsNullOrWhiteSpace(uri.Fragment) ? route : $"{route}{uri.Fragment}";
+            return true;
+        }
+    }
+}

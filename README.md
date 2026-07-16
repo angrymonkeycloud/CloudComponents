@@ -54,6 +54,7 @@ dotnet add package AngryMonkey.CloudComponents.Icons
 @using CloudIcons
 @using CloudIcons.Icons
 @using CloudIcons.Logos
+@using AngryMonkey.CloudComponents.Markdown
 ```
 
 ### 3. Add required assets to `wwwroot/index.html`
@@ -84,6 +85,11 @@ dotnet add package AngryMonkey.CloudComponents.Icons
 | `Tabs` | `<Tabs TabsList="@_tabs" />` where `_tabs` is a `List<TabItem>` |
 | `ProgressBar` | `<ProgressBar Style="ProgressBarStyle.Flat" Value="@_v" Total="100" OnChanged="OnChanged" />` |
 | `VolumeBar` | `<VolumeBar Value="@_vol" Extended="true" OnChanged="OnChanged" />` |
+| `CloudMarkdown` | `<CloudMarkdown SourceUrl="@readmeUrl" DocumentRoute="/docs" />` |
+
+### CloudMarkdown
+
+`CloudMarkdown` renders either a remote `.md` / `.markdown` document (`SourceUrl`) or supplied Markdown (`Content`) inside isolated documentation styles. It resets surrounding page styles, resolves GitHub README links through `DocumentRoutes`, preserves external GitHub links, and scrolls local fragments without leaving `#...` in the address bar. Register `builder.Services.AddHttpClient()` in the host app before loading remote documents. Theme overrides can be passed through `Style` with component-local variables such as `--cloud-markdown-link`, `--cloud-markdown-surface`, and `--cloud-markdown-font-size`. Raw HTML is intentionally disabled for safe remote rendering.
 
 ### CloudGrid (`AngryMonkey.CloudComponents.DataGrid`)
 

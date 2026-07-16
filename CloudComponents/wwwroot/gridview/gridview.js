@@ -1,5 +1,3 @@
-//const table : HTMLElement= document.getElementById('table');
-//resizableGrid(table);
 export function resizableGrid(table) {
     debugger;
     var row = table.getElementsByTagName('tr')[0], cols = row ? row.children : undefined;
@@ -19,10 +17,8 @@ function createDiv(height) {
     div.style.width = '5px';
     div.style.position = 'absolute';
     div.style.cursor = 'col-resize';
-    /* remove backGroundColor later */
     div.style.backgroundColor = 'red';
     div.style.userSelect = 'none';
-    /* table height */
     div.style.height = height + 'px';
     return div;
 }
