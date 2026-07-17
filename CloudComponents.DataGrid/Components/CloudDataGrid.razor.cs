@@ -69,6 +69,38 @@ public partial class CloudDataGrid : IAsyncDisposable
     /// <summary>Placeholder rendered for null cell values.</summary>
     [Parameter] public string EmptyCellText { get; set; } = "--";
 
+    /// <summary>Summary rows aligned to the data columns (for example, "Total" and a value).</summary>
+    [Parameter] public List<CloudDataGridFooterRow> ColumnFooterRows { get; set; } = [];
+
+    /// <summary>Keeps <see cref="ColumnFooterRows"/> visible at the bottom of the scrolling table.</summary>
+    [Parameter] public bool FixedColumnFooter { get; set; } = true;
+
+    /// <summary>Height reserved for the optional viewport-anchored note beneath each row.</summary>
+    [Parameter] public double RowNoteHeight { get; set; } = 24;
+
+    /// <summary>
+    /// Always reserves note space. Enable this for infinite data when later pages may introduce notes,
+    /// keeping the virtualization item size stable before those pages are loaded.
+    /// </summary>
+    [Parameter] public bool ReserveRowNoteSpace { get; set; }
+
+    /// <summary>Shows row notes when rows provide them.</summary>
+    [Parameter] public bool ShowRowNotes { get; set; } = true;
+
+    /// <summary>Groups rows that provide category keys beneath category headers.</summary>
+    [Parameter] public bool EnableRowCategories { get; set; } = true;
+
+    /// <summary>Allows category headers created from row category keys to collapse and expand.</summary>
+    [Parameter] public bool AllowCategoryCollapse { get; set; } = true;
+
+    /// <summary>Category keys currently collapsed. Supports two-way binding.</summary>
+    [Parameter] public HashSet<string>? CollapsedCategories { get; set; }
+
+    [Parameter] public EventCallback<HashSet<string>> CollapsedCategoriesChanged { get; set; }
+
+    /// <summary>Optional custom content for category headers.</summary>
+    [Parameter] public RenderFragment<CloudDataGridCategoryContext>? CategoryHeaderTemplate { get; set; }
+
     /// <summary>Fixed row height in pixels. Overrides the <c>--cloudgrid-row-height</c> CSS variable.</summary>
     [Parameter] public double? RowHeight { get; set; }
 
@@ -231,7 +263,7 @@ public partial class CloudDataGrid : IAsyncDisposable
     private async Task<IJSObjectReference> GetJsModuleAsync()
     {
         _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import",
-            "./_content/AngryMonkey.AngryMonkey.CloudComponents.DataGrid/cloudgrid.js");
+            "./_content/AngryMonkey.CloudComponents.DataGrid/cloudgrid.js");
         return _jsModule;
     }
 
@@ -315,7 +347,7 @@ public partial class CloudDataGrid : IAsyncDisposable
             string.Join(',', row.Cells
                 .Select((cell, i) => (cell, i))
                 .Where(t => !skipIndexes.Contains(t.i))
-                .Select(t => QuoteCsv(t.cell))));
+                .Select(t => QuoteCsv(t.cell is CloudDataGridCell richCell ? richCell.Value : t.cell))));
 
         return string.Join(Environment.NewLine,
             [string.Join(',', header), .. dataLines]);
@@ -394,6 +426,8 @@ public partial class CloudDataGrid : IAsyncDisposable
 
     private List<Guid> _selectedRecords = [];
     private List<Guid>? _lastSelectedRecordsParameter;
+    private HashSet<string> _collapsedCategories = new(StringComparer.Ordinal);
+    private HashSet<string>? _lastCollapsedCategoriesParameter;
 
     protected override void OnParametersSet()
     {
@@ -403,12 +437,27 @@ public partial class CloudDataGrid : IAsyncDisposable
             _lastSelectedRecordsParameter = SelectedRecords;
             _selectedRecords = SelectedRecords is null ? [] : [.. SelectedRecords];
         }
+
+
+        if (!ReferenceEquals(CollapsedCategories, _lastCollapsedCategoriesParameter))
+        {
+            _lastCollapsedCategoriesParameter = CollapsedCategories;
+            _collapsedCategories = CollapsedCategories is null
+                ? new HashSet<string>(StringComparer.Ordinal)
+                : new HashSet<string>(CollapsedCategories, StringComparer.Ordinal);
+        }
     }
 
     private async Task OnBodySelectionChanged(List<Guid> updated)
     {
         _selectedRecords = updated;
         await SelectedRecordsChanged.InvokeAsync(_selectedRecords);
+    }
+
+    private async Task OnBodyCollapsedCategoriesChanged(HashSet<string> updated)
+    {
+        _collapsedCategories = updated;
+        await CollapsedCategoriesChanged.InvokeAsync(new HashSet<string>(_collapsedCategories, StringComparer.Ordinal));
     }
 
     #endregion
@@ -486,8 +535,11 @@ public partial class CloudDataGrid : IAsyncDisposable
         }
     }
 
-    private string? RootStyle =>
-        RowHeight.HasValue ? $"--cloudgrid-row-height: {RowHeight.Value.ToString(CultureInfo.InvariantCulture)}px" : null;
+    private string RootStyle => string.Join("; ", new[]
+    {
+        RowHeight.HasValue ? $"--cloudgrid-row-height: {RowHeight.Value.ToString(CultureInfo.InvariantCulture)}px" : null,
+        $"--cloudgrid-note-height: {(ShowRowNotes && (ReserveRowNoteSpace || (_data?.Rows.Any(row => !string.IsNullOrWhiteSpace(row.Note)) ?? false)) ? RowNoteHeight : 0).ToString(CultureInfo.InvariantCulture)}px"
+    }.Where(value => value != null));
 
     #endregion
 }

@@ -1,4 +1,4 @@
-﻿.cloudgridheader {
+.cloudgridheader {
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
@@ -167,7 +167,7 @@
 }
 .cloudgridheader-search {
   box-sizing: border-box;
-  width: min(180px, 100%);
+  width: calc(min(180px, 100%));
   max-width: 100%;
   height: calc(var(--cloudgrid-header-height, 40px) - 8px);
   min-height: calc(var(--cloudgrid-header-height, 40px) - 8px);
@@ -190,7 +190,7 @@
   right: 0;
   z-index: 100;
   min-width: 160px;
-  max-width: min(280px, calc(100vw - 16px));
+  max-width: calc(min(280px, calc(100vw - 16px)));
   margin-top: 4px;
   padding: 4px 0;
   background: var(--cloudgrid-background, #fff);
@@ -300,7 +300,7 @@
     left: auto;
     width: auto;
     min-width: 160px;
-    max-width: min(280px, calc(100vw - 16px));
+    max-width: calc(min(280px, calc(100vw - 16px)));
   }
 }
 ::deep .cloudgridheader-action {

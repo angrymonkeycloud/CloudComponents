@@ -1,0 +1,90 @@
+@page "/grid/customization"
+@using AngryMonkey.CloudComponents.DataGrid.Models
+@using CloudComponents.Demo.Models
+@using CloudComponents.Demo.Services
+@inject SampleDataService Data
+
+<PageTitle>CloudDataGrid — Customization</PageTitle>
+
+<div class="page-header">
+    <h1>Pinning, templates, styling &amp; notes</h1>
+    <p>The name stays pinned left, salary and status stay pinned right, and the summary row stays fixed at the bottom.</p>
+</div>
+
+<div class="card">
+    <div class="grid-host" style="height:480px">
+        <CloudDataGrid Columns="_columns"
+                       DataProvider="LoadAsync"
+                       PagingMode="CloudDataGridPagingMode.InfiniteScroll"
+                       RowsPerPage="20"
+                       ReserveRowNoteSpace="true"
+                       RowNoteHeight="26"
+                       ColumnFooterRows="_footerRows"
+                       FixedColumnFooter="true" />
+    </div>
+</div>
+
+@code {
+    private List<CloudDataGridColumn> _columns = [];
+
+    private readonly List<CloudDataGridFooterRow> _footerRows =
+    [
+        new()
+        {
+            Cells =
+            [
+                new CloudDataGridCell { Value = "Total", Style = "font-weight:700; background:#eef2ff" },
+                null, null, null, null,
+                new CloudDataGridCell { Value = "$13,500,000", Style = "font-weight:800; color:#3730a3; background:#eef2ff" },
+                null
+            ]
+        }
+    ];
+
+    protected override void OnInitialized()
+    {
+        _columns =
+        [
+            new() { Label = "Name", Key = "name", Width = 210, Pinned = CloudDataGridPinnedPosition.Left, HeaderStyle = "background:#eef2ff" },
+            new() { Label = "Email", Key = "email", Width = 280 },
+            new() { Label = "Department", Key = "department", Width = 180, CssClass = "department-cell" },
+            new() { Label = "Country", Key = "country", Width = 160 },
+            new() { Label = "Hired", Key = "hiredate", Width = 150 },
+            new() { Label = "Salary", Key = "salary", Width = 150, Pinned = CloudDataGridPinnedPosition.Right, Style = "font-variant-numeric:tabular-nums" },
+            new() { Label = "Status", Key = "active", Width = 130, Pinned = CloudDataGridPinnedPosition.Right, CellTemplate = StatusTemplate }
+        ];
+    }
+
+    private RenderFragment<CloudDataGridCellContext> StatusTemplate => context => @<ActiveStatusBadge Value="@(context.Value is true)" />;
+
+    private Task<CloudDataGridDataResult?> LoadAsync(CloudDataGridDataRequest request) =>
+        LoadRowsAsync(request);
+
+    private async Task<CloudDataGridDataResult?> LoadRowsAsync(CloudDataGridDataRequest request)
+    {
+        CloudDataGridDataResult result = await Data.QueryAsync(request, person => new CloudDataGridRow
+        {
+            Id = person.Id,
+            CssClass = person.IsActive ? null : "inactive-row",
+            Style = person.Salary >= 150_000 ? "background:linear-gradient(90deg,#fffbeb,#fff)" : null,
+            Note = $"{person.FullName} joined {person.Department} on {person.HireDate:MMMM d, yyyy}.",
+            NoteStyle = "color:#64748b",
+            Cells =
+            [
+                person.FullName,
+                person.Email,
+                new CloudDataGridCell
+                {
+                    Value = person.Department,
+                    Style = person.Department == "Engineering" ? "color:#1d4ed8; font-weight:600" : null
+                },
+                person.Country,
+                person.HireDate,
+                person.Salary.ToString("C0"),
+                person.IsActive
+            ]
+        }, simulatedDelayMs: 100);
+
+        return result;
+    }
+}

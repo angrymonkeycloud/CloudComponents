@@ -1,0 +1,10 @@
+@namespace CloudComponents.Demo.Pages.Grid
+
+<span style="display:inline-flex;align-items:center;gap:6px;font-weight:600;color:@(Value ? "#166534" : "#991b1b")">
+    <span aria-hidden="true" style="width:7px;height:7px;border-radius:50%;background:currentColor"></span>
+    @(Value ? "Active" : "Inactive")
+</span>
+
+@code {
+    [Parameter] public bool Value { get; set; }
+}

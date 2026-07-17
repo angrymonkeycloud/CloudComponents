@@ -2,19 +2,23 @@
   "files": [
     {
       "input": "Components/CloudDataGridHeader.razor.less",
-      "output": "Components/CloudDataGridHeader.razor.css"
+      "output": "Components/CloudDataGridHeader.razor.css",
+      "minify": false
     },
     {
       "input": "Components/CloudDataGridFooter.razor.less",
-      "output": "Components/CloudDataGridFooter.razor.css"
+      "output": "Components/CloudDataGridFooter.razor.css",
+      "minify": false
     },
     {
       "input": "Components/CloudDataGrid.razor.less",
-      "output": "Components/CloudDataGrid.razor.css"
+      "output": "Components/CloudDataGrid.razor.css",
+      "minify": false
     },
     {
       "input": "Components/CloudDataGridBody.razor.less",
-      "output": "Components/CloudDataGridBody.razor.css"
+      "output": "Components/CloudDataGridBody.razor.css",
+      "minify": false
     }
   ]
 }

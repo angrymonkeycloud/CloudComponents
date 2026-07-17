@@ -1,0 +1,334 @@
+@page "/grid/playground"
+@using AngryMonkey.CloudComponents.DataGrid.Models
+@using CloudComponents.Demo.Models
+@using CloudComponents.Demo.Services
+@inject SampleDataService Data
+
+<PageTitle>CloudDataGrid — Playground</PageTitle>
+
+<div class="page-header">
+    <h1>Customization playground</h1>
+    <p>Turn features on and off from the panel. Categories and rows remain virtualized in infinite-scroll mode.</p>
+</div>
+
+<DemoResultCodeTabs>
+  <ResultContent>
+   <div class="playground-layout">
+    <section class="playground-preview">
+        <div class="playground-status">
+            <span>@(_useVirtualization ? "Virtualized infinite scroll" : "Classic pages")</span>
+            <span>@_collapsedCategories.Count collapsed categor@(_collapsedCategories.Count == 1 ? "y" : "ies")</span>
+            <span>@_selected.Count selected</span>
+        </div>
+
+        <div class="playground-gridhost">
+            <CloudDataGrid @key="_useVirtualization"
+                           Header="@ActiveHeader"
+                           Columns="@PlaygroundColumns"
+                           DataProvider="LoadAsync"
+                           PagingMode="@(_useVirtualization ? CloudDataGridPagingMode.InfiniteScroll : CloudDataGridPagingMode.Pages)"
+                           RowsPerPage="12"
+                           AllowSelection="@_selection"
+                           @bind-SelectedRecords="_selected"
+                           AllowReordering="@_reordering"
+                           OnRowsReordered="OnRowsReordered"
+                           ColumnFooterRows="@ActiveFooterRows"
+                           FixedColumnFooter="@_fixedFooter"
+                           ShowRowNotes="@_notes"
+                           ReserveRowNoteSpace="@_notes"
+                           EnableRowCategories="@_categories"
+                           AllowCategoryCollapse="@_categoryCollapse"
+                           @bind-CollapsedCategories="_collapsedCategories"
+                           CategoryHeaderTemplate="@(_customCategoryHeader ? CategoryTemplate : null)"
+                           RowHeight="@(_compactRows ? 36 : 43)"
+                           RowNoteHeight="24"
+                           CssClass="@PlaygroundCssClasses" />
+        </div>
+    </section>
+
+    <aside class="playground-options">
+        <div class="playground-optionshead">
+            <div>
+                <strong>Grid options</strong>
+                <small>Changes apply immediately</small>
+            </div>
+            <button type="button" @onclick="ResetOptions">Reset</button>
+        </div>
+
+        <fieldset>
+            <legend>Structure</legend>
+            @Option("Show header", _showToolbar, value => _showToolbar = value)
+            @Option("Header search", _allowSearch, value => _allowSearch = value)
+            @Option("Header refresh", _allowRefresh, value => _allowRefresh = value)
+            @Option("Header export", _allowExport, value => _allowExport = value)
+            @Option("Selection", _selection, value => _selection = value)
+            @Option("Row reordering", _reordering, value => _reordering = value)
+            @Option("Compact rows", _compactRows, value => _compactRows = value)
+            @Option("Virtualization", _useVirtualization, value => _useVirtualization = value)
+        </fieldset>
+
+        <fieldset>
+            <legend>Categories & notes</legend>
+            @Option("Group by department", _categories, value => _categories = value)
+            @Option("Allow collapse", _categoryCollapse, value => _categoryCollapse = value)
+            @Option("Custom category header", _customCategoryHeader, value => _customCategoryHeader = value)
+            @Option("Row notes", _notes, value => _notes = value)
+        </fieldset>
+
+        <fieldset>
+            <legend>Pinning & footer</legend>
+            @Option("Pin name left", _pinLeft, value => _pinLeft = value)
+            @Option("Pin salary & status right", _pinRight, value => _pinRight = value)
+            @Option("Totals footer", _showFooter, value => _showFooter = value)
+            @Option("Fix totals footer", _fixedFooter, value => _fixedFooter = value)
+        </fieldset>
+
+        <fieldset>
+            <legend>Content & styling</legend>
+            @Option("Avatar column", _avatars, value => _avatars = value)
+            @Option("Email column", _email, value => _email = value)
+            @Option("Country column", _country, value => _country = value)
+            @Option("Razor status component", _cellTemplate, value => _cellTemplate = value)
+            @Option("Row backgrounds", _rowStyling, value => _rowStyling = value)
+            @Option("Cell styling", _cellStyling, value => _cellStyling = value)
+            @Option("Column styling", _columnStyling, value => _columnStyling = value)
+        </fieldset>
+    </aside>
+   </div>
+  </ResultContent>
+  <CodeContent>
+    <div class="card">
+        <h2 class="card-title">Copy-ready example</h2>
+        <p class="card-subtitle">Includes the header, search, refresh, export, categories, templates, fixed columns, totals, notes, and virtualization.</p>
+        <pre class="code-snippet"><code>@_usageSnippet</code></pre>
+    </div>
+  </CodeContent>
+</DemoResultCodeTabs>
+
+@code {
+    private bool _showToolbar = true;
+    private bool _allowSearch = true;
+    private bool _allowRefresh = true;
+    private bool _allowExport = true;
+    private bool _selection = true;
+    private bool _reordering;
+    private bool _compactRows;
+    private bool _useVirtualization = true;
+    private bool _categories = true;
+    private bool _categoryCollapse = true;
+    private bool _customCategoryHeader = true;
+    private bool _notes = true;
+    private bool _pinLeft = true;
+    private bool _pinRight = true;
+    private bool _showFooter = true;
+    private bool _fixedFooter = true;
+    private bool _avatars;
+    private bool _email = true;
+    private bool _country = true;
+    private bool _cellTemplate = true;
+    private bool _rowStyling = true;
+    private bool _cellStyling = true;
+    private bool _columnStyling = true;
+    private List<Guid> _selected = [];
+    private HashSet<string> _collapsedCategories = new(StringComparer.Ordinal);
+
+    private CloudDataGridHeaderOptions? ActiveHeader => _showToolbar
+        ? new CloudDataGridHeaderOptions
+        {
+            Label = "Employees",
+            AllowSearch = _allowSearch,
+            AllowRefresh = _allowRefresh,
+            AllowExport = _allowExport
+        }
+        : null;
+
+    private List<CloudDataGridColumn> PlaygroundColumns
+    {
+        get
+        {
+            List<CloudDataGridColumn> columns = [];
+
+            if (_avatars)
+                columns.Add(new() { Label = "", Key = "avatar", Width = 54, Sortable = false, IsImage = true, Pinned = _pinLeft ? CloudDataGridPinnedPosition.Left : CloudDataGridPinnedPosition.None });
+
+            columns.Add(new()
+            {
+                Label = "Name", Key = "name", Width = 190,
+                Pinned = _pinLeft ? CloudDataGridPinnedPosition.Left : CloudDataGridPinnedPosition.None
+            });
+
+            if (_email)
+                columns.Add(new() { Label = "Email", Key = "email", Width = 260 });
+
+            columns.Add(new()
+            {
+                Label = "Department", Key = "department", Width = 170,
+                CssClass = _columnStyling ? "playground-department" : null
+            });
+
+            if (_country)
+                columns.Add(new() { Label = "Country", Key = "country", Width = 140 });
+
+            columns.Add(new() { Label = "Hired", Key = "hiredate", Width = 135 });
+            columns.Add(new()
+            {
+                Label = "Salary", Key = "salary", Width = 135,
+                Pinned = _pinRight ? CloudDataGridPinnedPosition.Right : CloudDataGridPinnedPosition.None,
+                Style = "font-variant-numeric:tabular-nums"
+            });
+            columns.Add(new()
+            {
+                Label = "Status", Key = "active", Width = 120,
+                Pinned = _pinRight ? CloudDataGridPinnedPosition.Right : CloudDataGridPinnedPosition.None,
+                CellTemplate = _cellTemplate ? StatusTemplate : null
+            });
+
+            return columns;
+        }
+    }
+
+    private List<CloudDataGridFooterRow> ActiveFooterRows => _showFooter
+        ? [new CloudDataGridFooterRow { Cells = PlaygroundColumns.Select(FooterCell).ToList() }]
+        : [];
+
+    private static object? FooterCell(CloudDataGridColumn column) => column.Key switch
+    {
+        "name" => new CloudDataGridCell { Value = "Total payroll", CssClass = "playground-total-label" },
+        "salary" => new CloudDataGridCell { Value = "$13.5M", CssClass = "playground-total-value" },
+        _ => null
+    };
+
+    private string PlaygroundCssClasses => string.Join(' ', new[]
+    {
+        _rowStyling ? "_playground-row-styling" : null,
+        _cellStyling ? "_playground-cell-styling" : null
+    }.Where(value => value != null));
+
+    private RenderFragment<CloudDataGridCellContext> StatusTemplate => context =>
+        @<ActiveStatusBadge Value="@(context.Value is true)" />;
+
+    private RenderFragment<CloudDataGridCategoryContext> CategoryTemplate => category => @<text>
+        <span class="playground-category-icon">&#9670;</span>
+        <strong>@category.Label team</strong>
+        <span class="playground-category-meta">@category.VisibleRowCount loaded</span>
+    </text>;
+
+    private RenderFragment Option(string label, bool value, Action<bool> setter) => @<label class="playground-option">
+        <input type="checkbox" checked="@value" @onchange="e => setter(e.Value is true)" />
+        <span>@label</span>
+    </label>;
+
+    private async Task<CloudDataGridDataResult?> LoadAsync(CloudDataGridDataRequest request)
+    {
+        IReadOnlyList<CloudDataGridColumn> columns = PlaygroundColumns;
+
+        return await Data.QueryAsync(request, person => new CloudDataGridRow
+        {
+            Id = person.Id,
+            CategoryKey = person.Department,
+            CategoryLabel = person.Department,
+            CssClass = person.Salary >= 150_000 ? "playground-highsalary-row" : null,
+            Note = $"Joined {person.Department} on {person.HireDate:MMMM d, yyyy} · {person.Email}",
+            Cells = columns.Select(column => ValueFor(column.Key, person)).ToList()
+        }, simulatedDelayMs: 100);
+    }
+
+    private static object? ValueFor(string? key, Person person) => key switch
+    {
+        "avatar" => person.AvatarUrl,
+        "name" => person.FullName,
+        "email" => person.Email,
+        "department" => person.Department,
+        "country" => person.Country,
+        "hiredate" => person.HireDate,
+        "salary" => new CloudDataGridCell
+        {
+            Value = person.Salary.ToString("C0"),
+            CssClass = person.Salary >= 150_000 ? "playground-highlight-cell" : null
+        },
+        "active" => person.IsActive,
+        _ => null
+    };
+
+    private void OnRowsReordered(CloudDataGridRowReorder reorder) => Data.ApplyReorder(reorder);
+
+    private void ResetOptions()
+    {
+        _showToolbar = _allowSearch = _allowRefresh = _allowExport = true;
+        _selection = _useVirtualization = _categories = _categoryCollapse = true;
+        _customCategoryHeader = _notes = _pinLeft = _pinRight = _showFooter = _fixedFooter = true;
+        _email = _country = _cellTemplate = _rowStyling = _cellStyling = _columnStyling = true;
+        _reordering = _compactRows = _avatars = false;
+        _selected = [];
+        _collapsedCategories = new(StringComparer.Ordinal);
+    }
+
+    private readonly string _usageSnippet = """
+@using AngryMonkey.CloudComponents.DataGrid.Models
+
+<CloudDataGrid Header="_header"
+               Columns="_columns"
+               DataProvider="LoadAsync"
+               PagingMode="CloudDataGridPagingMode.InfiniteScroll"
+               RowsPerPage="20"
+               EnableRowCategories="true"
+               AllowCategoryCollapse="true"
+               @bind-CollapsedCategories="_collapsedCategories"
+               CategoryHeaderTemplate="CategoryTemplate"
+               ReserveRowNoteSpace="true"
+               ColumnFooterRows="_footerRows"
+               FixedColumnFooter="true" />
+
+@code {
+    private readonly CloudDataGridHeaderOptions _header = new()
+    {
+        Label = "Employees",
+        AllowSearch = true,
+        AllowRefresh = true,
+        AllowExport = true
+    };
+
+    private readonly List<CloudDataGridColumn> _columns =
+    [
+        new() { Label = "Name", Key = "name", Width = 190, Pinned = CloudDataGridPinnedPosition.Left },
+        new() { Label = "Department", Key = "department", Width = 170 },
+        new() { Label = "Salary", Key = "salary", Width = 135, Pinned = CloudDataGridPinnedPosition.Right },
+        new() { Label = "Status", Key = "active", Width = 120, Pinned = CloudDataGridPinnedPosition.Right, CellTemplate = StatusTemplate }
+    ];
+
+    private readonly List<CloudDataGridFooterRow> _footerRows =
+    [
+        new() { Cells = ["Total payroll", null, "$13.5M", null] }
+    ];
+
+    private HashSet<string> _collapsedCategories = [];
+
+    private RenderFragment<CloudDataGridCellContext> StatusTemplate => context =>
+        @<EmployeeStatus Value="@(context.Value is true)" />;
+
+    private RenderFragment<CloudDataGridCategoryContext> CategoryTemplate => category => @<text>
+        <strong>@category.Label</strong>
+        <span>@category.VisibleRowCount loaded</span>
+    </text>;
+
+    private Task<CloudDataGridDataResult?> LoadAsync(CloudDataGridDataRequest request) =>
+        EmployeeService.QueryAsync(request, employee => new CloudDataGridRow
+        {
+            Id = employee.Id,
+            CategoryKey = employee.DepartmentId,
+            CategoryLabel = employee.DepartmentName,
+            Note = $"Joined on {employee.HireDate:MMMM d, yyyy}",
+            Cells = [employee.Name, employee.DepartmentName, employee.Salary, employee.IsActive]
+        });
+}
+
+<!-- EmployeeStatus.razor -->
+<span class="status-badge @(Value ? "active" : "inactive")">
+    @(Value ? "Active" : "Inactive")
+</span>
+
+@code {
+    [Parameter] public bool Value { get; set; }
+}
+""";
+}

@@ -18,12 +18,12 @@
 
         @if (AllowReordering)
         {
-            <div class="cloudgrid-draghandle"></div>
+            <div class="cloudgrid-draghandle @UtilityPinnedClass" style="@UtilityPinnedStyle(0)"></div>
         }
 
         @if (AllowSelection)
         {
-            <div class="cloudgrid-check">
+            <div class="cloudgrid-check @UtilityPinnedClass" style="@UtilityPinnedStyle(AllowReordering ? 28 : 0)">
                 <input type="checkbox" title="Select all" checked="@AllRowsSelected" @onchange="ToggleSelectAllAsync" />
             </div>
         }
@@ -34,7 +34,7 @@
             CloudDataGridColumn column = Columns[columnIndex];
 
             <div class="cloudgrid-headcell @HeadCellClasses(columnIndex)"
-                 style="width: @Px(GetColumnWidth(columnIndex))"
+                 style="@HeadCellStyle(columnIndex)"
                  @onclick="() => SortByAsync(columnIndex)">
 
                 <span>@column.Label</span>
@@ -77,18 +77,18 @@
                 @* Blazor's built-in Virtualize detects scrolling near the end of
                    the loaded rows and asks the provider for the missing range,
                    which triggers loading the next page — no custom JavaScript. *@
-                <Virtualize @ref="_virtualize" TItem="CloudDataGridRow" ItemsProvider="ProvideRowsAsync" ItemSize="@((float)EffectiveRowHeight)" OverscanCount="5">
-                    <ItemContent>@RenderRow(context)</ItemContent>
+                <Virtualize @ref="_virtualize" TItem="CloudDataGridDisplayItem" ItemsProvider="ProvideRowsAsync" ItemSize="@((float)EffectiveRowHeight)" OverscanCount="5">
+                    <ItemContent>@RenderDisplayItem(context)</ItemContent>
                     <Placeholder>
-                        <div class="cloudgrid-row _placeholder"></div>
+                        <div class="cloudgrid-row _placeholder @(HasRowNotes ? "_with-note" : null)"></div>
                     </Placeholder>
                 </Virtualize>
             }
             else
             {
-                foreach (CloudDataGridRow row in DisplayRows)
+                foreach (CloudDataGridDisplayItem item in DisplayItems)
                 {
-                    @RenderRow(row)
+                    @RenderDisplayItem(item)
                 }
 
                 @if (PagingMode == CloudDataGridPagingMode.LoadMore && HasMoreRows)
@@ -100,6 +100,26 @@
             }
         }
     </div>
+
+    @if (ColumnFooterRows.Count > 0)
+    {
+        <div class="cloudgrid-columnfooters @(FixedColumnFooter ? "_fixed" : null)">
+            @foreach (CloudDataGridFooterRow footerRow in ColumnFooterRows)
+            {
+                <div class="cloudgrid-columnfooter @footerRow.CssClass" style="@footerRow.Style" @attributes="footerRow.Attributes">
+                    @if (AllowReordering)
+                    {
+                        <div class="cloudgrid-draghandle @UtilityPinnedClass" style="@UtilityPinnedStyle(0)"></div>
+                    }
+                    @if (AllowSelection)
+                    {
+                        <div class="cloudgrid-check @UtilityPinnedClass" style="@UtilityPinnedStyle(AllowReordering ? 28 : 0)"></div>
+                    }
+                    @FooterCells(footerRow)
+                </div>
+            }
+        </div>
+    }
 </div>
 
 @if (_resizeIndex.HasValue)
@@ -127,12 +147,62 @@
 @code {
     // Markup-only helpers stay in the .razor file; all behavior lives in CloudDataGridBody.razor.cs.
 
+    private RenderFragment<CloudDataGridDisplayItem> RenderDisplayItem => item => @<text>
+        @if (item.Category is not null)
+        {
+            @RenderCategory(item.Category)
+        }
+        else if (item.Row is not null)
+        {
+            @RenderRow(item.Row)
+        }
+    </text>;
+
+    private RenderFragment<CloudDataGridCategoryContext> RenderCategory => category => @<text>
+        <div class="cloudgrid-category @(category.IsExpanded ? "_expanded" : "_collapsed")">
+            @if (AllowCategoryCollapse)
+            {
+                <button type="button"
+                        class="cloudgrid-categorycontent"
+                        aria-expanded="@(category.IsExpanded ? "true" : "false")"
+                        @onclick="() => ToggleCategoryAsync(category)">
+                    <span class="cloudgrid-categorychevron" aria-hidden="true">&#x25B6;</span>
+                    @if (CategoryHeaderTemplate is not null)
+                    {
+                        @CategoryHeaderTemplate(category)
+                    }
+                    else
+                    {
+                        <strong>@category.Label</strong>
+                        <span class="cloudgrid-categorycount">@category.VisibleRowCount</span>
+                    }
+                </button>
+            }
+            else
+            {
+                <div class="cloudgrid-categorycontent">
+                    @if (CategoryHeaderTemplate is not null)
+                    {
+                        @CategoryHeaderTemplate(category)
+                    }
+                    else
+                    {
+                        <strong>@category.Label</strong>
+                        <span class="cloudgrid-categorycount">@category.VisibleRowCount</span>
+                    }
+                </div>
+            }
+        </div>
+    </text>;
+
     private RenderFragment<CloudDataGridRow> RenderRow => row => @<text>
-        <div class="cloudgrid-row @RowClasses(row)" data-id="@row.Id" @attributes="row.Attributes">
+        <div class="cloudgrid-row @RowClasses(row)" style="@row.Style" data-id="@row.Id" @attributes="row.Attributes">
+
+          <div class="cloudgrid-rowmain" style="@row.Style">
 
             @if (AllowReordering)
             {
-                <div class="cloudgrid-draghandle"
+                <div class="cloudgrid-draghandle @UtilityPinnedClass" style="@UtilityPinnedStyle(0)"
                      title="Drag to re-arrange"
                      @onpointerdown="e => BeginRowDrag(row, e)"
                      @onpointerdown:preventDefault
@@ -143,7 +213,7 @@
 
             @if (AllowSelection)
             {
-                <div class="cloudgrid-check">
+                <div class="cloudgrid-check @UtilityPinnedClass" style="@UtilityPinnedStyle(AllowReordering ? 28 : 0)">
                     <input type="checkbox" checked="@IsRowSelected(row)" @onchange="() => ToggleRowAsync(row)" />
                 </div>
             }
@@ -170,6 +240,12 @@
                     }
                 </div>
             }
+          </div>
+
+          @if (HasRowNotes)
+          {
+              <div class="cloudgrid-rownote @row.NoteCssClass" style="@row.NoteStyle">@row.Note</div>
+          }
         </div>
     </text>;
 
@@ -243,19 +319,52 @@
     </text>;
 
     private RenderFragment<CloudDataGridRow> RowCells => row => @<text>
-        @for (int c = 0; c < row.Cells.Count; c++)
+        @for (int c = 0; c < Columns.Count; c++)
         {
-            object? cell = row.Cells[c];
-            bool isImage = c < Columns.Count && Columns[c].IsImage;
+            object? source = row.Cells.ElementAtOrDefault(c);
+            CloudDataGridCell? cell = source as CloudDataGridCell;
+            object? value = cell?.Value ?? source;
+            CloudDataGridColumn column = Columns[c];
+            CloudDataGridCellContext context = CellContext(row, column, c, cell, value, false);
 
-            <div class="cloudgrid-cell" style="width: @Px(GetColumnWidth(c))">
-                @if (isImage && cell is string imageUrl && !string.IsNullOrWhiteSpace(imageUrl))
+            <div class="cloudgrid-cell @CellClasses(column, cell)" style="@CellStyle(c, cell)" @attributes="cell?.Attributes">
+                @if (cell?.Template is not null)
+                {
+                    @cell.Template(context)
+                }
+                else if (column.CellTemplate is not null)
+                {
+                    @column.CellTemplate(context)
+                }
+                else if (column.IsImage && value is string imageUrl && !string.IsNullOrWhiteSpace(imageUrl))
                 {
                     <img src="@imageUrl" alt="" loading="lazy" />
                 }
                 else
                 {
-                    <span>@(cell ?? EmptyCellText)</span>
+                    <span>@(value ?? EmptyCellText)</span>
+                }
+            </div>
+        }
+    </text>;
+
+    private RenderFragment<CloudDataGridFooterRow> FooterCells => footerRow => @<text>
+        @for (int c = 0; c < Columns.Count; c++)
+        {
+            object? source = footerRow.Cells.ElementAtOrDefault(c);
+            CloudDataGridCell? cell = source as CloudDataGridCell;
+            object? value = cell?.Value ?? source;
+            CloudDataGridColumn column = Columns[c];
+            CloudDataGridCellContext context = CellContext(null, column, c, cell, value, true);
+
+            <div class="cloudgrid-cell @CellClasses(column, cell)" style="@CellStyle(c, cell)" @attributes="cell?.Attributes">
+                @if (cell?.Template is not null)
+                {
+                    @cell.Template(context)
+                }
+                else
+                {
+                    <span>@(value ?? string.Empty)</span>
                 }
             </div>
         }

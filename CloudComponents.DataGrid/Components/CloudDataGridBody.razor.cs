@@ -66,8 +66,28 @@ public partial class CloudDataGridBody
     /// <summary>Placeholder rendered for null cell values.</summary>
     [Parameter] public string EmptyCellText { get; set; } = "--";
 
+    [Parameter] public List<CloudDataGridFooterRow> ColumnFooterRows { get; set; } = [];
+
+    [Parameter] public bool FixedColumnFooter { get; set; } = true;
+
     /// <summary>Fixed row height in pixels. Overrides the <c>--cloudgrid-row-height</c> CSS variable.</summary>
     [Parameter] public double? RowHeight { get; set; }
+
+    [Parameter] public double RowNoteHeight { get; set; } = 24;
+
+    [Parameter] public bool ReserveRowNoteSpace { get; set; }
+
+    [Parameter] public bool ShowRowNotes { get; set; } = true;
+
+    [Parameter] public bool EnableRowCategories { get; set; } = true;
+
+    [Parameter] public bool AllowCategoryCollapse { get; set; } = true;
+
+    [Parameter] public HashSet<string> CollapsedCategories { get; set; } = new(StringComparer.Ordinal);
+
+    [Parameter] public EventCallback<HashSet<string>> CollapsedCategoriesChanged { get; set; }
+
+    [Parameter] public RenderFragment<CloudDataGridCategoryContext>? CategoryHeaderTemplate { get; set; }
 
     /// <summary>Number of body rows the grid is sized for.</summary>
     [Parameter] public int? RowsPerPage { get; set; }
@@ -298,9 +318,77 @@ public partial class CloudDataGridBody
             int index = _sortIndex.Value;
 
             return _sortDirection == CloudDataGridSortDirection.Ascending
-                ? Data.Rows.OrderBy(row => row.Cells.ElementAtOrDefault(index), CellComparer.Instance)
-                : Data.Rows.OrderByDescending(row => row.Cells.ElementAtOrDefault(index), CellComparer.Instance);
+                ? Data.Rows.OrderBy(row => CellValue(row.Cells.ElementAtOrDefault(index)), CellComparer.Instance)
+                : Data.Rows.OrderByDescending(row => CellValue(row.Cells.ElementAtOrDefault(index)), CellComparer.Instance);
         }
+    }
+
+    private List<CloudDataGridDisplayItem> DisplayItems
+    {
+        get
+        {
+            List<CloudDataGridRow> rows = [.. DisplayRows];
+
+            if (!EnableRowCategories || !rows.Any(row => !string.IsNullOrWhiteSpace(row.CategoryKey)))
+                return [.. rows.Select(CloudDataGridDisplayItem.ForRow)];
+
+            List<CloudDataGridDisplayItem> items = [];
+
+            foreach (IGrouping<string, CloudDataGridRow> group in rows.GroupBy(
+                row => row.CategoryKey ?? string.Empty,
+                StringComparer.Ordinal))
+            {
+                List<CloudDataGridRow> categoryRows = [.. group];
+
+                if (string.IsNullOrEmpty(group.Key))
+                {
+                    items.AddRange(categoryRows.Select(CloudDataGridDisplayItem.ForRow));
+                    continue;
+                }
+
+                string label = categoryRows.Select(row => row.CategoryLabel)
+                    .FirstOrDefault(value => !string.IsNullOrWhiteSpace(value)) ?? group.Key;
+                bool expanded = !CollapsedCategories.Contains(group.Key);
+                CloudDataGridCategoryContext context = new()
+                {
+                    Key = group.Key,
+                    Label = label,
+                    VisibleRowCount = categoryRows.Count,
+                    IsExpanded = expanded
+                };
+
+                items.Add(CloudDataGridDisplayItem.ForCategory(context));
+
+                if (expanded)
+                    items.AddRange(categoryRows.Select(CloudDataGridDisplayItem.ForRow));
+            }
+
+            return items;
+        }
+    }
+
+    private async Task ToggleCategoryAsync(CloudDataGridCategoryContext category)
+    {
+        if (!AllowCategoryCollapse)
+            return;
+
+        HashSet<string> updated = new(CollapsedCategories, StringComparer.Ordinal);
+
+        if (!updated.Add(category.Key))
+            updated.Remove(category.Key);
+
+        CollapsedCategories = updated;
+        await CollapsedCategoriesChanged.InvokeAsync(new HashSet<string>(updated, StringComparer.Ordinal));
+        await RefreshVirtualizeAsync();
+    }
+
+    private sealed class CloudDataGridDisplayItem
+    {
+        public CloudDataGridRow? Row { get; private init; }
+        public CloudDataGridCategoryContext? Category { get; private init; }
+
+        public static CloudDataGridDisplayItem ForRow(CloudDataGridRow row) => new() { Row = row };
+        public static CloudDataGridDisplayItem ForCategory(CloudDataGridCategoryContext category) => new() { Category = category };
     }
 
     private async Task SortByAsync(int columnIndex)
@@ -406,12 +494,17 @@ public partial class CloudDataGridBody
 
     #region Paging
 
-    private Virtualize<CloudDataGridRow>? _virtualize;
+    private Virtualize<CloudDataGridDisplayItem>? _virtualize;
     private bool _loadMorePending;
     private bool _loadExhausted;
     private (int Total, int Count, int Page) _dataSignature;
+    private (bool Categories, bool Notes, bool ReserveNotes, string Collapsed) _viewSignature;
 
-    private double EffectiveRowHeight => RowHeight ?? 43;
+    private double EffectiveDataRowHeight => RowHeight ?? 43;
+
+    private bool HasRowNotes => ShowRowNotes && (ReserveRowNoteSpace || (Data?.Rows.Any(row => !string.IsNullOrWhiteSpace(row.Note)) ?? false));
+
+    private double EffectiveRowHeight => EffectiveDataRowHeight + (HasRowNotes ? RowNoteHeight : 0);
 
     private List<CloudDataGridRow> LoadedRows => Data?.Rows ?? [];
 
@@ -449,9 +542,9 @@ public partial class CloudDataGridBody
     /// <summary>
     /// Items provider for <see cref="CloudDataGridPagingMode.InfiniteScroll"/>.
     /// </summary>
-    private async ValueTask<ItemsProviderResult<CloudDataGridRow>> ProvideRowsAsync(ItemsProviderRequest request)
+    private async ValueTask<ItemsProviderResult<CloudDataGridDisplayItem>> ProvideRowsAsync(ItemsProviderRequest request)
     {
-        while (request.StartIndex + request.Count > LoadedRows.Count && HasMoreRows)
+        while (request.StartIndex + request.Count > DisplayItems.Count && HasMoreRows)
         {
             int rowsBefore = LoadedRows.Count;
             await LoadMoreAsync();
@@ -460,20 +553,37 @@ public partial class CloudDataGridBody
                 break;
         }
 
-        List<CloudDataGridRow> rows = [.. DisplayRows];
-        int total = HasMoreRows ? Math.Max(Data?.Total ?? 0, rows.Count) : rows.Count;
+        List<CloudDataGridDisplayItem> items = DisplayItems;
+        int knownCategories = items.Count(item => item.Category != null);
+        int total = HasMoreRows
+            ? Math.Max((Data?.Total ?? 0) + knownCategories, items.Count)
+            : items.Count;
 
-        return new ItemsProviderResult<CloudDataGridRow>(rows.Skip(request.StartIndex).Take(request.Count), total);
+        return new ItemsProviderResult<CloudDataGridDisplayItem>(items.Skip(request.StartIndex).Take(request.Count), total);
     }
 
     protected override async Task OnParametersSetAsync()
     {
         (int, int, int) signature = (Data?.Total ?? 0, Data?.Rows.Count ?? 0, Data?.Page ?? 0);
+        (bool, bool, bool, string) viewSignature = (
+            EnableRowCategories,
+            ShowRowNotes,
+            ReserveRowNoteSpace,
+            string.Join('\u001F', CollapsedCategories.OrderBy(key => key, StringComparer.Ordinal)));
+        bool viewChanged = viewSignature != _viewSignature;
 
         if (signature != _dataSignature)
         {
             _dataSignature = signature;
             _loadExhausted = false;
+
+            if (!_loadMorePending)
+                await RefreshVirtualizeAsync();
+        }
+
+        if (viewChanged)
+        {
+            _viewSignature = viewSignature;
 
             if (!_loadMorePending)
                 await RefreshVirtualizeAsync();
@@ -488,11 +598,18 @@ public partial class CloudDataGridBody
     {
         List<string> classes = [];
 
-        if (Columns[columnIndex].Sortable)
+        CloudDataGridColumn column = Columns[columnIndex];
+
+        if (column.Sortable)
             classes.Add("_sortable");
 
         if (_sortIndex == columnIndex)
             classes.Add(_sortDirection == CloudDataGridSortDirection.Ascending ? "_sorted-ascending" : "_sorted-descending");
+
+        AddPinnedClass(classes, column.Pinned);
+
+        if (!string.IsNullOrWhiteSpace(column.HeaderCssClass))
+            classes.Add(column.HeaderCssClass);
 
         return string.Join(' ', classes);
     }
@@ -506,6 +623,12 @@ public partial class CloudDataGridBody
 
         if (IsRowDragging(row))
             classes.Add("_dragging");
+
+        if (HasRowNotes)
+            classes.Add("_with-note");
+
+        if (!string.IsNullOrWhiteSpace(row.CssClass))
+            classes.Add(row.CssClass);
 
         return string.Join(' ', classes);
     }
@@ -539,7 +662,7 @@ public partial class CloudDataGridBody
     /// </summary>
     private string? BodyStyle =>
         HeightMode == CloudDataGridHeightMode.RowHeight && RowsPerPage.HasValue
-            ? $"height: calc(var(--cloudgrid-row-height) * {RowsPerPage.Value})"
+            ? $"height: calc(var(--cloudgrid-item-height) * {RowsPerPage.Value})"
             : null;
 
     /// <summary>
@@ -555,6 +678,83 @@ public partial class CloudDataGridBody
             : null;
 
     private static string Px(double value) => value.ToString(CultureInfo.InvariantCulture) + "px";
+
+    private bool HasLeftPinnedColumns => Columns.Any(column => column.Pinned == CloudDataGridPinnedPosition.Left);
+
+    private string? UtilityPinnedClass => HasLeftPinnedColumns ? "_pinned-left _utility" : null;
+
+    private string? UtilityPinnedStyle(double left) => HasLeftPinnedColumns ? $"left: {Px(left)}" : null;
+
+    private string HeadCellStyle(int columnIndex) => JoinStyles(
+        $"width: {Px(GetColumnWidth(columnIndex))}",
+        Columns[columnIndex].HeaderStyle,
+        PinnedStyle(columnIndex));
+
+    private string CellStyle(int columnIndex, CloudDataGridCell? cell) => JoinStyles(
+        $"width: {Px(GetColumnWidth(columnIndex))}",
+        Columns[columnIndex].Style,
+        cell?.Style,
+        PinnedStyle(columnIndex));
+
+    private static string CellClasses(CloudDataGridColumn column, CloudDataGridCell? cell)
+    {
+        List<string> classes = [];
+        AddPinnedClass(classes, column.Pinned);
+        if (!string.IsNullOrWhiteSpace(column.CssClass)) classes.Add(column.CssClass);
+        if (!string.IsNullOrWhiteSpace(cell?.CssClass)) classes.Add(cell.CssClass);
+        return string.Join(' ', classes);
+    }
+
+    private static object? CellValue(object? cell) => cell is CloudDataGridCell richCell ? richCell.Value : cell;
+
+    private string? PinnedStyle(int columnIndex)
+    {
+        CloudDataGridPinnedPosition pinned = Columns[columnIndex].Pinned;
+
+        if (pinned == CloudDataGridPinnedPosition.Left)
+        {
+            double utilityWidth = (AllowReordering ? 28 : 0) + (AllowSelection ? 40 : 0);
+            double left = utilityWidth + Enumerable.Range(0, columnIndex)
+                .Where(index => Columns[index].Pinned == CloudDataGridPinnedPosition.Left)
+                .Sum(GetColumnWidth);
+            return $"left: {Px(left)}";
+        }
+
+        if (pinned == CloudDataGridPinnedPosition.Right)
+        {
+            double right = Enumerable.Range(columnIndex + 1, Columns.Count - columnIndex - 1)
+                .Where(index => Columns[index].Pinned == CloudDataGridPinnedPosition.Right)
+                .Sum(GetColumnWidth);
+            return $"right: {Px(right)}";
+        }
+
+        return null;
+    }
+
+    private static void AddPinnedClass(List<string> classes, CloudDataGridPinnedPosition pinned)
+    {
+        if (pinned == CloudDataGridPinnedPosition.Left) classes.Add("_pinned-left");
+        if (pinned == CloudDataGridPinnedPosition.Right) classes.Add("_pinned-right");
+    }
+
+    private static string JoinStyles(params string?[] styles) =>
+        string.Join("; ", styles.Where(style => !string.IsNullOrWhiteSpace(style)).Select(style => style!.Trim().TrimEnd(';')));
+
+    private static CloudDataGridCellContext CellContext(
+        CloudDataGridRow? row,
+        CloudDataGridColumn column,
+        int columnIndex,
+        CloudDataGridCell? cell,
+        object? value,
+        bool isFooter) => new()
+        {
+            Row = row,
+            Column = column,
+            ColumnIndex = columnIndex,
+            Cell = cell,
+            Value = value,
+            IsFooter = isFooter
+        };
 
     #endregion
 }

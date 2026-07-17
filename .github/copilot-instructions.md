@@ -26,7 +26,7 @@ See per-project READMEs for API details: [Grid](../CloudComponents.DataGrid/READ
 
 - **Build**: `dotnet build CloudComponents.sln`
 - **Pack**: `dotnet pack` → output in `NugetPackage/`
-- **LESS compilation**: Handled by Visual Studio's `compilerconfig.json` — do not run manually. The `.css` and `.min.css` files are generated artifacts.
+- **LESS compilation**: Handled by CloudMate. Always create or update `.less` sources and never hand-author `.css` or `.min.css` files. Agents must leave generated CSS unchanged and may let the developer run CloudMate later.
 
 ## Code Style
 

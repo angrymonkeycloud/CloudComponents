@@ -1,0 +1,86 @@
+.playground-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 18px;
+    align-items: start;
+}
+
+.playground-preview { min-width: 0; }
+.playground-gridhost { height: 650px; min-width: 0; }
+
+.playground-status {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.playground-status span {
+    padding: 3px 8px;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    color: var(--color-text-muted);
+    font-size: 11px;
+}
+
+.playground-options {
+    position: sticky;
+    top: 16px;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+    padding: 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+}
+
+.playground-optionshead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.playground-optionshead div { display: flex; flex-direction: column; }
+.playground-optionshead small { color: var(--color-text-muted); font-size: 11px; }
+.playground-optionshead button { border: 0; background: none; color: var(--color-accent); cursor: pointer; }
+
+.playground-options fieldset {
+    display: grid;
+    gap: 7px;
+    margin: 0 0 12px;
+    padding: 10px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+}
+
+.playground-options legend {
+    padding: 0 5px;
+    color: var(--color-text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.playground-option { display: flex; align-items: center; gap: 8px; font-size: 12.5px; cursor: pointer; }
+.playground-option input { width: 15px; height: 15px; }
+
+::deep .cloudgrid._playground-row-styling .playground-highsalary-row,
+::deep .cloudgrid._playground-row-styling .playground-highsalary-row .cloudgrid-rowmain {
+    background: linear-gradient(90deg, #fffbeb, #fff7ed);
+}
+
+::deep .cloudgrid._playground-cell-styling .playground-highlight-cell { color: #b45309; font-weight: 800; }
+::deep .cloudgrid .playground-department { color: #4f46e5; font-weight: 650; }
+::deep .cloudgrid .playground-total-label,
+::deep .cloudgrid .playground-total-value { background: #eef2ff; font-weight: 800; }
+::deep .cloudgrid .playground-total-value { color: #3730a3; }
+::deep .cloudgrid .playground-category-icon { color: #6366f1; }
+::deep .cloudgrid .playground-category-meta { margin-left: auto; color: var(--cloudgrid-color); opacity: .65; font-size: 11px; }
+
+@media (max-width: 1050px) {
+    .playground-layout { grid-template-columns: 1fr; }
+    .playground-options { position: static; max-height: none; grid-row: 1; }
+}

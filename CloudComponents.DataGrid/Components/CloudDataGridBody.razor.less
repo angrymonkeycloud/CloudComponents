@@ -13,6 +13,7 @@
         display: flex;
         flex-direction: column;
         overflow: auto;
+        container-type: inline-size;
         background-color: var(--cloudgrid-body-background, #fff);
         scrollbar-color: #505050 #fff;
         // No arbitrary max-height — Auto+MaxHeight is applied via inline style when needed.
@@ -23,7 +24,7 @@
         // flows or scrolls below. Sticky positioning keeps it at the top of the scroll viewport.
         position: sticky;
         top: 0;
-        z-index: 1;
+        z-index: 10;
         flex: none;
         display: flex;
         box-sizing: border-box;
@@ -155,12 +156,94 @@
         }
     }
 
+    &-columnfooters {
+        flex: none;
+        min-width: max-content;
+        background: var(--cloudgrid-footer-background, #f5f5f5);
+        border-top: 1px solid var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15));
+        z-index: 8;
+
+        &._fixed {
+            position: sticky;
+            bottom: 0;
+        }
+    }
+
+    &-columnfooter {
+        display: flex;
+        min-width: 100%;
+        height: var(--cloudgrid-row-height);
+        box-sizing: border-box;
+        font-weight: 600;
+    }
+
+    &-category {
+        display: flex;
+        box-sizing: border-box;
+        width: max-content;
+        min-width: 100%;
+        height: var(--cloudgrid-item-height);
+        border-bottom: 1px solid var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15));
+        background: var(--cloudgrid-category-background, #eef2f7);
+        color: var(--cloudgrid-category-color, var(--cloudgrid-color, #505050));
+
+        &content {
+            position: sticky;
+            left: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-sizing: border-box;
+            width: 100cqi;
+            height: 100%;
+            padding: 0 10px;
+            border: 0;
+            background: inherit;
+            color: inherit;
+            font: inherit;
+            text-align: left;
+        }
+
+        button&content {
+            cursor: pointer;
+
+            &:hover {
+                background: var(--cloudgrid-hover-background, #e8e8e8);
+            }
+        }
+
+        &chevron {
+            flex: none;
+            font-size: 9px;
+            transition: transform .15s ease;
+        }
+
+        &._expanded &chevron {
+            transform: rotate(90deg);
+        }
+
+        &count {
+            min-width: 20px;
+            padding: 1px 6px;
+            border-radius: 999px;
+            background: color-mix(in srgb, currentColor 10%, transparent);
+            font-size: 11px;
+            text-align: center;
+        }
+    }
+
     &-row {
         display: flex;
+        flex-direction: column;
         box-sizing: border-box;
         height: var(--cloudgrid-row-height);
         min-width: 100%;
+        background: var(--cloudgrid-body-background, #fff);
         border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+        &._with-note {
+            height: var(--cloudgrid-item-height);
+        }
 
         a {
             display: contents;
@@ -170,10 +253,20 @@
 
         &:hover {
             background-color: var(--cloudgrid-hover-background, #e8e8e8);
+
+            ._pinned-left,
+            ._pinned-right {
+                background-color: var(--cloudgrid-hover-background, #e8e8e8);
+            }
         }
 
         &._selected {
             background-color: var(--cloudgrid-selected-background, #f8f8f8);
+
+            ._pinned-left,
+            ._pinned-right {
+                background-color: var(--cloudgrid-selected-background, #f8f8f8);
+            }
         }
 
         &._dragging {
@@ -188,6 +281,35 @@
             opacity: 0.4;
             background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.05), transparent);
         }
+    }
+
+    &-rowmain {
+        display: flex;
+        flex: none;
+        height: var(--cloudgrid-row-height);
+        min-width: 100%;
+        background: inherit;
+
+        > a {
+            display: contents;
+        }
+    }
+
+    &-rownote {
+        position: sticky;
+        left: 0;
+        flex: none;
+        box-sizing: border-box;
+        width: 100cqi;
+        height: var(--cloudgrid-note-height);
+        padding: 2px 8px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        background: inherit;
+        font-size: 0.85em;
+        opacity: 0.75;
+        z-index: 7;
     }
 
     &-cell {
@@ -211,6 +333,35 @@
             height: calc(var(--cloudgrid-row-height) - 1px);
             max-width: 100%;
             object-fit: cover;
+        }
+    }
+
+    &-headcell,
+    &-cell,
+    &-check,
+    &-draghandle {
+        &._pinned-left,
+        &._pinned-right {
+            position: sticky;
+            z-index: 6;
+            background: inherit;
+            box-shadow: 1px 0 0 var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15));
+        }
+    }
+
+    &-headcell {
+        &._pinned-left,
+        &._pinned-right {
+            z-index: 12;
+            background-color: var(--cloudgrid-head-background, #f8f8f8);
+        }
+    }
+
+    &-columnfooter {
+        ._pinned-left,
+        ._pinned-right {
+            background-color: var(--cloudgrid-footer-background, #f5f5f5);
+            z-index: 9;
         }
     }
 

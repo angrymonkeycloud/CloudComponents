@@ -3,6 +3,11 @@
     {
       "input": "src/css/app.less",
       "output": "wwwroot/css/app.css"
+    },
+    {
+      "input": "Pages/Grid/PlaygroundPage.razor.less",
+      "output": "Pages/Grid/PlaygroundPage.razor.css",
+      "minify": false
     }
   ]
 }

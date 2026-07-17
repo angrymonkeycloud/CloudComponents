@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Components;
+
 namespace AngryMonkey.CloudComponents.DataGrid.Models;
 
 /// <summary>
@@ -34,4 +36,25 @@ public class CloudDataGridColumn
     /// rendered as thumbnails instead of text.
     /// </summary>
     public bool IsImage { get; set; }
+
+    /// <summary>Keeps the column visible at the left or right edge while scrolling horizontally.</summary>
+    public CloudDataGridPinnedPosition Pinned { get; set; }
+
+    /// <summary>CSS class applied to every body and column-footer cell in this column.</summary>
+    public string? CssClass { get; set; }
+
+    /// <summary>Inline CSS applied to every body and column-footer cell in this column.</summary>
+    public string? Style { get; set; }
+
+    /// <summary>CSS class applied only to this column's header cell.</summary>
+    public string? HeaderCssClass { get; set; }
+
+    /// <summary>Inline CSS applied only to this column's header cell.</summary>
+    public string? HeaderStyle { get; set; }
+
+    /// <summary>
+    /// Optional Razor template for body cells. The context exposes the raw value, row,
+    /// column and cell-level metadata, so a component can receive <c>context.Value</c>.
+    /// </summary>
+    public RenderFragment<CloudDataGridCellContext>? CellTemplate { get; set; }
 }

@@ -191,7 +191,17 @@ Return a `CloudDataGridDataResult` with `Rows`, `Page`, `PageSize`, `Total`, and
 | `LoadingText` | `string` | `retrieving data...` | Loading status text. |
 | `SearchingText` | `string` | `searching...` | Searching status text. |
 | `EmptyCellText` | `string` | `--` | Placeholder for null/empty cells. |
+| `ColumnFooterRows` | `List<CloudDataGridFooterRow>` | `[]` | Summary rows aligned with the data columns. |
+| `FixedColumnFooter` | `bool` | `true` | Keeps column summary rows visible at the bottom of the table viewport. |
 | `RowHeight` | `double?` | `null` | Overrides `--cloudgrid-row-height` in px. |
+| `RowNoteHeight` | `double` | `24` | Fixed note-line height used by virtualization. |
+| `ReserveRowNoteSpace` | `bool` | `false` | Reserves note space before later infinite-scroll pages with notes are loaded. |
+| `ShowRowNotes` | `bool` | `true` | Shows or hides notes supplied by rows. |
+| `EnableRowCategories` | `bool` | `true` | Groups rows that provide `CategoryKey`. |
+| `AllowCategoryCollapse` | `bool` | `true` | Lets users collapse and expand category headers. |
+| `CollapsedCategories` | `HashSet<string>?` | `null` | Collapsed category keys; supports `@bind-CollapsedCategories`. |
+| `CollapsedCategoriesChanged` | `EventCallback<HashSet<string>>` | — | Raised when category expansion changes. |
+| `CategoryHeaderTemplate` | `RenderFragment<CloudDataGridCategoryContext>?` | `null` | Custom category header content. |
 | `RowsPerPage` | `int?` | `null` | Desired body rows in viewport and page size sent to provider. |
 | `HeightMode` | `CloudDataGridHeightMode` | `FullHeight` | How the grid is sized vertically: `FullHeight` (default, fills parent), `RowHeight` (fixed to `RowsPerPage` rows), or `Auto` (grows with content, optionally capped by `MaxHeight`). |
 | `MaxHeight` | `double?` | `null` | Maximum height in pixels when `HeightMode` is `Auto`. Ignored for other modes. |
@@ -222,8 +232,16 @@ Return a `CloudDataGridDataResult` with `Rows`, `Page`, `PageSize`, `Total`, and
 
 - `CloudDataGridColumn`
   - `Label`, `Key`, `Width`, `MinWidth`, `Sortable`, `Resizable`, `IsImage`
+  - `Pinned` (`None`, `Left`, `Right`), `CssClass`, `Style`, `HeaderCssClass`, `HeaderStyle`
+  - `CellTemplate` (`RenderFragment<CloudDataGridCellContext>`) for custom Razor components
 - `CloudDataGridRow`
-  - `Id`, `Link`, `Cells`, `Attributes`
+  - `Id`, `Link`, `Cells`, `Attributes`, `CssClass`, `Style`
+  - `Note`, `NoteCssClass`, `NoteStyle` for a viewport-anchored line beneath the row
+  - `CategoryKey`, `CategoryLabel` for collapsible grouping
+- `CloudDataGridCell`
+  - Optional wrapper around a value with `CssClass`, `Style`, `Attributes`, and a per-cell `Template`
+- `CloudDataGridFooterRow`
+  - Column-aligned footer `Cells`, plus row-level styling and attributes
 - `CloudDataGridDataRequest`
   - `Page`, `PageSize`, `Search`, `Sort`, `IsAppend`, `Total`
 - `CloudDataGridDataResult`
@@ -268,6 +286,84 @@ Return a `CloudDataGridDataResult` with `Rows`, `Page`, `PageSize`, `Total`, and
 - Also expects append behavior
 
 In append modes, ensure your `DataProvider` returns incremented `Page` and updated `Total`.
+
+---
+
+## Pinning, styling, templates, totals, and row notes
+
+Plain values in `CloudDataGridRow.Cells` remain supported. Wrap only the cells that need individual customization:
+
+```razor
+<CloudDataGrid Columns="_columns"
+               DataProvider="LoadAsync"
+               PagingMode="CloudDataGridPagingMode.InfiniteScroll"
+               ReserveRowNoteSpace="true"
+               ColumnFooterRows="_totals" />
+
+@code {
+    private List<CloudDataGridColumn> _columns =
+    [
+        new() { Label = "Name", Pinned = CloudDataGridPinnedPosition.Left },
+        new() { Label = "Amount", Pinned = CloudDataGridPinnedPosition.Right },
+        new() { Label = "Status", CellTemplate = StatusTemplate }
+    ];
+
+    private RenderFragment<CloudDataGridCellContext> StatusTemplate => context =>
+        @<StatusBadge Value="@(context.Value is true)" />;
+
+    private List<CloudDataGridFooterRow> _totals =
+    [
+        new() { Cells = ["Total", new CloudDataGridCell { Value = 1234, Style = "font-weight:700" }] }
+    ];
+
+    private CloudDataGridRow ToRow(Order order) => new()
+    {
+        Id = order.Id,
+        CssClass = order.IsLate ? "late" : null,
+        Style = order.IsPriority ? "background:#fff7ed" : null,
+        Note = order.Note,
+        Cells =
+        [
+            order.Name,
+            new CloudDataGridCell { Value = order.Amount, Style = "color:#166534" },
+            order.IsActive
+        ]
+    };
+}
+```
+
+Column styles are defaults; a `CloudDataGridCell` style is appended afterward and can override them. The row note uses a fixed height so Blazor's virtualizer can calculate exact item positions. For infinite data where the first page has no notes but later pages might, set `ReserveRowNoteSpace="true"`.
+
+### Collapsible row categories
+
+Assign the same stable key to related rows. The grid inserts category headers into the same virtualized item stream as data rows:
+
+```razor
+<CloudDataGrid DataProvider="LoadAsync"
+               EnableRowCategories="true"
+               AllowCategoryCollapse="true"
+               @bind-CollapsedCategories="_collapsed"
+               CategoryHeaderTemplate="CategoryHeader" />
+
+@code {
+    private HashSet<string> _collapsed = [];
+
+    private CloudDataGridRow ToRow(Employee employee) => new()
+    {
+        Id = employee.Id,
+        CategoryKey = employee.DepartmentId,
+        CategoryLabel = employee.DepartmentName,
+        Cells = [employee.Name, employee.Email]
+    };
+
+    private RenderFragment<CloudDataGridCategoryContext> CategoryHeader => category => @<text>
+        <strong>@category.Label</strong>
+        <span>@category.VisibleRowCount loaded</span>
+    </text>;
+}
+```
+
+`EnableRowCategories` can be switched at runtime. `CollapsedCategories` uses stable keys, so expansion state survives data refreshes and paging.
 
 ---
 
