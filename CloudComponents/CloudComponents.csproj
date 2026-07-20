@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+﻿
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
@@ -18,7 +18,7 @@
 
     <AssemblyVersion>$(PackageVersion)</AssemblyVersion>
     <FileVersion>$(PackageVersion)</FileVersion>
-    <Version>4.2.0</Version>
+    <Version>4.2.1</Version>
     <PackageIcon>amc-logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageOutputPath>..\NugetPackage\</PackageOutputPath>

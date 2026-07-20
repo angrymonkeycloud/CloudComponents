@@ -25,8 +25,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px;
-  padding: 6px 8px;
+  gap: 7px;
+  padding: 7px 9px;
   background: var(--cloudeditor-toolbar-bg, #fafafa);
   border-bottom: 1px solid var(--cloudeditor-border-color, #d5d5d5);
   border-radius: var(--cloudeditor-radius, 8px) var(--cloudeditor-radius, 8px) 0 0;
@@ -34,11 +34,11 @@
 .cloudeditor-group {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
 }
 .cloudeditor-group + .cloudeditor-group {
-  padding-left: 6px;
-  border-left: 1px solid var(--cloudeditor-border-color, #e0e0e0);
+  padding-left: 0;
+  border-left: none;
 }
 .cloudeditor-spacer {
   flex: 1;
@@ -47,39 +47,45 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   padding: 0;
   background: transparent;
-  border: none;
-  border-radius: 6px;
+  border: 1px solid transparent;
+  border-radius: 5px;
   color: inherit;
   cursor: pointer;
 }
 .cloudeditor-btn:hover:not(:disabled) {
-  background: var(--cloudeditor-hover-bg, rgba(0, 0, 0, 0.07));
+  background: var(--cloudeditor-hover-bg, rgba(0, 0, 0, 0.055));
+  border-color: color-mix(in srgb, var(--cloudeditor-border-color, #d5d5d5) 75%, transparent);
 }
 .cloudeditor-btn._active {
   background: var(--cloudeditor-active-bg, rgba(0, 120, 212, 0.12));
+  border-color: color-mix(in srgb, var(--cloudeditor-accent, #0078d4) 30%, transparent);
   color: var(--cloudeditor-accent, #0078d4);
+}
+.cloudeditor-btn:focus-visible {
+  outline: 2px solid var(--cloudeditor-accent, #0078d4);
+  outline-offset: 1px;
 }
 .cloudeditor-btn:disabled {
   opacity: 0.4;
   cursor: default;
 }
 .cloudeditor-btn > svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   display: block;
 }
 .cloudeditor-select {
-  height: 30px;
-  padding: 0 8px;
-  font-size: 13px;
+  height: 26px;
+  padding: 0 7px;
+  font-size: 12px;
   color: inherit;
   background: var(--cloudeditor-bg, #fff);
   border: 1px solid var(--cloudeditor-border-color, #d5d5d5);
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
 }
 .cloudeditor-select:disabled {
@@ -230,7 +236,7 @@
 .cloudeditor-content ::deep figure.cloudeditor-embed {
   position: relative;
   margin: 0.8em 0;
-  aspect-ratio: 1.77777778;
+  aspect-ratio: 16 / 9;
   max-width: 720px;
 }
 .cloudeditor-content ::deep figure.cloudeditor-embed iframe,
@@ -260,24 +266,37 @@
   background: var(--cloudeditor-code-bg, #f9f9f9);
   border: none;
   outline: none;
-  resize: vertical;
+  resize: none;
   box-sizing: border-box;
+}
+.cloudeditor-code:focus {
+  box-shadow: inset 0 0 0 1px var(--cloudeditor-accent, #0078d4);
 }
 .cloudeditor-codebar {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 8px 12px;
+  min-height: 45px;
+  padding: 7px 10px;
   border-top: 1px solid var(--cloudeditor-border-color, #d5d5d5);
+  background: var(--cloudeditor-toolbar-bg, #fafafa);
 }
-.cloudeditor-messages {
+.cloudeditor-codestatus {
   display: flex;
-  flex-direction: column;
-  gap: 3px;
-  max-height: 110px;
-  overflow-y: auto;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
   font-size: 12px;
+}
+.cloudeditor-message {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
 }
 .cloudeditor-message._error {
   color: var(--cloudeditor-error, #d13438);
@@ -296,18 +315,31 @@
 .cloudeditor-action {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  font-size: 13px;
+  gap: 5px;
+  min-height: 28px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
   color: #fff;
   background: var(--cloudeditor-accent, #0078d4);
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
 }
 .cloudeditor-action > svg {
   width: 14px;
   height: 14px;
+}
+.cloudeditor-action > kbd {
+  margin-left: 2px;
+  padding: 1px 4px;
+  color: inherit;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 400;
+  background: rgba(255, 255, 255, 0.16);
+  border: 0;
+  border-radius: 3px;
 }
 .cloudeditor-action:hover:not(:disabled) {
   filter: brightness(1.08);
@@ -316,10 +348,86 @@
   opacity: 0.45;
   cursor: default;
 }
+.cloudeditor-action:focus-visible {
+  outline: 2px solid var(--cloudeditor-accent, #0078d4);
+  outline-offset: 1px;
+}
 .cloudeditor-action._secondary {
   color: inherit;
   background: transparent;
   border-color: var(--cloudeditor-border-color, #d5d5d5);
+}
+@media (max-width: 560px) {
+  .cloudeditor-codebar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .cloudeditor-codeactions {
+    align-self: flex-end;
+  }
+  .cloudeditor-action > kbd {
+    display: none;
+  }
+}
+.cloudeditor-messagetext {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cloudeditor-issuecount,
+.cloudeditor-issuetoggle {
+  flex-shrink: 0;
+  padding: 3px 7px;
+  color: var(--cloudeditor-accent, #0078d4);
+  font: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.cloudeditor-issuecount:hover,
+.cloudeditor-issuetoggle:hover,
+.cloudeditor-issuecount._active,
+.cloudeditor-issuetoggle._active {
+  background: var(--cloudeditor-active-bg, rgba(0, 120, 212, 0.1));
+}
+.cloudeditor-issuepanel {
+  display: flex;
+  flex: 0 1 38%;
+  flex-direction: column;
+  min-height: 130px;
+  max-height: 240px;
+  background: var(--cloudeditor-bg, #fff);
+  border-top: 1px solid var(--cloudeditor-border-color, #d5d5d5);
+}
+.cloudeditor-issuehead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 12px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--cloudeditor-border-color, #e5e5e5);
+}
+.cloudeditor-issuelist {
+  overflow-y: auto;
+}
+.cloudeditor-issue {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 8px;
+  padding: 7px 12px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--cloudeditor-border-color, #ededed);
+}
+.cloudeditor-issue._error {
+  color: var(--cloudeditor-error, #d13438);
+}
+.cloudeditor-issue._warning {
+  color: var(--cloudeditor-warning, #b05a00);
+}
+.cloudeditor-issueposition {
+  color: var(--cloudeditor-muted, #777);
+  font-family: Consolas, Monaco, 'Courier New', monospace;
 }
 .cloudeditor-overlay {
   position: fixed;
@@ -333,7 +441,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1020;
-  width: 430px;
+  width: calc(min(430px, calc(100vw - 32px)));
   background: var(--cloudeditor-bg, #fff);
   border-radius: 10px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);

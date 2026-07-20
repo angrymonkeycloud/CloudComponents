@@ -5,7 +5,7 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>4.2.0</Version>
+		<Version>4.2.1</Version>
 		<Authors>Angry Monkey</Authors>
 		<Company>Angry Monkey</Company>
 		<AssemblyName>AngryMonkey.CloudComponents.Maps</AssemblyName>
@@ -22,7 +22,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AngryMonkey.Cloud.Geography" Version="2.8.0" />
+		<PackageReference Include="AngryMonkey.CloudGeography" Version="2.8.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.8" />
 	</ItemGroup>
 

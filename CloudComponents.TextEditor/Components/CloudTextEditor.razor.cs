@@ -118,25 +118,36 @@ public partial class CloudTextEditor : ComponentBase, IAsyncDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender)
-            return;
-
-        _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath);
-        _selfRef = DotNetObjectReference.Create(this);
-
-        _controller = await _module.InvokeAsync<IJSObjectReference>("create", _selfRef, _contentElement, new
+        if (firstRender)
         {
-            debounceMs = Math.Max(0, DebounceMilliseconds),
-            sanitizePaste = SanitizePaste,
-            allowIframes = true
-        });
+            _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath);
+            _selfRef = DotNetObjectReference.Create(this);
 
-        await _controller.InvokeVoidAsync("setHtml", Value ?? string.Empty);
-        _lastSyncedValue = Value;
-        _appliedReadOnly = ReadOnly;
+            _controller = await _module.InvokeAsync<IJSObjectReference>("create", _selfRef, _contentElement, new
+            {
+                debounceMs = Math.Max(0, DebounceMilliseconds),
+                sanitizePaste = SanitizePaste,
+                allowIframes = true
+            });
 
-        if (ReadOnly)
-            await _controller.InvokeVoidAsync("setReadOnly", true);
+            await _controller.InvokeVoidAsync("setHtml", Value ?? string.Empty);
+            _lastSyncedValue = Value;
+            _appliedReadOnly = ReadOnly;
+
+            if (ReadOnly)
+                await _controller.InvokeVoidAsync("setReadOnly", true);
+        }
+
+        if (_focusCodeView)
+        {
+            _focusCodeView = false;
+            await _codeViewElement.FocusAsync();
+        }
+        else if (_focusDesignView && _controller is not null)
+        {
+            _focusDesignView = false;
+            await _controller.InvokeVoidAsync("focus");
+        }
     }
 
     protected override async Task OnParametersSetAsync()

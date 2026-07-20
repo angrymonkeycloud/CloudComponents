@@ -181,38 +181,60 @@
 
         @if (_isCodeView)
         {
-            <div class="cloudeditor-codeview">
+            <div class="cloudeditor-codeview" style="@ContentStyle">
                 <textarea class="cloudeditor-code"
+                          @ref="_codeViewElement"
                           spellcheck="false"
                           placeholder="HTML source"
-                          style="@ContentStyle"
+                          aria-label="HTML source"
                           @bind="_codeViewText"
                           @bind:event="oninput"
-                          @bind:after="HandleCodeViewInputAsync"></textarea>
+                          @bind:after="HandleCodeViewInputAsync"
+                          @onkeydown="HandleCodeViewKeyDownAsync"></textarea>
 
-                <div class="cloudeditor-codebar">
-                    <div class="cloudeditor-messages">
-                        @if (_codeValidation is not null)
-                        {
-                            @foreach (CloudTextEditorHtmlValidationMessage message in _codeValidation.Messages)
+                @if (_showCodeIssues && CodeIssueCount > 0)
+                {
+                    <div class="cloudeditor-issuepanel" role="region" aria-label="HTML issues">
+                        <div class="cloudeditor-issuehead">
+                            <strong>Issues</strong>
+                            <button type="button" class="cloudeditor-issuetoggle" @onclick="ToggleCodeIssues">Back to source</button>
+                        </div>
+                        <div class="cloudeditor-issuelist">
+                            @foreach (CloudTextEditorHtmlValidationMessage message in _codeValidation!.Messages)
                             {
-                                <div class="cloudeditor-message @(message.Severity == CloudTextEditorValidationSeverity.Error ? "_error" : "_warning")">
-                                    <strong>@(message.Severity == CloudTextEditorValidationSeverity.Error ? "Error" : "Warning")</strong>
-                                    (@message.Line,@message.Column): @message.Message
+                                <div class="cloudeditor-issue @(GetCodeIssueClass(message))">
+                                    <span class="cloudeditor-issueposition">@message.Line:@message.Column</span>
+                                    <span>@message.Message</span>
                                 </div>
                             }
+                        </div>
+                    </div>
+                }
 
-                            @if (_codeValidation.Messages.Count == 0)
-                            {
-                                <div class="cloudeditor-message _ok">Valid HTML</div>
-                            }
+                <div class="cloudeditor-codebar">
+                    <div class="cloudeditor-codestatus" role="status" aria-live="polite">
+                        @if (FirstCodeIssue is { } firstIssue)
+                        {
+                            <div class="cloudeditor-message @(GetCodeIssueClass(firstIssue))" title="@firstIssue.Message">
+                                <strong>@(firstIssue.Severity == CloudTextEditorValidationSeverity.Error ? "Error" : "Warning")</strong>
+                                <span>@firstIssue.Line:@firstIssue.Column</span>
+                                <span class="cloudeditor-messagetext">@firstIssue.Message</span>
+                            </div>
+                            <button type="button"
+                                    class="cloudeditor-issuecount @(_showCodeIssues ? "_active" : null)"
+                                    aria-expanded="@_showCodeIssues"
+                                    @onclick="ToggleCodeIssues">@CodeIssueCount @(CodeIssueCount == 1 ? "issue" : "issues")</button>
+                        }
+                        else
+                        {
+                            <div class="cloudeditor-message _ok">Valid HTML</div>
                         }
                     </div>
 
                     <div class="cloudeditor-codeactions">
                         <button type="button" class="cloudeditor-action _secondary" @onclick="CancelCodeViewAsync">Cancel</button>
                         <button type="button" class="cloudeditor-action" disabled="@(_codeValidation?.IsValid != true)" @onclick="ApplyCodeViewAsync">
-                            <EditorCheckIcon /> Apply
+                            <EditorCheckIcon /> Apply <kbd>Ctrl + Enter</kbd>
                         </button>
                     </div>
                 </div>

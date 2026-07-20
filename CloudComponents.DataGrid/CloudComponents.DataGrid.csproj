@@ -15,7 +15,7 @@
     <Authors>Angry Monkey</Authors>
     <Company>Angry Monkey</Company>
     <PackageProjectUrl>https://www.angrymonkeycloud.com/</PackageProjectUrl>
-    <Version>4.2.0</Version>
+    <Version>4.2.1</Version>
     <AssemblyVersion>$(PackageVersion)</AssemblyVersion>
     <FileVersion>$(PackageVersion)</FileVersion>
     <PackageOutputPath>..\NugetPackage\</PackageOutputPath>
