@@ -7,7 +7,7 @@
 		<Nullable>enable</Nullable>
 		<Authors>Angry Monkey</Authors>
 		<Company>Angry Monkey</Company>
-		<Version>4.2.1</Version>
+		<Version>4.2.2</Version>
 		<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
 		<FileVersion>$(PackageVersion)</FileVersion>
 		<PackageIcon>amc-logo.png</PackageIcon>
@@ -15,8 +15,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AngryMonkey.CloudMate" Version="1.3.4" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.6" />
+		<PackageReference Include="AngryMonkey.CloudMate" Version="1.3.6" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.10" />
 	</ItemGroup>
 
 	<ItemGroup>

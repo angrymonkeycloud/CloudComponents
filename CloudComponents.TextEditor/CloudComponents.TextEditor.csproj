@@ -20,7 +20,7 @@
 		<PackageProjectUrl>https://www.angrymonkeycloud.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/angrymonkeycloud/CloudComponents</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<Version>4.2.1</Version>
+		<Version>4.2.2</Version>
 		<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
 		<FileVersion>$(PackageVersion)</FileVersion>
 		<PackageOutputPath>..\NugetPackage\</PackageOutputPath>
@@ -34,7 +34,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.8" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.10" />
 	</ItemGroup>
 
 	<ItemGroup>
