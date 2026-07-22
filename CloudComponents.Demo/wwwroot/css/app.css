@@ -512,7 +512,7 @@ select.input {
 .player-wrapper {
   border-radius: var(--radius);
   overflow: hidden;
-  aspect-ratio: 1.77777778;
+  aspect-ratio: 16 / 9;
   background: #000;
 }
 .controls-bar {
