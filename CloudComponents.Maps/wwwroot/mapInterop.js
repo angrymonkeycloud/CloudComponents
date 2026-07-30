@@ -122,6 +122,9 @@ class AzureMapController {
         this._lockBounds = null;
         this._lockDataSource = null;
         this._lastAllowedCenter = null;
+        this._allowZoomCenterChange = false;
+        this._intentionalCenterChangeTimer = null;
+        this._centerPinMoveRequested = true;
         this._trafficFlow = !!options.showTrafficFlow;
         this._trafficIncidents = !!options.showTrafficIncidents;
         this._addTrigger = options.addMarkerTrigger || 'double';   // 'disabled' | 'single' | 'double'
@@ -226,11 +229,16 @@ class AzureMapController {
         // runtime via setAddMarkerTrigger() works without recreating the map;
         // _firePan itself no-ops unless this._addTrigger is currently 'center'.
         let _isZooming = false;
-        this._lastAllowedCenter = this._map.getCamera().center; // [lng, lat]
+        let _isZoomSettling = false;
+        let _zoomSettleTimer = null;
+        let _zoomAnchorCenter = null;
+        const initialCenter = this._map.getCamera().center;
+        this._lastAllowedCenter = initialCenter ? [initialCenter[0], initialCenter[1]] : null;
 
         this._firePan = () => {
             if (this._addTrigger !== 'center') return; // only active in center-pin mode
-            if (_isZooming) return;
+            if (!this._centerPinMoveRequested && !this._allowZoomCenterChange) return;
+            if ((_isZooming || _isZoomSettling) && !this._allowZoomCenterChange) return;
             const c = this._map.getCamera().center;   // [lng, lat]
             if (!c) return;
 
@@ -244,16 +252,56 @@ class AzureMapController {
                     this._map.setCamera({ center: revertTo, type: 'ease', duration: 200 });
                 }
                 this._dotNetRef?.invokeMethodAsync('NotifyLocationLockRejectedAsync', c[1], c[0]);
+                this._centerPinMoveRequested = false;
+                this._finishIntentionalCenterChange();
                 return;
             }
 
-            this._lastAllowedCenter = c;
+            this._lastAllowedCenter = [c[0], c[1]];
             this._dotNetRef?.invokeMethodAsync('NotifyCenterPinChangedAsync', c[1], c[0]);
+            this._centerPinMoveRequested = false;
+            this._finishIntentionalCenterChange();
         };
 
-        // Track zoom start/end so we can suppress pan events during zoom
-        this._map.events.add('zoomstart', () => { _isZooming = true; });
-        this._map.events.add('zoomend', () => { _isZooming = false; });
+        // A selected coordinate may change only after a real map pan. Zooming,
+        // including an attempted zoom beyond the minimum or maximum, can still
+        // raise moveend and must never be interpreted as a new pin location.
+        this._map.events.add('dragstart', () => {
+            if (this._addTrigger === 'center')
+                this._centerPinMoveRequested = true;
+        });
+
+        // Preserve the exact selected coordinate through user zooms. Azure Maps
+        // can slightly shift the camera center during zoom projection/rounding,
+        // so restore the last reported pin coordinate when zooming finishes.
+        // Programmatic search/restore/location moves opt out because they are
+        // intentionally changing both the center and (sometimes) the zoom.
+        this._map.events.add('zoomstart', () => {
+            clearTimeout(_zoomSettleTimer);
+            _isZoomSettling = false;
+            _isZooming = true;
+            _zoomAnchorCenter = this._addTrigger === 'center' && !this._allowZoomCenterChange
+                && this._lastAllowedCenter
+                ? [this._lastAllowedCenter[0], this._lastAllowedCenter[1]]
+                : null;
+        });
+        this._map.events.add('zoomend', () => {
+            _isZooming = false;
+            _isZoomSettling = true;
+
+            if (_zoomAnchorCenter && !this._allowZoomCenterChange) {
+                this._map.setCamera({
+                    center: [_zoomAnchorCenter[0], _zoomAnchorCenter[1]],
+                    type: 'jump'
+                });
+            }
+            _zoomAnchorCenter = null;
+
+            clearTimeout(_zoomSettleTimer);
+            _zoomSettleTimer = setTimeout(() => {
+                _isZoomSettling = false;
+            }, 50);
+        });
 
         // 'moveend' fires after ANY settled camera change — drag, search
         // fly-to (setBounds/setCenter), "pin my location", etc. — so the
@@ -972,10 +1020,14 @@ class AzureMapController {
 
         // Re-emit immediately so switching into center-pin mode at runtime notifies
         // .NET of the current pin position without waiting for the next camera move.
-        if (this._addTrigger === 'center') this._firePan?.();
+        if (this._addTrigger === 'center') {
+            this._centerPinMoveRequested = true;
+            this._firePan?.();
+        }
     }
 
     setCenter(lat, lng, zoom) {
+        this._beginIntentionalCenterChange();
         const cam = { center: [lng, lat] };
         if (zoom != null) cam.zoom = zoom;
         this._map.setCamera(cam);
@@ -1038,6 +1090,7 @@ class AzureMapController {
 
     setBounds(south, west, north, east, paddingPx) {
         try {
+            this._beginIntentionalCenterChange();
             this._map.setCamera({
                 bounds: [west, south, east, north],
                 padding: paddingPx ?? 40
@@ -1047,10 +1100,26 @@ class AzureMapController {
 
     showCurrentLocation(lat, lng) {
         this._setCurrentLocation(lat, lng);
+        this._beginIntentionalCenterChange();
         this._map.setCamera({ center: [lng, lat], zoom: 15 });
     }
 
+    _beginIntentionalCenterChange() {
+        this._allowZoomCenterChange = true;
+        clearTimeout(this._intentionalCenterChangeTimer);
+        this._intentionalCenterChangeTimer = setTimeout(() => {
+            this._allowZoomCenterChange = false;
+        }, 5000);
+    }
+
+    _finishIntentionalCenterChange() {
+        this._allowZoomCenterChange = false;
+        clearTimeout(this._intentionalCenterChangeTimer);
+        this._intentionalCenterChangeTimer = null;
+    }
+
     dispose() {
+        clearTimeout(this._intentionalCenterChangeTimer);
         this.clearMarkers();
         this.clearRegions();
         this.clearLocationLock();

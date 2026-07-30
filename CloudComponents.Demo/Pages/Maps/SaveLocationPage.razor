@@ -27,6 +27,8 @@
                           Width="100%"
                           SubscriptionKey="@GetKey()"
                           InitialView="_initialView"
+                          MinZoom="2"
+                          MaxZoom="24"
                           Style="MapStyle.Road"
                           ShowSearchBox="true"
                           ShowCurrentLocationButton="true"
@@ -114,7 +116,9 @@
 
     private readonly string _usageSnippet =
         """
-<AzureMap ScrollZoomInteraction="false"
+<AzureMap MinZoom="2"
+          MaxZoom="24"
+          ScrollZoomInteraction="false"
           AddMarkerTrigger="MarkerAddTrigger.CenterPin"
           OnCenterPinChanged="HandleCenterPinChanged"
           @ref="_map" />
