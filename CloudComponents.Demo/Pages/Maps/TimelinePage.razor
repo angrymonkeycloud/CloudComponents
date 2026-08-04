@@ -1,0 +1,288 @@
+@page "/maps/timeline"
+@inject IOptions<AzureMapsOptions> Options
+@inject AzureMapsConfigurationService ConfigService
+@inject SampleTrackingService TrackingService
+
+<PageTitle>CloudMaps — Timeline History</PageTitle>
+
+<div class="page-header">
+    <h1>Timeline History</h1>
+    <p>
+        Pass a timeline of timestamped positions to the map and it renders the whole journey: a route line
+        with direction arrows, marked start and end, named places, and raw GPS fixes that stack into
+        counted clusters when zoomed out and break apart as you zoom in. Click anything for its details.
+    </p>
+</div>
+
+<MapsKeyGuard>
+<DemoResultCodeTabs>
+    <ResultContent>
+        <div class="card">
+            <h2 class="card-title">Timeline Filter</h2>
+            <div class="controls-grid-3" style="margin-bottom: 8px;">
+                <div>
+                    <label class="field-label">Date:</label>
+                    <input type="date" class="input" value="@_date.ToString("yyyy-MM-dd")" @onchange="HandleDateChanged" />
+                </div>
+                <div>
+                    <label class="field-label">From: <strong>@FormatHour(_startHour)</strong></label>
+                    <input type="range" min="0" max="24" step="1" @bind="_startHour" @bind:event="oninput" @bind:after="RebuildTimeline" style="width: 100%;" />
+                </div>
+                <div>
+                    <label class="field-label">To: <strong>@FormatHour(_endHour)</strong></label>
+                    <input type="range" min="0" max="24" step="1" @bind="_endHour" @bind:event="oninput" @bind:after="RebuildTimeline" style="width: 100%;" />
+                </div>
+            </div>
+            <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">
+                Changing the date loads that day's history; the time range narrows which part of the day is shown.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🗺 Timeline Map</h2>
+            <div class="map-host">
+                <AzureMap Height="520px"
+                          Width="100%"
+                          SubscriptionKey="@GetKey()"
+                          InitialView="_initialView"
+                          Style="MapStyle.Road"
+                          ScrollZoomInteraction="true"
+                          ShowCurrentLocationButton="false"
+                          Timelines="_timelines"
+                          OnTimelinePointClick="HandlePointClick" />
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 14px 22px; margin-top: 12px; font-size: 12px; color: var(--text-secondary);">
+                <span style="display:flex;align-items:center;gap:7px;">
+                    <span style="width:15px;height:15px;border-radius:50%;background:#107c10;border:2px solid #fff;box-shadow:0 0 0 1px #ccc;"></span>
+                    Start
+                </span>
+                <span style="display:flex;align-items:center;gap:7px;">
+                    <span style="width:15px;height:15px;border-radius:50%;background:#d13438;border:2px solid #fff;box-shadow:0 0 0 1px #ccc;"></span>
+                    End
+                </span>
+                <span style="display:flex;align-items:center;gap:7px;">
+                    <span style="width:13px;height:13px;border-radius:50%;background:#0078d4;border:3px solid #fff;box-shadow:0 0 0 1px #ccc;"></span>
+                    Named place
+                </span>
+                <span style="display:flex;align-items:center;gap:7px;">
+                    <span style="width:7px;height:7px;border-radius:50%;background:#0078d4;border:1.5px solid #fff;box-shadow:0 0 0 1px #ccc;"></span>
+                    GPS fix
+                </span>
+                <span style="display:flex;align-items:center;gap:7px;">
+                    <span style="width:20px;height:20px;border-radius:50%;background:#0078d4;color:#fff;border:2px solid #fff;box-shadow:0 0 0 1px #ccc;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;">12</span>
+                    Stacked fixes — click or zoom in to expand
+                </span>
+                <span style="display:flex;align-items:center;gap:7px;">
+                    <span style="color:#0078d4;font-size:13px;">▸▸</span>
+                    Direction of travel
+                </span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">📊 Day Summary</h2>
+            <div class="chip-grid" style="margin-bottom: 16px;">
+                <div class="chip"><div class="chip-label">Points Shown</div><div class="chip-value">@_visiblePoints.Count</div></div>
+                <div class="chip"><div class="chip-label">Places Visited</div><div class="chip-value">@_visiblePoints.Count(p => p.Label != null)</div></div>
+                <div class="chip"><div class="chip-label">Distance</div><div class="chip-value">@_distanceKm km</div></div>
+                <div class="chip"><div class="chip-label">Time Span</div><div class="chip-value">@_timeSpanText</div></div>
+            </div>
+
+            @if (_selectedPoint is not null)
+            {
+                <div class="info-box">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="padding:2px 7px;border-radius:5px;background:@SelectedAccent;color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;">@SelectedKind</span>
+                        <strong>@(_selectedPoint.Label ?? $"GPS point #{_selectedIndex + 1}")</strong>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; font-size: 13px;">
+                        <div><strong>Time:</strong> @_selectedPoint.Timestamp.ToString("ddd, MMM d — HH:mm")</div>
+                        <div><strong>Position:</strong> @_selectedPoint.Latitude.ToString("F5"), @_selectedPoint.Longitude.ToString("F5")</div>
+                        @if (_selectedStay is not null)
+                        {
+                            <div><strong>Stayed:</strong> @_selectedStay</div>
+                        }
+                        @if (_selectedFromPrevious is not null)
+                        {
+                            <div><strong>From previous:</strong> @_selectedFromPrevious</div>
+                        }
+                        @if (_selectedPoint.Description is not null)
+                        {
+                            <div style="grid-column: 1 / -1;"><strong>Details:</strong> @_selectedPoint.Description</div>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">
+                    Click a place, a GPS point, or a start/end badge on the map to see its details here.
+                </p>
+            }
+        </div>
+    </ResultContent>
+
+    <CodeContent>
+        <div class="card">
+            <h2 class="card-title">How it works</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0;">
+                Build a <code>MapTimeline</code> from your timestamped positions and bind it to the
+                <code>Timelines</code> parameter. The component draws the route line with direction arrows,
+                badges the first and last point as start/end, clusters the raw fixes so crowded areas stay
+                readable, keeps labeled places always visible, opens a details popup on click, and raises
+                <code>OnTimelinePointClick</code>.
+            </p>
+            <pre class="code-snippet"><code>@_snippet</code></pre>
+        </div>
+    </CodeContent>
+</DemoResultCodeTabs>
+</MapsKeyGuard>
+
+@code {
+    private readonly InitialMapView _initialView = new(37.7799, -122.4300, 12);
+
+    private DateOnly _date = DateOnly.FromDateTime(DateTime.Today);
+    private int _startHour = 0;
+    private int _endHour = 24;
+
+    private List<MapTimelinePoint> _dayPoints = [];
+    private List<MapTimelinePoint> _visiblePoints = [];
+    private IReadOnlyList<MapTimeline> _timelines = [];
+    private double _distanceKm;
+    private string _timeSpanText = "—";
+
+    private MapTimelinePoint? _selectedPoint;
+    private int _selectedIndex;
+    private string? _selectedStay;
+    private string? _selectedFromPrevious;
+
+    private string SelectedKind => _selectedIndex == 0 ? "Start"
+        : _selectedIndex == _visiblePoints.Count - 1 ? "End"
+        : _selectedPoint?.Label is not null ? "Place"
+        : "GPS point";
+
+    private string SelectedAccent => _selectedIndex == 0 ? "#107c10"
+        : _selectedIndex == _visiblePoints.Count - 1 ? "#d13438"
+        : "#0078d4";
+
+    protected override void OnInitialized()
+    {
+        LoadDay();
+    }
+
+    private void HandleDateChanged(ChangeEventArgs e)
+    {
+        if (DateOnly.TryParse(e.Value?.ToString(), out var date))
+        {
+            _date = date;
+            LoadDay();
+        }
+    }
+
+    private void LoadDay()
+    {
+        _dayPoints = TrackingService.GetDailyTimeline(_date);
+        RebuildTimeline();
+    }
+
+    private void RebuildTimeline()
+    {
+        if (_endHour < _startHour)
+            (_startHour, _endHour) = (_endHour, _startHour);
+
+        var from = TimeSpan.FromHours(_startHour);
+        var to = TimeSpan.FromHours(_endHour);
+
+        _visiblePoints = _dayPoints
+            .Where(p => p.Timestamp.TimeOfDay >= from && p.Timestamp.TimeOfDay <= to)
+            .ToList();
+
+        _distanceKm = TrackingService.CalculateTimelineDistanceKm(_visiblePoints);
+        _timeSpanText = _visiblePoints.Count > 1
+            ? $"{_visiblePoints[0].Timestamp:HH:mm} – {_visiblePoints[^1].Timestamp:HH:mm}"
+            : "—";
+
+        _selectedPoint = null;
+        _selectedStay = null;
+        _selectedFromPrevious = null;
+
+        // New list instance so the component picks up the change by reference.
+        _timelines =
+        [
+            new MapTimeline
+            {
+                Id = "day-history",
+                Name = $"History — {_date:MMM d, yyyy}",
+                Color = "#0078d4",
+                Points = _visiblePoints
+            }
+        ];
+    }
+
+    private void HandlePointClick(MapTimelinePointClickEventArgs args)
+    {
+        _selectedPoint = args.Point;
+        _selectedIndex = args.PointIndex;
+
+        var points = args.Timeline.Points;
+
+        _selectedStay = args.Point.Label is not null && _selectedIndex < points.Count - 1
+            ? FormatDuration(points[_selectedIndex + 1].Timestamp - args.Point.Timestamp)
+            : null;
+
+        _selectedFromPrevious = _selectedIndex > 0
+            ? FormatDistance(TrackingService.CalculateTimelineDistanceKm(
+                [points[_selectedIndex - 1], args.Point]))
+            : null;
+    }
+
+    private static string? FormatDuration(TimeSpan span) => span.TotalMinutes < 1
+        ? null
+        : span.TotalHours >= 1
+            ? $"{(int)span.TotalHours} h {span.Minutes} min"
+            : $"{(int)span.TotalMinutes} min";
+
+    private static string FormatDistance(double km) =>
+        km < 1 ? $"{km * 1000:F0} m" : $"{km:F2} km";
+
+    private static string FormatHour(int hour) => TimeSpan.FromHours(hour).ToString(@"hh\:mm");
+
+    private string GetKey()
+    {
+        var key = ConfigService.GetSubscriptionKey();
+        return !string.IsNullOrEmpty(key) ? key : Options.Value.SubscriptionKey ?? string.Empty;
+    }
+
+    private readonly string _snippet = """
+<AzureMap Timelines="_timelines"
+          OnTimelinePointClick="HandlePointClick" />
+
+@code {
+    private IReadOnlyList<MapTimeline> _timelines = [];
+
+    private void LoadHistory(DateOnly date, TimeSpan from, TimeSpan to)
+    {
+        List<MapTimelinePoint> points = LoadPointsFromYourStore(date)
+            .Where(p => p.Timestamp.TimeOfDay >= from && p.Timestamp.TimeOfDay <= to)
+            .ToList();
+
+        // Assign a new list instance — the map re-renders and smoothly
+        // frames the timeline (disable via FitToTimelines="false").
+        _timelines =
+        [
+            new MapTimeline
+            {
+                Name = $"History — {date:MMM d}",
+                Color = "#0078d4",
+                Points = points   // labeled points stay visible and show their name;
+                                  // unlabeled ones cluster until you zoom in
+            }
+        ];
+    }
+
+    private void HandlePointClick(MapTimelinePointClickEventArgs args)
+        => Console.WriteLine($"{args.Point.Timestamp}: {args.Point.Label}");
+}
+""";
+}

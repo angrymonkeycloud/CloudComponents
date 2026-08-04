@@ -298,6 +298,7 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
         }
 
         await SyncLocationLockAsync();
+        await SyncTimelinesAsync();
     }
 
     private object BuildMapOptions(InitialMapView view) => new
@@ -587,6 +588,9 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
 
         if (Zones is { Count: > 0 })
             _ = SyncZonesAsync();
+
+        if (Timelines is { Count: > 0 })
+            await SyncTimelinesAsync();
 
         if (LocateOnOpen)
             await LocateMeAsync();

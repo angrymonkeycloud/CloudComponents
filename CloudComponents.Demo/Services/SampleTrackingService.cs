@@ -1,3 +1,4 @@
+using AngryMonkey.CloudComponents.Maps.Models;
 using CloudComponents.Demo.Models;
 
 namespace CloudComponents.Demo.Services;
@@ -5,6 +6,108 @@ namespace CloudComponents.Demo.Services;
 public sealed class SampleTrackingService
 {
     private static readonly Random _random = new();
+
+    // Pool of "places" for the daily-timeline generator. Each day picks a
+    // deterministic subset so changing the date on the demo page produces a
+    // visibly different journey. Coordinates are around San Francisco.
+    private static readonly (double Lat, double Lng, string Name, string Detail)[] _places =
+    [
+        (37.7648, -122.4214, "Coffee Shop", "Quick espresso stop — 15 min"),
+        (37.7897, -122.4009, "Office", "Worked on site — 3 h 20 min"),
+        (37.7955, -122.3937, "Ferry Building", "Lunch at the market — 50 min"),
+        (37.8024, -122.4058, "Client Visit", "Project review meeting — 1 h 10 min"),
+        (37.8080, -122.4177, "Fisherman's Wharf", "Walked along the pier — 35 min"),
+        (37.7694, -122.4862, "Golden Gate Park", "Afternoon run — 40 min"),
+        (37.7680, -122.4290, "Gym", "Evening workout — 55 min"),
+        (37.7793, -122.4193, "City Hall", "Paperwork errand — 25 min"),
+        (37.7614, -122.4356, "Grocery Store", "Picked up groceries — 20 min")
+    ];
+
+    private const double HomeLat = 37.7599;
+    private const double HomeLng = -122.4148;
+
+    /// <summary>
+    /// Deterministic full-day movement history for the given date: starts and ends
+    /// at "Home", visits a date-dependent subset of places, with dense GPS points
+    /// recorded along the way. Same date always yields the same timeline.
+    /// </summary>
+    public List<MapTimelinePoint> GetDailyTimeline(DateOnly date)
+    {
+        var rnd = new Random(date.DayNumber);
+
+        // Pick 4–6 places for the day, keeping the pool order for a sane route.
+        int stopCount = 4 + rnd.Next(3);
+        var stops = Enumerable.Range(0, _places.Length)
+            .OrderBy(_ => rnd.Next())
+            .Take(stopCount)
+            .OrderBy(i => i)
+            .Select(i => _places[i])
+            .ToList();
+
+        var points = new List<MapTimelinePoint>();
+        var time = date.ToDateTime(new TimeOnly(7, 30)).AddMinutes(rnd.Next(0, 45));
+
+        (double Lat, double Lng) current = (HomeLat, HomeLng);
+        points.Add(new MapTimelinePoint(HomeLat, HomeLng, time)
+        {
+            Label = "Home",
+            Description = "Left home"
+        });
+
+        foreach (var stop in stops)
+        {
+            // Travel: a GPS fix roughly every 1–2 minutes along the way.
+            int samples = 8 + rnd.Next(8);
+            for (int j = 1; j < samples; j++)
+            {
+                double t = (double)j / samples;
+                double lat = current.Lat + (stop.Lat - current.Lat) * t + (rnd.NextDouble() - 0.5) * 0.0015;
+                double lng = current.Lng + (stop.Lng - current.Lng) * t + (rnd.NextDouble() - 0.5) * 0.0015;
+                time = time.AddMinutes(1 + rnd.NextDouble());
+                points.Add(new MapTimelinePoint(lat, lng, time));
+            }
+
+            time = time.AddMinutes(2);
+            points.Add(new MapTimelinePoint(stop.Lat, stop.Lng, time)
+            {
+                Label = stop.Name,
+                Description = stop.Detail
+            });
+
+            // Dwell time at the place before moving on.
+            time = time.AddMinutes(20 + rnd.Next(80));
+            current = (stop.Lat, stop.Lng);
+        }
+
+        // Head back home.
+        int homeSamples = 8 + rnd.Next(8);
+        for (int j = 1; j < homeSamples; j++)
+        {
+            double t = (double)j / homeSamples;
+            double lat = current.Lat + (HomeLat - current.Lat) * t + (rnd.NextDouble() - 0.5) * 0.0015;
+            double lng = current.Lng + (HomeLng - current.Lng) * t + (rnd.NextDouble() - 0.5) * 0.0015;
+            time = time.AddMinutes(1 + rnd.NextDouble());
+            points.Add(new MapTimelinePoint(lat, lng, time));
+        }
+        time = time.AddMinutes(2);
+        points.Add(new MapTimelinePoint(HomeLat, HomeLng, time)
+        {
+            Label = "Home",
+            Description = "Back home"
+        });
+
+        return points;
+    }
+
+    /// <summary>Total distance in km along a sequence of timeline points.</summary>
+    public double CalculateTimelineDistanceKm(IReadOnlyList<MapTimelinePoint> points)
+    {
+        double total = 0;
+        for (int i = 0; i < points.Count - 1; i++)
+            total += HaversineDistance(points[i].Latitude, points[i].Longitude,
+                                       points[i + 1].Latitude, points[i + 1].Longitude);
+        return Math.Round(total, 2);
+    }
 
     public TrackSession GetSampleTrace(string name = "Sample Route")
     {

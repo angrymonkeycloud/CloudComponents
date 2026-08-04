@@ -1,4 +1,4 @@
-// ES module — loaded via Blazor JS isolation:
+// ES module ï¿½ loaded via Blazor JS isolation:
 // import('./_content/CloudComponents.Maps/mapInterop.js')
 // The Azure Maps Web SDK (atlas) is loaded on-demand by this module.
 
@@ -10,7 +10,7 @@ const ATLAS_JS_URL = `https://atlas.microsoft.com/sdk/javascript/mapcontrol/${AT
 // thousands of vertices per ring (e.g. detailed coastlines). Running a
 // synchronous point-in-polygon ray-cast against that many points blocks the
 // single UI thread shared by the browser and Blazor WebAssembly, which can
-// make the entire page appear frozen — not just the map. Rings are
+// make the entire page appear frozen ï¿½ not just the map. Rings are
 // decimated to at most this many vertices before being used for
 // interactive location-lock checks or region-overlay rendering.
 const MAX_LOCK_RING_VERTICES = 500;
@@ -118,6 +118,9 @@ class AzureMapController {
         this._regionDataSource = null;
         this._currentLocationMarker = null;
         this._activePopupId = null;
+        this._timelineGroups = [];
+        this._timelineMeta = new Map();
+        this._timelinePopup = null;
         this._lockPolygons = null;
         this._lockBounds = null;
         this._lockDataSource = null;
@@ -128,7 +131,7 @@ class AzureMapController {
         this._trafficFlow = !!options.showTrafficFlow;
         this._trafficIncidents = !!options.showTrafficIncidents;
         this._addTrigger = options.addMarkerTrigger || 'double';   // 'disabled' | 'single' | 'double'
-        this._controlInstances = {};   // key -> { control, position } — lets setControls() diff/re-apply at runtime
+        this._controlInstances = {};   // key -> { control, position } ï¿½ lets setControls() diff/re-apply at runtime
         this._scrollHintEl = null;
         this._scrollHintTimer = null;
 
@@ -191,8 +194,9 @@ class AzureMapController {
             if (this._suppressNextMapClick) {
                 this._suppressNextMapClick = false;
             } else if (!this._wasOnMarker(e)) {
-                // Plain background click ? dismiss any open marker popup.
+                // Plain background click ? dismiss any open marker/timeline popup.
                 this._closeActivePopup();
+                this._closeTimelinePopup();
             }
 
             this._dotNetRef?.invokeMethodAsync('NotifyMapClickAsync', lat, lng);
@@ -222,7 +226,7 @@ class AzureMapController {
         // Center-pin mode ? broadcast the camera-center coordinate whenever the
         // camera finishes moving for any reason (drag, search fly-to, "pin my
         // location", setCenter/setBounds from C#, etc.), but not while a
-        // zoom-driven camera animation is still in flight — zooming is always
+        // zoom-driven camera animation is still in flight ï¿½ zooming is always
         // anchored to the map center (pin position) regardless of cursor location.
         // These listeners are always registered (not just when the map starts in
         // center-pin mode) so that switching AddMarkerTrigger to CenterPin at
@@ -245,7 +249,7 @@ class AzureMapController {
             if (!this._isPointAllowed(c[0], c[1])) {
                 // Only snap back when the last known-good center is itself inside the
                 // locked area. If it is outside (e.g. the map loaded with the pin
-                // outside the lock), do NOT snap — the user must be able to drag the
+                // outside the lock), do NOT snap ï¿½ the user must be able to drag the
                 // pin into the allowed area from its current position.
                 const revertTo = this._lastAllowedCenter;
                 if (revertTo && this._isPointAllowed(revertTo[0], revertTo[1])) {
@@ -303,8 +307,8 @@ class AzureMapController {
             }, 50);
         });
 
-        // 'moveend' fires after ANY settled camera change — drag, search
-        // fly-to (setBounds/setCenter), "pin my location", etc. — so the
+        // 'moveend' fires after ANY settled camera change ï¿½ drag, search
+        // fly-to (setBounds/setCenter), "pin my location", etc. ï¿½ so the
         // tracked center coordinate (and .NET) always reflects where the
         // fixed pin visually ends up, not just manual drags.
         this._map.events.add('moveend', this._firePan);
@@ -316,7 +320,7 @@ class AzureMapController {
         //  2) When ScrollZoomInteraction is disabled, a plain wheel/trackpad
         //     gesture is left alone (so the page can scroll normally past an
         //     embedded map) unless the user holds Ctrl/?/Shift, in which case we
-        //     zoom anyway — the common "hold a modifier to zoom" pattern — and
+        //     zoom anyway ï¿½ the common "hold a modifier to zoom" pattern ï¿½ and
         //     show a brief one-time hint the first time a bare scroll is ignored.
         this._setupScrollZoomGate();
 
@@ -361,12 +365,12 @@ class AzureMapController {
     // -- Scroll-wheel zoom gate -------------------------------------------
     //
     // Handles two behaviors with a single wheel listener registered at the DOM
-    // capture phase (BEFORE Azure Maps' own listener runs — see note on the
+    // capture phase (BEFORE Azure Maps' own listener runs ï¿½ see note on the
     // element hierarchy below):
     //   1) Center-pin mode always zooms anchored to the map center (not the
     //      cursor) so the fixed pin never visually drifts.
     //   2) When ScrollZoomInteraction is off, a bare wheel/trackpad gesture is
-    //      left alone so the page can scroll past an embedded map — unless the
+    //      left alone so the page can scroll past an embedded map ï¿½ unless the
     //      user holds Ctrl/?/Shift, the common "modifier + scroll to zoom"
     //      pattern, in which case we hand the gesture to the SDK's native
     //      (cursor-anchored) zoom for one gesture. A brief hint is shown the
@@ -586,6 +590,7 @@ class AzureMapController {
             // from closing the popup we are about to open.
             this._suppressNextMapClick = true;
             this._closeActivePopup(info.id);
+            this._closeTimelinePopup();
             try { entry.popup.open(this._map); this._activePopupId = info.id; } catch { /* noop */ }
             this._dotNetRef?.invokeMethodAsync('NotifyMarkerClickAsync', info.id);
         });
@@ -680,6 +685,448 @@ class AzureMapController {
             this._regionDataSource.clear();
         }
         this._regions = [];
+    }
+
+    // -- Tracking/history timelines ---------------------------------------
+    //
+    // Each timeline gets its own layer group so color, clustering and popups
+    // never bleed between timelines. A group is composed of:
+    //   * a route line plus direction arrows spaced along it, so the direction
+    //     of travel is readable without playing anything back;
+    //   * the raw GPS fixes in a CLUSTERED source â€” zoomed out they stack into
+    //     numbered bubbles, zooming in (or clicking a cluster) breaks them
+    //     apart until every individual fix is visible;
+    //   * labeled "places", in their own unclustered source so a meaningful
+    //     stop is never swallowed by a cluster. Their name labels are
+    //     collision-managed by the SDK, so crowded areas stay readable;
+    //   * start/end badges as HTML markers so both ends of the journey are
+    //     unmistakable at any zoom.
+    // Every one of those is clickable and opens a details popup.
+
+    /// Replace all rendered timelines. `timelines` is an array of
+    /// { id, name, color, showLine, points: [{ latitude, longitude, timestamp, label, description }] }.
+    async setTimelines(timelines, fitToBounds) {
+        this._disposeTimelineGroups();
+        this._closeTimelinePopup();
+        this._timelineMeta = new Map();
+
+        let north = -90, south = 90, east = -180, west = 180, hasPoints = false;
+
+        for (const tl of (timelines || [])) {
+            const pts = tl.points || [];
+            if (pts.length === 0) continue;
+
+            this._timelineMeta.set(tl.id, tl);
+            const color = tl.color || '#0078d4';
+            const group = { id: tl.id, sources: [], layers: [], markers: [] };
+
+            for (const p of pts) {
+                hasPoints = true;
+                if (p.latitude > north) north = p.latitude;
+                if (p.latitude < south) south = p.latitude;
+                if (p.longitude > east) east = p.longitude;
+                if (p.longitude < west) west = p.longitude;
+            }
+
+            // ---- Route line + direction arrows ------------------------------
+            if (tl.showLine !== false && pts.length > 1) {
+                const lineSource = new atlas.source.DataSource();
+                this._map.sources.add(lineSource);
+                group.sources.push(lineSource);
+                lineSource.add(new atlas.data.Feature(
+                    new atlas.data.LineString(pts.map(p => [p.longitude, p.latitude])),
+                    { timelineId: tl.id }));
+
+                const lineLayer = new atlas.layer.LineLayer(lineSource, null, {
+                    strokeColor: color,
+                    strokeWidth: ['interpolate', ['linear'], ['zoom'], 5, 2.5, 15, 5],
+                    strokeOpacity: 0.75,
+                    lineCap: 'round',
+                    lineJoin: 'round'
+                });
+                this._map.layers.add(lineLayer);
+                group.layers.push(lineLayer);
+
+                const arrowLayer = await this._createDirectionArrowLayer(lineSource, color);
+                if (arrowLayer) {
+                    this._map.layers.add(arrowLayer);
+                    group.layers.push(arrowLayer);
+                }
+            }
+
+            // ---- Split the points: endpoints / labeled places / raw fixes ----
+            const trailFeatures = [];
+            const placeFeatures = [];
+            pts.forEach((p, i) => {
+                if (i === 0 || i === pts.length - 1) return; // endpoints are HTML markers
+                const feature = new atlas.data.Feature(
+                    new atlas.data.Point([p.longitude, p.latitude]),
+                    { timelineId: tl.id, index: i, label: p.label || '' });
+                (p.label ? placeFeatures : trailFeatures).push(feature);
+            });
+
+            // ---- Raw GPS fixes: clustered ------------------------------------
+            if (trailFeatures.length > 0) {
+                const trailSource = new atlas.source.DataSource(null, {
+                    cluster: true,
+                    clusterRadius: 42,
+                    // Past this zoom every fix is drawn individually â€” the
+                    // "fully zoomed in = full detail" end of the scale.
+                    clusterMaxZoom: 17
+                });
+                this._map.sources.add(trailSource);
+                group.sources.push(trailSource);
+                trailSource.add(trailFeatures);
+
+                const clusterLayer = new atlas.layer.BubbleLayer(trailSource, null, {
+                    filter: ['has', 'point_count'],
+                    radius: ['step', ['get', 'point_count'], 11, 10, 14, 50, 18, 200, 22],
+                    color: color,
+                    opacity: 0.9,
+                    strokeColor: '#ffffff',
+                    strokeWidth: 2
+                });
+                const clusterCountLayer = new atlas.layer.SymbolLayer(trailSource, null, {
+                    filter: ['has', 'point_count'],
+                    iconOptions: { image: 'none' },
+                    textOptions: {
+                        textField: ['get', 'point_count_abbreviated'],
+                        color: '#ffffff',
+                        size: 11,
+                        offset: [0, 0.1],
+                        allowOverlap: true,
+                        ignorePlacement: true
+                    }
+                });
+                const trailLayer = new atlas.layer.BubbleLayer(trailSource, null, {
+                    filter: ['!', ['has', 'point_count']],
+                    radius: ['interpolate', ['linear'], ['zoom'], 8, 3, 16, 5.5],
+                    color: color,
+                    opacity: 0.95,
+                    strokeColor: '#ffffff',
+                    strokeWidth: 1.5
+                });
+
+                this._map.layers.add([clusterLayer, clusterCountLayer, trailLayer]);
+                group.layers.push(clusterLayer, clusterCountLayer, trailLayer);
+
+                this._bindTimelineClusterExpand(clusterLayer, trailSource);
+                this._bindTimelinePointClick(trailLayer);
+            }
+
+            // ---- Labeled places: always visible ------------------------------
+            if (placeFeatures.length > 0) {
+                const placeSource = new atlas.source.DataSource();
+                this._map.sources.add(placeSource);
+                group.sources.push(placeSource);
+                placeSource.add(placeFeatures);
+
+                const placeLayer = new atlas.layer.BubbleLayer(placeSource, null, {
+                    radius: ['interpolate', ['linear'], ['zoom'], 8, 6.5, 16, 9],
+                    color: color,
+                    strokeColor: '#ffffff',
+                    strokeWidth: 3
+                });
+                const placeLabelLayer = new atlas.layer.SymbolLayer(placeSource, null, {
+                    iconOptions: { image: 'none' },
+                    textOptions: {
+                        textField: ['get', 'label'],
+                        offset: [0, -1.4],
+                        size: 12,
+                        color: '#1b1b1b',
+                        haloColor: '#ffffff',
+                        haloWidth: 2
+                    }
+                });
+
+                this._map.layers.add([placeLayer, placeLabelLayer]);
+                group.layers.push(placeLayer, placeLabelLayer);
+                this._bindTimelinePointClick(placeLayer);
+            }
+
+            // ---- Start / end badges ------------------------------------------
+            group.markers.push(this._addTimelineEndpointMarker(tl, 0, 'start'));
+            if (pts.length > 1)
+                group.markers.push(this._addTimelineEndpointMarker(tl, pts.length - 1, 'end'));
+
+            this._timelineGroups.push(group);
+        }
+
+        if (fitToBounds && hasPoints) {
+            // Pad degenerate bounds (single point / stationary trace) so the
+            // camera doesn't zoom to max.
+            if (north - south < 0.002) { north += 0.001; south -= 0.001; }
+            if (east - west < 0.002) { east += 0.001; west -= 0.001; }
+            this._beginIntentionalCenterChange();
+            this._map.setCamera({
+                bounds: [west, south, east, north],
+                padding: 70,
+                type: 'ease',
+                duration: 700
+            });
+        }
+    }
+
+    clearTimelines() {
+        this._disposeTimelineGroups();
+        this._timelineMeta = new Map();
+        this._closeTimelinePopup();
+    }
+
+    _disposeTimelineGroups() {
+        for (const group of (this._timelineGroups || [])) {
+            for (const marker of group.markers) {
+                try { this._map.markers.remove(marker); } catch { /* noop */ }
+            }
+            for (const layer of group.layers) {
+                try { this._map.layers.remove(layer); } catch { /* noop */ }
+            }
+            for (const source of group.sources) {
+                try { this._map.sources.remove(source); } catch { /* noop */ }
+            }
+        }
+        this._timelineGroups = [];
+    }
+
+    /// Arrow glyphs repeated along the route so the direction of travel is
+    /// obvious at a glance. Uses the SDK's scalable 'triangle-arrow-up' image
+    /// template rotated 90Â° â€” with `placement: 'line'` the icon's own "up"
+    /// axis maps onto the line's heading. Returns null when the template isn't
+    /// available so the route still renders without arrows.
+    async _createDirectionArrowLayer(lineSource, color) {
+        const iconId = `cc-tl-arrow-${color.replace(/[^a-z0-9]/gi, '')}`;
+        try {
+            if (!this._map.imageSprite.hasImage(iconId))
+                await this._map.imageSprite.createFromTemplate(iconId, 'triangle-arrow-up', color, '#ffffff');
+
+            return new atlas.layer.SymbolLayer(lineSource, null, {
+                iconOptions: {
+                    image: iconId,
+                    allowOverlap: true,
+                    ignorePlacement: true,
+                    anchor: 'center',
+                    rotation: 90,
+                    size: 0.75
+                },
+                lineSpacing: 90,
+                placement: 'line'
+            });
+        } catch {
+            return null;
+        }
+    }
+
+    /// Start/end are HTML markers rather than layer features: there are only two
+    /// per timeline and they must stay legible and unclustered at every zoom.
+    _addTimelineEndpointMarker(tl, index, kind) {
+        const p = tl.points[index];
+        const marker = new atlas.HtmlMarker({
+            position: [p.longitude, p.latitude],
+            anchor: 'top',
+            pixelOffset: [0, -15],
+            htmlContent: this._buildTimelineEndpointHtml(kind, p)
+        });
+        this._map.markers.add(marker);
+
+        this._map.events.add('click', marker, () => {
+            this._suppressNextMapClick = true;
+            this._openTimelinePopup(tl.id, index);
+            this._dotNetRef?.invokeMethodAsync('NotifyTimelinePointClickAsync', tl.id, index);
+        });
+
+        return marker;
+    }
+
+    _buildTimelineEndpointHtml(kind, p) {
+        const isStart = kind === 'start';
+        const bg = isStart ? '#107c10' : '#d13438';
+        const glyph = isStart ? '&#9654;' : '&#9632;';           // â–¶ / â– 
+        const caption = (isStart ? 'Start' : 'End')
+            + (p.label ? ` Â· ${this._escapeHtml(p.label)}` : '')
+            + (this._formatClockTime(p.timestamp) ? ` Â· ${this._formatClockTime(p.timestamp)}` : '');
+
+        return `<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;">
+                    <div style="width:28px;height:28px;border-radius:50%;background:${bg};
+                                border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);
+                                display:flex;align-items:center;justify-content:center;
+                                color:#fff;font-size:11px;line-height:1;">${glyph}</div>
+                    <div style="margin-top:4px;padding:2px 8px;border-radius:10px;background:${bg};color:#fff;
+                                font:600 10.5px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif;
+                                white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.3);">${caption}</div>
+                </div>`;
+    }
+
+    /// Clicking a stack of points zooms to exactly the level where that cluster
+    /// breaks apart â€” the "tap to see what's inside" gesture users expect.
+    _bindTimelineClusterExpand(layer, source) {
+        this._map.events.add('click', layer, (e) => {
+            const feature = e?.shapes?.[0];
+            if (!feature) return;
+            const props = typeof feature.getProperties === 'function' ? feature.getProperties() : feature.properties;
+            const coords = typeof feature.getCoordinates === 'function'
+                ? feature.getCoordinates()
+                : feature.geometry?.coordinates;
+            if (!props || props.cluster_id == null || !coords) return;
+
+            this._suppressNextMapClick = true;
+            source.getClusterExpansionZoom(props.cluster_id)
+                .then(zoom => {
+                    this._beginIntentionalCenterChange();
+                    this._map.setCamera({ center: coords, zoom, type: 'ease', duration: 450 });
+                })
+                .catch(() => { /* noop */ });
+        });
+        this._bindTimelinePointerCursor(layer);
+    }
+
+    _bindTimelinePointClick(layer) {
+        this._map.events.add('click', layer, (e) => {
+            const feature = e?.shapes?.[0];
+            if (!feature) return;
+            const props = typeof feature.getProperties === 'function' ? feature.getProperties() : feature.properties;
+            if (!props || props.timelineId == null) return;
+
+            this._suppressNextMapClick = true;
+            this._openTimelinePopup(props.timelineId, props.index);
+            this._dotNetRef?.invokeMethodAsync('NotifyTimelinePointClickAsync', props.timelineId, props.index);
+        });
+        this._bindTimelinePointerCursor(layer);
+    }
+
+    _bindTimelinePointerCursor(layer) {
+        this._map.events.add('mouseenter', layer, () => {
+            this._map.getCanvasContainer().style.cursor = 'pointer';
+        });
+        this._map.events.add('mouseleave', layer, () => {
+            this._map.getCanvasContainer().style.cursor = '';
+        });
+    }
+
+    _haversineMeters(lat1, lng1, lat2, lng2) {
+        const R = 6371000;
+        const toRad = d => d * Math.PI / 180;
+        const dLat = toRad(lat2 - lat1);
+        const dLng = toRad(lng2 - lng1);
+        const a = Math.sin(dLat / 2) ** 2 +
+            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+        return R * 2 * Math.asin(Math.sqrt(a));
+    }
+
+    _openTimelinePopup(timelineId, index) {
+        const tl = this._timelineMeta?.get(timelineId);
+        const p = tl?.points?.[index];
+        if (!p) return;
+
+        if (!this._timelinePopup)
+            this._timelinePopup = new atlas.Popup({ pixelOffset: [0, -16], closeButton: true });
+
+        this._closeActivePopup(); // marker popups and timeline popups are mutually exclusive
+        this._timelinePopup.setOptions({
+            position: [p.longitude, p.latitude],
+            content: this._buildTimelinePopupContent(tl, p, index)
+        });
+        this._timelinePopup.open(this._map);
+    }
+
+    _closeTimelinePopup() {
+        if (this._timelinePopup) { try { this._timelinePopup.close(); } catch { /* noop */ } }
+    }
+
+    _parseDate(value) {
+        if (!value) return null;
+        const d = new Date(value);
+        return isNaN(d) ? null : d;
+    }
+
+    _formatClockTime(value) {
+        const d = this._parseDate(value);
+        return d ? d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) : '';
+    }
+
+    _formatDuration(minutes) {
+        if (!isFinite(minutes) || minutes < 1) return '';
+        const h = Math.floor(minutes / 60);
+        const m = Math.round(minutes % 60);
+        if (h === 0) return `${m} min`;
+        return m === 0 ? `${h} h` : `${h} h ${m} min`;
+    }
+
+    _formatDistance(meters) {
+        return meters >= 1000 ? `${(meters / 1000).toFixed(2)} km` : `${Math.round(meters)} m`;
+    }
+
+    _buildTimelinePopupContent(tl, p, index) {
+        const esc = (s) => (s == null ? '' : this._escapeHtml(s));
+        const pts = tl.points;
+        const isStart = index === 0;
+        const isEnd = index === pts.length - 1;
+        const accent = isStart ? '#107c10' : isEnd ? '#d13438' : (tl.color || '#0078d4');
+        const kindText = isStart ? 'Start' : isEnd ? 'End' : (p.label ? 'Place' : 'GPS point');
+
+        const when = this._parseDate(p.timestamp);
+        const dateText = when ? when.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }) : '';
+        const timeText = when ? when.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) : '';
+
+        // How long the journey paused here â€” the gap to the next recorded point.
+        let stayText = '';
+        if (p.label && index < pts.length - 1 && when) {
+            const next = this._parseDate(pts[index + 1].timestamp);
+            if (next) stayText = this._formatDuration((next - when) / 60000);
+        }
+
+        // Leg into this point: distance covered and average speed.
+        let legText = '', speedText = '';
+        if (index > 0) {
+            const prev = pts[index - 1];
+            const meters = this._haversineMeters(prev.latitude, prev.longitude, p.latitude, p.longitude);
+            legText = `${this._formatDistance(meters)} from previous point`;
+            const prevWhen = this._parseDate(prev.timestamp);
+            if (when && prevWhen) {
+                const seconds = (when - prevWhen) / 1000;
+                if (seconds > 0) speedText = `${(meters / seconds * 3.6).toFixed(1)} km/h average`;
+            }
+        }
+
+        let elapsedText = '';
+        if (index > 0 && when) {
+            const startWhen = this._parseDate(pts[0].timestamp);
+            const elapsed = startWhen ? this._formatDuration((when - startWhen) / 60000) : '';
+            if (elapsed) elapsedText = `${elapsed} into the timeline`;
+        }
+
+        const row = (icon, text) => text
+            ? `<div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:#555;line-height:1.45;">
+                   <span style="opacity:.5;flex:none;">${icon}</span><span>${esc(text)}</span>
+               </div>`
+            : '';
+
+        const title = p.label || tl.name || kindText;
+
+        return `
+            <div style="font-family:system-ui,-apple-system,'Segoe UI',sans-serif;min-width:225px;max-width:280px;">
+                <div style="height:4px;background:${accent};border-radius:6px 6px 0 0;"></div>
+                <div style="padding:10px 14px 12px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <span style="flex:none;padding:2px 7px;border-radius:5px;background:${accent};color:#fff;
+                                     font-size:10px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;">${kindText}</span>
+                        ${dateText ? `<span style="font-size:11px;color:#888;">${esc(dateText)}</span>` : ''}
+                    </div>
+                    <div style="font-weight:600;color:#111;font-size:14.5px;margin-top:7px;word-break:break-word;">${esc(title)}</div>
+                    ${p.label && tl.name ? `<div style="font-size:11.5px;color:#888;margin-top:1px;">${esc(tl.name)}</div>` : ''}
+                    <div style="display:flex;flex-direction:column;gap:4px;margin-top:9px;">
+                        ${row('&#128337;', timeText)}
+                        ${row('&#9203;', stayText ? `Stayed ${stayText}` : '')}
+                        ${row('&#128172;', p.description)}
+                        ${row('&#128207;', legText)}
+                        ${row('&#128663;', speedText)}
+                        ${row('&#9201;', elapsedText)}
+                    </div>
+                    <div style="margin-top:9px;padding-top:8px;border-top:1px solid #eee;
+                                font-variant-numeric:tabular-nums;font-size:11px;color:#999;">
+                        Point ${index + 1} of ${pts.length} &middot; ${p.latitude.toFixed(5)}, ${p.longitude.toFixed(5)}
+                    </div>
+                </div>
+            </div>`;
     }
 
     // -- Location lock ----------------------------------------------------
@@ -919,7 +1366,7 @@ class AzureMapController {
             const data = await resp.json();
 
             // Try to extract polygon coordinates from various response formats,
-            // then decimate large rings — see MAX_LOCK_RING_VERTICES above.
+            // then decimate large rings ï¿½ see MAX_LOCK_RING_VERTICES above.
             const coords = this._extractPolygonCoords(data);
             return coords ? this._simplifyRings(coords) : null;
         } catch {
@@ -934,7 +1381,7 @@ class AzureMapController {
         // Direct Polygon
         if (obj.type === 'Polygon' && obj.coordinates) return obj.coordinates;
 
-        // MultiPolygon — pick the largest sub-polygon
+        // MultiPolygon ï¿½ pick the largest sub-polygon
         if (obj.type === 'MultiPolygon' && obj.coordinates) {
             let best = obj.coordinates[0];
             for (const poly of obj.coordinates) {
@@ -1005,7 +1452,7 @@ class AzureMapController {
 
     /// Runtime sync for AddMarkerTrigger ('disabled' | 'single' | 'double' | 'center'),
     /// called from C# (AzureMap.razor.cs OnParametersSetAsync) whenever the parameter
-    /// changes after the map was already created — e.g. a demo page letting the user
+    /// changes after the map was already created ï¿½ e.g. a demo page letting the user
     /// switch between click-to-place and always-visible center-pin selection.
     setAddMarkerTrigger(trigger) {
         this._addTrigger = trigger || 'disabled';
@@ -1036,7 +1483,7 @@ class AzureMapController {
     setStyle(style) {
         if (!style) return;
         try {
-            // Push to the SDK unconditionally — Azure Maps is idempotent here
+            // Push to the SDK unconditionally ï¿½ Azure Maps is idempotent here
             // and this guarantees the map matches the requested value even
             // when the user changed it via the in-map StyleControl.
             this._map.setStyle({ style });
@@ -1122,6 +1569,7 @@ class AzureMapController {
         clearTimeout(this._intentionalCenterChangeTimer);
         this.clearMarkers();
         this.clearRegions();
+        this.clearTimelines();
         this.clearLocationLock();
         this._hideScrollHint();
         Object.keys(this._controlInstances).forEach(key => this._removeControl(key));

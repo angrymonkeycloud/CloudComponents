@@ -59,6 +59,7 @@ Blazor Azure Maps component for .NET 10 with typed C# APIs for map initializatio
   - user-added marker triggers (`SingleClick`, `DoubleClick`, `CenterPin`, `Disabled`) with opt-in defaults (`Disabled` + `AllowMarkerRemoval=false`)
 - Region overlays (polygon GeoJSON rings) with optional legend labels
 - Address-driven zone overlays (`MapZone`) with per-zone label/color and automatic geocode → polygon resolution
+- Tracking/history timelines (`MapTimeline`): timestamped points rendered as a route with direction arrows, marked start/end, always-visible named places, and raw GPS fixes that cluster when zoomed out and break apart on zoom-in — everything clickable for a details popup
 - Geocoding and polygon retrieval (Azure Maps Search API)
 - Built-in place search box with debounced fuzzy search, keyboard navigation, and result selection
 - Pin-my-location: one call/button requests device geolocation (with permission consent) and recenters the map — same API on web (browser geolocation) and .NET MAUI (native `Geolocation`), each with its own `ILocationService` implementation
@@ -277,6 +278,34 @@ public sealed record MapZone
 
 Use `MapZone` when you want CloudMaps to resolve address/place text to boundary polygons for you. A zone can contain one address or multiple addresses that should share the same visual style and label.
 
+### `MapTimeline` / `MapTimelinePoint`
+
+```csharp
+public sealed record MapTimelinePoint(double Latitude, double Longitude, DateTime Timestamp)
+{
+    public string? Label { get; init; }        // place name; labeled points are always visible
+    public string? Description { get; init; }  // extra detail shown in the point's popup
+}
+
+public sealed record MapTimeline
+{
+    public string Id { get; init; }
+    public string? Name { get; init; }             // shown in point popups
+    public string Color { get; init; }             // line + point color (default "#0078d4")
+    public bool ShowLine { get; init; } = true;    // connect points with a route line
+    public IReadOnlyList<MapTimelinePoint> Points { get; init; } = [];
+}
+```
+
+Bind timelines via the `Timelines` parameter (diffed by reference — assign a new list to update) or imperatively via `SetTimelinesAsync`. Each timeline renders as its own layer group:
+
+- **Route line + direction arrows** — arrow glyphs are repeated along the path so the direction of travel is readable without playing anything back. Set `ShowLine = false` to draw points only.
+- **Start / end badges** — the first and last points get distinct green/red HTML markers captioned with their place name and time, so both ends of the journey are unmistakable at any zoom.
+- **Named places** (points with a `Label`) — kept in an unclustered source so a meaningful stop is never swallowed by a cluster. Their labels are collision-managed by the SDK, so crowded areas stay readable.
+- **Raw GPS fixes** (points without a `Label`) — clustered. Zoomed out they stack into numbered bubbles; zooming in, or clicking a cluster, breaks them apart until every individual fix is visible.
+
+Clicking a place, a fix, or a start/end badge opens a popup showing the kind, date/time, stop duration, description, distance and average speed from the previous point, elapsed time into the timeline, and coordinates — and raises `OnTimelinePointClick` with a `MapTimelinePointClickEventArgs(Timeline, Point, PointIndex)`. When `FitToTimelines` is `true` (default), the camera smoothly frames the timeline whenever it changes.
+
 ### `ZoneCheckResult`
 
 ```csharp
@@ -358,6 +387,9 @@ public Task RemoveZoneAsync(string zoneId)
 public Task ClearZonesAsync()
 public Task<ZoneCheckResult> CanZoneAsync(string address, string? countrySet = null)
 
+public Task SetTimelinesAsync(IEnumerable<MapTimeline> timelines, bool? fitToBounds = null)
+public Task ClearTimelinesAsync()
+
 public Task<GeocodeResult?> GeocodeAsync(string query)
 public Task<double[][][]?> GetPolygonAsync(string geometryId)
 
@@ -402,6 +434,7 @@ Component state helpers:
 | `OnMyLocationFound` | `MapCoordinate` | React to a successful "pin my location" (e.g. update a form field). |
 | `OnSearchResultSelected` | `MapSearchResult` | React to the user picking a search suggestion. |
 | `OnLocationLockRejected` | `MapCoordinate` | Show custom feedback when a selection falls outside the locked area. |
+| `OnTimelinePointClick` | `MapTimelinePointClickEventArgs` | Show a details panel for the clicked timeline point. |
 
 ---
 

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "demo",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "CloudComponents.Demo/CloudComponents.Demo.csproj", "--urls", "http://localhost:51501"],
+      "port": 51501
+    }
+  ]
+}
