@@ -1,4 +1,4 @@
-.cloudgrid-table {
+﻿.cloudgrid-table {
   flex: 1;
   min-height: 0;
   display: flex;
@@ -114,6 +114,34 @@
 }
 .cloudgrid-body._virtualized ::deep .cloudgrid-row {
   min-width: max-content;
+}
+.cloudgrid-body._display-all-text .cloudgrid-row {
+  height: auto;
+  min-height: var(--cloudgrid-row-height);
+}
+.cloudgrid-body._display-all-text .cloudgrid-row._with-note {
+  height: auto;
+  min-height: var(--cloudgrid-item-height);
+}
+.cloudgrid-body._display-all-text .cloudgrid-rowmain {
+  height: auto;
+  min-height: var(--cloudgrid-row-height);
+}
+.cloudgrid-body._display-all-text .cloudgrid-cell {
+  height: auto;
+  min-height: var(--cloudgrid-row-height);
+  padding-top: 8px;
+  padding-bottom: 8px;
+  white-space: normal;
+  overflow: visible;
+  overflow-wrap: anywhere;
+}
+.cloudgrid-body._display-all-text .cloudgrid-cell span,
+.cloudgrid-body._display-all-text .cloudgrid-cell ::deep .manager-missing {
+  min-width: 0;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: inherit;
 }
 .cloudgrid-columnfooters {
   flex: none;

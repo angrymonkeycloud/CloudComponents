@@ -154,6 +154,40 @@
                 min-width: max-content;
             }
         }
+
+        &._display-all-text {
+            .cloudgrid-row {
+                height: auto;
+                min-height: var(--cloudgrid-row-height);
+
+                &._with-note {
+                    height: auto;
+                    min-height: var(--cloudgrid-item-height);
+                }
+            }
+
+            .cloudgrid-rowmain {
+                height: auto;
+                min-height: var(--cloudgrid-row-height);
+            }
+
+            .cloudgrid-cell {
+                height: auto;
+                min-height: var(--cloudgrid-row-height);
+                padding-top: 8px;
+                padding-bottom: 8px;
+                white-space: normal;
+                overflow: visible;
+                overflow-wrap: anywhere;
+
+                span, ::deep .manager-missing {
+                    min-width: 0;
+                    overflow: visible;
+                    text-overflow: clip;
+                    white-space: inherit;
+                }
+            }
+        }
     }
 
     &-columnfooters {

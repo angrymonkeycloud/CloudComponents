@@ -66,6 +66,12 @@ public partial class CloudDataGridBody
     /// <summary>Placeholder rendered for null cell values.</summary>
     [Parameter] public string EmptyCellText { get; set; } = "--";
 
+    /// <summary>
+    /// Displays complete cell text by allowing rows to grow and text to wrap.
+    /// Defaults to false so the standard fixed-height, ellipsis behavior is preserved.
+    /// </summary>
+    [Parameter] public bool DisplayAllText { get; set; }
+
     [Parameter] public List<CloudDataGridFooterRow> ColumnFooterRows { get; set; } = [];
 
     [Parameter] public bool FixedColumnFooter { get; set; } = true;
@@ -649,6 +655,9 @@ public partial class CloudDataGridBody
 
             if (PagingMode == CloudDataGridPagingMode.InfiniteScroll)
                 classes.Add("_virtualized");
+
+            if (DisplayAllText)
+                classes.Add("_display-all-text");
 
             return string.Join(' ', classes);
         }

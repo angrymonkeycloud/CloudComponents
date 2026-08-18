@@ -191,6 +191,7 @@ Return a `CloudDataGridDataResult` with `Rows`, `Page`, `PageSize`, `Total`, and
 | `LoadingText` | `string` | `retrieving data...` | Loading status text. |
 | `SearchingText` | `string` | `searching...` | Searching status text. |
 | `EmptyCellText` | `string` | `--` | Placeholder for null/empty cells. |
+| `DisplayAllText` | `bool` | `false` | Allows body rows to grow and wraps complete cell text instead of truncating it with an ellipsis. |
 | `ColumnFooterRows` | `List<CloudDataGridFooterRow>` | `[]` | Summary rows aligned with the data columns. |
 | `FixedColumnFooter` | `bool` | `true` | Keeps column summary rows visible at the bottom of the table viewport. |
 | `RowHeight` | `double?` | `null` | Overrides `--cloudgrid-row-height` in px. |

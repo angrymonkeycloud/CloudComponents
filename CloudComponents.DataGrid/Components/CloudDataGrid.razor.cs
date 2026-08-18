@@ -69,6 +69,12 @@ public partial class CloudDataGrid : IAsyncDisposable
     /// <summary>Placeholder rendered for null cell values.</summary>
     [Parameter] public string EmptyCellText { get; set; } = "--";
 
+    /// <summary>
+    /// Displays complete cell text by allowing rows to grow and text to wrap.
+    /// Defaults to false so rows remain fixed-height and overflowing text is truncated.
+    /// </summary>
+    [Parameter] public bool DisplayAllText { get; set; }
+
     /// <summary>Summary rows aligned to the data columns (for example, "Total" and a value).</summary>
     [Parameter] public List<CloudDataGridFooterRow> ColumnFooterRows { get; set; } = [];
 
