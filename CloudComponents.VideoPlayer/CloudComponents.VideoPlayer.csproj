@@ -37,6 +37,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Remove="artifacts\**" />
 		<None Update="amc-logo.png">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
