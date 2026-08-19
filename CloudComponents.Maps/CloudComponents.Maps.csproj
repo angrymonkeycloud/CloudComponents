@@ -1,5 +1,4 @@
-﻿
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
@@ -14,8 +13,8 @@
 		<FileVersion>$(PackageVersion)</FileVersion>
 		<PackageIcon>amc-logo.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-	<AssemblyVersion>$(PackageVersion)</AssemblyVersion></PropertyGroup>
-
+		<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<SupportedPlatform Include="browser" />
@@ -31,10 +30,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Remove="artifacts\**" />
 		<None Update="amc-logo.png">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
 		<None Update="README.md" Pack="True" PackagePath="\" />
-	<Content Remove="mateconfig.json" /><None Include="mateconfig.json"><CopyToOutputDirectory>Never</CopyToOutputDirectory><CopyToPublishDirectory>Never</CopyToPublishDirectory></None></ItemGroup>
+		<Content Remove="mateconfig.json" />
+		<None Include="mateconfig.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
+		</None>
+	</ItemGroup>
 </Project>

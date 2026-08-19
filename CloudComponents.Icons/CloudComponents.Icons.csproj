@@ -4,16 +4,9 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-
-
-
-
 		<AssemblyName>AngryMonkey.CloudComponents.Icons</AssemblyName>
 		<PackageId>AngryMonkey.CloudComponents.Icons</PackageId>
 		<RootNamespace>AngryMonkey.CloudComponents.Icons</RootNamespace>
-
-
-
 		<Version>4.2.4</Version>
 		<Authors>Angry Monkey</Authors>
 		<Company>Angry Monkey</Company>
@@ -33,6 +26,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Remove="artifacts\**" />
 		<None Update="amc-logo.png">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
