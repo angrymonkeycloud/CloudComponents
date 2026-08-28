@@ -86,6 +86,11 @@
 .map-search-box._busy {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(0, 120, 212, 0.25);
 }
+.map-search-box input {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
 .map-search-icon {
   width: 18px;
   height: 18px;
