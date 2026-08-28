@@ -2,7 +2,8 @@
   "files": [
     {
       "input": "Components/AzureMap.razor.less",
-      "output": "Components/AzureMap.razor.css"
+      "output": "Components/AzureMap.razor.css",
+      "minify": false
     }
   ]
 }
