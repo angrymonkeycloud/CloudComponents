@@ -76,7 +76,7 @@
         </div>
     }
 
-    @if (_regionLegendEntries.Count > 0)
+    @if (ShowLegend && _regionLegendEntries.Count > 0)
     {
         <div class="map-legend">
             @foreach (var entry in _regionLegendEntries)

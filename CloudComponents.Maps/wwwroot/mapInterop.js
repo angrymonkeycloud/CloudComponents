@@ -1316,6 +1316,114 @@ class AzureMapController {
         }
     }
 
+    /// Search only Azure Maps geography municipality records inside one country.
+    /// This is intentionally paged: bulk geography imports can continue with `offset`
+    /// until every result reported by Azure has been collected.
+    async searchMunicipalities(query, countryCode, limit, offset, useTypeahead) {
+        if (!query || !countryCode) {
+            console.log("Azure Maps: missing query or countryCode", {
+                query,
+                countryCode
+            });
+
+            return {
+                totalResults: 0,
+                results: []
+            };
+        }
+
+        try {
+            const key = this._options.subscriptionKey;
+
+            const pageSize = Math.max(
+                1,
+                Math.min(100, limit || 100)
+            );
+
+            const pageOffset = Math.max(0, offset || 0);
+
+            const typeahead = useTypeahead
+                ? "&typeahead=true"
+                : "";
+
+            const url =
+                `https://atlas.microsoft.com/search/fuzzy/json` +
+                `?api-version=1.0` +
+                `&subscription-key=${encodeURIComponent(key)}` +
+                `&query=${encodeURIComponent(query)}` +
+                `&idxSet=Geo` +
+                `&entityType=Municipality` +
+                `&countrySet=${encodeURIComponent(countryCode)}` +
+                `&limit=${pageSize}` +
+                `&ofs=${pageOffset}` +
+                `&language=en-US` +
+                typeahead;
+
+            const resp = await fetch(url);
+
+            if (!resp.ok) {
+                return {
+                    totalResults: 0,
+                    results: []
+                };
+            }
+
+            const data = await resp.json();
+
+            const results = (data?.results || [])
+                .map(result => {
+                    const address = result?.address || {};
+
+                    return {
+                        countryCode:
+                            address.countryCode ?? null,
+
+                        countrySubdivisionCode:
+                            address.countrySubdivisionCode ?? null,
+
+                        countrySecondarySubdivision:
+                            address.countrySecondarySubdivision ?? null,
+
+                        localName:
+                            address.localName ?? null,
+
+                        municipality:
+                            address.municipality ?? null,
+
+                        municipalitySubdivision:
+                            address.municipalitySubdivision ?? null,
+
+                        freeformAddress:
+                            address.freeformAddress ?? null
+                    };
+                })
+                .filter(result =>
+                    result.localName ||
+                    result.municipality ||
+                    result.municipalitySubdivision
+                );
+
+            return {
+                totalResults:
+                    data?.summary?.totalResults ??
+                    results.length,
+
+                results
+            };
+        }
+        catch (error) {
+            console.error(
+                "Azure Maps municipality search exception:",
+                error
+            );
+
+            return {
+                totalResults: 0,
+                results: []
+            };
+        }
+    }
+
     /// Get the browser's current geolocation without showing any custom prompt.
     /// Returns { latitude, longitude } or null if unavailable / denied.
     async getBrowserLocation() {
@@ -1347,7 +1455,9 @@ class AzureMapController {
                 countrySecondarySubdivision: addr.countrySecondarySubdivision ?? null,
                 municipality: addr.municipality ?? null,
                 municipalitySubdivision: addr.municipalitySubdivision ?? null,
-                postalCode: addr.postalCode ?? null
+                postalCode: addr.postalCode ?? null,
+                localName: addr.localName ?? null,
+                freeformAddress: addr.freeformAddress ?? null
             };
         } catch {
             return null;

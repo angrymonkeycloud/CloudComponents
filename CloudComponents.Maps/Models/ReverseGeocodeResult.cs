@@ -9,4 +9,6 @@ public sealed record ReverseGeocodeResult(
     string? CountrySecondarySubdivision,
     string? Municipality,
     string? MunicipalitySubdivision,
-    string? PostalCode);
+    string? PostalCode,
+    string? LocalName = null,
+    string? FreeformAddress = null);

@@ -99,6 +99,13 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     [Parameter] public IReadOnlyList<MapRegion>? Regions { get; set; }
 
     /// <summary>
+    /// Shows the region/zone legend (swatch + label) in the corner of the map when any
+    /// labelled region or zone is drawn. Defaults to <c>true</c>; set to <c>false</c> to
+    /// keep the map clean where the legend is redundant.
+    /// </summary>
+    [Parameter] public bool ShowLegend { get; set; } = true;
+
+    /// <summary>
     /// How users add markers by interacting with the map. Opt-in: defaults to
     /// <see cref="MarkerAddTrigger.Disabled"/> so the map doesn't create markers unless you ask it to.
     /// </summary>
@@ -464,6 +471,29 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     {
         var c = EnsureController();
         return await c.InvokeAsync<ReverseGeocodeResult?>("reverseGeocode", latitude, longitude);
+    }
+
+    /// <summary>
+    /// Searches Azure Maps' geography index for municipalities in one country.
+    /// Results are paged so callers can import every municipality returned for
+    /// a country, state, province, or district query without truncating at the
+    /// first result page.
+    /// </summary>
+    public async Task<MunicipalitySearchPage> SearchMunicipalitiesAsync(
+        string query,
+        string countryCode,
+        int limit = 100,
+        int offset = 0,
+        bool useTypeahead = false)
+    {
+        IJSObjectReference controller = EnsureController();
+        return await controller.InvokeAsync<MunicipalitySearchPage>(
+            "searchMunicipalities",
+            query,
+            countryCode,
+            limit,
+            offset,
+            useTypeahead);
     }
 
     /// <summary>
