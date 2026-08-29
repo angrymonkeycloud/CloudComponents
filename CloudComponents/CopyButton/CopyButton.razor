@@ -1,0 +1,25 @@
+@namespace AngryMonkey.CloudComponents
+
+<span class="amc-copybutton @CssClass">
+    @if (ChildContent != null)
+    {
+        <span class="amc-copybutton-content @ContentCssClass" @onclick="OnContentClick">
+            @ChildContent
+        </span>
+    }
+
+    @if (ShowButton)
+    {
+        <button type="button" class="--amc-iconbutton amc-copybutton-button" @onclick="CopyAsync" title="@ButtonTitle" aria-label="@ButtonTitle">
+            @if (ButtonContent != null)
+            {
+                @ButtonContent
+            }
+            else
+            {
+                <AngryMonkey.CloudComponents.Icons.CopyIcon />
+                <AngryMonkey.CloudComponents.Icons.Checkmark />
+            }
+        </button>
+    }
+</span>

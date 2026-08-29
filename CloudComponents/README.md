@@ -23,6 +23,7 @@ dotnet add package AngryMonkey.CloudComponents
 | `PopupComp` | Programmatically controlled popup content |
 | `Dialog` | Modal confirmation and action workflows |
 | `Switch` | Boolean and optional tri-state input |
+| `CopyButton` | Copies text to the clipboard with a checkmark confirmation |
 | `Tabs` | Structured tab navigation |
 | `ProgressBar` | Interactive or display-only progress |
 | `VolumeBar` | Compact audio volume input |

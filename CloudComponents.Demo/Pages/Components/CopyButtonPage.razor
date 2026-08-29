@@ -1,0 +1,69 @@
+@page "/components/copybutton"
+
+<PageTitle>Copy Button — Cloud Components Demo</PageTitle>
+
+<div class="page-header">
+    <h1>Copy Button</h1>
+    <p>
+        Copies text to the clipboard and swaps the icon for a checkmark for a short moment as
+        confirmation. The button can be shown, hidden, or replaced with custom content, and the
+        displayed text itself can optionally be made clickable too.
+    </p>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Icon-only button</h2>
+    <p class="card-subtitle">Default usage — just pass <code>Text</code>. The icon flips to a checkmark for a second after copying.</p>
+
+    <div class="demo-stage">
+        <CopyButton Text="@_iconOnlyText" />
+    </div>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Label + clickable text</h2>
+    <p class="card-subtitle">
+        <code>ChildContent</code> renders content next to the button. With
+        <code>CopyOnContentClick="true"</code>, clicking the text copies it too — not just the icon.
+    </p>
+
+    <div class="demo-stage">
+        <CopyButton Text="@_snippet" CopyOnContentClick="true">
+            <code>@_snippet</code>
+        </CopyButton>
+    </div>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Hidden button, text-only copy</h2>
+    <p class="card-subtitle">
+        <code>ShowButton="false"</code> hides the icon button entirely, leaving the text (with
+        <code>CopyOnContentClick="true"</code>) as the only way to trigger the copy.
+    </p>
+
+    <div class="demo-stage">
+        <CopyButton Text="@_hexColor" ShowButton="false" CopyOnContentClick="true">
+            <span class="badge">@_hexColor</span>
+        </CopyButton>
+    </div>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Custom button content</h2>
+    <p class="card-subtitle"><code>ButtonContent</code> replaces the default copy/checkmark icons with anything you want.</p>
+
+    <div class="demo-stage">
+        <CopyButton Text="@_link">
+            <ButtonContent>
+                <span>Copy link</span>
+            </ButtonContent>
+        </CopyButton>
+    </div>
+</div>
+
+@code {
+    private readonly string _iconOnlyText = "Copied from the icon-only button!";
+    private readonly string _snippet = "dotnet add package AngryMonkey.CloudComponents";
+    private readonly string _hexColor = "#0B5FFF";
+    private readonly string _link = "https://angrymonkeycloud.com/cloudcomponents";
+}

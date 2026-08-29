@@ -15,7 +15,7 @@ Free, open-source Blazor component libraries for .NET 10.
 
 | Package | Version | Downloads | Description |
 | --- | --- | --- | --- |
-| `AngryMonkey.CloudComponents` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents?style=flat-square&logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents) | [![Downloads](https://img.shields.io/nuget/dt/AngryMonkey.CloudComponents?style=flat-square&logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents) | Core UI primitives: Popup, Dialog, Switch, Tabs, ProgressBar, VolumeBar |
+| `AngryMonkey.CloudComponents` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents?style=flat-square&logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents) | [![Downloads](https://img.shields.io/nuget/dt/AngryMonkey.CloudComponents?style=flat-square&logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents) | Core UI primitives: Popup, Dialog, Switch, Tabs, ProgressBar, VolumeBar, CopyButton |
 | `AngryMonkey.CloudComponents.DataGrid` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.DataGrid?style=flat-square&logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.DataGrid) | [![Downloads](https://img.shields.io/nuget/dt/AngryMonkey.CloudComponents.DataGrid?style=flat-square&logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.DataGrid) | Data grid with sorting, paging, selection, actions, reordering, and export |
 | `AngryMonkey.CloudComponents.VideoPlayer` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.VideoPlayer?style=flat-square&logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.VideoPlayer) | [![Downloads](https://img.shields.io/nuget/dt/AngryMonkey.CloudComponents.VideoPlayer?style=flat-square&logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.VideoPlayer) | HTML5 and HLS video player with controls, casting, and settings |
 | `AngryMonkey.CloudComponents.Maps` | [![NuGet](https://img.shields.io/nuget/v/AngryMonkey.CloudComponents.Maps?style=flat-square&logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.Maps) | [![Downloads](https://img.shields.io/nuget/dt/AngryMonkey.CloudComponents.Maps?style=flat-square&logo=nuget)](https://www.nuget.org/packages/AngryMonkey.CloudComponents.Maps) | Azure Maps wrapper with markers, regions, geocoding, search, and location lock |
@@ -82,6 +82,7 @@ dotnet add package AngryMonkey.CloudComponents.Icons
 | `PopupComp` | `<PopupComp @ref="_p" Title="Hello"><p>Body</p></PopupComp>` then `await _p.Open()` |
 | `Dialog` | `<Dialog @ref="_d" Title="Confirm" Buttons="@_btns">Message</Dialog>` |
 | `Switch` | `<Switch Value="@_val" ValueChanged="OnChanged" AllowNone="true" DisplayText="true" />` |
+| `CopyButton` | `<CopyButton Text="@_value" CopyOnContentClick="true">@_value</CopyButton>` |
 | `Tabs` | `<Tabs TabsList="@_tabs" />` where `_tabs` is a `List<TabItem>` |
 | `ProgressBar` | `<ProgressBar Style="ProgressBarStyle.Flat" Value="@_v" Total="100" OnChanged="OnChanged" />` |
 | `VolumeBar` | `<VolumeBar Value="@_vol" Extended="true" OnChanged="OnChanged" />` |

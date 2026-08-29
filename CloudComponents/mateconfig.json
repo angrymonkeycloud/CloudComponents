@@ -11,48 +11,73 @@
   ],
   "files": [
     {
-      "output": [ "VideoPlayer/VideoPlayer.razor.css", "VideoPlayer/VideoPlayerCast.razor.css" ],
-      "input": "VideoPlayer/videoplayer.less"
+      "output": [
+        "VideoPlayer/VideoPlayer.razor.css",
+        "VideoPlayer/VideoPlayerCast.razor.css"
+      ],
+      "input": "VideoPlayer/videoplayer.razor.less",
+      "minify": false
     },
     {
       "output": "Tabs/tabs.razor.css",
-      "input": "Tabs/tabs.less"
+      "input": "Tabs/tabs.razor.less",
+      "minify": false
     },
     {
       "output": "wwwroot/js/amc-components.js",
-      "input": [ "VideoPlayer/hls.js", "Dialog/dialog.js", "ProgressBar/progressbar.js", "VideoPlayer/VideoPlayer.razor.js", "VideoPlayer/VideoPlayerCast.razor.js" ]
+      "input": [
+        "VideoPlayer/hls.js",
+        "Dialog/dialog.js",
+        "ProgressBar/progressbar.js",
+        "VideoPlayer/VideoPlayer.razor.js",
+        "VideoPlayer/VideoPlayerCast.razor.js"
+      ]
     },
     {
       "output": "wwwroot/css/amc-components.css",
-      "input": [ "Dialog/dialog.less" ]
+      "input": [
+        "Dialog/dialog.less"
+      ]
     },
     {
       "output": "ProgressBar/ProgressBar.razor.css",
-      "input": "ProgressBar/progressbar.less"
+      "input": "ProgressBar/ProgressBar.razor.less",
+      "minify": false
     },
     {
       "output": "Popup/Popup.razor.css",
-      "input": "Popup/popup.less"
+      "input": "Popup/Popup.razor.less",
+      "minify": false
     },
     {
       "output": "SwitchComponent/Switch.razor.css",
-      "input": "SwitchComponent/Switch.razor.less"
+      "input": "SwitchComponent/Switch.razor.less",
+      "minify": false
+    },
+    {
+      "output": "CopyButton/CopyButton.razor.css",
+      "input": "CopyButton/CopyButton.razor.less",
+      "minify": false
     },
     {
       "output": "VolumeBar/VolumeBar.razor.css",
-      "input": "VolumeBar/VolumeBar.less"
+      "input": "VolumeBar/VolumeBar.razor.less",
+      "minify": false
     },
     {
       "output": "DateTimePicker/DateTimePicker.razor.css",
-      "input": "DateTimePicker/DateTimePicker.less"
+      "input": "DateTimePicker/DateTimePicker.razor.less",
+      "minify": false
     },
     {
       "output": "DateTimePicker/Partials/DateTimePickerNavigation.razor.css",
-      "input": "DateTimePicker/Partials/DateTimePickerNavigation.less"
+      "input": "DateTimePicker/Partials/DateTimePickerNavigation.razor.less",
+      "minify": false
     },
     {
       "output": "GridView/GridView.razor.css",
-      "input": "GridView/GridView.less"
+      "input": "GridView/GridView.razor.less",
+      "minify": false
     },
     {
       "output": "wwwroot/gridview/gridview.js",

@@ -1,0 +1,38 @@
+@import '../General/css/common.less';
+
+.amc-copybutton {
+    .ComponentsDefault();
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    --amc-accentColor: #000;
+
+    &-content {
+        &._clickable {
+            cursor: pointer;
+
+            &:hover {
+                color: var(--amc-accentColor);
+            }
+        }
+    }
+
+    &-button {
+        ::deep svg:last-child {
+            display: none;
+        }
+    }
+
+    &._success &-button {
+        cursor: default;
+        pointer-events: none;
+
+        ::deep svg:first-child {
+            display: none;
+        }
+
+        ::deep svg:last-child {
+            display: block;
+        }
+    }
+}

@@ -60,7 +60,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="GridView\" />
 		<Folder Include="Popup2\" />
 	</ItemGroup>
 
