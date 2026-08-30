@@ -7,7 +7,7 @@
 		<AssemblyName>AngryMonkey.CloudComponents.Icons</AssemblyName>
 		<PackageId>AngryMonkey.CloudComponents.Icons</PackageId>
 		<RootNamespace>AngryMonkey.CloudComponents.Icons</RootNamespace>
-		<Version>4.2.5</Version>
+		<Version>4.2.6</Version>
 		<Authors>Angry Monkey</Authors>
 		<Company>Angry Monkey</Company>
 		<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
