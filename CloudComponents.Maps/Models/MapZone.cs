@@ -24,8 +24,8 @@ public sealed record MapZone
 {
     /// <summary>
     /// One or more free-text addresses or place names. Each entry is geocoded independently;
-    /// if Azure Maps returns a geometry ID for an entry its actual administrative boundary
-    /// polygon is drawn. Entries without a geometry ID (e.g. street addresses, POIs) are
+    /// if Azure Maps returns a geometry Id for an entry its actual administrative boundary
+    /// polygon is drawn. Entries without a geometry Id (e.g. street addresses, POIs) are
     /// silently skipped — no crash, no fallback rectangle.
     /// </summary>
     public required IReadOnlyList<string> Addresses { get; init; }

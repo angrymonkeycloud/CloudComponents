@@ -64,7 +64,7 @@ public partial class AzureMap
 
     /// <summary>
     /// Resolves each zone's addresses to boundary polygons and renders them on the map.
-    /// Zones whose addresses yield no geometry ID are silently skipped.
+    /// Zones whose addresses yield no geometry Id are silently skipped.
     /// </summary>
     public async Task AddZonesAsync(IEnumerable<MapZone> zones)
     {
@@ -138,7 +138,7 @@ public partial class AzureMap
 
             try
             {
-                // Geocode the address to get a geometry ID.
+                // Geocode the address to get a geometry Id.
                 var geocode = await GeocodeAsync(address, countrySet: zone.CountrySet);
 
                 if (geocode?.GeometryId is not { Length: > 0 } geometryId)

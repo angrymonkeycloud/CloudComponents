@@ -447,7 +447,7 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
 
     /// <summary>
     /// Geocode a query string (city name, address, etc.) using the Azure Maps Search API.
-    /// Returns the center point, viewport, and geometry ID, or <c>null</c> when nothing is found.
+    /// Returns the center point, viewport, and geometry Id, or <c>null</c> when nothing is found.
     /// </summary>
     /// <param name="query">Free-text place name/address to resolve.</param>
     /// <param name="entityType">
@@ -507,7 +507,7 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
-    /// Fetch the actual administrative boundary polygon for a geometry ID.
+    /// Fetch the actual administrative boundary polygon for a geometry Id.
     /// Returns GeoJSON coordinate rings, or <c>null</c> when not available.
     /// </summary>
     public async Task<double[][][]?> GetPolygonAsync(string geometryId)

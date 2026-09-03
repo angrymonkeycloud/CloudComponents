@@ -314,7 +314,7 @@ public sealed record ZoneCheckResult
     public required bool CanZone { get; init; }      // address has a boundary polygon
     public required bool Found { get; init; }         // address was geocoded successfully
     public MapCoordinate? Coordinate { get; init; }  // resolved position (or null)
-    public string? GeometryId { get; init; }         // Azure Maps geometry ID (or null)
+    public string? GeometryId { get; init; }         // Azure Maps geometry Id (or null)
 
     public static readonly ZoneCheckResult NotFound; // address could not be geocoded
 }
@@ -322,7 +322,7 @@ public sealed record ZoneCheckResult
 
 ### `GeocodeResult`
 
-Contains center and viewport bounds plus optional geometry ID:
+Contains center and viewport bounds plus optional geometry Id:
 - `Latitude`, `Longitude`
 - `North`, `South`, `East`, `West`
 - `GeometryId`

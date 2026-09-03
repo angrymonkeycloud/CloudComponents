@@ -7,7 +7,7 @@ namespace AngryMonkey.CloudComponents.Maps.Models;
 public sealed record ZoneCheckResult
 {
     /// <summary>
-    /// <c>true</c> when the address was geocoded AND Azure Maps returned a geometry ID,
+    /// <c>true</c> when the address was geocoded AND Azure Maps returned a geometry Id,
     /// meaning a real administrative boundary polygon can be drawn.
     /// </summary>
     public required bool CanZone { get; init; }
@@ -24,7 +24,7 @@ public sealed record ZoneCheckResult
     /// </summary>
     public MapCoordinate? Coordinate { get; init; }
 
-    /// <summary>Geometry ID returned by Azure Maps, or <c>null</c> when not available.</summary>
+    /// <summary>Geometry Id returned by Azure Maps, or <c>null</c> when not available.</summary>
     public string? GeometryId { get; init; }
 
     /// <summary>A result indicating the address could not be geocoded at all.</summary>

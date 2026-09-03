@@ -1282,7 +1282,7 @@ class AzureMapController {
 
     /// Search for places using the Azure Maps fuzzy search API and return up to `limit`
     /// suggestions for a search-box dropdown. Each result includes a viewport so the
-    /// caller can fit the camera to it, and a geometry ID for polygon lookups.
+    /// caller can fit the camera to it, and a geometry Id for polygon lookups.
     async search(query, limit) {
         if (!query) return [];
         try {
@@ -1464,7 +1464,7 @@ class AzureMapController {
         }
     }
 
-    /// Fetch the actual boundary polygon for a geometry ID from Azure Maps Search Polygon API.
+    /// Fetch the actual boundary polygon for a geometry Id from Azure Maps Search Polygon API.
     /// Returns an array of coordinate rings (GeoJSON Polygon coordinates) or null.
     async getPolygon(geometryId) {
         if (!geometryId) return null;
