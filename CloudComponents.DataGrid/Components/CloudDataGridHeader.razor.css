@@ -94,7 +94,7 @@
   border: none;
   border-radius: 3px;
   background: none;
-  color: var(--cloudgridheader-color, var(--cloudgrid-color, #505050));
+  color: var(--cloudgridheader-color, var(--cloudgrid-color, light-dark(#505050, #e3e9f3)));
   font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
   line-height: 1;
   text-decoration: none;
@@ -105,7 +105,7 @@
   line-height: 1;
 }
 .cloudgridheader-action:hover {
-  background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, #e8e8e8));
+  background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, light-dark(#e8e8e8, #222e42)));
 }
 .cloudgridheader-action ::deep svg {
   flex: none;
@@ -135,7 +135,7 @@
 }
 .cloudgridheader-action._bulk {
   border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
-  background-color: var(--cloudgrid-background, #fff);
+  background-color: var(--cloudgrid-background, light-dark(#fff, #141b29));
   font-size: 12px;
 }
 .cloudgridheader-action._reorder-start {
@@ -193,7 +193,7 @@
   max-width: calc(min(280px, calc(100vw - 16px)));
   margin-top: 4px;
   padding: 4px 0;
-  background: var(--cloudgrid-background, #fff);
+  background: var(--cloudgrid-background, light-dark(#fff, #141b29));
   border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
   border-radius: 4px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
@@ -208,7 +208,7 @@
   padding: 6px 14px;
   border: none;
   background: none;
-  color: var(--cloudgridheader-color, var(--cloudgrid-color, #505050));
+  color: var(--cloudgridheader-color, var(--cloudgrid-color, light-dark(#505050, #e3e9f3)));
   font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
   line-height: 1;
   text-align: left;
@@ -217,7 +217,7 @@
   white-space: nowrap;
 }
 .cloudgridheader-more-item:hover {
-  background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, #e8e8e8));
+  background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, light-dark(#e8e8e8, #222e42)));
 }
 .cloudgridheader-more-item ::deep svg {
   flex: none;
@@ -251,15 +251,15 @@
   padding: 0 12px;
   border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
   border-radius: 3px;
-  background: var(--cloudgrid-background, #fff);
-  color: var(--cloudgridheader-color, var(--cloudgrid-color, #505050));
+  background: var(--cloudgrid-background, light-dark(#fff, #141b29));
+  color: var(--cloudgridheader-color, var(--cloudgrid-color, light-dark(#505050, #e3e9f3)));
   font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
   line-height: 1;
   cursor: pointer;
   white-space: nowrap;
 }
 .cloudgridheader ::deep .cloudgrid-export-btn:hover {
-  background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, #e8e8e8));
+  background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, light-dark(#e8e8e8, #222e42)));
 }
 @media (max-width: 640px) {
   .cloudgridheader {
@@ -315,7 +315,7 @@
   border: none;
   border-radius: 3px;
   background: none;
-  color: var(--cloudgridheader-color, var(--cloudgrid-color, #505050));
+  color: var(--cloudgridheader-color, var(--cloudgrid-color, light-dark(#505050, #e3e9f3)));
   font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
   line-height: 1;
   text-decoration: none;
@@ -326,7 +326,7 @@
   line-height: 1;
 }
 ::deep .cloudgridheader-action:hover {
-  background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, #e8e8e8));
+  background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, light-dark(#e8e8e8, #222e42)));
 }
 ::deep .cloudgridheader-action svg {
   flex: none;
@@ -356,7 +356,7 @@
 }
 ::deep .cloudgridheader-action._bulk {
   border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
-  background-color: var(--cloudgrid-background, #fff);
+  background-color: var(--cloudgrid-background, light-dark(#fff, #141b29));
   font-size: 12px;
 }
 ::deep .cloudgridheader-action._reorder-save {

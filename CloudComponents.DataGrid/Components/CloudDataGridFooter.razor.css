@@ -46,7 +46,7 @@
 }
 .cloudgridfooter-pager button svg polyline {
   fill: none;
-  stroke: var(--cloudgrid-accent-color, #000);
+  stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
   stroke-width: 4px;
   stroke-miterlimit: 10;
 }

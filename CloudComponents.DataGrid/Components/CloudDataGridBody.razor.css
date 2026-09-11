@@ -5,7 +5,7 @@
   flex-direction: column;
   overflow: auto;
   container-type: inline-size;
-  background-color: var(--cloudgrid-body-background, #fff);
+  background-color: var(--cloudgrid-body-background, light-dark(#fff, #141b29));
   scrollbar-color: #505050 #fff;
 }
 .cloudgrid-head {
@@ -17,7 +17,7 @@
   box-sizing: border-box;
   height: var(--cloudgrid-row-height);
   min-width: max-content;
-  background-color: var(--cloudgrid-head-background, #f8f8f8);
+  background-color: var(--cloudgrid-head-background, light-dark(#f8f8f8, #1b2434));
   border-top: 1px solid var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15));
   border-bottom: 1px solid var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15));
 }
@@ -56,7 +56,7 @@
   cursor: pointer;
 }
 .cloudgrid-headcell._sortable:hover {
-  background-color: var(--cloudgrid-hover-background, #e8e8e8);
+  background-color: var(--cloudgrid-hover-background, light-dark(#e8e8e8, #222e42));
 }
 .cloudgrid-resizer {
   position: absolute;
@@ -146,7 +146,7 @@
 .cloudgrid-columnfooters {
   flex: none;
   min-width: max-content;
-  background: var(--cloudgrid-footer-background, #f5f5f5);
+  background: var(--cloudgrid-footer-background, light-dark(#f5f5f5, #1b2434));
   border-top: 1px solid var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15));
   z-index: 8;
 }
@@ -168,8 +168,8 @@
   min-width: 100%;
   height: var(--cloudgrid-item-height);
   border-bottom: 1px solid var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15));
-  background: var(--cloudgrid-category-background, #eef2f7);
-  color: var(--cloudgrid-category-color, var(--cloudgrid-color, #505050));
+  background: var(--cloudgrid-category-background, light-dark(#eef2f7, #1b2434));
+  color: var(--cloudgrid-category-color, var(--cloudgrid-color, light-dark(#505050, #e3e9f3)));
 }
 .cloudgrid-categorycontent {
   position: sticky;
@@ -191,7 +191,7 @@ button.cloudgrid-categorycontent {
   cursor: pointer;
 }
 button.cloudgrid-categorycontent:hover {
-  background: var(--cloudgrid-hover-background, #e8e8e8);
+  background: var(--cloudgrid-hover-background, light-dark(#e8e8e8, #222e42));
 }
 .cloudgrid-categorychevron {
   flex: none;
@@ -215,7 +215,7 @@ button.cloudgrid-categorycontent:hover {
   box-sizing: border-box;
   height: var(--cloudgrid-row-height);
   min-width: 100%;
-  background: var(--cloudgrid-body-background, #fff);
+  background: var(--cloudgrid-body-background, light-dark(#fff, #141b29));
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 .cloudgrid-row._with-note {
@@ -227,23 +227,23 @@ button.cloudgrid-categorycontent:hover {
   text-decoration: none;
 }
 .cloudgrid-row:hover {
-  background-color: var(--cloudgrid-hover-background, #e8e8e8);
+  background-color: var(--cloudgrid-hover-background, light-dark(#e8e8e8, #222e42));
 }
 .cloudgrid-row:hover ._pinned-left,
 .cloudgrid-row:hover ._pinned-right {
-  background-color: var(--cloudgrid-hover-background, #e8e8e8);
+  background-color: var(--cloudgrid-hover-background, light-dark(#e8e8e8, #222e42));
 }
 .cloudgrid-row._selected {
-  background-color: var(--cloudgrid-selected-background, #f8f8f8);
+  background-color: var(--cloudgrid-selected-background, light-dark(#f8f8f8, #243249));
 }
 .cloudgrid-row._selected ._pinned-left,
 .cloudgrid-row._selected ._pinned-right {
-  background-color: var(--cloudgrid-selected-background, #f8f8f8);
+  background-color: var(--cloudgrid-selected-background, light-dark(#f8f8f8, #243249));
 }
 .cloudgrid-row._dragging {
   position: relative;
   z-index: 2;
-  background-color: var(--cloudgrid-selected-background, #f8f8f8);
+  background-color: var(--cloudgrid-selected-background, light-dark(#f8f8f8, #243249));
   opacity: 0.85;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
@@ -314,11 +314,11 @@ button.cloudgrid-categorycontent:hover {
 .cloudgrid-headcell._pinned-left,
 .cloudgrid-headcell._pinned-right {
   z-index: 12;
-  background-color: var(--cloudgrid-head-background, #f8f8f8);
+  background-color: var(--cloudgrid-head-background, light-dark(#f8f8f8, #1b2434));
 }
 .cloudgrid-columnfooter ._pinned-left,
 .cloudgrid-columnfooter ._pinned-right {
-  background-color: var(--cloudgrid-footer-background, #f5f5f5);
+  background-color: var(--cloudgrid-footer-background, light-dark(#f5f5f5, #1b2434));
   z-index: 9;
 }
 .cloudgrid-status {
@@ -337,7 +337,7 @@ button.cloudgrid-categorycontent:hover {
   cursor: pointer;
 }
 .cloudgrid-loadmore:hover:enabled {
-  background-color: var(--cloudgrid-hover-background, #e8e8e8);
+  background-color: var(--cloudgrid-hover-background, light-dark(#e8e8e8, #222e42));
 }
 .cloudgrid-loadmore:disabled {
   opacity: 0.5;
@@ -361,8 +361,8 @@ button.cloudgrid-categorycontent:hover {
   padding: 4px 8px;
   border: 1px solid var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15));
   border-radius: 3px;
-  background-color: var(--cloudgrid-background, #fff);
-  color: var(--cloudgrid-color, #505050);
+  background-color: var(--cloudgrid-background, light-dark(#fff, #141b29));
+  color: var(--cloudgrid-color, light-dark(#505050, #e3e9f3));
   font-size: 12px;
   line-height: 1;
   cursor: pointer;
@@ -376,7 +376,7 @@ button.cloudgrid-categorycontent:hover {
   height: 14px;
 }
 .cloudgrid-action:hover {
-  background-color: var(--cloudgrid-hover-background, #e8e8e8);
+  background-color: var(--cloudgrid-hover-background, light-dark(#e8e8e8, #222e42));
 }
 .cloudgrid-shield {
   position: fixed;

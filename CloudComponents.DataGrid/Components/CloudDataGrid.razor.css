@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  color: var(--cloudgrid-color, #505050);
+  color: var(--cloudgrid-color, light-dark(#505050, #e3e9f3));
   font-size: var(--cloudgrid-font-size, 14px);
   --cloudgrid-row-height: 43px;
   --cloudgrid-note-height: 24px;
