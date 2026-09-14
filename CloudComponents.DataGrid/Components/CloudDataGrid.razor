@@ -42,6 +42,9 @@
 
     @* ── Body (table head + rows + shields) ─────────────────────────────── *@
     <CloudDataGridBody Columns="@Columns"
+                   SavedColumnWidths="@_savedWidths"
+                   ColumnWidthsChanged="OnColumnWidthsChanged"
+                   ActiveSort="@_sort"
                    Data="@_data"
                    IsLoading="@_loading"
                    IsSearching="@_searching"

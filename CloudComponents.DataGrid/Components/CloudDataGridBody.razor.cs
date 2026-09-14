@@ -458,15 +458,20 @@ public partial class CloudDataGridBody
 
     #region Column resizing
 
-    private readonly Dictionary<int, double> _columnWidths = [];
+    [Parameter] public Dictionary<string, double>? SavedColumnWidths { get; set; }
+    [Parameter] public EventCallback<Dictionary<string, double>> ColumnWidthsChanged { get; set; }
+    [Parameter] public CloudDataGridSort? ActiveSort { get; set; }
+    private Dictionary<string, double>? _lastSavedWidths;
+    private Dictionary<string, double> _columnWidths = [];
+    private string ColumnKey(int index) => Columns[index].Key ?? Columns[index].Label;
     private int? _resizeIndex;
     private double _resizeStartX;
     private double _resizeStartWidth;
 
     private double GetColumnWidth(int columnIndex)
     {
-        if (_columnWidths.TryGetValue(columnIndex, out double width))
-            return width;
+        if (columnIndex < Columns.Count && _columnWidths.TryGetValue(ColumnKey(columnIndex), out double width))
+            return Math.Max(Columns[columnIndex].MinWidth, width);
 
         return columnIndex < Columns.Count ? Columns[columnIndex].Width : 100;
     }
@@ -487,12 +492,13 @@ public partial class CloudDataGridBody
 
         double minWidth = columnIndex < Columns.Count ? Columns[columnIndex].MinWidth : 40;
 
-        _columnWidths[columnIndex] = Math.Max(minWidth, _resizeStartWidth + e.ClientX - _resizeStartX);
+        _columnWidths[ColumnKey(columnIndex)] = Math.Clamp(_resizeStartWidth + e.ClientX - _resizeStartX, minWidth, Math.Max(minWidth, 3000));
     }
 
     private async Task EndResize()
     {
         _resizeIndex = null;
+        await ColumnWidthsChanged.InvokeAsync(new Dictionary<string, double>(_columnWidths));
         await OnResizingChanged.InvokeAsync(false);
     }
 
@@ -570,6 +576,17 @@ public partial class CloudDataGridBody
 
     protected override async Task OnParametersSetAsync()
     {
+        if (!ReferenceEquals(_lastSavedWidths, SavedColumnWidths))
+        {
+            _lastSavedWidths = SavedColumnWidths;
+            _columnWidths = SavedColumnWidths is null ? [] : new(SavedColumnWidths);
+        }
+        if (OnSortChanged.HasDelegate)
+        {
+            int index = ActiveSort is null ? -1 : Columns.FindIndex(column => (column.Key ?? column.Label) == ActiveSort.Key);
+            _sortIndex = index < 0 ? null : index;
+            if (ActiveSort is not null) _sortDirection = ActiveSort.Direction;
+        }
         (int, int, int) signature = (Data?.Total ?? 0, Data?.Rows.Count ?? 0, Data?.Page ?? 0);
         (bool, bool, bool, string) viewSignature = (
             EnableRowCategories,

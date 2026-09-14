@@ -165,10 +165,11 @@ public partial class CloudDataGrid : IAsyncDisposable
         }
     }
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         InitExportContent();
-        return ExecuteAsync(page: 1, isAppend: false);
+        await RestorePreferencesAsync();
+        await ExecuteAsync(page: 1, isAppend: false);
     }
 
     /// <summary>Reloads from page 1, clearing any active search and sort.</summary>
@@ -240,22 +241,21 @@ public partial class CloudDataGrid : IAsyncDisposable
         return ExecuteAsync(_data.Page + 1, isAppend: append);
     }
 
-    private Task OnSortChanged(CloudDataGridSort sort)
+    private async Task OnSortChanged(CloudDataGridSort sort)
     {
         _sort = sort;
-        _data = null;
-        return ExecuteAsync(page: 1, isAppend: false);
+        await SavePreferencesAsync();
+        await ExecuteAsync(page: 1, isAppend: false);
     }
 
     private Task OnSearchChanged(string? query)
     {
         _search = string.IsNullOrWhiteSpace(query) ? null : query.Trim();
-        _sort = null;
-        _data = null;
+        if (string.IsNullOrEmpty(PreferenceKey)) _sort = null;
         return ExecuteAsync(page: 1, isAppend: false, isSearch: true);
     }
 
-    private Task OnRefreshAsync() => ReloadAsync();
+    private Task OnRefreshAsync() => string.IsNullOrEmpty(PreferenceKey) ? ReloadAsync() : RefreshAsync();
 
     #endregion
 
