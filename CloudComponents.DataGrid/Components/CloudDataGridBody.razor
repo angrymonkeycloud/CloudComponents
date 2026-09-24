@@ -196,7 +196,12 @@
     </text>;
 
     private RenderFragment<CloudDataGridRow> RenderRow => row => @<text>
-        <div class="cloudgrid-row @RowClasses(row)" style="@row.Style" data-id="@row.Id" @attributes="row.Attributes">
+        <div class="cloudgrid-row @RowClasses(row) @(!string.IsNullOrEmpty(row.Link) ? "_linked" : null)" style="@row.Style" data-id="@row.Id" @attributes="row.Attributes">
+
+          @if (!string.IsNullOrEmpty(row.Link))
+          {
+              <a class="cloudgrid-rowlink" href="@row.Link" target="@LinkTarget" aria-label="Open record"></a>
+          }
 
           <div class="cloudgrid-rowmain" style="@row.Style">
 
@@ -218,14 +223,7 @@
                 </div>
             }
 
-            @if (!string.IsNullOrEmpty(row.Link))
-            {
-                <a href="@row.Link" target="@LinkTarget">@RowCells(row)</a>
-            }
-            else
-            {
-                @RowCells(row)
-            }
+            @RowCells(row)
 
             @{
                 List<CloudDataGridAction> rowActions = [.. RowVisibleActions(row)];

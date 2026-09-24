@@ -71,6 +71,9 @@
   border-right: 3px solid var(--cloudgrid-accent-color, #000);
 }
 .cloudgrid-check {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -84,6 +87,9 @@
   cursor: pointer;
 }
 .cloudgrid-draghandle {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -210,6 +216,8 @@ button.cloudgrid-categorycontent:hover {
   text-align: center;
 }
 .cloudgrid-row {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -220,11 +228,6 @@ button.cloudgrid-categorycontent:hover {
 }
 .cloudgrid-row._with-note {
   height: var(--cloudgrid-item-height);
-}
-.cloudgrid-row a {
-  display: contents;
-  color: inherit;
-  text-decoration: none;
 }
 .cloudgrid-row:hover {
   background-color: var(--cloudgrid-hover-background, light-dark(#e8e8e8, #222e42));
@@ -251,15 +254,29 @@ button.cloudgrid-categorycontent:hover {
   opacity: 0.4;
   background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.05), transparent);
 }
+.cloudgrid-rowlink {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  border-radius: inherit;
+  color: inherit;
+  text-decoration: none;
+}
+.cloudgrid-rowlink:focus-visible {
+  outline: 2px solid var(--cloudgrid-accent-color, #000);
+  outline-offset: -3px;
+}
+.cloudgrid-row._linked .cloudgrid-rowmain,
+.cloudgrid-row._linked .cloudgrid-rownote {
+  pointer-events: none;
+}
 .cloudgrid-rowmain {
   display: flex;
   flex: none;
   height: var(--cloudgrid-row-height);
   min-width: 100%;
   background: inherit;
-}
-.cloudgrid-rowmain > a {
-  display: contents;
 }
 .cloudgrid-rownote {
   position: sticky;
@@ -344,6 +361,9 @@ button.cloudgrid-categorycontent:hover {
   cursor: default;
 }
 .cloudgrid-rowactions {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
   display: flex;
   align-items: center;
   gap: 4px;

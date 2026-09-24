@@ -15,6 +15,9 @@ namespace CloudComponents.VideoPlayer
      {
          await Init();
 
+         if (Metadata.VideoState == VideoStates.Error)
+             return;
+
          if (string.IsNullOrEmpty(Metadata.VideoUrl))
              return;
 
@@ -99,12 +102,6 @@ namespace CloudComponents.VideoPlayer
  try
  {
  await JS.InvokeVoidAsync("amcVideoPlayerInit", ComponentElement);
- }
- catch (Exception e)
- {
- Metadata.VideoState = VideoStates.Error;
- }
-
  await Implement(VideoEvents.TimeUpdate);
  await Implement(VideoEvents.Play);
  await Implement(VideoEvents.Playing);
@@ -113,6 +110,13 @@ namespace CloudComponents.VideoPlayer
  await Implement(VideoEvents.LoadedMetadata);
 
  Metadata.VideoState = VideoStates.Ready;
+ }
+ catch (JSException)
+ {
+ // A missing or failed static asset should put only this player in its error
+ // state; it must never tear down the containing form or popup render tree.
+ Metadata.VideoState = VideoStates.Error;
+ }
 
  StateHasChanged();
  }

@@ -50,6 +50,11 @@
       "minify": false
     },
     {
+      "output": "Popup2/PopupComp.razor.css",
+      "input": "Popup2/PopupComp.razor.less",
+      "minify": false
+    },
+    {
       "output": "SwitchComponent/Switch.razor.css",
       "input": "SwitchComponent/Switch.razor.less",
       "minify": false
