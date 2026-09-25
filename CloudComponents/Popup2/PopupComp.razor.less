@@ -17,7 +17,10 @@
     visibility: hidden;
     transition: opacity .2s ease, visibility .2s ease;
 
-    &._open { opacity: 1; visibility: visible; }
+    &._open {
+        opacity: 1;
+        visibility: visible;
+    }
 
     .header {
         display: flex;
@@ -71,7 +74,9 @@
         border-top: 1px solid var(--cdm-border, #e2e8f0);
         background: var(--cdm-subtle, #f8fafc);
 
-        button { max-width: 100%; }
+        button {
+            max-width: 100%;
+        }
 
         .close,
         ::deep .back {
@@ -87,11 +92,26 @@
             cursor: pointer;
             font-size: 0;
 
-            svg { width: 1rem; height: 1rem; }
+            svg {
+                width: 1rem;
+                height: 1rem;
+            }
         }
 
-        .close ::deep .--svg-fill { fill: #fff; }
-        ::deep .back svg { transform: rotate(180deg); stroke: #fff; }
+        .close ::deep .--svg-fill {
+            fill: #fff;
+        }
+
+        ::deep .back svg {
+            transform: rotate(180deg);
+            stroke: #fff;
+        }
+
+        &._center {
+            .close {
+                margin-inline: auto;
+            }
+        }
     }
 }
 
@@ -120,24 +140,45 @@
 }
 
 .modal._small .modal-content,
-.modal._small .modal-slot { max-width: 26.25rem; }
+.modal._small .modal-slot {
+    max-width: 26.25rem;
+}
+
 .modal._medium .modal-content,
-.modal._medium .modal-slot { max-width: 40rem; }
+.modal._medium .modal-slot {
+    max-width: 40rem;
+}
+
 .modal._large .modal-content,
-.modal._large .modal-slot { max-width: 50rem; }
+.modal._large .modal-slot {
+    max-width: 50rem;
+}
+
 .modal._xlarge .modal-content,
-.modal._xlarge .modal-slot { max-width: 62.5rem; }
+.modal._xlarge .modal-slot {
+    max-width: 62.5rem;
+}
+
 .modal._form .modal-content,
-.modal._form .modal-slot { max-width: 37.5rem; }
+.modal._form .modal-slot {
+    max-width: 37.5rem;
+}
 
 @keyframes popupIn {
-    from { opacity: 0; transform: translateY(.75rem) scale(.98); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+    from {
+        opacity: 0;
+        transform: translateY(.75rem) scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 @media (max-width: 40rem) {
     .modal {
-        align-items: flex-end;
+        align-items: center;
         padding: .5rem;
 
         .actions {
