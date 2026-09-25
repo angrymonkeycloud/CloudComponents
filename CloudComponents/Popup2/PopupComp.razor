@@ -30,7 +30,7 @@
 
                 @if (Footer is not null || !HeaderClose)
                 {
-                    <div class="actions">
+                    <div class="actions @(Footer ==null ? "_center"  : string.Empty)">
 
                         @if (Footer is not null)
                         {
