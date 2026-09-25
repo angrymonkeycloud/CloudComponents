@@ -1,3 +1,4 @@
+@import (reference) "../../src/css/theme.less";
 .ComponentsDefault {
 	user-select: none;
 	font-family: 'Segoe UI';
@@ -31,12 +32,12 @@
 
 		.amc-svg {
 			&-fill {
-				fill: var(--amc-accentColor);
+				fill: @components-color-primary;
 			}
 
 			&-stroke {
 				fill: none;
-				stroke: var(--amc-accentColor);
+				stroke: @components-color-primary;
 				stroke-width: 0.5;
 				stroke-miterlimit: 10;
 

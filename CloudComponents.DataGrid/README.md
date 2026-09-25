@@ -194,7 +194,7 @@ Return a `CloudDataGridDataResult` with `Rows`, `Page`, `PageSize`, `Total`, and
 | `DisplayAllText` | `bool` | `false` | Allows body rows to grow and wraps complete cell text instead of truncating it with an ellipsis. |
 | `ColumnFooterRows` | `List<CloudDataGridFooterRow>` | `[]` | Summary rows aligned with the data columns. |
 | `FixedColumnFooter` | `bool` | `true` | Keeps column summary rows visible at the bottom of the table viewport. |
-| `RowHeight` | `double?` | `null` | Overrides `--cloudgrid-row-height` in px. |
+| `RowHeight` | `double?` | `null` | Overrides `--cloudcomponents-grid-row-height` in px. |
 | `RowNoteHeight` | `double` | `24` | Fixed note-line height used by virtualization. |
 | `ReserveRowNoteSpace` | `bool` | `false` | Reserves note space before later infinite-scroll pages with notes are loaded. |
 | `ShowRowNotes` | `bool` | `true` | Shows or hides notes supplied by rows. |
@@ -386,7 +386,7 @@ Assign the same stable key to related rows. The grid inserts category headers in
 ### `RowHeight`
 
 - Grid is exactly tall enough to show `RowsPerPage` rows (no more, no less)
-- Calculated as `RowsPerPage × var(--cloudgrid-row-height)`
+- Calculated as `RowsPerPage × var(--cloudcomponents-grid-row-height)`
 - The body scrolls internally if accumulating paging (`LoadMore`/`InfiniteScroll`) appends beyond that height
 - Best for embedding a grid in a content flow without forcing a container height
 
@@ -512,24 +512,24 @@ The component uses scoped styles authored in `*.razor.less` and compiled to `*.r
 
 | Variable | Default |
 |---|---|
-| `--cloudgrid-font-size` | `14px` |
-| `--cloudgrid-row-height` | `32px` |
-| `--cloudgrid-color` | `#505050` |
-| `--cloudgrid-background` | `#fff` |
-| `--cloudgrid-accent-color` | `#000` |
-| `--cloudgrid-border-color` | `rgba(0,0,0,0.15)` |
-| `--cloudgrid-head-background` | `#f8f8f8` |
-| `--cloudgrid-hover-background` | `#e8e8e8` |
-| `--cloudgrid-selected-background` | `#f8f8f8` |
+| `--cloudcomponents-grid-font-size` | `14px` |
+| `--cloudcomponents-grid-row-height` | `32px` |
+| `--cloudcomponents-grid-color` | `#505050` |
+| `--cloudcomponents-grid-background` | `#fff` |
+| `--cloudcomponents-grid-accent-color` | `#000` |
+| `--cloudcomponents-grid-border-color` | `rgba(0,0,0,0.15)` |
+| `--cloudcomponents-grid-head-background` | `#f8f8f8` |
+| `--cloudcomponents-grid-hover-background` | `#e8e8e8` |
+| `--cloudcomponents-grid-selected-background` | `#f8f8f8` |
 
-Header-specific variables (`--cloudgridheader-*`) fall back to matching `--cloudgrid-*` values.
+Header-specific variables (`--cloudcomponents-grid-header-*`) fall back to matching `--cloudcomponents-grid-*` values.
 
 Example:
 
 ```css
 :root {
-    --cloudgrid-accent-color: #0a5dc2;
-    --cloudgrid-row-height: 40px;
+    --cloudcomponents-grid-accent-color: #0a5dc2;
+    --cloudcomponents-grid-row-height: 40px;
 }
 ```
 

@@ -18,8 +18,8 @@ You can inject an accent color and a different radius as follows:
 
 ```css
 :root {
-    --amc-videoplayer-accentColor: #fff !important;
-    --amc-videoplayer-roundedCorder: 3px !important;
+    --cloudcomponents-video-player-accent-color: #fff !important;
+    --cloudcomponents-video-player-rounded-corder: 3px !important;
 }
 ```
 

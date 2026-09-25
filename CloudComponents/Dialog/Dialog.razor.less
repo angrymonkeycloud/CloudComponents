@@ -1,4 +1,5 @@
-﻿@import '../General/css/common.less';
+@import (reference) "../src/css/theme.less";
+@import '../General/css/common.less';
 
 ::deep {
     .amc-dialog-message {
@@ -15,19 +16,19 @@
             &:focus,
             &:hover {
                 padding: .4em .6em;
-                color: var(--amc-accentColor);
+                color: @components-color-primary;
                 background-color: #fff;
                 border-radius: 4px;
                 border: 1px solid transparent;
 
                 &:focus {
-                    border-color: var(--amc-accentColor);
+                    border-color: @components-color-primary;
                 }
 
                 &:hover {
                     color: #fff;
-                    background-color: var(--amc-accentColor);
-                    border-color: var(--amc-accentColor);
+                    background-color: @components-color-primary;
+                    border-color: @components-color-primary;
                 }
             }
         }

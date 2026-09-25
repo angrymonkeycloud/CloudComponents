@@ -90,7 +90,7 @@ dotnet add package AngryMonkey.CloudComponents.Icons
 
 ### CloudMarkdown
 
-`CloudMarkdown` renders either a remote `.md` / `.markdown` document (`SourceUrl`) or supplied Markdown (`Content`) inside isolated documentation styles. It resets surrounding page styles, resolves GitHub README links through `DocumentRoutes`, preserves external GitHub links, and scrolls local fragments without leaving `#...` in the address bar. Register `builder.Services.AddHttpClient()` in the host app before loading remote documents. Theme overrides can be passed through `Style` with component-local variables such as `--cloud-markdown-link`, `--cloud-markdown-surface`, and `--cloud-markdown-font-size`. Raw HTML is intentionally disabled for safe remote rendering.
+`CloudMarkdown` renders either a remote `.md` / `.markdown` document (`SourceUrl`) or supplied Markdown (`Content`) inside isolated documentation styles. It resets surrounding page styles, resolves GitHub README links through `DocumentRoutes`, preserves external GitHub links, and scrolls local fragments without leaving `#...` in the address bar. Register `builder.Services.AddHttpClient()` in the host app before loading remote documents. Theme overrides can be passed through `Style` with component-local variables such as `--cloudcomponents-markdown-link`, `--cloudcomponents-markdown-surface`, and `--cloudcomponents-markdown-font-size`. Raw HTML is intentionally disabled for safe remote rendering.
 
 ### CloudGrid (`AngryMonkey.CloudComponents.DataGrid`)
 
@@ -178,3 +178,7 @@ MIT
 ## Angry Monkey Cloud
 
 This project is part of the [Angry Monkey Cloud](https://angrymonkeycloud.com) open-source ecosystem. Follow the shared [AI development instructions](https://github.com/angrymonkeycloud/CloudDocs/blob/main/docs/ai/instructions.md) and browse the [project catalog](https://angrymonkeycloud.com) and [GitHub organization](https://github.com/angrymonkeycloud).
+
+## Shared theme
+
+UI visuals consume CloudCommon --amc-* tokens. Library overrides use --cloudcomponents-*. Load ThemeCss.ExportDocument(theme) or render CloudThemeDocument in the document head; set html data-amc-theme to light, dark or system. Use CloudThemeScope for independent embedded themes. Component class names are unchanged. See [CloudCommon integration](../CloudCommon/docs/migration.md) for the token migration and source build instructions.

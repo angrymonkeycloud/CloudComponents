@@ -1,0 +1,25 @@
+// Project-local CloudTheme contract. Components import this file and use these names.
+@import (reference) "../../../../CloudCommon/CloudCommon.Theming/src/css/library.less";
+
+@video-player-duration: var(--cloudcomponents-video-player-duration, var(--amc-duration, 160ms));
+@video-player-border: var(--cloudcomponents-video-player-border, var(--amc-color-border, #c0c0c0));
+@video-player-rounded-corder: var(--cloudcomponents-video-player-rounded-corder, var(--amc-radius-control, .5rem));
+@video-player-surface: var(--cloudcomponents-video-player-surface, var(--amc-color-surface, #ffffff));
+@video-player-inverse-text: var(--cloudcomponents-video-player-inverse-text, var(--amc-color-inverse-text, #ffffff));
+@video-player-background: var(--cloudcomponents-video-player-background, var(--amc-color-inverse-surface, #171717));
+@video-player-button-hover-background: var(--cloudcomponents-button-hover-background, var(--amc-button-hover-background, #464646));
+@video-player-danger-soft: var(--cloudcomponents-video-player-danger-soft, var(--amc-color-danger-soft, #f8f8f8));
+@video-player-danger: var(--cloudcomponents-video-player-danger, var(--amc-color-danger, #525252));
+@video-player-button-normal-background: var(--cloudcomponents-button-normal-background, var(--amc-button-normal-background, #525252));
+@video-player-button-normal-color: var(--cloudcomponents-button-normal-color, var(--amc-button-normal-color, #ffffff));
+@video-player-duration-2: var(--cloudcomponents-video-player-duration);
+@video-player-inverse-surface: var(--cloudcomponents-video-player-inverse-surface, var(--amc-color-inverse-surface, #171717));
+@video-player-radius-control: var(--cloudcomponents-video-player-radius-control, var(--amc-radius-control, .5rem));
+
+.video-player-control(@element) {
+    .amc-control(cloudcomponents; @element);
+}
+
+@video-player-transition-duration: var(--transitionDuration);
+@video-player-cloudcomponents-video-player-accent-color: var(--cloudcomponents-video-player-accent-color);
+@video-player-background-color: var(--backgroundColor);

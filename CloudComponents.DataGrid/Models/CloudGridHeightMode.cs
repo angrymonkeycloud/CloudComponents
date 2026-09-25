@@ -7,7 +7,7 @@ public enum CloudDataGridHeightMode
 {
     /// <summary>
     /// The body is fixed to <c>RowsPerPage</c> rows tall
-    /// (<c>height: calc(var(--cloudgrid-row-height) * RowsPerPage)</c>) and scrolls internally
+    /// (<c>height: calc(var(--cloudcomponents-grid-row-height) * RowsPerPage)</c>) and scrolls internally
     /// once content exceeds that height.
     /// </summary>
     RowHeight,

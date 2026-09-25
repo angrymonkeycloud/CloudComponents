@@ -53,8 +53,8 @@
             <h2 class="card-title">Theming with CSS variables</h2>
             <p class="card-subtitle">
                 This grid is wrapped in a <code>.themed-grid</code> element that overrides
-                <code>--cloudgrid-accent-color</code>, <code>--cloudgrid-row-height</code>,
-                <code>--cloudgrid-head-background</code> and more — no recompilation, no component changes.
+                <code>--cloudcomponents-grid-accent-color</code>, <code>--cloudcomponents-grid-row-height</code>,
+                <code>--cloudcomponents-grid-head-background</code> and more — no recompilation, no component changes.
             </p>
 
             <div class="grid-host themed-grid">
@@ -159,12 +159,12 @@ private async Task<CloudDataGridDataResult?> LoadAsync(CloudDataGridDataRequest 
 <!-- Theme via CSS variables (no component changes) -->
 <style>
     .themed-grid {
-        --cloudgrid-accent-color: #7c3aed;
-        --cloudgrid-row-height: 44px;
-        --cloudgrid-head-background: #f5f3ff;
-        --cloudgrid-hover-background: #ede9fe;
-        --cloudgrid-selected-background: #f5f3ff;
-        --cloudgrid-border-color: #ddd6fe;
+        --cloudcomponents-grid-accent-color: #7c3aed;
+        --cloudcomponents-grid-row-height: 44px;
+        --cloudcomponents-grid-head-background: #f5f3ff;
+        --cloudcomponents-grid-hover-background: #ede9fe;
+        --cloudcomponents-grid-selected-background: #f5f3ff;
+        --cloudcomponents-grid-border-color: #ddd6fe;
     }
 </style>
 

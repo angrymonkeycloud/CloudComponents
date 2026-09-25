@@ -1,38 +1,18 @@
+/* Generated from LESS. Do not edit. */
 .cloud-markdown {
   all: revert !important;
   box-sizing: border-box !important;
-  color: var(--cloud-markdown-text) !important;
+  color: var(--cloudcomponents-markdown-text, var(--amc-color-text, #111111)) !important;
   contain: style;
   display: block !important;
-  font-family: var(--cloud-markdown-font-family) !important;
-  font-size: var(--cloud-markdown-font-size) !important;
+  font-family: var(--cloudcomponents-markdown-font-family, var(--amc-font-family, Inter, 'Segoe UI', system-ui, sans-serif)) !important;
+  font-size: var(--cloudcomponents-markdown-font-size, var(--amc-font-body, 1rem)) !important;
   font-weight: 400 !important;
   isolation: isolate;
-  line-height: var(--cloud-markdown-line-height) !important;
+  line-height: var(--cloudcomponents-markdown-line-height, var(--amc-line-height, 1.5)) !important;
   text-align: left !important;
   width: 100% !important;
-  --cloud-markdown-font-family: Inter, "Segoe UI", Arial, sans-serif;
-  --cloud-markdown-font-size: 14.5px;
-  --cloud-markdown-line-height: 1.62;
-  --cloud-markdown-surface: #fff;
-  --cloud-markdown-text: #334155;
-  --cloud-markdown-heading: #172033;
-  --cloud-markdown-strong: #1e293b;
-  --cloud-markdown-muted: #64748b;
-  --cloud-markdown-border: #e2e8f0;
-  --cloud-markdown-link: #007e9d;
-  --cloud-markdown-link-hover: #005f78;
-  --cloud-markdown-accent: #00a7ce;
-  --cloud-markdown-code-surface: #f1f5f9;
-  --cloud-markdown-code-block-surface: #172033;
-  --cloud-markdown-code-block-border: #253149;
-  --cloud-markdown-code-block-text: #e2e8f0;
-  --cloud-markdown-quote-surface: #f5fafc;
-  --cloud-markdown-table-heading-surface: #f7f9fb;
-  --cloud-markdown-table-border: #dfe6ee;
-  --cloud-markdown-radius: 10px;
-  --cloud-markdown-padding: 32px 36px;
-  --cloud-markdown-shadow: 0 12px 32px rgba(15, 23, 42, 0.055);
+  --cloudcomponents-markdown-padding: 32px 36px;
 }
 .cloud-markdown ::deep * {
   all: revert !important;
@@ -41,19 +21,19 @@
 }
 .cloud-markdown__document {
   all: revert !important;
-  background: var(--cloud-markdown-surface) !important;
-  border: 1px solid var(--cloud-markdown-border) !important;
-  border-radius: var(--cloud-markdown-radius) !important;
-  box-shadow: var(--cloud-markdown-shadow) !important;
+  background: var(--cloudcomponents-markdown-surface, var(--amc-color-surface, #ffffff)) !important;
+  border: 1px solid var(--cloudcomponents-markdown-border, var(--amc-color-border, #c0c0c0)) !important;
+  border-radius: var(--cloudcomponents-markdown-radius, var(--amc-radius-surface, 0.75rem)) !important;
+  box-shadow: var(--cloudcomponents-markdown-shadow, var(--amc-shadow, 0 8px 24px #00000012)) !important;
   box-sizing: border-box !important;
-  color: var(--cloud-markdown-text) !important;
+  color: var(--cloudcomponents-markdown-text, var(--amc-color-text, #111111)) !important;
   display: block !important;
-  font-family: var(--cloud-markdown-font-family) !important;
-  font-size: var(--cloud-markdown-font-size) !important;
+  font-family: var(--cloudcomponents-markdown-font-family, var(--amc-font-family, Inter, 'Segoe UI', system-ui, sans-serif)) !important;
+  font-size: var(--cloudcomponents-markdown-font-size, var(--amc-font-body, 1rem)) !important;
   font-weight: 400 !important;
-  line-height: var(--cloud-markdown-line-height) !important;
+  line-height: var(--cloudcomponents-markdown-line-height, var(--amc-line-height, 1.5)) !important;
   overflow-wrap: anywhere !important;
-  padding: var(--cloud-markdown-padding) !important;
+  padding: var(--cloudcomponents-markdown-padding) !important;
   text-align: left !important;
   width: 100% !important;
 }
@@ -63,7 +43,7 @@
 .cloud-markdown__document ::deep h4,
 .cloud-markdown__document ::deep h5,
 .cloud-markdown__document ::deep h6 {
-  color: var(--cloud-markdown-heading) !important;
+  color: var(--cloudcomponents-markdown-heading, var(--amc-color-text, #111111)) !important;
   font-style: normal !important;
   font-weight: 650 !important;
   letter-spacing: -0.012em !important;
@@ -75,7 +55,7 @@
   margin: 0 0 18px !important;
 }
 .cloud-markdown__document ::deep h2 {
-  border-bottom: 1px solid var(--cloud-markdown-border) !important;
+  border-bottom: 1px solid var(--cloudcomponents-markdown-border, var(--amc-color-border, #c0c0c0)) !important;
   font-size: 19px !important;
   margin: 30px 0 13px !important;
   padding: 0 0 8px !important;
@@ -91,29 +71,29 @@
   margin: 20px 0 8px !important;
 }
 .cloud-markdown__document ::deep p {
-  color: var(--cloud-markdown-text) !important;
-  font-size: var(--cloud-markdown-font-size) !important;
-  line-height: var(--cloud-markdown-line-height) !important;
+  color: var(--cloudcomponents-markdown-text, var(--amc-color-text, #111111)) !important;
+  font-size: var(--cloudcomponents-markdown-font-size, var(--amc-font-body, 1rem)) !important;
+  line-height: var(--cloudcomponents-markdown-line-height, var(--amc-line-height, 1.5)) !important;
   margin: 0 0 13px !important;
 }
 .cloud-markdown__document ::deep strong {
-  color: var(--cloud-markdown-strong) !important;
+  color: var(--cloudcomponents-markdown-strong, var(--amc-color-text, #111111)) !important;
   font-weight: 650 !important;
 }
 .cloud-markdown__document ::deep a {
-  color: var(--cloud-markdown-link) !important;
+  color: var(--cloudcomponents-markdown-link, var(--amc-color-link, #525252)) !important;
   font-size: inherit !important;
   text-decoration: underline !important;
   text-decoration-thickness: 1px !important;
   text-underline-offset: 2px !important;
 }
 .cloud-markdown__document ::deep a:hover {
-  color: var(--cloud-markdown-link-hover) !important;
+  color: var(--cloudcomponents-markdown-link-hover, var(--amc-color-link-hover, #464646)) !important;
 }
 .cloud-markdown__document ::deep ul,
 .cloud-markdown__document ::deep ol {
-  color: var(--cloud-markdown-text) !important;
-  font-size: var(--cloud-markdown-font-size) !important;
+  color: var(--cloudcomponents-markdown-text, var(--amc-color-text, #111111)) !important;
+  font-size: var(--cloudcomponents-markdown-font-size, var(--amc-font-body, 1rem)) !important;
   line-height: 1.58 !important;
   margin: 0 0 14px !important;
   padding-left: 24px !important;
@@ -125,18 +105,18 @@
   padding: 0 !important;
 }
 .cloud-markdown__document ::deep code {
-  background: var(--cloud-markdown-code-surface) !important;
+  background: var(--cloudcomponents-markdown-code-surface, var(--amc-color-surface-subtle, #f1f1f1)) !important;
   border-radius: 4px !important;
-  color: var(--cloud-markdown-heading) !important;
+  color: var(--cloudcomponents-markdown-heading, var(--amc-color-text, #111111)) !important;
   font-family: Consolas, "SFMono-Regular", monospace !important;
   font-size: 12.5px !important;
   padding: 2px 5px !important;
 }
 .cloud-markdown__document ::deep pre {
-  background: var(--cloud-markdown-code-block-surface) !important;
-  border: 1px solid var(--cloud-markdown-code-block-border) !important;
+  background: var(--cloudcomponents-markdown-code-block-surface, var(--amc-color-inverse-surface, #171717)) !important;
+  border: 1px solid var(--cloudcomponents-markdown-code-block-border, var(--amc-color-border, #c0c0c0)) !important;
   border-radius: 8px !important;
-  color: var(--cloud-markdown-code-block-text) !important;
+  color: var(--cloudcomponents-markdown-code-block-text, var(--amc-color-inverse-text, #ffffff)) !important;
   font-family: Consolas, "SFMono-Regular", monospace !important;
   font-size: 12.5px !important;
   line-height: 1.52 !important;
@@ -152,9 +132,9 @@
   padding: 0 !important;
 }
 .cloud-markdown__document ::deep blockquote {
-  background: var(--cloud-markdown-quote-surface) !important;
+  background: var(--cloudcomponents-markdown-quote-surface, var(--amc-color-primary-soft, #f8f8f8)) !important;
   border: 0 !important;
-  border-left: 3px solid var(--cloud-markdown-accent) !important;
+  border-left: 3px solid var(--cloudcomponents-markdown-accent, var(--amc-color-primary, #525252)) !important;
   color: #475569 !important;
   font-size: 14px !important;
   margin: 16px 0 !important;
@@ -175,7 +155,7 @@
 }
 .cloud-markdown__document ::deep th,
 .cloud-markdown__document ::deep td {
-  border: 1px solid var(--cloud-markdown-table-border) !important;
+  border: 1px solid var(--cloudcomponents-markdown-table-border, var(--amc-color-border, #c0c0c0)) !important;
   font-size: 13px !important;
   line-height: 1.45 !important;
   padding: 8px 10px !important;
@@ -183,8 +163,8 @@
   vertical-align: top !important;
 }
 .cloud-markdown__document ::deep th {
-  background: var(--cloud-markdown-table-heading-surface) !important;
-  color: var(--cloud-markdown-strong) !important;
+  background: var(--cloudcomponents-markdown-table-heading-surface, var(--amc-color-surface-subtle, #f1f1f1)) !important;
+  color: var(--cloudcomponents-markdown-strong, var(--amc-color-text, #111111)) !important;
   font-weight: 650 !important;
 }
 .cloud-markdown__document ::deep img {
@@ -197,7 +177,7 @@
 }
 .cloud-markdown__document ::deep hr {
   border: 0 !important;
-  border-top: 1px solid var(--cloud-markdown-border) !important;
+  border-top: 1px solid var(--cloudcomponents-markdown-border, var(--amc-color-border, #c0c0c0)) !important;
   margin: 24px 0 !important;
 }
 .cloud-markdown__document ::deep details {
@@ -205,21 +185,21 @@
   margin: 12px 0 16px !important;
 }
 .cloud-markdown__document ::deep summary {
-  color: var(--cloud-markdown-strong) !important;
+  color: var(--cloudcomponents-markdown-strong, var(--amc-color-text, #111111)) !important;
   cursor: pointer !important;
   font-weight: 600 !important;
 }
 .cloud-markdown__status {
   all: revert !important;
-  background: var(--cloud-markdown-surface) !important;
-  border: 1px solid var(--cloud-markdown-border) !important;
-  border-radius: var(--cloud-markdown-radius) !important;
+  background: var(--cloudcomponents-markdown-surface, var(--amc-color-surface, #ffffff)) !important;
+  border: 1px solid var(--cloudcomponents-markdown-border, var(--amc-color-border, #c0c0c0)) !important;
+  border-radius: var(--cloudcomponents-markdown-radius, var(--amc-radius-surface, 0.75rem)) !important;
   box-sizing: border-box !important;
-  color: var(--cloud-markdown-muted) !important;
+  color: var(--cloudcomponents-markdown-muted, var(--amc-color-muted, #505050)) !important;
   display: block !important;
-  font-family: var(--cloud-markdown-font-family) !important;
-  font-size: var(--cloud-markdown-font-size) !important;
-  line-height: var(--cloud-markdown-line-height) !important;
+  font-family: var(--cloudcomponents-markdown-font-family, var(--amc-font-family, Inter, 'Segoe UI', system-ui, sans-serif)) !important;
+  font-size: var(--cloudcomponents-markdown-font-size, var(--amc-font-body, 1rem)) !important;
+  line-height: var(--cloudcomponents-markdown-line-height, var(--amc-line-height, 1.5)) !important;
   padding: 42px 24px !important;
   text-align: center !important;
   width: 100% !important;
@@ -228,12 +208,11 @@
   margin: 0 0 8px !important;
 }
 .cloud-markdown__status a {
-  color: var(--cloud-markdown-link) !important;
+  color: var(--cloudcomponents-markdown-link, var(--amc-color-link, #525252)) !important;
 }
 @media (max-width: 700px) {
   .cloud-markdown {
-    --cloud-markdown-font-size: 14px;
-    --cloud-markdown-padding: 24px 20px;
+    --cloudcomponents-markdown-padding: 24px 20px;
   }
   .cloud-markdown__document ::deep h1 {
     font-size: 21px !important;

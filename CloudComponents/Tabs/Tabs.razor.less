@@ -1,4 +1,5 @@
-﻿@import '../General/css/common.less';
+@import (reference) "../src/css/theme.less";
+@import '../General/css/common.less';
 
 .amc {
 	&-tabs {
@@ -20,7 +21,7 @@
 			bottom: 0;
 			left: 50%;
 			transform: translateX(-50%);
-			background-color: var(--amc-accentColor);
+			background-color: @components-color-primary;
 			transition: width 200ms ease-in-out;
 		}
 
@@ -33,7 +34,7 @@
 		&._active {
 			pointer-events: none;
 			cursor: default;
-			color: var(--amc-accentColor);
+			color: @components-color-primary;
 
 			&::after {
 				width: 2em;

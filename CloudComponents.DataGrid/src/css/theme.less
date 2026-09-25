@@ -1,0 +1,42 @@
+// Project-local CloudTheme contract. Components import this file and use these names.
+@import (reference) "../../../../CloudCommon/CloudCommon.Theming/src/css/library.less";
+
+@grid-color: var(--cloudcomponents-grid-color, var(--amc-color-text, #111111));
+@grid-font-size: var(--cloudcomponents-grid-font-size, var(--amc-font-small, .875rem));
+@grid-row-height: var(--cloudcomponents-grid-row-height);
+@grid-note-height: var(--cloudcomponents-grid-note-height, 0px);
+@grid-body-background: var(--cloudcomponents-grid-body-background, var(--amc-color-surface, #ffffff));
+@grid-head-background: var(--cloudcomponents-grid-head-background, var(--amc-color-surface-subtle, #f1f1f1));
+@grid-border-color: var(--cloudcomponents-grid-border-color, var(--amc-color-border, #c0c0c0));
+@grid-accent-color: var(--cloudcomponents-grid-accent-color, var(--amc-color-primary, #525252));
+@grid-hover-background: var(--cloudcomponents-grid-hover-background, var(--amc-color-primary-soft, #f8f8f8));
+@grid-border: var(--cloudcomponents-grid-border, var(--amc-color-border, #c0c0c0));
+@grid-item-height: var(--cloudcomponents-grid-item-height);
+@grid-footer-background: var(--cloudcomponents-grid-footer-background, var(--amc-color-surface-subtle, #f1f1f1));
+@grid-category-background: var(--cloudcomponents-grid-category-background, var(--amc-color-surface-subtle, #f1f1f1));
+@grid-category-color: var(--cloudcomponents-grid-category-color, var(--amc-color-muted, #505050));
+@grid-button-hover-background: var(--cloudcomponents-button-hover-background, var(--amc-button-hover-background, #464646));
+@grid-selected-background: var(--cloudcomponents-grid-selected-background, var(--amc-color-selected, #eeeeee));
+@grid-shadow: var(--cloudcomponents-grid-shadow, var(--amc-shadow, 0 8px 24px #00000012));
+@grid-note-height-2: var(--cloudcomponents-grid-note-height);
+@grid-button-normal-border-radius: var(--cloudcomponents-button-normal-border-radius, var(--amc-button-normal-border-radius, .5rem));
+@grid-button-normal-background: var(--cloudcomponents-button-normal-background, var(--amc-button-normal-background, #525252));
+@grid-button-normal-color: var(--cloudcomponents-button-normal-color, var(--amc-button-normal-color, #ffffff));
+@grid-footer-height: var(--cloudcomponents-grid-footer-height, 30px);
+@grid-surface: var(--cloudcomponents-grid-surface, var(--amc-color-surface, #ffffff));
+@grid-header-height: var(--cloudcomponents-grid-header-height, 40px);
+@grid-header-font-size: var(--cloudcomponents-grid-header-font-size, var(--amc-font-small, .875rem));
+@grid-header-accent-color: var(--cloudcomponents-grid-header-accent-color, var(--amc-color-primary, #525252));
+@grid-header-border-color: var(--cloudcomponents-grid-header-border-color, var(--amc-color-border, #c0c0c0));
+@grid-text: var(--cloudcomponents-grid-text, var(--amc-color-text, #111111));
+@grid-secondary-button-normal-color: var(--cloudcomponents-secondary-button-normal-color, var(--amc-secondary-button-normal-color, #ffffff));
+@grid-secondary-button-hover-background: var(--cloudcomponents-secondary-button-hover-background, var(--amc-secondary-button-hover-background, #464646));
+@grid-radius-control: var(--cloudcomponents-grid-radius-control, var(--amc-radius-control, .5rem));
+@grid-background: var(--cloudcomponents-grid-background, var(--amc-color-surface, #ffffff));
+@grid-header-color: var(--cloudcomponents-grid-header-color, var(--amc-color-text, #111111));
+@grid-header-hover-background: var(--cloudcomponents-grid-header-hover-background, var(--amc-color-primary-soft, #f8f8f8));
+@grid-selected: var(--cloudcomponents-grid-selected, var(--amc-color-selected, #eeeeee));
+
+.grid-control(@element) {
+    .amc-control(cloudcomponents; @element);
+}

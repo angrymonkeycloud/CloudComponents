@@ -1,3 +1,4 @@
+/* Generated from LESS. Do not edit. */
 .playground-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 300px;
@@ -107,7 +108,7 @@
 }
 ::deep .cloudgrid .playground-category-meta {
   margin-left: auto;
-  color: var(--cloudgrid-color);
+  color: var(--cloudcomponents-grid-color);
   opacity: 0.65;
   font-size: 11px;
 }

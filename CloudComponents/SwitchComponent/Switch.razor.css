@@ -1,9 +1,9 @@
+/* Generated from LESS. Do not edit. */
 .amc-switch {
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 1rem;
-  --amc-accentColor: #000;
 }
 .amc-switch > div {
   position: relative;
@@ -27,7 +27,7 @@
   border-radius: 50px;
   pointer-events: none;
   padding: 3px;
-  border: 0.05em solid var(--amc-accentColor);
+  border: 0.05em solid var(--amc-color-primary, #525252);
   overflow: hidden;
 }
 .amc-switch-circle {
@@ -42,7 +42,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--amc-accentColor);
+  background-color: var(--amc-color-primary, #525252);
   left: 50%;
   transform: translateX(-50%);
 }

@@ -1,3 +1,4 @@
+@import (reference) "../src/css/theme.less";
 // CloudDataGrid root styles.
 // Naming follows https://github.com/angrymonkeydocs/css-naming-convention:
 // block `.cloudgrid`, children `.cloudgrid-*`, adjectives `._name`.
@@ -11,13 +12,13 @@
     width: 100%;
     // Only FullHeight mode forces the root to fill its parent's height. Auto/RowHeight
     // stay intrinsically sized (their content + optional MaxHeight cap controls height).
-    color: var(--cloudgrid-color, light-dark(#505050, #e3e9f3));
-    font-size: var(--cloudgrid-font-size, 14px);
-    --cloudgrid-row-height: 43px;
-    --cloudgrid-note-height: 24px;
-    --cloudgrid-item-height: calc(var(--cloudgrid-row-height) + var(--cloudgrid-note-height, 0px));
-    --cloudgrid-header-height: 40px;
-    --cloudgrid-footer-height: 30px;
+    color: @grid-color;
+    font-size: @grid-font-size;
+    --cloudcomponents-grid-row-height: 43px;
+    --cloudcomponents-grid-note-height: 24px;
+    --cloudcomponents-grid-item-height: calc(@grid-row-height + @grid-note-height);
+    --cloudcomponents-grid-header-height: 40px;
+    --cloudcomponents-grid-footer-height: 30px;
    
     &._full-height {
         height: 100%;

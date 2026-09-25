@@ -210,19 +210,19 @@ All colors and metrics are CSS variables. Set them on any ancestor element to th
 
 ```css
 .my-container {
-    --cloudeditor-accent:       #6b30c9;
-    --cloudeditor-bg:           #1e1e24;
-    --cloudeditor-color:        #eee;
-    --cloudeditor-toolbar-bg:   #26262e;
-    --cloudeditor-border-color: #3a3a44;
-    --cloudeditor-code-bg:      #16161a;
-    --cloudeditor-hover-bg:     rgba(255, 255, 255, 0.08);
-    --cloudeditor-active-bg:    rgba(107, 48, 201, 0.25);
-    --cloudeditor-muted:        #9a9aa5;
+    --cloudcomponents-editor-accent:       #6b30c9;
+    --cloudcomponents-editor-bg:           #1e1e24;
+    --cloudcomponents-editor-color:        #eee;
+    --cloudcomponents-editor-toolbar-bg:   #26262e;
+    --cloudcomponents-editor-border-color: #3a3a44;
+    --cloudcomponents-editor-code-bg:      #16161a;
+    --cloudcomponents-editor-hover-bg:     rgba(255, 255, 255, 0.08);
+    --cloudcomponents-editor-active-bg:    rgba(107, 48, 201, 0.25);
+    --cloudcomponents-editor-muted:        #9a9aa5;
 }
 ```
 
-Additional variables: `--cloudeditor-font-size`, `--cloudeditor-radius`, `--cloudeditor-readonly-bg`, `--cloudeditor-quote-bg`, `--cloudeditor-error`, `--cloudeditor-warning`, `--cloudeditor-success`.
+Additional variables: `--cloudcomponents-editor-font-size`, `--cloudcomponents-editor-radius`, `--cloudcomponents-editor-readonly-bg`, `--cloudcomponents-editor-quote-bg`, `--cloudcomponents-editor-error`, `--cloudcomponents-editor-warning`, `--cloudcomponents-editor-success`.
 
 ## Known limitations
 
@@ -249,7 +249,7 @@ Additional variables: `--cloudeditor-font-size`, `--cloudeditor-radius`, `--clou
 - Paste sanitization with allowlist.
 - Image upload handler integration (`CloudTextEditorFileUpload`).
 - Video embedding: YouTube (privacy-enhanced), Vimeo, direct file URLs.
-- Theme-friendly CSS variables (`--cloudeditor-*`).
+- Theme-friendly CSS variables (`--cloudcomponents-editor-*`).
 - No font-family controls by design.
 
 
@@ -396,19 +396,19 @@ All colors and metrics are driven by CSS variables set on any ancestor:
 
 ```css
 .my-theme {
-	--cloudeditor-accent: #6b30c9;
-	--cloudeditor-bg: #1e1e24;
-	--cloudeditor-color: #eee;
-	--cloudeditor-toolbar-bg: #26262e;
-	--cloudeditor-border-color: #3a3a44;
-	--cloudeditor-code-bg: #16161a;
-	--cloudeditor-hover-bg: rgba(255, 255, 255, 0.08);
-	--cloudeditor-active-bg: rgba(107, 48, 201, 0.25);
-	--cloudeditor-muted: #9a9aa5;
+	--cloudcomponents-editor-accent: #6b30c9;
+	--cloudcomponents-editor-bg: #1e1e24;
+	--cloudcomponents-editor-color: #eee;
+	--cloudcomponents-editor-toolbar-bg: #26262e;
+	--cloudcomponents-editor-border-color: #3a3a44;
+	--cloudcomponents-editor-code-bg: #16161a;
+	--cloudcomponents-editor-hover-bg: rgba(255, 255, 255, 0.08);
+	--cloudcomponents-editor-active-bg: rgba(107, 48, 201, 0.25);
+	--cloudcomponents-editor-muted: #9a9aa5;
 }
 ```
 
-Additional variables: `--cloudeditor-font-size`, `--cloudeditor-radius`, `--cloudeditor-readonly-bg`, `--cloudeditor-quote-bg`, `--cloudeditor-error`, `--cloudeditor-warning`, `--cloudeditor-success`.
+Additional variables: `--cloudcomponents-editor-font-size`, `--cloudcomponents-editor-radius`, `--cloudcomponents-editor-readonly-bg`, `--cloudcomponents-editor-quote-bg`, `--cloudcomponents-editor-error`, `--cloudcomponents-editor-warning`, `--cloudcomponents-editor-success`.
 
 ## Troubleshooting
 

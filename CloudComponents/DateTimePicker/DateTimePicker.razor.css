@@ -1,3 +1,4 @@
+/* Generated from LESS. Do not edit. */
 .ComponentsDefault {
   user-select: none;
   font-family: 'Segoe UI';
@@ -28,11 +29,11 @@
   height: 1.8em;
 }
 .ComponentsDefault ::deep .amc-svg-fill {
-  fill: var(--amc-accentColor);
+  fill: var(--amc-color-primary, #525252);
 }
 .ComponentsDefault ::deep .amc-svg-stroke {
   fill: none;
-  stroke: var(--amc-accentColor);
+  stroke: var(--amc-color-primary, #525252);
   stroke-width: 0.5;
   stroke-miterlimit: 10;
 }
@@ -53,33 +54,31 @@
   content: '';
   width: 1em;
   height: 0.13em;
-  background-color: var(--amc-datetimepicker-accentColor);
+  background-color: var(--cloudcomponents-datetime-picker-accent-color, var(--amc-color-primary, #525252));
   bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
   opacity: var(--lowOpacity);
 }
 .amc-SelectableField._selected {
-  background-color: var(--amc-datetimepicker-accentColor);
-  color: var(--amc-datetimepicker-backgroundColor);
+  background-color: var(--cloudcomponents-datetime-picker-accent-color, var(--amc-color-primary, #525252));
+  color: var(--cloudcomponents-datetime-picker-background-color, var(--amc-color-surface, #ffffff));
 }
 .amc-SelectableField._selected::after {
-  background-color: var(--amc-datetimepicker-backgroundColor);
+  background-color: var(--cloudcomponents-datetime-picker-background-color, var(--amc-color-surface, #ffffff));
 }
 .amc-SelectableField:hover:not(._selected) {
-  border-color: var(--amc-datetimepicker-accentColor);
+  border-color: var(--cloudcomponents-datetime-picker-accent-color, var(--amc-color-primary, #525252));
 }
 .amc-SelectableField:not(._current):not(._selected) {
   opacity: var(--lowOpacity);
 }
 .amc-datetimepicker {
-  --amc-datetimepicker-backgroundColor: #fff;
-  --amc-datetimepicker-accentColor: #000;
   user-select: none;
   font-family: 'Segoe UI';
   font-size: 0.9rem;
-  background-color: var(--amc-datetimepicker-backgroundColor);
-  color: var(--amc-datetimepicker-accentColor);
+  background-color: var(--cloudcomponents-datetime-picker-background-color, var(--amc-color-surface, #ffffff));
+  color: var(--cloudcomponents-datetime-picker-accent-color, var(--amc-color-primary, #525252));
   --lowOpacity: 0.7;
 }
 .amc-datetimepicker button,
@@ -107,11 +106,11 @@
   height: 1.8em;
 }
 .amc-datetimepicker ::deep .amc-svg-fill {
-  fill: var(--amc-accentColor);
+  fill: var(--amc-color-primary, #525252);
 }
 .amc-datetimepicker ::deep .amc-svg-stroke {
   fill: none;
-  stroke: var(--amc-accentColor);
+  stroke: var(--amc-color-primary, #525252);
   stroke-width: 0.5;
   stroke-miterlimit: 10;
 }
@@ -190,21 +189,21 @@
   content: '';
   width: 1em;
   height: 0.13em;
-  background-color: var(--amc-datetimepicker-accentColor);
+  background-color: var(--cloudcomponents-datetime-picker-accent-color, var(--amc-color-primary, #525252));
   bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
   opacity: var(--lowOpacity);
 }
 .amc-datetimepicker-calendar-day._selected {
-  background-color: var(--amc-datetimepicker-accentColor);
-  color: var(--amc-datetimepicker-backgroundColor);
+  background-color: var(--cloudcomponents-datetime-picker-accent-color, var(--amc-color-primary, #525252));
+  color: var(--cloudcomponents-datetime-picker-background-color, var(--amc-color-surface, #ffffff));
 }
 .amc-datetimepicker-calendar-day._selected::after {
-  background-color: var(--amc-datetimepicker-backgroundColor);
+  background-color: var(--cloudcomponents-datetime-picker-background-color, var(--amc-color-surface, #ffffff));
 }
 .amc-datetimepicker-calendar-day:hover:not(._selected) {
-  border-color: var(--amc-datetimepicker-accentColor);
+  border-color: var(--cloudcomponents-datetime-picker-accent-color, var(--amc-color-primary, #525252));
 }
 .amc-datetimepicker-calendar-day:not(._current):not(._selected) {
   opacity: var(--lowOpacity);
@@ -239,7 +238,7 @@
   content: '';
   width: 1em;
   height: 0.13em;
-  background-color: var(--amc-datetimepicker-accentColor);
+  background-color: var(--cloudcomponents-datetime-picker-accent-color, var(--amc-color-primary, #525252));
   bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
@@ -249,20 +248,20 @@
 .amc-datetimepicker-years-year._selected,
 .amc-datetimepicker-hours-hour._selected,
 .amc-datetimepicker-minutes-minute._selected {
-  background-color: var(--amc-datetimepicker-accentColor);
-  color: var(--amc-datetimepicker-backgroundColor);
+  background-color: var(--cloudcomponents-datetime-picker-accent-color, var(--amc-color-primary, #525252));
+  color: var(--cloudcomponents-datetime-picker-background-color, var(--amc-color-surface, #ffffff));
 }
 .amc-datetimepicker-months-month._selected::after,
 .amc-datetimepicker-years-year._selected::after,
 .amc-datetimepicker-hours-hour._selected::after,
 .amc-datetimepicker-minutes-minute._selected::after {
-  background-color: var(--amc-datetimepicker-backgroundColor);
+  background-color: var(--cloudcomponents-datetime-picker-background-color, var(--amc-color-surface, #ffffff));
 }
 .amc-datetimepicker-months-month:hover:not(._selected),
 .amc-datetimepicker-years-year:hover:not(._selected),
 .amc-datetimepicker-hours-hour:hover:not(._selected),
 .amc-datetimepicker-minutes-minute:hover:not(._selected) {
-  border-color: var(--amc-datetimepicker-accentColor);
+  border-color: var(--cloudcomponents-datetime-picker-accent-color, var(--amc-color-primary, #525252));
 }
 .amc-datetimepicker-months-month:not(._current):not(._selected),
 .amc-datetimepicker-years-year:not(._current):not(._selected),

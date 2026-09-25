@@ -1,3 +1,4 @@
+/* Generated from LESS. Do not edit. */
 :root {
   --color-bg: #0f0f17;
   --color-surface: #16161f;
@@ -482,11 +483,11 @@ select.input {
   overflow: hidden;
 }
 .themed-grid {
-  --cloudgrid-accent-color: #7c3aed;
-  --cloudgrid-head-background: #2d1b69;
-  --cloudgrid-hover-background: #3b2080;
-  --cloudgrid-selected-background: #2d1b69;
-  --cloudgrid-border-color: #4c2fad;
+  --cloudcomponents-grid-accent-color: #7c3aed;
+  --cloudcomponents-grid-head-background: #2d1b69;
+  --cloudcomponents-grid-hover-background: #3b2080;
+  --cloudcomponents-grid-selected-background: #2d1b69;
+  --cloudcomponents-grid-border-color: #4c2fad;
 }
 .checklist {
   list-style: none;

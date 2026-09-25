@@ -1,3 +1,4 @@
+/* Generated from LESS. Do not edit. */
 .amc-datetimepicker-selection {
   display: flex;
   flex-direction: row;
@@ -15,7 +16,7 @@
 }
 .amc-datetimepicker-selection button svg * {
   fill: none;
-  stroke: var(--amc-datetimepicker-accentColor);
+  stroke: var(--cloudcomponents-datetime-picker-accent-color, var(--amc-color-primary, #525252));
   stroke-width: 4px;
   stroke-miterlimit: 10;
 }

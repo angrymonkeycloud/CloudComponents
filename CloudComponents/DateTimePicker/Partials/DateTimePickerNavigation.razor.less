@@ -1,4 +1,5 @@
-﻿
+@import (reference) "../../src/css/theme.less";
+
 .amc-datetimepicker-selection {
 	display: flex;
 	flex-direction: row;
@@ -16,7 +17,7 @@
 
 			* {
 				fill: none;
-				stroke: var(--amc-datetimepicker-accentColor);
+				stroke: @components-datetime-picker-accent-color;
 				stroke-width: 4px;
 				stroke-miterlimit: 10;
 			}

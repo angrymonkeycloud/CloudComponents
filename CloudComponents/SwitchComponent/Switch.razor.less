@@ -1,9 +1,9 @@
+@import (reference) "../src/css/theme.less";
 .amc-switch {
     display: flex;
     align-items: center;
     gap: 10px;
     font-size: 1rem;
-    --amc-accentColor: #000;
 
     > div {
         position: relative;
@@ -30,7 +30,7 @@
         pointer-events: none;
         overflow: hidden;
         padding: 3px;
-        border: .05em solid var(--amc-accentColor);
+        border: .05em solid @components-color-primary;
         overflow: hidden;
     }
 
@@ -46,7 +46,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: var(--amc-accentColor);
+        background-color: @components-color-primary;
         left: 50%;
         transform: translateX(-50%);
 

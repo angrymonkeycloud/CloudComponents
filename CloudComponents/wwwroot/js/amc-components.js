@@ -1,4 +1,4 @@
-
+﻿
 function selectDialogPreviousButton() {
     let selected = document.querySelector(".amc-dialog-buttons button:focus");
 
@@ -49,7 +49,8 @@ window.Dialog = {
     }
 };
 
-const _amc_progressbar_valueRange = '.amc-progressbar-value';
+;
+﻿const _amc_progressbar_valueRange = '.amc-progressbar-value';
 const _amc_progressbar_changingRange = '.amc-progressbar-changingvalue';
 
 amcProgressBarUpdatePosition = (component, clientX, maxMoveDistance) => {
@@ -196,7 +197,8 @@ window.amcProgressBarGetInfo = (component) => {
         Height: element.clientHeight
     };
 }
-class VideoInfo {
+;
+﻿class VideoInfo {
     constructor() {
         this.Duration = 0;
         this.Width = 0;
@@ -555,6 +557,7 @@ window.amcVideoPlayerDisposeStreaming = () => {
 
     hls = null;
 }
+;
 //declare class Castjs {
 //	available: boolean;
 //	connected: boolean;

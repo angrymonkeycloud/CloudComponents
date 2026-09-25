@@ -1,3 +1,4 @@
+/* Generated from LESS. Do not edit. */
 .ComponentsDefault {
   user-select: none;
   font-family: 'Segoe UI';
@@ -28,11 +29,11 @@
   height: 1.8em;
 }
 .ComponentsDefault ::deep .amc-svg-fill {
-  fill: var(--amc-accentColor);
+  fill: var(--amc-color-primary, #525252);
 }
 .ComponentsDefault ::deep .amc-svg-stroke {
   fill: none;
-  stroke: var(--amc-accentColor);
+  stroke: var(--amc-color-primary, #525252);
   stroke-width: 0.5;
   stroke-miterlimit: 10;
 }
@@ -46,7 +47,6 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  --amc-accentColor: #000;
 }
 .amc-copybutton button,
 .amc-copybutton button:active,
@@ -73,11 +73,11 @@
   height: 1.8em;
 }
 .amc-copybutton ::deep .amc-svg-fill {
-  fill: var(--amc-accentColor);
+  fill: var(--amc-color-primary, #525252);
 }
 .amc-copybutton ::deep .amc-svg-stroke {
   fill: none;
-  stroke: var(--amc-accentColor);
+  stroke: var(--amc-color-primary, #525252);
   stroke-width: 0.5;
   stroke-miterlimit: 10;
 }
@@ -88,7 +88,7 @@
   cursor: pointer;
 }
 .amc-copybutton-content._clickable:hover {
-  color: var(--amc-accentColor);
+  color: var(--amc-color-primary, #525252);
 }
 .amc-copybutton-button ::deep svg:last-child {
   display: none;

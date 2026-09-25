@@ -1,3 +1,4 @@
+/* Generated from LESS. Do not edit. */
 .ComponentsDefault {
   user-select: none;
   font-family: 'Segoe UI';
@@ -28,11 +29,11 @@
   height: 1.8em;
 }
 .ComponentsDefault ::deep .amc-svg-fill {
-  fill: var(--amc-accentColor);
+  fill: var(--amc-color-primary, #525252);
 }
 .ComponentsDefault ::deep .amc-svg-stroke {
   fill: none;
-  stroke: var(--amc-accentColor);
+  stroke: var(--amc-color-primary, #525252);
   stroke-width: 0.5;
   stroke-miterlimit: 10;
 }
@@ -40,7 +41,7 @@
   stroke-linecap: round;
 }
 .amc-progressbar {
-  --amc-progressbar-seekbuttonSize: 20px;
+  --cloudcomponents-progress-bar-seekbutton-size: 20px;
   user-select: none;
   font-family: 'Segoe UI';
   font-size: 0.9rem;
@@ -76,11 +77,11 @@
   height: 1.8em;
 }
 .amc-progressbar ::deep .amc-svg-fill {
-  fill: var(--amc-accentColor);
+  fill: var(--amc-color-primary, #525252);
 }
 .amc-progressbar ::deep .amc-svg-stroke {
   fill: none;
-  stroke: var(--amc-accentColor);
+  stroke: var(--amc-color-primary, #525252);
   stroke-width: 0.5;
   stroke-miterlimit: 10;
 }
@@ -98,11 +99,11 @@
   position: relative;
 }
 .amc-progressbar-left {
-  background-color: var(--amc-accentColor);
+  background-color: var(--amc-color-primary, #525252);
   grid-area: left;
 }
 .amc-progressbar-right {
-  background-color: var(--amc-accentColor);
+  background-color: var(--amc-color-primary, #525252);
   grid-area: right;
   opacity: 0.4;
 }
@@ -131,37 +132,37 @@
 .amc-progressbar-middle button:active:hover,
 .amc-progressbar-middle button:focus:hover,
 .amc-progressbar-middle button:visited:hover {
-  filter: drop-shadow(0 0 4px var(--amc-accentColor));
+  filter: drop-shadow(0 0 4px var(--amc-color-primary, #525252));
 }
 .amc-progressbar._flat .amc-progressbar-middle button {
-  background-color: var(--amc-accentColor);
+  background-color: var(--amc-color-primary, #525252);
   height: 1px;
   width: 5px;
 }
 .amc-progressbar._circle .amc-progressbar-middle button {
   width: 1.5em;
   height: 1.5em;
-  /*width: var(--amc-progressbar-seekbuttonSize);
-					height: var(--amc-progressbar-seekbuttonSize);*/
+  /*width: @components-progress-bar-seekbutton-size;
+					height: @components-progress-bar-seekbutton-size;*/
   display: block;
-  border: 2px solid var(--amc-accentColor);
+  border: 2px solid var(--amc-color-primary, #525252);
   border-radius: 50%;
   background-color: transparent;
 }
 .amc-progressbar._circle._moving .amc-progressbar-middle button {
-  background-color: var(--amc-accentColor);
+  background-color: var(--amc-color-primary, #525252);
 }
 .amc-progressbar._disk .amc-progressbar-middle button {
   width: 1.5em;
   height: 1.5em;
-  /*width: var(--amc-progressbar-seekbuttonSize);
-					height: var(--amc-progressbar-seekbuttonSize);*/
+  /*width: @components-progress-bar-seekbutton-size;
+					height: @components-progress-bar-seekbutton-size;*/
   display: block;
   border-radius: 50%;
-  background-color: var(--amc-accentColor);
+  background-color: var(--amc-color-primary, #525252);
   border: 2px solid transparent;
 }
 .amc-progressbar._disk._moving .amc-progressbar-middle button {
   background-color: transparent;
-  border-color: var(--amc-accentColor);
+  border-color: var(--amc-color-primary, #525252);
 }

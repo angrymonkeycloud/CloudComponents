@@ -76,7 +76,7 @@ public partial class CloudDataGridBody
 
     [Parameter] public bool FixedColumnFooter { get; set; } = true;
 
-    /// <summary>Fixed row height in pixels. Overrides the <c>--cloudgrid-row-height</c> CSS variable.</summary>
+    /// <summary>Fixed row height in pixels. Overrides the <c>--cloudcomponents-grid-row-height</c> CSS variable.</summary>
     [Parameter] public double? RowHeight { get; set; }
 
     [Parameter] public double RowNoteHeight { get; set; } = 24;
@@ -688,7 +688,7 @@ public partial class CloudDataGridBody
     /// </summary>
     private string? BodyStyle =>
         HeightMode == CloudDataGridHeightMode.RowHeight && RowsPerPage.HasValue
-            ? $"height: calc(var(--cloudgrid-item-height) * {RowsPerPage.Value})"
+            ? $"height: calc(var(--cloudcomponents-grid-item-height) * {RowsPerPage.Value})"
             : null;
 
     /// <summary>

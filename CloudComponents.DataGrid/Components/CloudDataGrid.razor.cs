@@ -107,7 +107,7 @@ public partial class CloudDataGrid : IAsyncDisposable
     /// <summary>Optional custom content for category headers.</summary>
     [Parameter] public RenderFragment<CloudDataGridCategoryContext>? CategoryHeaderTemplate { get; set; }
 
-    /// <summary>Fixed row height in pixels. Overrides the <c>--cloudgrid-row-height</c> CSS variable.</summary>
+    /// <summary>Fixed row height in pixels. Overrides the <c>--cloudcomponents-grid-row-height</c> CSS variable.</summary>
     [Parameter] public double? RowHeight { get; set; }
 
     /// <summary>Number of body rows the grid is sized for (also the page size sent to <see cref="DataProvider"/>).</summary>
@@ -543,8 +543,8 @@ public partial class CloudDataGrid : IAsyncDisposable
 
     private string RootStyle => string.Join("; ", new[]
     {
-        RowHeight.HasValue ? $"--cloudgrid-row-height: {RowHeight.Value.ToString(CultureInfo.InvariantCulture)}px" : null,
-        $"--cloudgrid-note-height: {(ShowRowNotes && (ReserveRowNoteSpace || (_data?.Rows.Any(row => !string.IsNullOrWhiteSpace(row.Note)) ?? false)) ? RowNoteHeight : 0).ToString(CultureInfo.InvariantCulture)}px"
+        RowHeight.HasValue ? $"--cloudcomponents-grid-row-height: {RowHeight.Value.ToString(CultureInfo.InvariantCulture)}px" : null,
+        $"--cloudcomponents-grid-note-height: {(ShowRowNotes && (ReserveRowNoteSpace || (_data?.Rows.Any(row => !string.IsNullOrWhiteSpace(row.Note)) ?? false)) ? RowNoteHeight : 0).ToString(CultureInfo.InvariantCulture)}px"
     }.Where(value => value != null));
 
     #endregion

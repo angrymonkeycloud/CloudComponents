@@ -1,3 +1,4 @@
+@import (reference) "../src/css/theme.less";
 // CloudDataGridFooter styles.
 // Naming follows https://github.com/angrymonkeydocs/css-naming-convention:
 // block `.cloudgridfooter`, children `&-*`, adjectives `._name`.
@@ -8,8 +9,8 @@
     gap: 12px;
     flex: none;
     box-sizing: border-box;
-    height: var(--cloudgrid-footer-height, 30px);
-    min-height: var(--cloudgrid-footer-height, 30px);
+    height: @grid-footer-height;
+    min-height: @grid-footer-height;
     padding: 0 8px;
     font-size: 12px;
     background-color: rgba(0, 0, 0, 0.04);
@@ -54,7 +55,7 @@
 
                 polyline {
                     fill: none;
-                    stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+                    stroke: @grid-header-accent-color;
                     stroke-width: 4px;
                     stroke-miterlimit: 10;
                 }

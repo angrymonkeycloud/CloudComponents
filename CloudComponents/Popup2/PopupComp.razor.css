@@ -1,3 +1,4 @@
+/* Generated from LESS. Do not edit. */
 .modal {
   position: fixed;
   inset: 0;
@@ -8,7 +9,7 @@
   box-sizing: border-box;
   width: 100dvw;
   height: 100dvh;
-  padding: calc(clamp(0.5rem, 2vw, 1rem));
+  padding: clamp(0.5rem, 2vw, 1rem);
   overflow: hidden;
   border: 0;
   background: var(--cdm-overlay, rgba(15, 23, 42, 0.56));
@@ -26,13 +27,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1rem calc(clamp(1rem, 3vw, 1.5rem));
+  padding: 1rem clamp(1rem, 3vw, 1.5rem);
   border-bottom: 1px solid var(--cdm-border, #e2e8f0);
 }
 .modal .header strong {
   min-width: 0;
   color: var(--cdm-text, #172238);
-  font-size: calc(clamp(1rem, 2vw, 1.125rem));
+  font-size: clamp(1rem, 2vw, 1.125rem);
   font-weight: 700;
   overflow-wrap: anywhere;
 }
@@ -65,9 +66,9 @@
   align-items: center;
   justify-content: flex-end;
   gap: 0.65rem;
-  padding: 0.9rem calc(clamp(1rem, 3vw, 1.5rem));
+  padding: 0.9rem clamp(1rem, 3vw, 1.5rem);
   border-top: 1px solid var(--cdm-border, #e2e8f0);
-  background: var(--cdm-subtle, #f8fafc);
+  background: var(--cdm-subtle, #f3f4f6);
 }
 .modal .actions button {
   max-width: 100%;
@@ -82,7 +83,7 @@
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: var(--amc-accentColor, var(--cdm-accent, #0b2559));
+  background: var(--amc-color-primary, #525252);
   cursor: pointer;
   font-size: 0;
 }
@@ -104,7 +105,7 @@
   flex-direction: column;
   box-sizing: border-box;
   width: 100%;
-  max-height: calc(100dvh - calc(clamp(1rem, 4vw, 2rem)));
+  max-height: calc(100dvh - clamp(1rem, 4vw, 2rem));
   overflow: hidden;
   border: 1px solid var(--cdm-border, #e2e8f0);
   border-radius: 1rem;
@@ -116,7 +117,7 @@
 .modal-content .body {
   flex: 1;
   min-height: 0;
-  padding: calc(clamp(1rem, 3vw, 1.5rem));
+  padding: clamp(1rem, 3vw, 1.5rem);
   overflow: auto;
   overscroll-behavior: contain;
 }
@@ -157,7 +158,7 @@
   }
   .modal .actions {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(calc(min(100%, 7.5rem)), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 7.5rem), 1fr));
   }
   .modal .actions ::deep .--cdm-button,
   .modal .actions ::deep .--button,

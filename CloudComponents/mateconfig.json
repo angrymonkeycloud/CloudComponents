@@ -15,7 +15,7 @@
         "VideoPlayer/VideoPlayer.razor.css",
         "VideoPlayer/VideoPlayerCast.razor.css"
       ],
-      "input": "VideoPlayer/videoplayer.razor.less",
+      "input": "VideoPlayer/videoplayer.less",
       "minify": false
     },
     {
@@ -26,7 +26,6 @@
     {
       "output": "wwwroot/js/amc-components.js",
       "input": [
-        "VideoPlayer/hls.js",
         "Dialog/dialog.js",
         "ProgressBar/progressbar.js",
         "VideoPlayer/VideoPlayer.razor.js",
@@ -34,19 +33,8 @@
       ]
     },
     {
-      "output": "wwwroot/css/amc-components.css",
-      "input": [
-        "Dialog/dialog.less"
-      ]
-    },
-    {
       "output": "ProgressBar/ProgressBar.razor.css",
       "input": "ProgressBar/ProgressBar.razor.less",
-      "minify": false
-    },
-    {
-      "output": "Popup/Popup.razor.css",
-      "input": "Popup/Popup.razor.less",
       "minify": false
     },
     {

@@ -26,4 +26,5 @@
 		<ProjectReference Include="..\CloudComponents\CloudComponents.csproj" />
 	<Content Remove="mateconfig.json" /><None Include="mateconfig.json"><CopyToOutputDirectory>Never</CopyToOutputDirectory><CopyToPublishDirectory>Never</CopyToPublishDirectory></None></ItemGroup>
 
+  <ItemGroup><ProjectReference Include="../../CloudCommon/CloudCommon.Theming.Blazor/CloudCommon.Theming.Blazor.csproj" /></ItemGroup>
 </Project>

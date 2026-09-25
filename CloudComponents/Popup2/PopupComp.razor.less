@@ -1,3 +1,4 @@
+@import (reference) "../src/css/theme.less";
 .modal {
     position: fixed;
     inset: 0;
@@ -11,7 +12,7 @@
     padding: clamp(.5rem, 2vw, 1rem);
     overflow: hidden;
     border: 0;
-    background: var(--cdm-overlay, rgba(15, 23, 42, .56));
+    background: @components-cdm-overlay;
     backdrop-filter: blur(4px);
     opacity: 0;
     visibility: hidden;
@@ -25,11 +26,11 @@
         justify-content: space-between;
         gap: 1rem;
         padding: 1rem clamp(1rem, 3vw, 1.5rem);
-        border-bottom: 1px solid var(--cdm-border, #e2e8f0);
+        border-bottom: 1px solid @components-cdm-border;
 
         strong {
             min-width: 0;
-            color: var(--cdm-text, #172238);
+            color: @components-cdm-text;
             font-size: clamp(1rem, 2vw, 1.125rem);
             font-weight: 700;
             overflow-wrap: anywhere;
@@ -44,8 +45,8 @@
             padding: 0;
             border: 1px solid transparent;
             border-radius: 50%;
-            background: var(--cdm-subtle, #f3f4f6);
-            color: var(--cdm-muted, #64748b);
+            background: @components-cdm-subtle;
+            color: @components-cdm-muted;
             font: inherit;
             font-size: 1.5rem;
             line-height: 1;
@@ -53,9 +54,9 @@
 
             &:hover,
             &:focus-visible {
-                border-color: var(--cdm-control-border, #d8e0eb);
-                background: var(--cdm-control-hover, #e8edf4);
-                color: var(--cdm-text, #172238);
+                border-color: @components-cdm-control-border;
+                background: @components-cdm-control-hover;
+                color: @components-cdm-text;
                 outline: none;
             }
         }
@@ -68,8 +69,8 @@
         justify-content: flex-end;
         gap: .65rem;
         padding: .9rem clamp(1rem, 3vw, 1.5rem);
-        border-top: 1px solid var(--cdm-border, #e2e8f0);
-        background: var(--cdm-subtle, #f8fafc);
+        border-top: 1px solid @components-cdm-border;
+        background: @components-cdm-subtle;
 
         button { max-width: 100%; }
 
@@ -83,7 +84,7 @@
             padding: 0;
             border: 0;
             border-radius: 50%;
-            background: var(--amc-accentColor, var(--cdm-accent, #0b2559));
+            background: @components-color-primary;
             cursor: pointer;
             font-size: 0;
 
@@ -103,10 +104,10 @@
     width: 100%;
     max-height: calc(100dvh - clamp(1rem, 4vw, 2rem));
     overflow: hidden;
-    border: 1px solid var(--cdm-border, #e2e8f0);
+    border: 1px solid @components-cdm-border;
     border-radius: 1rem;
-    background: var(--cdm-surface, #fff);
-    color: var(--cdm-text, #172238);
+    background: @components-cdm-surface;
+    color: @components-cdm-text;
     box-shadow: 0 24px 60px rgba(2, 6, 23, .22);
     animation: popupIn .2s ease;
 }

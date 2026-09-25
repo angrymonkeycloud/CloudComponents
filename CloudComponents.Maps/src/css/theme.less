@@ -1,0 +1,30 @@
+// Project-local CloudTheme contract. Components import this file and use these names.
+@import (reference) "../../../../CloudCommon/CloudCommon.Theming/src/css/library.less";
+
+@map-radius-control: var(--cloudcomponents-map-radius-control, var(--amc-radius-control, .5rem));
+@map-shadow: var(--cloudcomponents-map-shadow, var(--amc-shadow, 0 8px 24px #00000012));
+@map-surface: var(--cloudcomponents-map-surface, var(--amc-color-surface, #ffffff));
+@map-muted: var(--cloudcomponents-map-muted, var(--amc-color-muted, #505050));
+@map-font-family: var(--cloudcomponents-map-font-family, var(--amc-font-family, Inter, 'Segoe UI', system-ui, sans-serif));
+@map-input-normal-background: var(--cloudcomponents-input-normal-background, var(--amc-input-normal-background, #ffffff));
+@map-input-normal-box-shadow: var(--cloudcomponents-input-normal-box-shadow, var(--amc-input-normal-box-shadow, none));
+@map-text: var(--cloudcomponents-map-text, var(--amc-color-text, #111111));
+@map-selected: var(--cloudcomponents-map-selected, var(--amc-color-selected, #eeeeee));
+@map-border: var(--cloudcomponents-map-border, var(--amc-color-border, #c0c0c0));
+@map-inverse-surface: var(--cloudcomponents-map-inverse-surface, var(--amc-color-inverse-surface, #171717));
+@map-inverse-text: var(--cloudcomponents-map-inverse-text, var(--amc-color-inverse-text, #ffffff));
+@map-secondary-button-normal-border-radius: var(--cloudcomponents-secondary-button-normal-border-radius, var(--amc-secondary-button-normal-border-radius, .5rem));
+@map-secondary-button-normal-font-family: var(--cloudcomponents-secondary-button-normal-font-family, var(--amc-secondary-button-normal-font-family, Inter, 'Segoe UI', system-ui, sans-serif));
+@map-secondary-button-normal-background: var(--cloudcomponents-secondary-button-normal-background, var(--amc-secondary-button-normal-background, #525252));
+@map-secondary-button-normal-color: var(--cloudcomponents-secondary-button-normal-color, var(--amc-secondary-button-normal-color, #ffffff));
+@map-secondary-button-normal-border-color: var(--cloudcomponents-secondary-button-normal-border-color, var(--amc-secondary-button-normal-border-color, #525252));
+@map-secondary-button-hover-background: var(--cloudcomponents-secondary-button-hover-background, var(--amc-secondary-button-hover-background, #464646));
+@map-button-normal-background: var(--cloudcomponents-button-normal-background, var(--amc-button-normal-background, #525252));
+@map-button-normal-color: var(--cloudcomponents-button-normal-color, var(--amc-button-normal-color, #ffffff));
+@map-button-hover-background: var(--cloudcomponents-button-hover-background, var(--amc-button-hover-background, #464646));
+@map-button-normal-border-radius: var(--cloudcomponents-button-normal-border-radius, var(--amc-button-normal-border-radius, .5rem));
+@map-button-normal-box-shadow: var(--cloudcomponents-button-normal-box-shadow, var(--amc-button-normal-box-shadow, none));
+
+.map-control(@element) {
+    .amc-control(cloudcomponents; @element);
+}

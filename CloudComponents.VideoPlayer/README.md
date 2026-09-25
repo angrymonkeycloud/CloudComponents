@@ -107,8 +107,8 @@ Override CSS variables for accent color and border radius:
 
 ```css
 :root {
-	--amc-videoplayer-accentColor: #4c9aff !important;
-	--amc-videoplayer-roundedCorder: 4px !important;
+	--cloudcomponents-video-player-accent-color: #4c9aff !important;
+	--cloudcomponents-video-player-rounded-corder: 4px !important;
 }
 ```
 

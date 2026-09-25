@@ -1,0 +1,46 @@
+// Project-local CloudTheme contract. Components import this file and use these names.
+@import (reference) "../../../../CloudCommon/CloudCommon.Theming/src/css/library.less";
+
+@editor-color: var(--cloudcomponents-editor-color, var(--amc-color-text, #111111));
+@editor-font-size: var(--cloudcomponents-editor-font-size, var(--amc-font-body, 1rem));
+@editor-bg: var(--cloudcomponents-editor-bg, var(--amc-color-surface, #ffffff));
+@editor-border-color: var(--cloudcomponents-editor-border-color, var(--amc-color-border, #c0c0c0));
+@editor-radius: var(--cloudcomponents-editor-radius, var(--amc-radius-control, .5rem));
+@editor-readonly-bg: var(--cloudcomponents-editor-readonly-bg, var(--amc-color-surface-subtle, #f1f1f1));
+@editor-toolbar-bg: var(--cloudcomponents-editor-toolbar-bg, var(--amc-color-surface-subtle, #f1f1f1));
+@editor-button-normal-background: var(--cloudcomponents-button-normal-background, var(--amc-button-normal-background, #525252));
+@editor-button-normal-border-radius: var(--cloudcomponents-button-normal-border-radius, var(--amc-button-normal-border-radius, .5rem));
+@editor-button-normal-color: var(--cloudcomponents-button-normal-color, var(--amc-button-normal-color, #ffffff));
+@editor-button-disabled-background: var(--cloudcomponents-button-disabled-background, var(--amc-button-disabled-background, #525252));
+@editor-button-disabled-border-color: var(--cloudcomponents-button-disabled-border-color, var(--amc-button-disabled-border-color, #525252));
+@editor-button-active-background: var(--cloudcomponents-button-active-background, var(--amc-button-active-background, #393939));
+@editor-button-active-border-color: var(--cloudcomponents-button-active-border-color, var(--amc-button-active-border-color, #525252));
+@editor-button-active-color: var(--cloudcomponents-button-active-color, var(--amc-button-active-color, #ffffff));
+@editor-accent: var(--cloudcomponents-editor-accent, var(--amc-color-primary, #525252));
+@editor-radius-control: var(--cloudcomponents-editor-radius-control, var(--amc-radius-control, .5rem));
+@editor-shadow: var(--cloudcomponents-editor-shadow, var(--amc-shadow, 0 8px 24px #00000012));
+@editor-border: var(--cloudcomponents-editor-border, var(--amc-color-border, #c0c0c0));
+@editor-muted: var(--cloudcomponents-editor-muted, var(--amc-color-muted, #505050));
+@editor-muted-strong: var(--cloudcomponents-editor-muted-strong, var(--amc-color-muted, #505050));
+@editor-quote-bg: var(--cloudcomponents-editor-quote-bg, var(--amc-color-surface-subtle, #f1f1f1));
+@editor-font-family: var(--cloudcomponents-editor-font-family, var(--amc-font-family, Inter, 'Segoe UI', system-ui, sans-serif));
+@editor-code-bg: var(--cloudcomponents-editor-code-bg, var(--amc-color-surface-subtle, #f1f1f1));
+@editor-inverse-surface: var(--cloudcomponents-editor-inverse-surface, var(--amc-color-inverse-surface, #171717));
+@editor-error: var(--cloudcomponents-editor-error, var(--amc-color-danger, #525252));
+@editor-warning: var(--cloudcomponents-editor-warning, var(--amc-color-warning, #525252));
+@editor-success: var(--cloudcomponents-editor-success, var(--amc-color-success, #525252));
+@editor-text: var(--cloudcomponents-editor-text, var(--amc-color-text, #111111));
+@editor-surface: var(--cloudcomponents-editor-surface, var(--amc-color-surface, #ffffff));
+@editor-active-bg: var(--cloudcomponents-editor-active-bg, var(--amc-color-selected, #eeeeee));
+@editor-overlay: var(--cloudcomponents-editor-overlay, var(--amc-color-overlay, #00000080));
+@editor-input-normal-color: var(--cloudcomponents-input-normal-color, var(--amc-input-normal-color, #111111));
+@editor-input-normal-background: var(--cloudcomponents-input-normal-background, var(--amc-input-normal-background, #ffffff));
+@editor-input-normal-border-radius: var(--cloudcomponents-input-normal-border-radius, var(--amc-input-normal-border-radius, .5rem));
+@editor-input-focus-border-color: var(--cloudcomponents-input-focus-border-color, var(--amc-input-focus-border-color, #737373));
+@editor-button-active-box-shadow: var(--cloudcomponents-button-active-box-shadow, var(--amc-button-active-box-shadow, none));
+
+.editor-control(@element) {
+    .amc-control(cloudcomponents; @element);
+}
+
+@editor-cloudcomponents-editor-hover-bg: var(--cloudcomponents-editor-hover-bg, rgba(0, 0, 0, 0.055));

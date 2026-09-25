@@ -1,4 +1,5 @@
-﻿.ComponentsDefault {
+/* Generated from LESS. Do not edit. */
+.ComponentsDefault {
   user-select: none;
   font-family: 'Segoe UI';
   font-size: 0.9rem;
@@ -28,11 +29,11 @@
   height: 1.8em;
 }
 .ComponentsDefault ::deep .amc-svg-fill {
-  fill: var(--amc-accentColor);
+  fill: var(--amc-color-primary, #525252);
 }
 .ComponentsDefault ::deep .amc-svg-stroke {
   fill: none;
-  stroke: var(--amc-accentColor);
+  stroke: var(--amc-color-primary, #525252);
   stroke-width: 0.5;
   stroke-miterlimit: 10;
 }
@@ -45,7 +46,7 @@
 }
 .Extendible._extended {
   border-color: rgba(255, 255, 255, 0.4);
-  border-radius: var(--amc-videoplayer-roundedCorder);
+  border-radius: var(--cloudcomponents-video-player-rounded-corder, var(--amc-radius-control, 0.5rem));
   background-color: rgba(255, 255, 255, 0.2);
 }
 ::deep .amc-svg-stroke._corner-rounded {
@@ -56,7 +57,6 @@
   user-select: none;
   font-family: 'Segoe UI';
   font-size: 0.9rem;
-  --amc-videoplayer-roundedCorder: 3px;
   --backgroundColor: rgba(0, 0, 0, 0.4);
   --transitionDuration: 200ms;
   position: relative;
@@ -66,7 +66,7 @@
   height: 100%;
   /*
     ::deep .amc-progressbar {
-        --amc-progressbar-accentColor: var(--amc-videoplayer-accentColor);
+        --cloudcomponents-progress-bar-accent-color: @video-player-cloudcomponents-video-player-accent-color;
     }*/
 }
 .amc-videoplayer button,
@@ -94,11 +94,11 @@
   height: 1.8em;
 }
 .amc-videoplayer ::deep .amc-svg-fill {
-  fill: var(--amc-accentColor);
+  fill: var(--amc-color-primary, #525252);
 }
 .amc-videoplayer ::deep .amc-svg-stroke {
   fill: none;
-  stroke: var(--amc-accentColor);
+  stroke: var(--amc-color-primary, #525252);
   stroke-width: 0.5;
   stroke-miterlimit: 10;
 }
@@ -156,7 +156,7 @@
   min-width: 20%;
   max-width: 60%;
   color: #fff;
-  border-radius: var(--amc-videoplayer-roundedCorder);
+  border-radius: var(--cloudcomponents-video-player-rounded-corder, var(--amc-radius-control, 0.5rem));
   margin: 7px;
 }
 .amc-videoplayer-sidebar > div > * {
@@ -368,7 +368,7 @@
 }
 .amc-videoplayer-volume._extended {
   border-color: rgba(255, 255, 255, 0.4);
-  border-radius: var(--amc-videoplayer-roundedCorder);
+  border-radius: var(--cloudcomponents-video-player-rounded-corder, var(--amc-radius-control, 0.5rem));
   background-color: rgba(255, 255, 255, 0.2);
 }
 .amc-videoplayer-volume-bar {
@@ -377,7 +377,7 @@
 }
 .amc-videoplayer-volume-bar ::deep .amc-progressbar {
   height: 20px;
-  --amc-progressbar-seekbuttonSize: 15px;
+  --cloudcomponents-progress-bar-seekbutton-size: 15px;
 }
 .amc-videoplayer-volume-value {
   width: 3ch;
@@ -428,7 +428,7 @@
 .amc-videoplayer-seekinfo-container {
   background-color: var(--backgroundColor);
   color: #fff;
-  border-radius: var(--amc-videoplayer-roundedCorder);
+  border-radius: var(--cloudcomponents-video-player-rounded-corder, var(--amc-radius-control, 0.5rem));
   text-align: center;
   padding: 10px;
   white-space: nowrap;

@@ -1,8 +1,9 @@
-﻿@import '../General/css/common.less';
+@import (reference) "../src/css/theme.less";
+@import '../General/css/common.less';
 
 .amc-volumebar {
 	.ComponentsDefault();
-	color: var(--amc-accentColor);
+	color: @components-color-primary;
 	display: flex;
 	align-items: center;
 

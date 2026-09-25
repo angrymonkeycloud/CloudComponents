@@ -1,3 +1,4 @@
+/* Generated from LESS. Do not edit. */
 .ComponentsDefault {
   user-select: none;
   font-family: 'Segoe UI';
@@ -28,11 +29,11 @@
   height: 1.8em;
 }
 .ComponentsDefault ::deep .amc-svg-fill {
-  fill: var(--amc-accentColor);
+  fill: var(--amc-color-primary, #525252);
 }
 .ComponentsDefault ::deep .amc-svg-stroke {
   fill: none;
-  stroke: var(--amc-accentColor);
+  stroke: var(--amc-color-primary, #525252);
   stroke-width: 0.5;
   stroke-miterlimit: 10;
 }
@@ -72,11 +73,11 @@
   height: 1.8em;
 }
 .amc-tabs ::deep .amc-svg-fill {
-  fill: var(--amc-accentColor);
+  fill: var(--amc-color-primary, #525252);
 }
 .amc-tabs ::deep .amc-svg-stroke {
   fill: none;
-  stroke: var(--amc-accentColor);
+  stroke: var(--amc-color-primary, #525252);
   stroke-width: 0.5;
   stroke-miterlimit: 10;
 }
@@ -95,7 +96,7 @@
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  background-color: var(--amc-accentColor);
+  background-color: var(--amc-color-primary, #525252);
   transition: width 200ms ease-in-out;
 }
 .amc-tab:hover::after {
@@ -104,7 +105,7 @@
 .amc-tab._active {
   pointer-events: none;
   cursor: default;
-  color: var(--amc-accentColor);
+  color: var(--amc-color-primary, #525252);
 }
 .amc-tab._active::after {
   width: 2em;

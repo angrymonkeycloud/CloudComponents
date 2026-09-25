@@ -1,11 +1,12 @@
+/* Generated from LESS. Do not edit. */
 .cloudgridfooter {
   display: flex;
   align-items: center;
   gap: 12px;
   flex: none;
   box-sizing: border-box;
-  height: var(--cloudgrid-footer-height, 30px);
-  min-height: var(--cloudgrid-footer-height, 30px);
+  height: var(--cloudcomponents-grid-footer-height, 30px);
+  min-height: var(--cloudcomponents-grid-footer-height, 30px);
   padding: 0 8px;
   font-size: 12px;
   background-color: rgba(0, 0, 0, 0.04);
@@ -46,7 +47,7 @@
 }
 .cloudgridfooter-pager button svg polyline {
   fill: none;
-  stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+  stroke: var(--cloudcomponents-grid-header-accent-color, var(--amc-color-primary, #525252));
   stroke-width: 4px;
   stroke-miterlimit: 10;
 }

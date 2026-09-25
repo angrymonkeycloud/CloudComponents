@@ -1,10 +1,11 @@
+/* Generated from LESS. Do not edit. */
 .cloudgridheader {
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
   box-sizing: border-box;
-  height: var(--cloudgrid-header-height, 40px);
-  min-height: var(--cloudgrid-header-height, 40px);
+  height: var(--cloudcomponents-grid-header-height, 40px);
+  min-height: var(--cloudcomponents-grid-header-height, 40px);
   padding: 4px 8px;
   overflow: visible;
   position: relative;
@@ -88,14 +89,14 @@
   justify-content: center;
   gap: 6px;
   box-sizing: border-box;
-  height: calc(var(--cloudgrid-header-height, 40px) - 8px);
-  min-height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+  height: calc(var(--cloudcomponents-grid-header-height, 40px) - 8px);
+  min-height: calc(var(--cloudcomponents-grid-header-height, 40px) - 8px);
   padding: 0 10px;
   border: none;
   border-radius: 3px;
   background: none;
-  color: var(--cloudgridheader-color, var(--cloudgrid-color, light-dark(#505050, #e3e9f3)));
-  font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
+  color: var(--cloudcomponents-grid-header-color, var(--amc-color-text, #111111));
+  font-size: var(--cloudcomponents-grid-header-font-size, var(--amc-font-small, 0.875rem));
   line-height: 1;
   text-decoration: none;
   cursor: pointer;
@@ -105,7 +106,7 @@
   line-height: 1;
 }
 .cloudgridheader-action:hover {
-  background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, light-dark(#e8e8e8, #222e42)));
+  background-color: var(--cloudcomponents-grid-header-hover-background, var(--amc-color-primary-soft, #f8f8f8));
 }
 .cloudgridheader-action ::deep svg {
   flex: none;
@@ -114,28 +115,28 @@
 }
 .cloudgridheader-action ::deep svg path,
 .cloudgridheader-action ::deep svg .amc-svg-fill {
-  fill: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+  fill: var(--cloudcomponents-grid-header-accent-color, var(--amc-color-primary, #525252));
 }
 .cloudgridheader-action ::deep svg line {
-  stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+  stroke: var(--cloudcomponents-grid-header-accent-color, var(--amc-color-primary, #525252));
   stroke-width: 2px;
   stroke-linecap: round;
 }
 .cloudgridheader-action ::deep svg circle {
   fill: none;
-  stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+  stroke: var(--cloudcomponents-grid-header-accent-color, var(--amc-color-primary, #525252));
   stroke-width: 2px;
 }
 .cloudgridheader-action ::deep svg polyline {
   fill: none;
-  stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+  stroke: var(--cloudcomponents-grid-header-accent-color, var(--amc-color-primary, #525252));
   stroke-width: 2px;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 .cloudgridheader-action._bulk {
-  border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
-  background-color: var(--cloudgrid-background, light-dark(#fff, #141b29));
+  border: 1px solid var(--cloudcomponents-grid-header-border-color, var(--amc-color-border, #c0c0c0));
+  background-color: var(--cloudcomponents-grid-background, var(--amc-color-surface, #ffffff));
   font-size: 12px;
 }
 .cloudgridheader-action._reorder-start {
@@ -167,18 +168,18 @@
 }
 .cloudgridheader-search {
   box-sizing: border-box;
-  width: calc(min(180px, 100%));
+  width: min(180px, 100%);
   max-width: 100%;
-  height: calc(var(--cloudgrid-header-height, 40px) - 8px);
-  min-height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+  height: calc(var(--cloudcomponents-grid-header-height, 40px) - 8px);
+  min-height: calc(var(--cloudcomponents-grid-header-height, 40px) - 8px);
   padding: 0 8px;
-  border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
+  border: 1px solid var(--cloudcomponents-grid-header-border-color, var(--amc-color-border, #c0c0c0));
   border-radius: 3px;
-  font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
+  font-size: var(--cloudcomponents-grid-header-font-size, var(--amc-font-small, 0.875rem));
 }
 .cloudgridheader-search:focus {
   outline: none;
-  border-color: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+  border-color: var(--cloudcomponents-grid-header-accent-color, var(--amc-color-primary, #525252));
 }
 .cloudgridheader-more {
   flex: 0 0 auto;
@@ -190,11 +191,11 @@
   right: 0;
   z-index: 100;
   min-width: 160px;
-  max-width: calc(min(280px, calc(100vw - 16px)));
+  max-width: min(280px, calc(100vw - 16px));
   margin-top: 4px;
   padding: 4px 0;
-  background: var(--cloudgrid-background, light-dark(#fff, #141b29));
-  border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
+  background: var(--cloudcomponents-grid-background, var(--amc-color-surface, #ffffff));
+  border: 1px solid var(--cloudcomponents-grid-header-border-color, var(--amc-color-border, #c0c0c0));
   border-radius: 4px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   overflow-x: hidden;
@@ -208,8 +209,8 @@
   padding: 6px 14px;
   border: none;
   background: none;
-  color: var(--cloudgridheader-color, var(--cloudgrid-color, light-dark(#505050, #e3e9f3)));
-  font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
+  color: var(--cloudcomponents-grid-header-color, var(--amc-color-text, #111111));
+  font-size: var(--cloudcomponents-grid-header-font-size, var(--amc-font-small, 0.875rem));
   line-height: 1;
   text-align: left;
   text-decoration: none;
@@ -217,7 +218,7 @@
   white-space: nowrap;
 }
 .cloudgridheader-more-item:hover {
-  background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, light-dark(#e8e8e8, #222e42)));
+  background-color: var(--cloudcomponents-grid-header-hover-background, var(--amc-color-primary-soft, #f8f8f8));
 }
 .cloudgridheader-more-item ::deep svg {
   flex: none;
@@ -226,12 +227,12 @@
 }
 .cloudgridheader-more-item ::deep svg path,
 .cloudgridheader-more-item ::deep svg .amc-svg-fill {
-  fill: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+  fill: var(--cloudcomponents-grid-header-accent-color, var(--amc-color-primary, #525252));
 }
 .cloudgridheader-more-item ::deep svg line,
 .cloudgridheader-more-item ::deep svg polyline,
 .cloudgridheader-more-item ::deep svg circle {
-  stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+  stroke: var(--cloudcomponents-grid-header-accent-color, var(--amc-color-primary, #525252));
   stroke-width: 2px;
   stroke-linecap: round;
   fill: none;
@@ -247,19 +248,19 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+  height: calc(var(--cloudcomponents-grid-header-height, 40px) - 8px);
   padding: 0 12px;
-  border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
+  border: 1px solid var(--cloudcomponents-grid-header-border-color, var(--amc-color-border, #c0c0c0));
   border-radius: 3px;
-  background: var(--cloudgrid-background, light-dark(#fff, #141b29));
-  color: var(--cloudgridheader-color, var(--cloudgrid-color, light-dark(#505050, #e3e9f3)));
-  font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
+  background: var(--cloudcomponents-grid-background, var(--amc-color-surface, #ffffff));
+  color: var(--cloudcomponents-grid-header-color, var(--amc-color-text, #111111));
+  font-size: var(--cloudcomponents-grid-header-font-size, var(--amc-font-small, 0.875rem));
   line-height: 1;
   cursor: pointer;
   white-space: nowrap;
 }
 .cloudgridheader ::deep .cloudgrid-export-btn:hover {
-  background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, light-dark(#e8e8e8, #222e42)));
+  background-color: var(--cloudcomponents-grid-header-hover-background, var(--amc-color-primary-soft, #f8f8f8));
 }
 @media (max-width: 640px) {
   .cloudgridheader {
@@ -300,7 +301,7 @@
     left: auto;
     width: auto;
     min-width: 160px;
-    max-width: calc(min(280px, calc(100vw - 16px)));
+    max-width: min(280px, calc(100vw - 16px));
   }
 }
 ::deep .cloudgridheader-action {
@@ -309,14 +310,14 @@
   justify-content: center;
   gap: 6px;
   box-sizing: border-box;
-  height: calc(var(--cloudgrid-header-height, 40px) - 8px);
-  min-height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+  height: calc(var(--cloudcomponents-grid-header-height, 40px) - 8px);
+  min-height: calc(var(--cloudcomponents-grid-header-height, 40px) - 8px);
   padding: 0 10px;
   border: none;
   border-radius: 3px;
   background: none;
-  color: var(--cloudgridheader-color, var(--cloudgrid-color, light-dark(#505050, #e3e9f3)));
-  font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
+  color: var(--cloudcomponents-grid-header-color, var(--amc-color-text, #111111));
+  font-size: var(--cloudcomponents-grid-header-font-size, var(--amc-font-small, 0.875rem));
   line-height: 1;
   text-decoration: none;
   cursor: pointer;
@@ -326,7 +327,7 @@
   line-height: 1;
 }
 ::deep .cloudgridheader-action:hover {
-  background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, light-dark(#e8e8e8, #222e42)));
+  background-color: var(--cloudcomponents-grid-header-hover-background, var(--amc-color-primary-soft, #f8f8f8));
 }
 ::deep .cloudgridheader-action svg {
   flex: none;
@@ -335,28 +336,28 @@
 }
 ::deep .cloudgridheader-action svg path,
 ::deep .cloudgridheader-action svg .amc-svg-fill {
-  fill: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+  fill: var(--cloudcomponents-grid-header-accent-color, var(--amc-color-primary, #525252));
 }
 ::deep .cloudgridheader-action svg line {
-  stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+  stroke: var(--cloudcomponents-grid-header-accent-color, var(--amc-color-primary, #525252));
   stroke-width: 2px;
   stroke-linecap: round;
 }
 ::deep .cloudgridheader-action svg circle {
   fill: none;
-  stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+  stroke: var(--cloudcomponents-grid-header-accent-color, var(--amc-color-primary, #525252));
   stroke-width: 2px;
 }
 ::deep .cloudgridheader-action svg polyline {
   fill: none;
-  stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+  stroke: var(--cloudcomponents-grid-header-accent-color, var(--amc-color-primary, #525252));
   stroke-width: 2px;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 ::deep .cloudgridheader-action._bulk {
-  border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
-  background-color: var(--cloudgrid-background, light-dark(#fff, #141b29));
+  border: 1px solid var(--cloudcomponents-grid-header-border-color, var(--amc-color-border, #c0c0c0));
+  background-color: var(--cloudcomponents-grid-background, var(--amc-color-surface, #ffffff));
   font-size: 12px;
 }
 ::deep .cloudgridheader-action._reorder-save {

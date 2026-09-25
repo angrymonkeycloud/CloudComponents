@@ -1,13 +1,14 @@
+/* Generated from LESS. Do not edit. */
 .cloudeditor {
   position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
-  color: var(--cloudeditor-color, #333);
-  font-size: var(--cloudeditor-font-size, 14px);
-  background: var(--cloudeditor-bg, #fff);
-  border: 1px solid var(--cloudeditor-border-color, #d5d5d5);
-  border-radius: var(--cloudeditor-radius, 8px);
+  color: var(--cloudcomponents-editor-color, var(--amc-color-text, #111111));
+  font-size: var(--cloudcomponents-editor-font-size, var(--amc-font-body, 1rem));
+  background: var(--cloudcomponents-editor-bg, var(--amc-color-surface, #ffffff));
+  border: 1px solid var(--cloudcomponents-editor-border-color, var(--amc-color-border, #c0c0c0));
+  border-radius: var(--cloudcomponents-editor-radius, var(--amc-radius-control, 0.5rem));
 }
 .cloudeditor._fullscreen {
   position: fixed;
@@ -19,7 +20,7 @@
   display: none;
 }
 .cloudeditor._readonly .cloudeditor-content {
-  background: var(--cloudeditor-readonly-bg, #f8f8f8);
+  background: var(--cloudcomponents-editor-readonly-bg, var(--amc-color-surface-subtle, #f1f1f1));
 }
 .cloudeditor-toolbar {
   display: flex;
@@ -27,9 +28,9 @@
   align-items: center;
   gap: 7px;
   padding: 7px 9px;
-  background: var(--cloudeditor-toolbar-bg, #fafafa);
-  border-bottom: 1px solid var(--cloudeditor-border-color, #d5d5d5);
-  border-radius: var(--cloudeditor-radius, 8px) var(--cloudeditor-radius, 8px) 0 0;
+  background: var(--cloudcomponents-editor-toolbar-bg, var(--amc-color-surface-subtle, #f1f1f1));
+  border-bottom: 1px solid var(--cloudcomponents-editor-border-color, var(--amc-color-border, #c0c0c0));
+  border-radius: var(--cloudcomponents-editor-radius, var(--amc-radius-control, 0.5rem)) var(--cloudcomponents-editor-radius, var(--amc-radius-control, 0.5rem)) 0 0;
 }
 .cloudeditor-group {
   display: flex;
@@ -57,16 +58,16 @@
   cursor: pointer;
 }
 .cloudeditor-btn:hover:not(:disabled) {
-  background: var(--cloudeditor-hover-bg, rgba(0, 0, 0, 0.055));
-  border-color: color-mix(in srgb, var(--cloudeditor-border-color, #d5d5d5) 75%, transparent);
+  background: var(--cloudcomponents-editor-hover-bg, rgba(0, 0, 0, 0.055));
+  border-color: color-mix(in srgb, var(--cloudcomponents-editor-border-color, var(--amc-color-border, #c0c0c0)) 75%, transparent);
 }
 .cloudeditor-btn._active {
-  background: var(--cloudeditor-active-bg, rgba(0, 120, 212, 0.12));
-  border-color: color-mix(in srgb, var(--cloudeditor-accent, #0078d4) 30%, transparent);
-  color: var(--cloudeditor-accent, #0078d4);
+  background: var(--cloudcomponents-editor-active-bg, var(--amc-color-selected, #eeeeee));
+  border-color: color-mix(in srgb, var(--cloudcomponents-editor-accent, var(--amc-color-primary, #525252)) 30%, transparent);
+  color: var(--cloudcomponents-editor-accent, var(--amc-color-primary, #525252));
 }
 .cloudeditor-btn:focus-visible {
-  outline: 2px solid var(--cloudeditor-accent, #0078d4);
+  outline: 2px solid var(--cloudcomponents-editor-accent, var(--amc-color-primary, #525252));
   outline-offset: 1px;
 }
 .cloudeditor-btn:disabled {
@@ -83,8 +84,8 @@
   padding: 0 7px;
   font-size: 12px;
   color: inherit;
-  background: var(--cloudeditor-bg, #fff);
-  border: 1px solid var(--cloudeditor-border-color, #d5d5d5);
+  background: var(--cloudcomponents-editor-bg, var(--amc-color-surface, #ffffff));
+  border: 1px solid var(--cloudcomponents-editor-border-color, var(--amc-color-border, #c0c0c0));
   border-radius: 5px;
   cursor: pointer;
 }
@@ -102,8 +103,8 @@
   left: 0;
   z-index: 30;
   padding: 8px;
-  background: var(--cloudeditor-bg, #fff);
-  border: 1px solid var(--cloudeditor-border-color, #d5d5d5);
+  background: var(--cloudcomponents-editor-bg, var(--amc-color-surface, #ffffff));
+  border: 1px solid var(--cloudcomponents-editor-border-color, var(--amc-color-border, #c0c0c0));
   border-radius: 8px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
@@ -133,7 +134,7 @@
   width: 34px;
   height: 26px;
   padding: 0;
-  border: 1px solid var(--cloudeditor-border-color, #d5d5d5);
+  border: 1px solid var(--cloudcomponents-editor-border-color, var(--amc-color-border, #c0c0c0));
   border-radius: 4px;
   background: none;
   cursor: pointer;
@@ -159,7 +160,7 @@
   top: 14px;
   left: 16px;
   right: 16px;
-  color: var(--cloudeditor-muted, #999);
+  color: var(--cloudcomponents-editor-muted, var(--amc-color-muted, #505050));
   pointer-events: none;
 }
 .cloudeditor-content ::deep h1,
@@ -175,14 +176,14 @@
   margin: 0 0 0.6em;
 }
 .cloudeditor-content ::deep a {
-  color: var(--cloudeditor-accent, #0078d4);
+  color: var(--cloudcomponents-editor-accent, var(--amc-color-primary, #525252));
 }
 .cloudeditor-content ::deep blockquote {
   margin: 0.6em 0;
   padding: 4px 14px;
-  border-left: 3px solid var(--cloudeditor-accent, #0078d4);
-  color: var(--cloudeditor-muted-strong, #666);
-  background: var(--cloudeditor-quote-bg, rgba(0, 0, 0, 0.03));
+  border-left: 3px solid var(--cloudcomponents-editor-accent, var(--amc-color-primary, #525252));
+  color: var(--cloudcomponents-editor-muted-strong, var(--amc-color-muted, #505050));
+  background: var(--cloudcomponents-editor-quote-bg, var(--amc-color-surface-subtle, #f1f1f1));
   border-radius: 0 6px 6px 0;
 }
 .cloudeditor-content ::deep pre {
@@ -190,7 +191,7 @@
   padding: 12px 14px;
   font-family: Consolas, Monaco, 'Courier New', monospace;
   font-size: 0.92em;
-  background: var(--cloudeditor-code-bg, #f4f4f4);
+  background: var(--cloudcomponents-editor-code-bg, var(--amc-color-surface-subtle, #f1f1f1));
   border-radius: 6px;
   overflow-x: auto;
   white-space: pre-wrap;
@@ -199,7 +200,7 @@
   padding: 2px 5px;
   font-family: Consolas, Monaco, 'Courier New', monospace;
   font-size: 0.9em;
-  background: var(--cloudeditor-code-bg, #f4f4f4);
+  background: var(--cloudcomponents-editor-code-bg, var(--amc-color-surface-subtle, #f1f1f1));
   border-radius: 4px;
 }
 .cloudeditor-content ::deep pre code {
@@ -217,7 +218,7 @@
 .cloudeditor-content ::deep hr {
   margin: 1em 0;
   border: none;
-  border-top: 1px solid var(--cloudeditor-border-color, #d5d5d5);
+  border-top: 1px solid var(--cloudcomponents-editor-border-color, var(--amc-color-border, #c0c0c0));
 }
 .cloudeditor-content ::deep img {
   max-width: 100%;
@@ -230,7 +231,7 @@
 }
 .cloudeditor-content ::deep td,
 .cloudeditor-content ::deep th {
-  border: 1px solid var(--cloudeditor-border-color, #d5d5d5);
+  border: 1px solid var(--cloudcomponents-editor-border-color, var(--amc-color-border, #c0c0c0));
   padding: 6px 10px;
 }
 .cloudeditor-content ::deep figure.cloudeditor-embed {
@@ -263,14 +264,14 @@
   font-size: 13px;
   line-height: 1.5;
   color: inherit;
-  background: var(--cloudeditor-code-bg, #f9f9f9);
+  background: var(--cloudcomponents-editor-code-bg, var(--amc-color-surface-subtle, #f1f1f1));
   border: none;
   outline: none;
   resize: none;
   box-sizing: border-box;
 }
 .cloudeditor-code:focus {
-  box-shadow: inset 0 0 0 1px var(--cloudeditor-accent, #0078d4);
+  box-shadow: inset 0 0 0 1px var(--cloudcomponents-editor-accent, var(--amc-color-primary, #525252));
 }
 .cloudeditor-codebar {
   display: flex;
@@ -279,8 +280,8 @@
   gap: 12px;
   min-height: 45px;
   padding: 7px 10px;
-  border-top: 1px solid var(--cloudeditor-border-color, #d5d5d5);
-  background: var(--cloudeditor-toolbar-bg, #fafafa);
+  border-top: 1px solid var(--cloudcomponents-editor-border-color, var(--amc-color-border, #c0c0c0));
+  background: var(--cloudcomponents-editor-toolbar-bg, var(--amc-color-surface-subtle, #f1f1f1));
 }
 .cloudeditor-codestatus {
   display: flex;
@@ -299,13 +300,13 @@
   min-width: 0;
 }
 .cloudeditor-message._error {
-  color: var(--cloudeditor-error, #d13438);
+  color: var(--cloudcomponents-editor-error, var(--amc-color-danger, #525252));
 }
 .cloudeditor-message._warning {
-  color: var(--cloudeditor-warning, #b05a00);
+  color: var(--cloudcomponents-editor-warning, var(--amc-color-warning, #525252));
 }
 .cloudeditor-message._ok {
-  color: var(--cloudeditor-success, #107c10);
+  color: var(--cloudcomponents-editor-success, var(--amc-color-success, #525252));
 }
 .cloudeditor-codeactions {
   display: flex;
@@ -321,7 +322,7 @@
   font-size: 12px;
   font-weight: 500;
   color: #fff;
-  background: var(--cloudeditor-accent, #0078d4);
+  background: var(--cloudcomponents-editor-accent, var(--amc-color-primary, #525252));
   border: 1px solid transparent;
   border-radius: 4px;
   cursor: pointer;
@@ -349,13 +350,13 @@
   cursor: default;
 }
 .cloudeditor-action:focus-visible {
-  outline: 2px solid var(--cloudeditor-accent, #0078d4);
+  outline: 2px solid var(--cloudcomponents-editor-accent, var(--amc-color-primary, #525252));
   outline-offset: 1px;
 }
 .cloudeditor-action._secondary {
   color: inherit;
   background: transparent;
-  border-color: var(--cloudeditor-border-color, #d5d5d5);
+  border-color: var(--cloudcomponents-editor-border-color, var(--amc-color-border, #c0c0c0));
 }
 @media (max-width: 560px) {
   .cloudeditor-codebar {
@@ -378,7 +379,7 @@
 .cloudeditor-issuetoggle {
   flex-shrink: 0;
   padding: 3px 7px;
-  color: var(--cloudeditor-accent, #0078d4);
+  color: var(--cloudcomponents-editor-accent, var(--amc-color-primary, #525252));
   font: inherit;
   background: transparent;
   border: 0;
@@ -389,7 +390,7 @@
 .cloudeditor-issuetoggle:hover,
 .cloudeditor-issuecount._active,
 .cloudeditor-issuetoggle._active {
-  background: var(--cloudeditor-active-bg, rgba(0, 120, 212, 0.1));
+  background: var(--cloudcomponents-editor-active-bg, var(--amc-color-selected, #eeeeee));
 }
 .cloudeditor-issuepanel {
   display: flex;
@@ -397,8 +398,8 @@
   flex-direction: column;
   min-height: 130px;
   max-height: 240px;
-  background: var(--cloudeditor-bg, #fff);
-  border-top: 1px solid var(--cloudeditor-border-color, #d5d5d5);
+  background: var(--cloudcomponents-editor-bg, var(--amc-color-surface, #ffffff));
+  border-top: 1px solid var(--cloudcomponents-editor-border-color, var(--amc-color-border, #c0c0c0));
 }
 .cloudeditor-issuehead {
   display: flex;
@@ -406,7 +407,7 @@
   justify-content: space-between;
   padding: 7px 12px;
   font-size: 12px;
-  border-bottom: 1px solid var(--cloudeditor-border-color, #e5e5e5);
+  border-bottom: 1px solid var(--cloudcomponents-editor-border-color, var(--amc-color-border, #c0c0c0));
 }
 .cloudeditor-issuelist {
   overflow-y: auto;
@@ -417,16 +418,16 @@
   gap: 8px;
   padding: 7px 12px;
   font-size: 12px;
-  border-bottom: 1px solid var(--cloudeditor-border-color, #ededed);
+  border-bottom: 1px solid var(--cloudcomponents-editor-border-color, var(--amc-color-border, #c0c0c0));
 }
 .cloudeditor-issue._error {
-  color: var(--cloudeditor-error, #d13438);
+  color: var(--cloudcomponents-editor-error, var(--amc-color-danger, #525252));
 }
 .cloudeditor-issue._warning {
-  color: var(--cloudeditor-warning, #b05a00);
+  color: var(--cloudcomponents-editor-warning, var(--amc-color-warning, #525252));
 }
 .cloudeditor-issueposition {
-  color: var(--cloudeditor-muted, #777);
+  color: var(--cloudcomponents-editor-muted, var(--amc-color-muted, #505050));
   font-family: Consolas, Monaco, 'Courier New', monospace;
 }
 .cloudeditor-overlay {
@@ -441,8 +442,8 @@
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1020;
-  width: calc(min(430px, calc(100vw - 32px)));
-  background: var(--cloudeditor-bg, #fff);
+  width: min(430px, calc(100vw - 32px));
+  background: var(--cloudcomponents-editor-bg, var(--amc-color-surface, #ffffff));
   border-radius: 10px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
 }
@@ -452,7 +453,7 @@
   justify-content: space-between;
   padding: 12px 16px;
   font-weight: 600;
-  border-bottom: 1px solid var(--cloudeditor-border-color, #e5e5e5);
+  border-bottom: 1px solid var(--cloudcomponents-editor-border-color, var(--amc-color-border, #c0c0c0));
 }
 .cloudeditor-dialogbody {
   display: flex;
@@ -465,7 +466,7 @@
   justify-content: flex-end;
   gap: 8px;
   padding: 12px 16px;
-  border-top: 1px solid var(--cloudeditor-border-color, #e5e5e5);
+  border-top: 1px solid var(--cloudcomponents-editor-border-color, var(--amc-color-border, #c0c0c0));
 }
 .cloudeditor-field {
   display: flex;
@@ -474,19 +475,19 @@
 }
 .cloudeditor-field span {
   font-size: 12px;
-  color: var(--cloudeditor-muted, #777);
+  color: var(--cloudcomponents-editor-muted, var(--amc-color-muted, #505050));
 }
 .cloudeditor-field input[type="text"] {
   padding: 8px 10px;
   font-size: 13px;
   color: inherit;
-  background: var(--cloudeditor-bg, #fff);
-  border: 1px solid var(--cloudeditor-border-color, #d5d5d5);
+  background: var(--cloudcomponents-editor-bg, var(--amc-color-surface, #ffffff));
+  border: 1px solid var(--cloudcomponents-editor-border-color, var(--amc-color-border, #c0c0c0));
   border-radius: 6px;
   outline: none;
 }
 .cloudeditor-field input[type="text"]:focus {
-  border-color: var(--cloudeditor-accent, #0078d4);
+  border-color: var(--cloudcomponents-editor-accent, var(--amc-color-primary, #525252));
 }
 .cloudeditor-check {
   display: flex;
@@ -499,7 +500,7 @@
   display: flex;
   gap: 4px;
   padding: 3px;
-  background: var(--cloudeditor-code-bg, #f0f0f0);
+  background: var(--cloudcomponents-editor-code-bg, var(--amc-color-surface-subtle, #f1f1f1));
   border-radius: 8px;
 }
 .cloudeditor-tabs button {
@@ -513,10 +514,10 @@
   cursor: pointer;
 }
 .cloudeditor-tabs button._active {
-  background: var(--cloudeditor-bg, #fff);
+  background: var(--cloudcomponents-editor-bg, var(--amc-color-surface, #ffffff));
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 .cloudeditor-hint {
   font-size: 12px;
-  color: var(--cloudeditor-muted, #777);
+  color: var(--cloudcomponents-editor-muted, var(--amc-color-muted, #505050));
 }

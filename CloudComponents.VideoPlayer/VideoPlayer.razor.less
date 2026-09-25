@@ -1,12 +1,13 @@
-@import "../ AngryMonkey.CloudComponents/General/css/common";
+@import (reference) "src/css/theme.less";
+@import "../CloudComponents/General/css/common";
 
 .Extendible {
     border: 1px solid transparent;
-    transition: all var(--transitionDuration);
+    transition: all @video-player-transition-duration;
 
     &._extended {
         border-color: rgba(255, 255, 255, .4);
-        border-radius: var(--amc-videoplayer-roundedCorder);
+        border-radius: @video-player-rounded-corder;
         background-color: rgba(255, 255, 255, .2);
     }
 }
@@ -21,7 +22,6 @@
 
 .amc-videoplayer {
     .ComponentsDefault();
-    --amc-videoplayer-roundedCorder: 3px;
     --backgroundColor: rgba(0, 0, 0, .4);
     --transitionDuration: 200ms;
     position: relative;
@@ -66,7 +66,7 @@
     }
     /*
     ::deep .amc-progressbar {
-        --amc-progressbar-accentColor: var(--amc-videoplayer-accentColor);
+        --cloudcomponents-progress-bar-accent-color: @video-player-cloudcomponents-video-player-accent-color;
     }*/
 
     &-settings {
@@ -94,14 +94,14 @@
     }
 
     &-sidebar {
-        background-color: var(--backgroundColor);
+        background-color: @video-player-background-color;
         white-space: nowrap;
         overflow: hidden auto;
         padding: 10px 0;
         min-width: 20%;
         max-width: 60%;
         color: #fff;
-        border-radius: var(--amc-videoplayer-roundedCorder);
+        border-radius: @video-player-rounded-corder;
         margin: 7px;
 
         > div > * {
@@ -369,7 +369,7 @@
 
             ::deep .amc-progressbar {
                 height: 20px;
-                --amc-progressbar-seekbuttonSize: 15px;
+                --cloudcomponents-progress-bar-seekbutton-size: 15px;
             }
         }
 
@@ -404,7 +404,7 @@
 
     .amc-videoplayer {
         &-content {
-            transition: background-color var(--transitionDuration);
+            transition: background-color @video-player-transition-duration;
         }
     }
 
@@ -412,7 +412,7 @@
 
         .amc-videoplayer {
             &-content {
-                background-color: var(--backgroundColor);
+                background-color: @video-player-background-color;
             }
         }
     }
@@ -448,9 +448,9 @@
         padding-top: 0;
 
         &-container {
-            background-color: var(--backgroundColor);
+            background-color: @video-player-background-color;
             color: #fff;
-            border-radius: var(--amc-videoplayer-roundedCorder);
+            border-radius: @video-player-rounded-corder;
             text-align: center;
             padding: 10px;
             white-space: nowrap;

@@ -49,7 +49,7 @@ Then add the namespace and use the component:
                DocumentRoutes="@_documentRoutes" />
 ```
 
-Set `Content` for Markdown already loaded by your application. Supply `DocumentUrl` with `Content` when it contains relative links. `LoadingTemplate`, `ErrorTemplate`, `EmptyTemplate`, and `Class` provide presentation customization. The component resets inherited page styles and owns its complete Markdown design. Pass theme overrides through `Style` using component-local variables such as `--cloud-markdown-link`, `--cloud-markdown-surface`, and `--cloud-markdown-font-size`. Raw HTML is deliberately disabled; this keeps remotely hosted documentation safe by default.
+Set `Content` for Markdown already loaded by your application. Supply `DocumentUrl` with `Content` when it contains relative links. `LoadingTemplate`, `ErrorTemplate`, `EmptyTemplate`, and `Class` provide presentation customization. The component resets inherited page styles and owns its complete Markdown design. Pass theme overrides through `Style` using component-local variables such as `--cloudcomponents-markdown-link`, `--cloudcomponents-markdown-surface`, and `--cloudcomponents-markdown-font-size`. Raw HTML is deliberately disabled; this keeps remotely hosted documentation safe by default.
 
 ## Angry Monkey Cloud
 

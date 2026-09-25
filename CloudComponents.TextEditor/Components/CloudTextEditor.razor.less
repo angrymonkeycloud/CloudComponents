@@ -1,3 +1,4 @@
+@import (reference) "../src/css/theme.less";
 // CloudTextEditor root styles.
 // Naming follows https://github.com/angrymonkeydocs/css-naming-convention:
 // block `.cloudeditor`, children `.cloudeditor-*`, adjectives `._name`.
@@ -11,11 +12,11 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    color: var(--cloudeditor-color, #333);
-    font-size: var(--cloudeditor-font-size, 14px);
-    background: var(--cloudeditor-bg, #fff);
-    border: 1px solid var(--cloudeditor-border-color, #d5d5d5);
-    border-radius: var(--cloudeditor-radius, 8px);
+    color: @editor-color;
+    font-size: @editor-font-size;
+    background: @editor-bg;
+    border: 1px solid @editor-border-color;
+    border-radius: @editor-radius;
 
     &._fullscreen {
         position: fixed;
@@ -29,7 +30,7 @@
     }
 
     &._readonly .cloudeditor-content {
-        background: var(--cloudeditor-readonly-bg, #f8f8f8);
+        background: @editor-readonly-bg;
     }
 }
 
@@ -41,9 +42,9 @@
     align-items: center;
     gap: 7px;
     padding: 7px 9px;
-    background: var(--cloudeditor-toolbar-bg, #fafafa);
-    border-bottom: 1px solid var(--cloudeditor-border-color, #d5d5d5);
-    border-radius: var(--cloudeditor-radius, 8px) var(--cloudeditor-radius, 8px) 0 0;
+    background: @editor-toolbar-bg;
+    border-bottom: 1px solid @editor-border-color;
+    border-radius: @editor-radius @editor-radius 0 0;
 }
 
 .cloudeditor-group {
@@ -75,18 +76,18 @@
     cursor: pointer;
 
     &:hover:not(:disabled) {
-        background: var(--cloudeditor-hover-bg, rgba(0, 0, 0, 0.055));
-        border-color: color-mix(in srgb, var(--cloudeditor-border-color, #d5d5d5) 75%, transparent);
+        background: @editor-cloudcomponents-editor-hover-bg;
+        border-color: color-mix(in srgb, @editor-border-color 75%, transparent);
     }
 
     &._active {
-        background: var(--cloudeditor-active-bg, rgba(0, 120, 212, 0.12));
-        border-color: color-mix(in srgb, var(--cloudeditor-accent, #0078d4) 30%, transparent);
-        color: var(--cloudeditor-accent, #0078d4);
+        background: @editor-active-bg;
+        border-color: color-mix(in srgb, @editor-accent 30%, transparent);
+        color: @editor-accent;
     }
 
     &:focus-visible {
-        outline: 2px solid var(--cloudeditor-accent, #0078d4);
+        outline: 2px solid @editor-accent;
         outline-offset: 1px;
     }
 
@@ -107,8 +108,8 @@
     padding: 0 7px;
     font-size: 12px;
     color: inherit;
-    background: var(--cloudeditor-bg, #fff);
-    border: 1px solid var(--cloudeditor-border-color, #d5d5d5);
+    background: @editor-bg;
+    border: 1px solid @editor-border-color;
     border-radius: 5px;
     cursor: pointer;
 
@@ -131,8 +132,8 @@
     left: 0;
     z-index: 30;
     padding: 8px;
-    background: var(--cloudeditor-bg, #fff);
-    border: 1px solid var(--cloudeditor-border-color, #d5d5d5);
+    background: @editor-bg;
+    border: 1px solid @editor-border-color;
     border-radius: 8px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
@@ -166,7 +167,7 @@
         width: 34px;
         height: 26px;
         padding: 0;
-        border: 1px solid var(--cloudeditor-border-color, #d5d5d5);
+        border: 1px solid @editor-border-color;
         border-radius: 4px;
         background: none;
         cursor: pointer;
@@ -197,7 +198,7 @@
         top: 14px;
         left: 16px;
         right: 16px;
-        color: var(--cloudeditor-muted, #999);
+        color: @editor-muted;
         pointer-events: none;
     }
 
@@ -216,15 +217,15 @@
     }
 
     ::deep a {
-        color: var(--cloudeditor-accent, #0078d4);
+        color: @editor-accent;
     }
 
     ::deep blockquote {
         margin: 0.6em 0;
         padding: 4px 14px;
-        border-left: 3px solid var(--cloudeditor-accent, #0078d4);
-        color: var(--cloudeditor-muted-strong, #666);
-        background: var(--cloudeditor-quote-bg, rgba(0, 0, 0, 0.03));
+        border-left: 3px solid @editor-accent;
+        color: @editor-muted-strong;
+        background: @editor-quote-bg;
         border-radius: 0 6px 6px 0;
     }
 
@@ -233,7 +234,7 @@
         padding: 12px 14px;
         font-family: Consolas, Monaco, 'Courier New', monospace;
         font-size: 0.92em;
-        background: var(--cloudeditor-code-bg, #f4f4f4);
+        background: @editor-code-bg;
         border-radius: 6px;
         overflow-x: auto;
         white-space: pre-wrap;
@@ -243,7 +244,7 @@
         padding: 2px 5px;
         font-family: Consolas, Monaco, 'Courier New', monospace;
         font-size: 0.9em;
-        background: var(--cloudeditor-code-bg, #f4f4f4);
+        background: @editor-code-bg;
         border-radius: 4px;
     }
 
@@ -265,7 +266,7 @@
     ::deep hr {
         margin: 1em 0;
         border: none;
-        border-top: 1px solid var(--cloudeditor-border-color, #d5d5d5);
+        border-top: 1px solid @editor-border-color;
     }
 
     ::deep img {
@@ -281,7 +282,7 @@
 
     ::deep td,
     ::deep th {
-        border: 1px solid var(--cloudeditor-border-color, #d5d5d5);
+        border: 1px solid @editor-border-color;
         padding: 6px 10px;
     }
 
@@ -321,14 +322,14 @@
     font-size: 13px;
     line-height: 1.5;
     color: inherit;
-    background: var(--cloudeditor-code-bg, #f9f9f9);
+    background: @editor-code-bg;
     border: none;
     outline: none;
     resize: none;
     box-sizing: border-box;
 
     &:focus {
-        box-shadow: inset 0 0 0 1px var(--cloudeditor-accent, #0078d4);
+        box-shadow: inset 0 0 0 1px @editor-accent;
     }
 }
 
@@ -339,8 +340,8 @@
     gap: 12px;
     min-height: 45px;
     padding: 7px 10px;
-    border-top: 1px solid var(--cloudeditor-border-color, #d5d5d5);
-    background: var(--cloudeditor-toolbar-bg, #fafafa);
+    border-top: 1px solid @editor-border-color;
+    background: @editor-toolbar-bg;
 }
 
 .cloudeditor-codestatus {
@@ -361,15 +362,15 @@
     min-width: 0;
 
     &._error {
-        color: var(--cloudeditor-error, #d13438);
+        color: @editor-error;
     }
 
     &._warning {
-        color: var(--cloudeditor-warning, #b05a00);
+        color: @editor-warning;
     }
 
     &._ok {
-        color: var(--cloudeditor-success, #107c10);
+        color: @editor-success;
     }
 }
 
@@ -388,7 +389,7 @@
     font-size: 12px;
     font-weight: 500;
     color: #fff;
-    background: var(--cloudeditor-accent, #0078d4);
+    background: @editor-accent;
     border: 1px solid transparent;
     border-radius: 4px;
     cursor: pointer;
@@ -420,14 +421,14 @@
     }
 
     &:focus-visible {
-        outline: 2px solid var(--cloudeditor-accent, #0078d4);
+        outline: 2px solid @editor-accent;
         outline-offset: 1px;
     }
 
     &._secondary {
         color: inherit;
         background: transparent;
-        border-color: var(--cloudeditor-border-color, #d5d5d5);
+        border-color: @editor-border-color;
     }
 }
 
@@ -456,7 +457,7 @@
 .cloudeditor-issuetoggle {
     flex-shrink: 0;
     padding: 3px 7px;
-    color: var(--cloudeditor-accent, #0078d4);
+    color: @editor-accent;
     font: inherit;
     background: transparent;
     border: 0;
@@ -465,7 +466,7 @@
 
     &:hover,
     &._active {
-        background: var(--cloudeditor-active-bg, rgba(0, 120, 212, 0.1));
+        background: @editor-active-bg;
     }
 }
 
@@ -475,8 +476,8 @@
     flex-direction: column;
     min-height: 130px;
     max-height: 240px;
-    background: var(--cloudeditor-bg, #fff);
-    border-top: 1px solid var(--cloudeditor-border-color, #d5d5d5);
+    background: @editor-bg;
+    border-top: 1px solid @editor-border-color;
 }
 
 .cloudeditor-issuehead {
@@ -485,7 +486,7 @@
     justify-content: space-between;
     padding: 7px 12px;
     font-size: 12px;
-    border-bottom: 1px solid var(--cloudeditor-border-color, #e5e5e5);
+    border-bottom: 1px solid @editor-border-color;
 }
 
 .cloudeditor-issuelist {
@@ -498,19 +499,19 @@
     gap: 8px;
     padding: 7px 12px;
     font-size: 12px;
-    border-bottom: 1px solid var(--cloudeditor-border-color, #ededed);
+    border-bottom: 1px solid @editor-border-color;
 
     &._error {
-        color: var(--cloudeditor-error, #d13438);
+        color: @editor-error;
     }
 
     &._warning {
-        color: var(--cloudeditor-warning, #b05a00);
+        color: @editor-warning;
     }
 }
 
 .cloudeditor-issueposition {
-    color: var(--cloudeditor-muted, #777);
+    color: @editor-muted;
     font-family: Consolas, Monaco, 'Courier New', monospace;
 }
 
@@ -530,7 +531,7 @@
     transform: translate(-50%, -50%);
     z-index: 1020;
     width: min(430px, calc(100vw - 32px));
-    background: var(--cloudeditor-bg, #fff);
+    background: @editor-bg;
     border-radius: 10px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
 }
@@ -541,7 +542,7 @@
     justify-content: space-between;
     padding: 12px 16px;
     font-weight: 600;
-    border-bottom: 1px solid var(--cloudeditor-border-color, #e5e5e5);
+    border-bottom: 1px solid @editor-border-color;
 }
 
 .cloudeditor-dialogbody {
@@ -556,7 +557,7 @@
     justify-content: flex-end;
     gap: 8px;
     padding: 12px 16px;
-    border-top: 1px solid var(--cloudeditor-border-color, #e5e5e5);
+    border-top: 1px solid @editor-border-color;
 }
 
 .cloudeditor-field {
@@ -566,20 +567,20 @@
 
     span {
         font-size: 12px;
-        color: var(--cloudeditor-muted, #777);
+        color: @editor-muted;
     }
 
     input[type="text"] {
         padding: 8px 10px;
         font-size: 13px;
         color: inherit;
-        background: var(--cloudeditor-bg, #fff);
-        border: 1px solid var(--cloudeditor-border-color, #d5d5d5);
+        background: @editor-bg;
+        border: 1px solid @editor-border-color;
         border-radius: 6px;
         outline: none;
 
         &:focus {
-            border-color: var(--cloudeditor-accent, #0078d4);
+            border-color: @editor-accent;
         }
     }
 }
@@ -596,7 +597,7 @@
     display: flex;
     gap: 4px;
     padding: 3px;
-    background: var(--cloudeditor-code-bg, #f0f0f0);
+    background: @editor-code-bg;
     border-radius: 8px;
 
     button {
@@ -610,7 +611,7 @@
         cursor: pointer;
 
         &._active {
-            background: var(--cloudeditor-bg, #fff);
+            background: @editor-bg;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
         }
     }
@@ -618,5 +619,5 @@
 
 .cloudeditor-hint {
     font-size: 12px;
-    color: var(--cloudeditor-muted, #777);
+    color: @editor-muted;
 }

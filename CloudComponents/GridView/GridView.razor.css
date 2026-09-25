@@ -1,9 +1,5 @@
+/* Generated from LESS. Do not edit. */
 .amc-datagrid {
-  --amc-gridview-columnColor: #fff;
-  --amc-gridview-rowColor: #fff;
-  --amc-gridview-backgroundColor: transparent;
-  --amc-gridview-footerColor: #63553B;
-  --amc-gridview-footerBgColor: #f3ede2;
   text-align: center;
 }
 .amc-datagrid-columns {
@@ -12,7 +8,7 @@
 }
 .amc-datagrid-column {
   padding: 5px 50px;
-  color: var(--amc-gridview-columnColor);
+  color: var(--cloudcomponents-grid-view-column-color, var(--amc-color-text, #111111));
   border: 1px solid #EFE6D7;
   width: auto;
 }
@@ -32,7 +28,7 @@
   flex-direction: row;
   overflow: auto;
   flex: 1;
-  background-color: var(--amc-gridview-backgroundColor);
+  background-color: var(--cloudcomponents-grid-view-background-color, var(--amc-color-surface, #ffffff));
 }
 .amc-datagrid-row {
   display: table-cell;
@@ -41,7 +37,7 @@
   background-color: rgba(229, 242, 211, 0.5);
 }
 .amc-datagrid-cell {
-  color: var(--amc-gridview-rowColor);
+  color: var(--cloudcomponents-grid-view-row-color, var(--amc-color-text, #111111));
   font-size: 0.9em;
   padding: 5px 50px;
 }
@@ -58,8 +54,8 @@
   font-family: 'Segoe UI';
   letter-spacing: 3px;
   opacity: 0.7;
-  background-color: var(--amc-gridview-footerBgColor);
-  color: var(--amc-gridview-footerColor);
+  background-color: var(--cloudcomponents-grid-view-footer-bg-color, var(--amc-color-surface-subtle, #f1f1f1));
+  color: var(--cloudcomponents-grid-view-footer-color, var(--amc-color-muted, #505050));
   padding: 5px 10px;
 }
 .amc-datagrid-footer-pagination {

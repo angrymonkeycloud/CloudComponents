@@ -1,3 +1,4 @@
+@import (reference) "../src/css/theme.less";
 // CloudDataGridHeader styles.
 // Naming follows https://github.com/angrymonkeydocs/css-naming-convention:
 // block `.cloudgridheader`, children `&-name`, adjectives `._name`.
@@ -7,8 +8,8 @@
     align-items: center;
     flex-wrap: nowrap;
     box-sizing: border-box;
-    height: var(--cloudgrid-header-height, 40px);
-    min-height: var(--cloudgrid-header-height, 40px);
+    height: @grid-header-height;
+    min-height: @grid-header-height;
     padding: 4px 8px;
     overflow: visible;
     position: relative;
@@ -107,14 +108,14 @@
         justify-content: center;
         gap: 6px;
         box-sizing: border-box;
-        height: calc(var(--cloudgrid-header-height, 40px) - 8px);
-        min-height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+        height: calc(@grid-header-height - 8px);
+        min-height: calc(@grid-header-height - 8px);
         padding: 0 10px;
         border: none;
         border-radius: 3px;
         background: none;
-        color: var(--cloudgridheader-color, var(--cloudgrid-color, light-dark(#505050, #e3e9f3)));
-        font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
+        color: @grid-header-color;
+        font-size: @grid-header-font-size;
         line-height: 1;
         text-decoration: none;
         cursor: pointer;
@@ -125,7 +126,7 @@
         }
 
         &:hover {
-            background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, light-dark(#e8e8e8, #222e42)));
+            background-color: @grid-header-hover-background;
         }
 
         ::deep svg {
@@ -135,24 +136,24 @@
 
             path,
             .amc-svg-fill {
-                fill: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+                fill: @grid-header-accent-color;
             }
 
             line {
-                stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+                stroke: @grid-header-accent-color;
                 stroke-width: 2px;
                 stroke-linecap: round;
             }
 
             circle {
                 fill: none;
-                stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+                stroke: @grid-header-accent-color;
                 stroke-width: 2px;
             }
 
             polyline {
                 fill: none;
-                stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+                stroke: @grid-header-accent-color;
                 stroke-width: 2px;
                 stroke-linecap: round;
                 stroke-linejoin: round;
@@ -160,8 +161,8 @@
         }
 
         &._bulk {
-            border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
-            background-color: var(--cloudgrid-background, light-dark(#fff, #141b29));
+            border: 1px solid @grid-header-border-color;
+            background-color: @grid-background;
             font-size: 12px;
         }
 
@@ -205,16 +206,16 @@
         box-sizing: border-box;
         width: min(180px, 100%);
         max-width: 100%;
-        height: calc(var(--cloudgrid-header-height, 40px) - 8px);
-        min-height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+        height: calc(@grid-header-height - 8px);
+        min-height: calc(@grid-header-height - 8px);
         padding: 0 8px;
-        border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
+        border: 1px solid @grid-header-border-color;
         border-radius: 3px;
-        font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
+        font-size: @grid-header-font-size;
 
         &:focus {
             outline: none;
-            border-color: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+            border-color: @grid-header-accent-color;
         }
     }
 
@@ -231,8 +232,8 @@
             max-width: min(280px, calc(100vw - 16px));
             margin-top: 4px;
             padding: 4px 0;
-            background: var(--cloudgrid-background, light-dark(#fff, #141b29));
-            border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
+            background: @grid-background;
+            border: 1px solid @grid-header-border-color;
             border-radius: 4px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
             overflow-x: hidden;
@@ -247,8 +248,8 @@
             padding: 6px 14px;
             border: none;
             background: none;
-            color: var(--cloudgridheader-color, var(--cloudgrid-color, light-dark(#505050, #e3e9f3)));
-            font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
+            color: @grid-header-color;
+            font-size: @grid-header-font-size;
             line-height: 1;
             text-align: left;
             text-decoration: none;
@@ -256,7 +257,7 @@
             white-space: nowrap;
 
             &:hover {
-                background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, light-dark(#e8e8e8, #222e42)));
+                background-color: @grid-header-hover-background;
             }
 
             ::deep svg {
@@ -266,13 +267,13 @@
 
                 path,
                 .amc-svg-fill {
-                    fill: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+                    fill: @grid-header-accent-color;
                 }
 
                 line,
                 polyline,
                 circle {
-                    stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+                    stroke: @grid-header-accent-color;
                     stroke-width: 2px;
                     stroke-linecap: round;
                     fill: none;
@@ -294,19 +295,19 @@
         align-items: center;
         justify-content: center;
         box-sizing: border-box;
-        height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+        height: calc(@grid-header-height - 8px);
         padding: 0 12px;
-        border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
+        border: 1px solid @grid-header-border-color;
         border-radius: 3px;
-        background: var(--cloudgrid-background, light-dark(#fff, #141b29));
-        color: var(--cloudgridheader-color, var(--cloudgrid-color, light-dark(#505050, #e3e9f3)));
-        font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
+        background: @grid-background;
+        color: @grid-header-color;
+        font-size: @grid-header-font-size;
         line-height: 1;
         cursor: pointer;
         white-space: nowrap;
 
         &:hover {
-            background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, light-dark(#e8e8e8, #222e42)));
+            background-color: @grid-header-hover-background;
         }
     }
 
@@ -367,14 +368,14 @@
     justify-content: center;
     gap: 6px;
     box-sizing: border-box;
-    height: calc(var(--cloudgrid-header-height, 40px) - 8px);
-    min-height: calc(var(--cloudgrid-header-height, 40px) - 8px);
+    height: calc(@grid-header-height - 8px);
+    min-height: calc(@grid-header-height - 8px);
     padding: 0 10px;
     border: none;
     border-radius: 3px;
     background: none;
-    color: var(--cloudgridheader-color, var(--cloudgrid-color, light-dark(#505050, #e3e9f3)));
-    font-size: var(--cloudgridheader-font-size, var(--cloudgrid-font-size, 14px));
+    color: @grid-header-color;
+    font-size: @grid-header-font-size;
     line-height: 1;
     text-decoration: none;
     cursor: pointer;
@@ -385,7 +386,7 @@
     }
 
     &:hover {
-        background-color: var(--cloudgridheader-hover-background, var(--cloudgrid-hover-background, light-dark(#e8e8e8, #222e42)));
+        background-color: @grid-header-hover-background;
     }
 
     svg {
@@ -395,24 +396,24 @@
 
         path,
         .amc-svg-fill {
-            fill: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+            fill: @grid-header-accent-color;
         }
 
         line {
-            stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+            stroke: @grid-header-accent-color;
             stroke-width: 2px;
             stroke-linecap: round;
         }
 
         circle {
             fill: none;
-            stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+            stroke: @grid-header-accent-color;
             stroke-width: 2px;
         }
 
         polyline {
             fill: none;
-            stroke: var(--cloudgridheader-accent-color, var(--cloudgrid-accent-color, #000));
+            stroke: @grid-header-accent-color;
             stroke-width: 2px;
             stroke-linecap: round;
             stroke-linejoin: round;
@@ -420,8 +421,8 @@
     }
 
     &._bulk {
-        border: 1px solid var(--cloudgridheader-border-color, var(--cloudgrid-border-color, rgba(0, 0, 0, 0.15)));
-        background-color: var(--cloudgrid-background, light-dark(#fff, #141b29));
+        border: 1px solid @grid-header-border-color;
+        background-color: @grid-background;
         font-size: 12px;
     }
 

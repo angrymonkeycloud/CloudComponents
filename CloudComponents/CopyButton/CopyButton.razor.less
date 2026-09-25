@@ -1,3 +1,4 @@
+@import (reference) "../src/css/theme.less";
 @import '../General/css/common.less';
 
 .amc-copybutton {
@@ -5,14 +6,13 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    --amc-accentColor: #000;
 
     &-content {
         &._clickable {
             cursor: pointer;
 
             &:hover {
-                color: var(--amc-accentColor);
+                color: @components-color-primary;
             }
         }
     }
