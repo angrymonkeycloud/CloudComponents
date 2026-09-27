@@ -306,6 +306,7 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
 
         await SyncLocationLockAsync();
         await SyncTimelinesAsync();
+        await SyncRoutesAsync();
     }
 
     private object BuildMapOptions(InitialMapView view) => new
@@ -546,6 +547,13 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
         await c.InvokeVoidAsync("setBounds", south, west, north, east, paddingPx);
     }
 
+    public async Task SetBoundsAsync(double south, double west, double north, double east, MapPadding padding)
+    {
+        ArgumentNullException.ThrowIfNull(padding);
+        IJSObjectReference controller = EnsureController();
+        await controller.InvokeVoidAsync("setBounds", south, west, north, east, padding);
+    }
+
     public async Task ShowCurrentLocationAsync(double latitude, double longitude)
     {
         var c = EnsureController();
@@ -621,6 +629,8 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
 
         if (Timelines is { Count: > 0 })
             await SyncTimelinesAsync();
+
+        await SyncRoutesAsync();
 
         if (LocateOnOpen)
             await LocateMeAsync();

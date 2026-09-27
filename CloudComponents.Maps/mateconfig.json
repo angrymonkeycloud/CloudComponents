@@ -1,6 +1,11 @@
 {
   "files": [
     {
+      "input": "src/js/mapRoutes.js",
+      "output": "wwwroot/mapRoutes.js",
+      "minify": false
+    },
+    {
       "input": "Components/AzureMap.razor.less",
       "output": "Components/AzureMap.razor.css",
       "minify": false

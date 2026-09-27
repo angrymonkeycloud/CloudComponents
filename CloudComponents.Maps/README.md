@@ -29,6 +29,7 @@ Blazor Azure Maps component for .NET 10 with typed C# APIs for map initializatio
 - [Events](#events)
 - [Usage patterns](#usage-patterns)
   - [Marker interaction](#marker-interaction)
+  - [Route overlays and camera padding](#route-overlays-and-camera-padding)
   - [Center-pin location picker](#center-pin-location-picker)
   - [Regions and legend overlays](#regions-and-legend-overlays)
   - [Map zones (address-driven boundaries)](#map-zones-address-driven-boundaries)
@@ -57,6 +58,7 @@ Blazor Azure Maps component for .NET 10 with typed C# APIs for map initializatio
   - add/remove/clear programmatically
   - click callbacks
   - user-added marker triggers (`SingleClick`, `DoubleClick`, `CenterPin`, `Disabled`) with opt-in defaults (`Disabled` + `AllowMarkerRemoval=false`)
+- Route overlays (`MapRoute`) for supplied route geometry, with independent clearing and camera fitting
 - Region overlays (polygon GeoJSON rings) with optional legend labels
 - Address-driven zone overlays (`MapZone`) with per-zone label/color and automatic geocode → polygon resolution
 - Tracking/history timelines (`MapTimeline`): timestamped points rendered as a route with direction arrows, marked start/end, always-visible named places, and raw GPS fixes that cluster when zoomed out and break apart on zoom-in — everything clickable for a details popup
@@ -195,6 +197,7 @@ In component/page:
 | `KeyboardInteraction` | `bool` | `true` | Enables keyboard map interaction. |
 | `TouchInteraction` | `bool` | `true` | Enables touch interactions. |
 | `Markers` | `IReadOnlyList<MapMarker>?` | `null` | Initial markers to add after map ready. |
+| `Routes` | `IReadOnlyList<MapRoute>?` | `null` | Route lines. Assign a new list to update, or `[]`/`null` to clear. |
 | `Regions` | `IReadOnlyList<MapRegion>?` | `null` | Initial region overlays rendered directly from supplied polygon coordinates. |
 | `Zones` | `IReadOnlyList<MapZone>?` | `null` | Initial address-driven zones. Each zone resolves one or more addresses to real administrative boundary polygons automatically. |
 | `AddMarkerTrigger` | `MarkerAddTrigger` | `Disabled` | User marker-add interaction mode (opt-in). |
@@ -240,6 +243,14 @@ Includes `InitialMapView.World` fallback (`0,0,2`).
 public readonly record struct MapCoordinate(double Latitude, double Longitude)
 ```
 
+### `MapPadding`
+
+```csharp
+public sealed record MapPadding(double Top, double Right, double Bottom, double Left)
+```
+
+Use with `SetBoundsAsync` to reserve space for toolbars, panels, or a mobile bottom sheet. Values are pixels, clamped to zero through 40% of the canvas height or width per edge. The existing numeric padding overload still defaults to 40 pixels on every side.
+
 ### `MapMarker`
 
 ```csharp
@@ -251,6 +262,19 @@ Additional optional metadata is supported:
 - `Title`, `City`, `District`, `Subdivision`, `Country`
 - `ImageUrl`, `Area`, `Price`
 - `DetailsUrl`, `DetailsLabel`
+
+### `MapRoute`
+
+```csharp
+public sealed record MapRoute
+{
+    public string Id { get; init; } = Guid.NewGuid().ToString("N");
+    public string Color { get; init; } = "#2563eb";
+    public IReadOnlyList<MapCoordinate> Points { get; init; } = [];
+}
+```
+
+Supply ordered coordinates from your routing service. The component draws the line with a white casing and preserves it across style changes. Routes have no point badges and do not move the camera automatically. Use `Markers` separately for destinations, and `SetBoundsAsync` to frame a route. Routes with fewer than two points or invalid coordinates are skipped.
 
 ### `MapRegion`
 
@@ -379,6 +403,9 @@ public Task AddMarkersAsync(IEnumerable<MapMarker> markers)
 public Task RemoveMarkerAsync(string id)
 public Task ClearMarkersAsync()
 
+public Task SetRoutesAsync(IEnumerable<MapRoute> routes)
+public Task ClearRoutesAsync()
+
 public Task AddRegionsAsync(IEnumerable<MapRegion> regions)
 public Task ClearRegionsAsync()
 
@@ -398,6 +425,7 @@ public Task SetStyleAsync(MapStyle style)
 public Task SetTrafficAsync(bool showFlow, bool showIncidents)
 public Task SetCameraOrientationAsync(double? pitch = null, double? bearing = null)
 public Task SetBoundsAsync(double south, double west, double north, double east, int paddingPx = 40)
+public Task SetBoundsAsync(double south, double west, double north, double east, MapPadding padding)
 public Task ShowCurrentLocationAsync(double latitude, double longitude)
 
 // Pin my location — requests device geolocation (prompting for permission if needed)
@@ -450,6 +478,48 @@ Marker interactions are opt-in. Set `AddMarkerTrigger` explicitly (default is `D
 		  OnMarkerAdded="HandleAdded"
 		  OnMarkerRemoved="HandleRemoved" />
 ```
+
+### Route overlays and camera padding
+
+Bind a fresh `Routes` list whenever geometry changes. The example below draws supplied coordinates; replace `Points` with the geometry returned by your routing service. Route calculation and travel instructions belong to that service.
+
+```razor
+@using AngryMonkey.CloudComponents.Maps.Components
+@using AngryMonkey.CloudComponents.Maps.Models
+
+<AzureMap @ref="_map" Routes="_routes" OnMapReady="FitRouteAsync"
+          InitialView="new InitialMapView(33.89, 35.50, 13)" />
+<button type="button" @onclick="FitRouteAsync">Show full route</button>
+<button type="button" @onclick="ClearRoute">Clear route</button>
+
+@code {
+    private AzureMap? _map;
+    private IReadOnlyList<MapRoute> _routes =
+    [
+        new MapRoute
+        {
+            Id = "directions",
+            Points = [new(33.89, 35.50), new(33.895, 35.505), new(33.90, 35.51)]
+        }
+    ];
+
+    private async Task FitRouteAsync()
+    {
+        if (_map is null || _routes.Count == 0)
+            return;
+
+        IReadOnlyList<MapCoordinate> points = _routes[0].Points;
+        await _map.SetBoundsAsync(
+            points.Min(point => point.Latitude), points.Min(point => point.Longitude),
+            points.Max(point => point.Latitude), points.Max(point => point.Longitude),
+            new MapPadding(130, 50, 210, 50));
+    }
+
+    private void ClearRoute() => _routes = [];
+}
+```
+
+For imperative updates after map readiness, use `await _map.SetRoutesAsync(routes)` and `await _map.ClearRoutesAsync()`. Clearing routes leaves markers, regions, and timelines in place. Choose either bound state or imperative updates as the owner of route state; bound updates are detected when the list reference changes.
 
 ### Center-pin location picker
 

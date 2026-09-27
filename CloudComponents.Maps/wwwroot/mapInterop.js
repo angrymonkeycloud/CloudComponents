@@ -1,3 +1,5 @@
+import { MapRoutes } from './mapRoutes.js';
+
 // ES module � loaded via Blazor JS isolation:
 // import('./_content/CloudComponents.Maps/mapInterop.js')
 // The Azure Maps Web SDK (atlas) is loaded on-demand by this module.
@@ -173,6 +175,7 @@ class AzureMapController {
         if (inter.touch === false) mapOptions.touchInteraction = false;
 
         this._map = new atlas.Map(options.elementId, mapOptions);
+        this._routes = new MapRoutes(this._map, options.elementId);
         this._map.events.add('ready', () => this._onReady());
         this._map.events.add('error', (e) => this._onMapSdkError(e));
     }
@@ -187,6 +190,7 @@ class AzureMapController {
         this._map.events.add('click', (e) => {
             if (!e?.position) return;
             const [lng, lat] = e.position;
+            const onMarker = this._suppressNextMapClick || this._wasOnMarker(e);
 
             // Azure Maps fires the map-level 'click' for the same gesture that
             // hit a marker. The marker handler sets a one-shot flag so we
@@ -199,9 +203,10 @@ class AzureMapController {
                 this._closeTimelinePopup();
             }
 
-            this._dotNetRef?.invokeMethodAsync('NotifyMapClickAsync', lat, lng);
+            if (!onMarker)
+                this._dotNetRef?.invokeMethodAsync('NotifyMapClickAsync', lat, lng);
 
-            if (this._addTrigger === 'single' && !this._wasOnMarker(e)) {
+            if (this._addTrigger === 'single' && !onMarker) {
                 if (this._isPointAllowed(lng, lat)) {
                     this._dotNetRef?.invokeMethodAsync('NotifyMapAddMarkerAsync', lat, lng);
                 } else {
@@ -330,6 +335,7 @@ class AzureMapController {
         // Keep .NET in sync if the user switches style via the in-map StyleControl.
         this._map.events.add('styledata', () => {
             try {
+                this._routes.restore();
                 const s = this._map.getStyle()?.style;
                 if (s && s !== this._options.style) {
                     this._options.style = s;
@@ -685,6 +691,14 @@ class AzureMapController {
             this._regionDataSource.clear();
         }
         this._regions = [];
+    }
+
+    setRoutes(routes) {
+        this._routes.set(routes);
+    }
+
+    clearRoutes() {
+        this._routes.clear();
     }
 
     // -- Tracking/history timelines ---------------------------------------
@@ -1647,10 +1661,23 @@ class AzureMapController {
 
     setBounds(south, west, north, east, paddingPx) {
         try {
+            let padding = paddingPx ?? 40;
+            if (typeof padding === 'object') {
+                const canvas = this._map.getCanvas();
+                const horizontalLimit = canvas.clientWidth * 0.4;
+                const verticalLimit = canvas.clientHeight * 0.4;
+                const clamp = (value, limit) => Number.isFinite(value) ? Math.max(0, Math.min(value, limit)) : 0;
+                padding = {
+                    top: clamp(padding.top, verticalLimit),
+                    right: clamp(padding.right, horizontalLimit),
+                    bottom: clamp(padding.bottom, verticalLimit),
+                    left: clamp(padding.left, horizontalLimit)
+                };
+            }
             this._beginIntentionalCenterChange();
             this._map.setCamera({
                 bounds: [west, south, east, north],
-                padding: paddingPx ?? 40
+                padding
             });
         } catch { /* noop */ }
     }
@@ -1680,6 +1707,7 @@ class AzureMapController {
         this.clearMarkers();
         this.clearRegions();
         this.clearTimelines();
+        this.clearRoutes();
         this.clearLocationLock();
         this._hideScrollHint();
         Object.keys(this._controlInstances).forEach(key => this._removeControl(key));
