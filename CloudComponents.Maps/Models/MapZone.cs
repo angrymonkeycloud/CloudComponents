@@ -30,6 +30,13 @@ public sealed record MapZone
     /// </summary>
     public required IReadOnlyList<string> Addresses { get; init; }
 
+    /// <summary>
+    /// Optional geography levels to outline, most specific first (e.g. <c>["Municipality", "Neighbourhood"]</c>
+    /// for a city/town, <c>["CountrySubdivision"]</c> for a state). Without them the best match is
+    /// outlined, which for a town search can be the whole district or state it belongs to.
+    /// </summary>
+    public IReadOnlyList<string>? EntityTypes { get; init; }
+
     /// <summary>Unique identifier. Auto-generated when not supplied.</summary>
     public string Id { get; init; } = Guid.NewGuid().ToString("N");
 

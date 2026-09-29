@@ -138,14 +138,10 @@ public partial class AzureMap
 
             try
             {
-                // Geocode the address to get a geometry Id.
-                var geocode = await GeocodeAsync(address, countrySet: zone.CountrySet);
-
-                if (geocode?.GeometryId is not { Length: > 0 } geometryId)
-                    continue;   // No boundary available for this address — skip gracefully.
-
-                // Fetch the actual administrative boundary polygon.
-                var polygon = await GetPolygonAsync(geometryId);
+                // Geocode the address and fetch its administrative boundary polygon.
+                var polygon = zone.EntityTypes is { Count: > 0 } levels
+                    ? await ResolveBoundaryAsync(address, levels, zone.CountrySet)
+                    : await ResolveBoundaryAsync(address, countrySet: zone.CountrySet);
 
                 if (polygon is not { Length: > 0 })
                     continue;

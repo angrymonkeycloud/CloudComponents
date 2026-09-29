@@ -114,6 +114,12 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     /// <summary>If true, double-clicking a marker removes it. Defaults to <c>false</c> (opt-in).</summary>
     [Parameter] public bool AllowMarkerRemoval { get; set; } = false;
 
+    /// <summary>
+    /// When true (default), clicking a marker opens the built-in details popup. Set to <c>false</c>
+    /// when the host shows its own details for <see cref="OnMarkerClick"/>; the click is still raised.
+    /// </summary>
+    [Parameter] public bool ShowMarkerPopups { get; set; } = true;
+
     [Parameter] public bool ShowCurrentLocationButton { get; set; } = true;
     [Parameter] public bool LocateOnOpen { get; set; } = false;
 
@@ -129,6 +135,10 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
 
     [Parameter] public EventCallback OnMapReady { get; set; }
     [Parameter] public EventCallback<MapCoordinate> OnMapClick { get; set; }
+    /// <summary>Double-click (or double-tap) on the map background, not on a marker. Both clicks also raise <see cref="OnMapClick"/>.</summary>
+    [Parameter] public EventCallback<MapCoordinate> OnMapDoubleClick { get; set; }
+    /// <summary>Touch press-and-hold (about half a second, without moving) on the map background. Touch devices use this instead of <see cref="OnMapDoubleClick"/>.</summary>
+    [Parameter] public EventCallback<MapCoordinate> OnMapLongPress { get; set; }
     [Parameter] public EventCallback<MapMarker> OnMarkerAdded { get; set; }
     [Parameter] public EventCallback<MapMarker> OnMarkerClick { get; set; }
     [Parameter] public EventCallback<MapMarker> OnMarkerRemoved { get; set; }
@@ -326,6 +336,7 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
         showTrafficFlow = ShowTrafficFlow,
         showTrafficIncidents = ShowTrafficIncidents,
         allowMarkerRemoval = AllowMarkerRemoval,
+        showMarkerPopups = ShowMarkerPopups,
         addMarkerTrigger = TriggerToString(AddMarkerTrigger),
         interactive = Interactive,
         interactions = new
@@ -517,6 +528,33 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
         return await c.InvokeAsync<double[][][]?>("getPolygon", geometryId);
     }
 
+    /// <summary>
+    /// Resolves a place name (city, district, state, country) to its boundary polygon: geocodes it,
+    /// tries the legacy geometry-id lookup, then falls back to the current Azure Maps boundary API at
+    /// the administrative level of the match. Prefer this over <see cref="GeocodeAsync"/> +
+    /// <see cref="GetPolygonAsync"/>, which no longer return shapes for many places.
+    /// </summary>
+    /// <param name="query">Place to outline, e.g. <c>"Jounieh, Keserwan, Lebanon"</c>.</param>
+    /// <param name="entityType">Optional geography level to match (e.g. <c>"Municipality"</c>, <c>"CountrySubdivision"</c>).</param>
+    /// <param name="countrySet">Optional ISO 3166-1 alpha-2 country code(s).</param>
+    public async Task<double[][][]?> ResolveBoundaryAsync(string query, string? entityType = null, string? countrySet = null)
+    {
+        var c = EnsureController();
+        return await c.InvokeAsync<double[][][]?>("resolveBoundary", query, entityType, countrySet);
+    }
+
+    /// <summary>
+    /// Resolves a place name to its boundary at the first of <paramref name="entityTypes"/> whose
+    /// match is really that place (e.g. <c>["Municipality", "Neighbourhood"]</c> for a town that may be
+    /// a district of a city). When none matches, the place's point is outlined at the first level —
+    /// never the larger area a loose search returns instead.
+    /// </summary>
+    public async Task<double[][][]?> ResolveBoundaryAsync(string query, IReadOnlyList<string> entityTypes, string? countrySet = null)
+    {
+        var c = EnsureController();
+        return await c.InvokeAsync<double[][][]?>("resolveBoundary", query, entityTypes, countrySet);
+    }
+
     public async Task SetCenterAsync(double latitude, double longitude, int? zoom = null)
     {
         var c = EnsureController();
@@ -639,6 +677,14 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     [JSInvokable]
     public Task NotifyMapClickAsync(double latitude, double longitude)
         => OnMapClick.InvokeAsync(new MapCoordinate(latitude, longitude));
+
+    [JSInvokable]
+    public Task NotifyMapDoubleClickAsync(double latitude, double longitude)
+        => OnMapDoubleClick.InvokeAsync(new MapCoordinate(latitude, longitude));
+
+    [JSInvokable]
+    public Task NotifyMapLongPressAsync(double latitude, double longitude)
+        => OnMapLongPress.InvokeAsync(new MapCoordinate(latitude, longitude));
 
     [JSInvokable]
     public async Task NotifyMapAddMarkerAsync(double latitude, double longitude)

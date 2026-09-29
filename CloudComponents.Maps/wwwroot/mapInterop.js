@@ -189,6 +189,7 @@ class AzureMapController {
         // Maps clicks ? notify .NET; optionally drop a pin on single-click.
         this._map.events.add('click', (e) => {
             if (!e?.position) return;
+            if (Date.now() - (this._longPressFiredAt || 0) < 800) return;
             const [lng, lat] = e.position;
             const onMarker = this._suppressNextMapClick || this._wasOnMarker(e);
 
@@ -206,6 +207,18 @@ class AzureMapController {
             if (!onMarker)
                 this._dotNetRef?.invokeMethodAsync('NotifyMapClickAsync', lat, lng);
 
+            // Two quick taps close together count as a double-click: touch browsers do not
+            // reliably raise 'dblclick' for a double-tap.
+            const now = Date.now();
+            const [x, y] = e.pixel || [0, 0];
+            const last = this._lastBackgroundClick;
+            if (!onMarker && last && now - last.time < 350 && Math.hypot(x - last.x, y - last.y) < 24) {
+                this._lastBackgroundClick = null;
+                this._notifyMapDoubleClick(lat, lng);
+            } else {
+                this._lastBackgroundClick = onMarker ? null : { time: now, x, y };
+            }
+
             if (this._addTrigger === 'single' && !onMarker) {
                 if (this._isPointAllowed(lng, lat)) {
                     this._dotNetRef?.invokeMethodAsync('NotifyMapAddMarkerAsync', lat, lng);
@@ -215,17 +228,52 @@ class AzureMapController {
             }
         });
 
-        // Native dblclick ? drop a pin (when configured).
+        // Native dblclick ? notify .NET, and drop a pin (when configured).
         this._map.events.add('dblclick', (e) => {
-            if (this._addTrigger !== 'double') return;
             if (!e?.position) return;
             if (this._wasOnMarker(e)) return;
             const [lng, lat] = e.position;
+            this._notifyMapDoubleClick(lat, lng);
+            if (this._addTrigger !== 'double') return;
             if (this._isPointAllowed(lng, lat)) {
                 this._dotNetRef?.invokeMethodAsync('NotifyMapAddMarkerAsync', lat, lng);
             } else {
                 this._dotNetRef?.invokeMethodAsync('NotifyLocationLockRejectedAsync', lat, lng);
             }
+        });
+
+        // Touch press-and-hold on the map background -> notify .NET (OnMapLongPress). Moving the
+        // finger (panning), a second finger (pinch) or lifting early cancels it.
+        const cancelLongPress = () => {
+            clearTimeout(this._longPressTimer);
+            this._longPress = null;
+        };
+        this._map.events.add('touchstart', (e) => {
+            this._lastTouchAt = Date.now();
+            cancelLongPress();
+            const touches = e?.originalEvent?.touches;
+            if (!e?.position || (touches && touches.length !== 1) || this._wasOnMarker(e)) return;
+            const [lng, lat] = e.position;
+            const [x, y] = e.pixel || [0, 0];
+            this._longPress = { x, y };
+            this._longPressTimer = setTimeout(() => {
+                this._longPress = null;
+                this._longPressFiredAt = Date.now(); // the finger lifting must not also count as a tap
+                this._dotNetRef?.invokeMethodAsync('NotifyMapLongPressAsync', lat, lng);
+            }, 550);
+        });
+        this._map.events.add('touchmove', (e) => {
+            if (!this._longPress) return;
+            const [x, y] = e?.pixel || [0, 0];
+            const touches = e?.originalEvent?.touches;
+            if ((touches && touches.length !== 1) || Math.hypot(x - this._longPress.x, y - this._longPress.y) > 10)
+                cancelLongPress();
+        });
+        this._map.events.add('touchend', () => { this._lastTouchAt = Date.now(); cancelLongPress(); });
+        this._map.events.add('touchcancel', cancelLongPress);
+        // Keep the browser's own long-press menu (copy / save) off the map after a touch.
+        this._map.getMapContainer()?.addEventListener('contextmenu', (event) => {
+            if (Date.now() - (this._lastTouchAt || 0) < 1000) event.preventDefault();
         });
 
         // Center-pin mode ? broadcast the camera-center coordinate whenever the
@@ -569,6 +617,17 @@ class AzureMapController {
         this._map.markers.add(this._currentLocationMarker);
     }
 
+    // One notification per double-click, whether it came from 'dblclick' or two quick clicks.
+    // Touch devices use press-and-hold (OnMapLongPress) instead: a double-tap is never reported
+    // as a double-click, so phones and desktops each get one gesture.
+    _notifyMapDoubleClick(lat, lng) {
+        const now = Date.now();
+        if (now - (this._lastTouchAt || 0) < 1000) return;
+        if (this._lastDoubleClickAt && now - this._lastDoubleClickAt < 400) return;
+        this._lastDoubleClickAt = now;
+        this._dotNetRef?.invokeMethodAsync('NotifyMapDoubleClickAsync', lat, lng);
+    }
+
     // -- Public API (called from C#) --------------------------------------
 
     addMarker(info) {
@@ -580,7 +639,8 @@ class AzureMapController {
         });
         this._map.markers.add(marker);
 
-        const popup = new atlas.Popup({
+        // Hosts that render their own details card turn the built-in popup off (showMarkerPopups: false).
+        const popup = this._options.showMarkerPopups === false ? null : new atlas.Popup({
             content: this._buildPopupContent(info),
             position: [info.longitude, info.latitude],
             pixelOffset: [0, -32],
@@ -597,14 +657,18 @@ class AzureMapController {
             this._suppressNextMapClick = true;
             this._closeActivePopup(info.id);
             this._closeTimelinePopup();
-            try { entry.popup.open(this._map); this._activePopupId = info.id; } catch { /* noop */ }
+            if (entry.popup) {
+                try { entry.popup.open(this._map); this._activePopupId = info.id; } catch { /* noop */ }
+            }
             this._dotNetRef?.invokeMethodAsync('NotifyMarkerClickAsync', info.id);
         });
 
         // Keep our active-id in sync if the user closes the popup manually.
-        this._map.events.add('close', entry.popup, () => {
-            if (this._activePopupId === info.id) this._activePopupId = null;
-        });
+        if (entry.popup) {
+            this._map.events.add('close', entry.popup, () => {
+                if (this._activePopupId === info.id) this._activePopupId = null;
+            });
+        }
 
         // Double-click on a marker ? remove it (when enabled)
         // HtmlMarker doesn't expose 'dblclick' directly; bind via its DOM element.
@@ -624,7 +688,7 @@ class AzureMapController {
     _removeMarkerInternal(id) {
         const entry = this._markers.get(id);
         if (!entry) return;
-        try { entry.popup.close(); } catch { /* noop */ }
+        try { entry.popup?.close(); } catch { /* noop */ }
         if (this._activePopupId === id) this._activePopupId = null;
         this._map.markers.remove(entry.marker);
         this._markers.delete(id);
@@ -633,13 +697,13 @@ class AzureMapController {
     _closeActivePopup(exceptId) {
         if (!this._activePopupId || this._activePopupId === exceptId) return;
         const prev = this._markers.get(this._activePopupId);
-        if (prev) { try { prev.popup.close(); } catch { /* noop */ } }
+        if (prev) { try { prev.popup?.close(); } catch { /* noop */ } }
         this._activePopupId = null;
     }
 
     clearMarkers() {
         this._markers.forEach(entry => {
-            try { entry.popup.close(); } catch { /* noop */ }
+            try { entry.popup?.close(); } catch { /* noop */ }
             this._map.markers.remove(entry.marker);
         });
         this._markers.clear();
@@ -1287,7 +1351,12 @@ class AzureMapController {
                 south: vp?.btmRightPoint?.lat ?? r.position.lat,
                 east: vp?.btmRightPoint?.lon ?? r.position.lon,
                 west: vp?.topLeftPoint?.lon ?? r.position.lon,
-                geometryId: geoId
+                geometryId: geoId,
+                entityType: r.entityType ?? null,
+                names: [r.address?.municipality, r.address?.municipalitySubdivision, r.address?.neighbourhood,
+                    r.address?.countrySecondarySubdivision, r.address?.countryTertiarySubdivision,
+                    r.address?.countrySubdivision, r.address?.countrySubdivisionName, r.address?.country, r.poi?.name]
+                    .filter(Boolean)
             };
         } catch {
             return null;
@@ -1496,6 +1565,121 @@ class AzureMapController {
         } catch {
             return null;
         }
+    }
+
+    /// Boundary of the area containing a point, from the current Search "Get Polygon" API
+    /// (coordinates + resultType). The v1 geometry-id lookup above no longer returns shapes
+    /// for many places, so this is the fallback that keeps outlines drawing.
+    async getBoundaryPolygon(latitude, longitude, resultType) {
+        if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
+        const key = this._options.subscriptionKey;
+        // Newest first; accounts that do not offer it yet still answer the GA version.
+        for (const version of ['2026-01-01', '2025-01-01']) {
+            try {
+                const url = `https://atlas.microsoft.com/search/polygon?api-version=${version}&subscription-key=${encodeURIComponent(key)}`
+                    + `&coordinates=${longitude},${latitude}&resultType=${encodeURIComponent(resultType || 'locality')}&resolution=medium`;
+                const resp = await fetch(url);
+                if (!resp.ok) {
+                    this._debugBoundary('boundary API', { version, resultType, status: resp.status });
+                    continue;
+                }
+                const coords = this._extractPolygonCoords(await resp.json());
+                this._debugBoundary('boundary API', { version, resultType, status: resp.status, found: !!coords });
+                return coords ? this._simplifyRings(coords) : null;
+            } catch (error) {
+                this._debugBoundary('boundary API', { version, resultType, error: String(error) });
+            }
+        }
+        return null;
+    }
+
+    _debugBoundary(step, details) {
+        try { console.debug('[CloudMaps] ' + step, details); } catch { /* noop */ }
+    }
+
+    /// Search v1 entity types (fuzzy search / idxSet=Geo) mapped to "Get Polygon" result types.
+    _boundaryTypeFor(entityType) {
+        switch (entityType) {
+            case 'Country': return 'countryRegion';
+            case 'CountrySubdivision': return 'adminDistrict';
+            case 'CountrySecondarySubdivision':
+            case 'CountryTertiarySubdivision': return 'adminDistrict2';
+            case 'Neighbourhood': return 'neighborhood';
+            case 'PostalCodeArea': return 'postalCode';
+            default: return 'locality';
+        }
+    }
+
+    /// Resolves a place name to its boundary polygon at the requested level(s).
+    /// `entityTypes` is one Search v1 entity type or an ordered list to try (e.g. town, then
+    /// neighbourhood). A typed match only counts when its name matches the place asked for (the first
+    /// part of the query, small spelling differences allowed), because fuzzy search otherwise answers
+    /// "Hamra, Beirut" with Beirut itself. With no accepted match, the place's point is outlined at the
+    /// first requested level via the current boundary API. Without levels, the best match is outlined.
+    async resolveBoundary(query, entityTypes, countrySet) {
+        const levels = Array.isArray(entityTypes) ? entityTypes.filter(Boolean) : entityTypes ? [entityTypes] : [];
+        const wanted = this._normalizePlaceName(String(query || '').split(',')[0]);
+
+        for (const level of levels) {
+            const place = await this.geocode(query, level, countrySet);
+            const matches = !!place && this._placeNameMatches(place, wanted);
+            this._debugBoundary('geocode', { query, level, matched: place?.names, entityType: place?.entityType, accepted: matches });
+            if (!matches) continue;
+            // A matching place without a shape at this level: keep going with the next level.
+            const polygon = await this._boundaryFor(place, level, true);
+            if (polygon) return polygon;
+        }
+
+        const place = await this.geocode(query, null, countrySet);
+        this._debugBoundary('geocode', { query, level: 'any', matched: place?.names, entityType: place?.entityType, geometryId: !!place?.geometryId });
+        if (!place) return null;
+        // A loose match's own geometry may be a much larger area (the governorate the town sits in);
+        // when a level was requested, outline that level at the point instead.
+        const atPoint = await this._boundaryFor(place, levels[0] || place.entityType, levels.length === 0);
+        if (atPoint) return atPoint;
+        // Last resort: the loose match's own shape, but only when it really is the place asked for.
+        if (levels.length > 0 && place.geometryId && this._placeNameMatches(place, wanted))
+            return await this.getPolygon(place.geometryId);
+        this._debugBoundary('no boundary', { query });
+        return null;
+    }
+
+    async _boundaryFor(place, level, useMatchGeometry) {
+        if (useMatchGeometry && place.geometryId) {
+            const v1 = await this.getPolygon(place.geometryId);
+            if (v1) return v1;
+        }
+        return await this.getBoundaryPolygon(place.latitude, place.longitude, this._boundaryTypeFor(level));
+    }
+
+    _normalizePlaceName(value) {
+        return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    }
+
+    /// True when one of the match's names is the wanted place: contains it, or is within a couple of
+    /// letters of it (transliterations such as "Babda" / "Baabda").
+    _placeNameMatches(place, wanted) {
+        if (!wanted) return true;
+        return (place.names || []).some(name => {
+            const candidate = this._normalizePlaceName(name);
+            if (!candidate) return false;
+            if (candidate.includes(wanted) || wanted.includes(candidate)) return true;
+            return this._editDistance(candidate, wanted) <= Math.max(1, Math.floor(wanted.length / 4));
+        });
+    }
+
+    _editDistance(a, b) {
+        const row = Array.from({ length: b.length + 1 }, (_, i) => i);
+        for (let i = 1; i <= a.length; i++) {
+            let previous = row[0];
+            row[0] = i;
+            for (let j = 1; j <= b.length; j++) {
+                const current = row[j];
+                row[j] = Math.min(row[j] + 1, row[j - 1] + 1, previous + (a[i - 1] === b[j - 1] ? 0 : 1));
+                previous = current;
+            }
+        }
+        return row[b.length];
     }
 
     /// Recursively extract polygon coordinates from any GeoJSON-like structure.

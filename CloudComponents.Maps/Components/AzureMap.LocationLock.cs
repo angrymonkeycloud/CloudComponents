@@ -140,13 +140,9 @@ public partial class AzureMap
     private async Task<double[][][]?> ResolveBoundaryPolygonAsync(
         string query, CancellationToken cancellationToken, string? entityType = null, string? countrySet = null)
     {
-        var geocode = await GeocodeAsync(query, entityType, countrySet);
+        var polygon = await ResolveBoundaryAsync(query, entityType, countrySet);
         cancellationToken.ThrowIfCancellationRequested();
-
-        if (geocode?.GeometryId is not { Length: > 0 } geometryId)
-            return null;
-
-        return await GetPolygonAsync(geometryId);
+        return polygon;
     }
 
     /// <summary>
