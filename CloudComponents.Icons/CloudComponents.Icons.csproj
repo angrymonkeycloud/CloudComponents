@@ -7,7 +7,7 @@
 		<AssemblyName>AngryMonkey.CloudComponents.Icons</AssemblyName>
 		<PackageId>AngryMonkey.CloudComponents.Icons</PackageId>
 		<RootNamespace>AngryMonkey.CloudComponents.Icons</RootNamespace>
-		<Version>4.2.11</Version>
+		<Version>4.2.12</Version>
 		<Authors>Angry Monkey</Authors>
 		<Company>Angry Monkey</Company>
 		<AssemblyVersion>$(PackageVersion)</AssemblyVersion>
@@ -22,7 +22,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.12" />
 	</ItemGroup>
 
 	<ItemGroup>
