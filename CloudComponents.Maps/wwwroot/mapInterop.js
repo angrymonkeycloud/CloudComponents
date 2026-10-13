@@ -136,6 +136,7 @@ class AzureMapController {
         this._controlInstances = {};   // key -> { control, position } � lets setControls() diff/re-apply at runtime
         this._scrollHintEl = null;
         this._scrollHintTimer = null;
+        this._mapContainer = document.getElementById(options.elementId);
 
         const mapOptions = {
             center: [options.longitude, options.latitude],
@@ -345,6 +346,7 @@ class AzureMapController {
         this._map.events.add('zoomend', () => {
             _isZooming = false;
             _isZoomSettling = true;
+            this._syncMarkerTitleVisibility();
 
             if (_zoomAnchorCenter && !this._allowZoomCenterChange) {
                 this._map.setCamera({
@@ -366,6 +368,7 @@ class AzureMapController {
         // fixed pin visually ends up, not just manual drags.
         this._map.events.add('moveend', this._firePan);
         this._firePan(); // emit initial position (no-op unless already in center-pin mode)
+        this._syncMarkerTitleVisibility();
 
         // Unified scroll-wheel zoom gate. Handles two things:
         //  1) Center-pin mode always zooms anchored to the map center (not the
@@ -633,10 +636,17 @@ class AzureMapController {
     addMarker(info) {
         if (!info || !info.id || this._markers.has(info.id)) return;
 
-        const marker = new atlas.HtmlMarker({
+        const markerOptions = {
             position: [info.longitude, info.latitude],
             color: info.color || '#e81123'
-        });
+        };
+
+        if (this._options.showMarkerTitlesOnZoom === true && info.title) {
+            markerOptions.anchor = 'bottom';
+            markerOptions.htmlContent = this._buildTitledMarkerContent(info);
+        }
+
+        const marker = new atlas.HtmlMarker(markerOptions);
         this._map.markers.add(marker);
 
         // Hosts that render their own details card turn the built-in popup off (showMarkerPopups: false).
@@ -708,6 +718,24 @@ class AzureMapController {
         });
         this._markers.clear();
         this._activePopupId = null;
+    }
+
+    _syncMarkerTitleVisibility() {
+        if (!this._mapContainer || this._options.showMarkerTitlesOnZoom !== true) return;
+
+        const zoom = this._map.getCamera()?.zoom ?? 0;
+        const minimumZoom = Number(this._options.markerTitleMinZoom ?? 15);
+        this._mapContainer.classList.toggle('_marker-titles-visible', zoom >= minimumZoom);
+    }
+
+    _buildTitledMarkerContent(info) {
+        const title = this._escapeHtml(info.title || info.label || '');
+        const color = /^#[0-9a-f]{3,8}$/i.test(info.color || '') ? info.color : '#e81123';
+
+        return `<div class="cloud-map-marker" style="--cloud-map-marker-color:${color}">
+                    <span class="cloud-map-marker-title">${title}</span>
+                    <span class="cloud-map-marker-pin" aria-hidden="true"><span></span></span>
+                </div>`;
     }
 
     // -- Circle overlay API -----------------------------------------------

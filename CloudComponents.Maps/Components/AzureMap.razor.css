@@ -9,6 +9,54 @@
   position: absolute;
   inset: 0;
 }
+.map-canvas ::deep .cloud-map-marker {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.28));
+}
+.map-canvas ::deep .cloud-map-marker-title {
+  position: absolute;
+  bottom: 43px;
+  left: 50%;
+  max-width: calc(min(180px, 45vw));
+  padding: 5px 9px;
+  overflow: hidden;
+  color: #172033;
+  font: 600 12px/1.25 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(23, 32, 51, 0.16);
+  border-radius: 7px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.map-canvas ::deep .cloud-map-marker-pin {
+  position: relative;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  background: var(--cloud-map-marker-color);
+  border: 2px solid #fff;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+}
+.map-canvas ::deep .cloud-map-marker-pin span {
+  width: 9px;
+  height: 9px;
+  background: #fff;
+  border-radius: 50%;
+}
+.map-canvas._marker-titles-visible ::deep .cloud-map-marker-title {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
 .map-pin {
   position: absolute;
   left: 50%;

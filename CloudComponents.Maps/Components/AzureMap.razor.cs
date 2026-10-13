@@ -120,6 +120,12 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     /// </summary>
     [Parameter] public bool ShowMarkerPopups { get; set; } = true;
 
+    /// <summary>Shows each marker's title directly above its pin once the map reaches <see cref="MarkerTitleMinZoom"/>.</summary>
+    [Parameter] public bool ShowMarkerTitlesOnZoom { get; set; }
+
+    /// <summary>Minimum zoom level at which marker title labels become visible.</summary>
+    [Parameter] public double MarkerTitleMinZoom { get; set; } = 15;
+
     [Parameter] public bool ShowCurrentLocationButton { get; set; } = true;
     [Parameter] public bool LocateOnOpen { get; set; } = false;
 
@@ -337,6 +343,8 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
         showTrafficIncidents = ShowTrafficIncidents,
         allowMarkerRemoval = AllowMarkerRemoval,
         showMarkerPopups = ShowMarkerPopups,
+        showMarkerTitlesOnZoom = ShowMarkerTitlesOnZoom,
+        markerTitleMinZoom = MarkerTitleMinZoom,
         addMarkerTrigger = TriggerToString(AddMarkerTrigger),
         interactive = Interactive,
         interactions = new
