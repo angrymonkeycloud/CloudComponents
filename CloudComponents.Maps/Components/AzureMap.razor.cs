@@ -457,6 +457,38 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
             StateHasChanged();
     }
 
+    /// <summary>
+    /// Draws several boundary polygons as one region: their union, outlined without fill. Use it when many neighbouring
+    /// areas would otherwise read as a patchwork of colours. Returns the region id.
+    /// </summary>
+    public async Task<string> AddMergedRegionAsync(
+        IEnumerable<double[][][]> polygons,
+        string strokeColor = "#0078d4",
+        double strokeWidth = 2,
+        string? label = null,
+        string? id = null)
+    {
+        var c = EnsureController();
+        string regionId = id ?? Guid.NewGuid().ToString("N");
+
+        await c.InvokeVoidAsync("addMergedRegion", new
+        {
+            id = regionId,
+            polygons = polygons.ToArray(),
+            strokeColor,
+            strokeWidth,
+            label
+        });
+
+        if (!string.IsNullOrWhiteSpace(label) && !_regionLegendEntries.Any(e => e.Label == label))
+        {
+            _regionLegendEntries.Add(new RegionLegendItem(label, "transparent", strokeColor));
+            StateHasChanged();
+        }
+
+        return regionId;
+    }
+
     public async Task ClearRegionsAsync()
     {
         if (_controller is null) return;

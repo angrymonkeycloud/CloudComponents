@@ -1,5 +1,5 @@
-﻿const _amc_progressbar_valueRange = '.amc-progressbar-value';
-const _amc_progressbar_changingRange = '.amc-progressbar-changingvalue';
+﻿const _amc_cc_progressbar_valueRange = '.amc-progressbar-value';
+const _amc_cc_progressbar_changingRange = '.amc-progressbar-changingvalue';
 
 amcProgressBarUpdatePosition = (component, clientX, maxMoveDistance) => {
 
@@ -13,8 +13,8 @@ amcProgressBarUpdatePosition = (component, clientX, maxMoveDistance) => {
 
     component.style.setProperty('grid-template-columns', moveDistance + 'px max-content 1fr')
 
-    const range = component.querySelector(_amc_progressbar_valueRange);
-    const changingRange = component.querySelector(_amc_progressbar_changingRange);
+    const range = component.querySelector(_amc_cc_progressbar_valueRange);
+    const changingRange = component.querySelector(_amc_cc_progressbar_changingRange);
 
     const total = Number(range.max);
 
@@ -34,7 +34,7 @@ window.amcProgressBarMouseDown = (component, clientX) => {
     component["IsUserInput"] = true;
     component.classList.add('_moving');
 
-    const range = component.querySelector(_amc_progressbar_valueRange);
+    const range = component.querySelector(_amc_cc_progressbar_valueRange);
 
     const oldValue = range.value;
 
@@ -75,7 +75,7 @@ window.amcProgressBarTouchDown = (component, clientX) => {
     component["IsUserInput"] = true;
     component.classList.add('_moving');
 
-    const range = component.querySelector(_amc_progressbar_valueRange);
+    const range = component.querySelector(_amc_cc_progressbar_valueRange);
 
     const oldValue = range.value;
 
@@ -119,7 +119,7 @@ window.amcProgressBarRepaint = (component, value, total) => {
     if (!component.querySelector)
         return;
 
-    const range = component.querySelector(_amc_progressbar_valueRange);
+    const range = component.querySelector(_amc_cc_progressbar_valueRange);
 
     if (total === null || total === undefined)
         total = Number(range.max);

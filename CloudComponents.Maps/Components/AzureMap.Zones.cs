@@ -68,9 +68,42 @@ public partial class AzureMap
     /// </summary>
     public async Task AddZonesAsync(IEnumerable<MapZone> zones)
     {
+        if (MergeZoneBoundariesAbove is not int threshold)
+        {
+            foreach (var zone in zones)
+                await ResolveAndRenderZoneAsync(zone);
+            return;
+        }
+
+        List<(MapZone Zone, double[][][] Polygon)> boundaries = [];
         foreach (var zone in zones)
-            await ResolveAndRenderZoneAsync(zone);
+            foreach (var polygon in await ResolveZoneBoundariesAsync(zone))
+                boundaries.Add((zone, polygon));
+
+        if (boundaries.Count <= threshold)
+        {
+            foreach (var (zone, polygon) in boundaries)
+                await RenderZoneBoundaryAsync(zone, polygon);
+            return;
+        }
+
+        string mergedId = await AddMergedRegionAsync(
+            boundaries.Select(boundary => boundary.Polygon),
+            MergedBoundaryStrokeColor,
+            boundaries[0].Zone.StrokeWidth);
+
+        foreach (var zoneId in boundaries.Select(boundary => boundary.Zone.Id).Distinct())
+            _zoneRegionMap[zoneId] = [mergedId];
     }
+
+    /// <summary>
+    /// When set, a batch of zones drawing more than this many boundaries is shown as one merged outline without fill
+    /// instead of one coloured shape per area. Null (the default) always draws every boundary.
+    /// </summary>
+    [Parameter] public int? MergeZoneBoundariesAbove { get; set; }
+
+    /// <summary>Outline color of merged zone boundaries. See <see cref="MergeZoneBoundariesAbove"/>.</summary>
+    [Parameter] public string MergedBoundaryStrokeColor { get; set; } = "#0078d4";
 
     /// <summary>
     /// Removes the overlay(s) previously rendered for a zone identified by <paramref name="zoneId"/>.
@@ -126,10 +159,17 @@ public partial class AzureMap
 
     private async Task ResolveAndRenderZoneAsync(MapZone zone)
     {
-        if (_controller is null || zone.Addresses is not { Count: > 0 })
-            return;
+        foreach (var polygon in await ResolveZoneBoundariesAsync(zone))
+            await RenderZoneBoundaryAsync(zone, polygon);
+    }
 
-        var regionIds = new List<string>();
+    /// <summary>The boundary polygon of each of the zone's addresses that has one.</summary>
+    private async Task<List<double[][][]>> ResolveZoneBoundariesAsync(MapZone zone)
+    {
+        List<double[][][]> polygons = [];
+
+        if (_controller is null || zone.Addresses is not { Count: > 0 })
+            return polygons;
 
         foreach (var address in zone.Addresses)
         {
@@ -143,20 +183,8 @@ public partial class AzureMap
                     ? await ResolveBoundaryAsync(address, levels, zone.CountrySet)
                     : await ResolveBoundaryAsync(address, countrySet: zone.CountrySet);
 
-                if (polygon is not { Length: > 0 })
-                    continue;
-
-                var region = new MapRegion(
-                    polygon,
-                    FillColor: zone.FillColor,
-                    StrokeColor: zone.StrokeColor,
-                    StrokeWidth: zone.StrokeWidth)
-                {
-                    Label = zone.Label
-                };
-
-                await AddRegionsAsync([region]);
-                regionIds.Add(region.Id);
+                if (polygon is { Length: > 0 })
+                    polygons.Add(polygon);
             }
             catch
             {
@@ -164,8 +192,25 @@ public partial class AzureMap
             }
         }
 
-        if (regionIds.Count > 0)
-            _zoneRegionMap[zone.Id] = regionIds;
+        return polygons;
+    }
+
+    private async Task RenderZoneBoundaryAsync(MapZone zone, double[][][] polygon)
+    {
+        var region = new MapRegion(
+            polygon,
+            FillColor: zone.FillColor,
+            StrokeColor: zone.StrokeColor,
+            StrokeWidth: zone.StrokeWidth)
+        {
+            Label = zone.Label
+        };
+
+        await AddRegionsAsync([region]);
+
+        if (!_zoneRegionMap.TryGetValue(zone.Id, out var regionIds))
+            _zoneRegionMap[zone.Id] = regionIds = [];
+        regionIds.Add(region.Id);
     }
 }
 

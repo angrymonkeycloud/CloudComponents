@@ -740,20 +740,59 @@ class AzureMapController {
 
     // -- Circle overlay API -----------------------------------------------
 
+    _ensureRegionLayers() {
+        if (this._regionDataSource) return;
+        this._regionDataSource = new atlas.source.DataSource();
+        this._map.sources.add(this._regionDataSource);
+        this._map.layers.add(new atlas.layer.PolygonLayer(this._regionDataSource, null, {
+            fillColor: ['get', 'fillColor'],
+            fillOpacity: 1
+        }));
+        this._map.layers.add(new atlas.layer.LineLayer(this._regionDataSource, null, {
+            strokeColor: ['get', 'strokeColor'],
+            strokeWidth: ['get', 'strokeWidth']
+        }));
+    }
+
+    /// Draws several boundaries as one: their union, outlined without fill, so many neighbouring
+    /// areas read as a single zone instead of a patchwork of colours.
+    async addMergedRegion(info) {
+        if (!info?.polygons?.length) return;
+        this._ensureRegionLayers();
+
+        const geometry = await this._unionPolygons(info.polygons);
+        const props = {
+            fillColor: 'rgba(0, 0, 0, 0)',
+            strokeColor: info.strokeColor || '#0078d4',
+            strokeWidth: info.strokeWidth ?? 2
+        };
+        if (info.label) props.label = info.label;
+
+        const shape = geometry.type === 'MultiPolygon'
+            ? new atlas.data.MultiPolygon(geometry.coordinates)
+            : new atlas.data.Polygon(geometry.coordinates);
+        this._regionDataSource.add(new atlas.Shape(shape, info.id, props));
+        this._regions.push(info.id);
+    }
+
+    async _unionPolygons(polygons) {
+        try {
+            const turf = await import('./vendor/turf-union.js');
+            const features = [];
+            for (const rings of polygons) {
+                try { features.push(turf.polygon(rings)); } catch { /* an invalid ring is left out of the union */ }
+            }
+            const merged = features.length === 1 ? features[0] : features.length > 1 ? turf.union(turf.featureCollection(features)) : null;
+            if (merged?.geometry) return merged.geometry;
+        } catch (error) {
+            console.warn('[CloudMaps] Boundaries could not be merged; they are outlined separately.', error);
+        }
+        return { type: 'MultiPolygon', coordinates: polygons };
+    }
+
     addRegion(info) {
         if (!info) return;
-        if (!this._regionDataSource) {
-            this._regionDataSource = new atlas.source.DataSource();
-            this._map.sources.add(this._regionDataSource);
-            this._map.layers.add(new atlas.layer.PolygonLayer(this._regionDataSource, null, {
-                fillColor: ['get', 'fillColor'],
-                fillOpacity: 1
-            }));
-            this._map.layers.add(new atlas.layer.LineLayer(this._regionDataSource, null, {
-                strokeColor: ['get', 'strokeColor'],
-                strokeWidth: ['get', 'strokeWidth']
-            }));
-        }
+        this._ensureRegionLayers();
 
         const props = {
             fillColor: info.fillColor || 'rgba(0, 120, 212, 0.15)',

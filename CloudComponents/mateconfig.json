@@ -27,9 +27,7 @@
       "output": "wwwroot/js/amc-components.js",
       "input": [
         "Dialog/dialog.js",
-        "ProgressBar/progressbar.js",
-        "VideoPlayer/VideoPlayer.razor.js",
-        "VideoPlayer/VideoPlayerCast.razor.js"
+        "ProgressBar/progressbar.js"
       ]
     },
     {
