@@ -328,19 +328,10 @@ public partial class CloudDataGrid : IAsyncDisposable
 
     private string BuildCsv(IEnumerable<CloudDataGridRow> rows)
     {
-        // Use char variable to avoid escaped-quote literals confusing the parser.
-        char q = '"';
-
-        string QuoteCsv(object? value)
-        {
-            string text = (value?.ToString() ?? string.Empty).Replace(q.ToString(), q.ToString() + q);
-            return q + text + q;
-        }
-
         // Header row from column labels (skip image columns).
         IEnumerable<string> header = Columns
             .Where(c => !c.IsImage)
-            .Select(c => QuoteCsv(c.Label));
+            .Select(c => CloudDataGridCsv.Field(c.Label));
 
         // Data rows — skip image columns by index.
         int[] skipIndexes = Columns
@@ -353,7 +344,7 @@ public partial class CloudDataGrid : IAsyncDisposable
             string.Join(',', row.Cells
                 .Select((cell, i) => (cell, i))
                 .Where(t => !skipIndexes.Contains(t.i))
-                .Select(t => QuoteCsv(t.cell is CloudDataGridCell richCell ? richCell.Value : t.cell))));
+                .Select(t => CloudDataGridCsv.Field(t.cell is CloudDataGridCell richCell ? richCell.Value : t.cell))));
 
         return string.Join(Environment.NewLine,
             [string.Join(',', header), .. dataLines]);
