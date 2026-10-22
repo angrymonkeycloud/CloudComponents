@@ -25,7 +25,7 @@
   align-items: center;
   gap: 2px;
   width: max-content;
-  max-width: min(210px, 55vw);
+  max-width: calc(min(210px, 55vw));
   padding: 5px 10px 6px;
   color: #172033;
   font: 600 12px/1.25 system-ui, -apple-system, 'Segoe UI', sans-serif;
