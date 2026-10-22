@@ -732,8 +732,15 @@ class AzureMapController {
         const title = this._escapeHtml(info.title || info.label || '');
         const color = /^#[0-9a-f]{3,8}$/i.test(info.color || '') ? info.color : '#e81123';
 
+        // The price and size go on their own line beneath the title; a marker with neither says where it is instead.
+        const details = [info.price, info.area].filter(Boolean);
+        if (details.length === 0 && info.city) details.push(info.city);
+        const detailsHtml = details.length
+            ? `<span class="cloud-map-marker-details">${this._escapeHtml(details.join(' · '))}</span>`
+            : '';
+
         return `<div class="cloud-map-marker" style="--cloud-map-marker-color:${color}">
-                    <span class="cloud-map-marker-title">${title}</span>
+                    <span class="cloud-map-marker-title"><span class="cloud-map-marker-name">${title}</span>${detailsHtml}</span>
                     <span class="cloud-map-marker-pin" aria-hidden="true"><span></span></span>
                 </div>`;
     }

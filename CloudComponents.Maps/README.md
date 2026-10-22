@@ -173,7 +173,8 @@ In component/page:
 | `Height` | `string` | `500px` | Host container height. |
 | `Width` | `string` | `100%` | Host container width. |
 | `InitialView` | `InitialMapView?` | `null` | Initial camera view. If null, component may auto-locate then fallback to world view. |
-| `Style` | `MapStyle` | `Satellite` | Base map style. |
+| `Style` | `MapStyle` | `Satellite` | Base map style the map starts with. A host re-rendering with the same value never undoes a style the user picked. |
+| `ShowStyleToggle` | `bool` | `true` | Shows a Road / Satellite switch on the map. Turn it off where the host draws its own. |
 | `Language` | `string` | `en-US` | Map language code. |
 | `View` | `string` | `Auto` | Azure Maps view mode. |
 | `Pitch` | `double` | `0` | Camera pitch angle. |

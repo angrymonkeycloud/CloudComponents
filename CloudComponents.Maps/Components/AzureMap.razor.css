@@ -20,13 +20,16 @@
   position: absolute;
   bottom: 43px;
   left: 50%;
-  max-width: calc(min(180px, 45vw));
-  padding: 5px 9px;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: max-content;
+  max-width: min(210px, 55vw);
+  padding: 5px 10px 6px;
   color: #172033;
   font: 600 12px/1.25 system-ui, -apple-system, 'Segoe UI', sans-serif;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  text-align: center;
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(23, 32, 51, 0.16);
   border-radius: 7px;
@@ -35,6 +38,21 @@
   pointer-events: none;
   transform: translate(-50%, 4px);
   transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.map-canvas ::deep .cloud-map-marker-name {
+  display: -webkit-box;
+  max-width: 100%;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+.map-canvas ::deep .cloud-map-marker-details {
+  max-width: 100%;
+  color: #0b5cad;
+  font-weight: 700;
+  overflow-wrap: anywhere;
 }
 .map-canvas ::deep .cloud-map-marker-pin {
   position: relative;
@@ -219,6 +237,44 @@
 .map-search-result-description {
   font-size: 11.5px;
   color: #777;
+}
+.map-style-switch {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 6;
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  backdrop-filter: blur(6px);
+}
+.map-style-switch._below-search {
+  top: 64px;
+}
+.map-style-switch button {
+  min-height: 30px;
+  padding: 4px 12px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #444;
+  font: 600 12px/1 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.map-style-switch button:hover {
+  background: #eef6fd;
+}
+.map-style-switch button:focus-visible {
+  outline: 2px solid #0078d4;
+  outline-offset: 2px;
+}
+.map-style-switch button._active {
+  background: #0078d4;
+  color: #fff;
 }
 .map-lock-toast {
   position: absolute;

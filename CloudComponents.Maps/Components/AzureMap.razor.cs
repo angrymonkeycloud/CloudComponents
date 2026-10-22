@@ -23,6 +23,7 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     private bool _showPermissionPrompt;
     private TaskCompletionSource<bool>? _permissionPromptTcs;
     private MapStyle _appliedStyle;
+    private MapStyle _styleParameter;
     private bool _appliedTrafficFlow;
     private bool _appliedTrafficIncidents;
     private (bool DragPan, bool DragRotate, bool ScrollZoom, bool DblClickZoom, bool BoxZoom, bool Keyboard, bool Touch) _appliedInteractions;
@@ -59,7 +60,14 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     /// </summary>
     [Parameter] public InitialMapView? InitialView { get; set; }
 
+    /// <summary>
+    /// The base map to start with; <see cref="ShowStyleToggle"/> lets the user switch between road and satellite. Changing this
+    /// value later restyles the map, but re-rendering the host with the same value does not undo a style the user picked.
+    /// </summary>
     [Parameter] public MapStyle Style { get; set; } = MapStyle.Satellite;
+
+    /// <summary>Shows the Road / Satellite switch on the map. On by default; turn it off where the host draws its own.</summary>
+    [Parameter] public bool ShowStyleToggle { get; set; } = true;
     [Parameter] public string Language { get; set; } = "en-US";
     [Parameter] public string View { get; set; } = "Auto";
 
@@ -182,6 +190,7 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
         var options = BuildMapOptions(startView);
         _controller = await _module.InvokeAsync<IJSObjectReference>("createMap", _selfRef, options);
         _appliedStyle = Style;
+        _styleParameter = Style;
         _appliedTrafficFlow = ShowTrafficFlow;
         _appliedTrafficIncidents = ShowTrafficIncidents;
         _appliedControls = (ZoomControl, CompassControl, PitchControl, StyleControl, FullscreenControl, ScaleControl);
@@ -265,11 +274,11 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     {
         if (_controller is null) return;
 
-        // Always push the style through to JS. The SDK is idempotent, and a
-        // local cache can drift when the user changes style via the in-map
-        // StyleControl, causing later C#-driven changes to be no-ops.
-        if (_appliedStyle != Style)
+        // The host's value is applied when the host changes it. Comparing with the style the map shows instead would undo
+        // what the user picked (the switch, or the in-map StyleControl) the next time the host re-rendered.
+        if (_styleParameter != Style)
         {
+            _styleParameter = Style;
             _appliedStyle = Style;
             await _controller.InvokeVoidAsync("setStyle", StyleToString(Style));
         }
@@ -604,7 +613,11 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     public async Task SetStyleAsync(MapStyle style)
     {
         var c = EnsureController();
+        _appliedStyle = style;
         await c.InvokeVoidAsync("setStyle", StyleToString(style));
+
+        if (ShowStyleToggle)
+            StateHasChanged();
     }
 
     public async Task SetTrafficAsync(bool showFlow, bool showIncidents)
@@ -766,7 +779,23 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     public Task NotifyStyleChangedAsync(string style)
     {
         _appliedStyle = StyleFromString(style);
-        return Task.CompletedTask;
+
+        return ShowStyleToggle ? InvokeAsync(StateHasChanged) : Task.CompletedTask;
+    }
+
+    /// <summary>The style on screen: what the user last picked, or the host's value until the map exists.</summary>
+    private MapStyle CurrentStyle => _controller is null ? Style : _appliedStyle;
+
+    private bool IsSatellite => CurrentStyle is MapStyle.Satellite or MapStyle.SatelliteRoadLabels;
+
+    private async Task SwitchStyleAsync(MapStyle style)
+    {
+        // Already on that side of the switch (either satellite style counts as satellite): nothing to change.
+        if (_controller is null || CurrentStyle == style || (IsSatellite && style is MapStyle.SatelliteRoadLabels))
+            return;
+
+        _appliedStyle = style;
+        await _controller.InvokeVoidAsync("setStyle", StyleToString(style));
     }
 
     private static MapStyle StyleFromString(string s) => s switch

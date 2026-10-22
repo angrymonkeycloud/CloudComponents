@@ -66,6 +66,14 @@
         </div>
     }
 
+    @if (ShowStyleToggle)
+    {
+        <div class="map-style-switch @(ShowSearchBox ? "_below-search" : null)" role="group" aria-label="Map style">
+            <button type="button" class="@(IsSatellite ? null : "_active")" aria-pressed="@(IsSatellite ? "false" : "true")" @onclick="() => SwitchStyleAsync(MapStyle.Road)">Road</button>
+            <button type="button" class="@(IsSatellite ? "_active" : null)" aria-pressed="@(IsSatellite ? "true" : "false")" @onclick="() => SwitchStyleAsync(MapStyle.SatelliteRoadLabels)">Satellite</button>
+        </div>
+    }
+
     @if (AddMarkerTrigger == MarkerAddTrigger.CenterPin)
     {
         <div class="map-pin @(_isLocating ? "_loading" : null)" aria-hidden="true">
