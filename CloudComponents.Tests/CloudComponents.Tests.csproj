@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
+		<RootNamespace>CloudComponents.Tests</RootNamespace>
+
+		<!-- Keys for the live Azure Maps / Google Maps tests live in user secrets (or environment variables), never in the repo.
+		     See README.md in this folder. -->
+		<UserSecretsId>cloudcomponents-tests-5b0c1d6e-7f3a-4a54-9d2e-3c8a1f6b2e91</UserSecretsId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="bunit" Version="2.13.3" />
+		<PackageReference Include="coverlet.collector" Version="10.1.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.14" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.14" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
+		<PackageReference Include="xunit" Version="2.9.3" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="4.0.1">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\CloudComponents\CloudComponents.csproj" />
+		<ProjectReference Include="..\CloudComponents.DataGrid\CloudComponents.DataGrid.csproj" />
+		<ProjectReference Include="..\CloudComponents.Icons\CloudComponents.Icons.csproj" />
+		<ProjectReference Include="..\CloudComponents.Maps\CloudComponents.Maps.csproj" />
+		<ProjectReference Include="..\CloudComponents.TextEditor\CloudComponents.TextEditor.csproj" />
+		<ProjectReference Include="..\CloudComponents.VideoPlayer\CloudComponents.VideoPlayer.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="Xunit" />
+	</ItemGroup>
+
+	<!-- The JavaScript tests and the Maps source they load are read from disk by the test that runs them. -->
+	<ItemGroup>
+		<None Include="js\**\*" />
+	</ItemGroup>
+
+</Project>

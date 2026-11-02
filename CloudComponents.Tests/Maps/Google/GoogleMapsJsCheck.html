@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Google Maps JavaScript API check</title>
+    <style>
+        :root { color-scheme: light dark; --ok: #137333; --bad: #c5221f; --muted: #666; }
+        body { font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; margin: 0; padding: 16px; max-width: 760px; margin-inline: auto; }
+        h1 { font-size: 1.15rem; margin: 0 0 4px; }
+        p, label { color: var(--muted); }
+        form { display: grid; gap: 8px; margin: 12px 0; }
+        input { padding: 8px 10px; font: inherit; border: 1px solid #8884; border-radius: 6px; background: transparent; color: inherit; }
+        button { padding: 8px 14px; font: inherit; border: 0; border-radius: 6px; background: #1a73e8; color: #fff; cursor: pointer; justify-self: start; }
+        #map { height: 280px; border-radius: 8px; border: 1px solid #8884; margin: 12px 0; }
+        ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+        li { padding: 8px 10px; border-radius: 6px; border: 1px solid #8884; display: grid; gap: 2px; }
+        li strong::before { margin-right: 8px; }
+        li.pass strong { color: var(--ok); } li.pass strong::before { content: "PASS"; }
+        li.fail strong { color: var(--bad); } li.fail strong::before { content: "FAIL"; }
+        li span { color: var(--muted); font-size: .85rem; overflow-wrap: anywhere; }
+        #summary { font-weight: 600; margin: 12px 0; }
+    </style>
+</head>
+<body>
+    <h1>Google Maps JavaScript API check</h1>
+    <p>
+        Loads the map the way the BluSky app will and calls what the port needs: the map itself, satellite imagery, the Geocoder and Places (New).
+        Your key is used only by this page, in your browser, and is not stored or sent anywhere but Google. Open this file through the same origin
+        your key allows (for the MAUI app that is <code>https://0.0.0.1</code>); to try a referrer-restricted key from your machine, serve the
+        file from a host that key allows, or use a temporary key restricted to <code>http://localhost:*/*</code>.
+    </p>
+
+    <form id="form" method="get">
+        <label>Browser key <input name="key" type="password" autocomplete="off" required placeholder="Maps JavaScript API key"></label>
+        <label>Map ID (optional, needed for advanced markers) <input name="mapId" autocomplete="off" placeholder="DEMO_MAP_ID or your Map ID"></label>
+        <button type="submit">Run the check</button>
+    </form>
+
+    <div id="summary" role="status"></div>
+    <div id="map" hidden></div>
+    <ul id="results"></ul>
+
+<script>
+    const params = new URLSearchParams(location.search);
+    const key = params.get('key');
+    const mapId = params.get('mapId') || '';
+    const results = [];
+    const list = document.getElementById('results');
+
+    function report(name, pass, detail) {
+        results.push({ name, pass, detail: detail || '' });
+        const item = document.createElement('li');
+        item.className = pass ? 'pass' : 'fail';
+        item.innerHTML = '<strong></strong><span></span>';
+        item.querySelector('strong').textContent = name;
+        item.querySelector('span').textContent = detail || '';
+        list.appendChild(item);
+    }
+
+    const withTimeout = (promise, ms, what) => Promise.race([
+        promise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error(`${what} did not finish in ${ms / 1000}s`)), ms))
+    ]);
+
+    // Google calls this when it rejects the key for the page's origin: a wrong key, a referrer that is not allowed, or the API not enabled.
+    window.gm_authFailure = () => report('Key accepted for this origin', false, 'gm_authFailure: check the key, its HTTP referrer restriction and that the Maps JavaScript API is enabled. Origin: ' + location.origin);
+
+    function finish() {
+        const failed = results.filter(r => !r.pass).length;
+        document.getElementById('summary').textContent = failed === 0 ? `All ${results.length} checks passed.` : `${failed} of ${results.length} checks failed.`;
+        document.title = failed === 0 ? `DONE: ${results.length} passed` : `DONE: ${failed} failed`;
+        window.__results = { passed: results.length - failed, failed, results };
+    }
+
+    async function run() {
+        document.getElementById('form').hidden = true;
+
+        await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&loading=async&v=weekly&libraries=marker,places&callback=__ready`;
+            script.async = true;
+            window.__ready = resolve;
+            script.onerror = () => reject(new Error('The Maps JavaScript API script could not be loaded (network or blocked).'));
+            document.head.appendChild(script);
+        }).then(() => report('Maps JavaScript API script loads', true), error => report('Maps JavaScript API script loads', false, error.message));
+
+        if (!window.google?.maps) return finish();
+
+        const mapElement = document.getElementById('map');
+        mapElement.hidden = false;
+        let map;
+
+        try {
+            const { Map } = await google.maps.importLibrary('maps');
+            map = new Map(mapElement, { center: { lat: 33.8938, lng: 35.5018 }, zoom: 11, mapId: mapId || undefined, mapTypeId: 'roadmap' });
+            await withTimeout(new Promise(resolve => google.maps.event.addListenerOnce(map, 'tilesloaded', resolve)), 15000, 'Road tiles');
+            report('Road map renders', true);
+        } catch (error) {
+            report('Road map renders', false, error.message);
+        }
+
+        if (map) {
+            try {
+                map.setMapTypeId('hybrid');
+                await withTimeout(new Promise(resolve => google.maps.event.addListenerOnce(map, 'tilesloaded', resolve)), 15000, 'Satellite tiles');
+                report('Satellite (hybrid) imagery renders', true);
+            } catch (error) {
+                report('Satellite (hybrid) imagery renders', false, error.message);
+            }
+
+            try {
+                const { AdvancedMarkerElement } = await google.maps.importLibrary('marker');
+                if (!mapId) {
+                    report('Advanced markers', true, 'Skipped: pass a Map ID to check them.');
+                } else {
+                    const marker = new AdvancedMarkerElement({ map, position: { lat: 33.8938, lng: 35.5018 }, title: 'check' });
+                    report('Advanced markers', !!marker.map, marker.map ? '' : 'The marker did not attach to the map.');
+                }
+            } catch (error) {
+                report('Advanced markers', false, error.message);
+            }
+        }
+
+        try {
+            const { Geocoder } = await google.maps.importLibrary('geocoding');
+            const { results: found } = await withTimeout(new Geocoder().geocode({ address: 'Jounieh, Lebanon' }), 15000, 'Geocoder');
+            const location = found[0].geometry.location;
+            const inLebanon = location.lat() > 33 && location.lat() < 34.7 && location.lng() > 35 && location.lng() < 36.7;
+            report('Geocoding API (Geocoder)', inLebanon, inLebanon ? found[0].formatted_address : 'Unexpected location: ' + location.toString());
+        } catch (error) {
+            report('Geocoding API (Geocoder)', false, error.message + ' (is the Geocoding API enabled for this key?)');
+        }
+
+        try {
+            const { Place } = await google.maps.importLibrary('places');
+            const { places } = await withTimeout(Place.searchByText({ textQuery: 'Jounieh Lebanon', fields: ['id', 'displayName', 'location', 'viewport'], maxResultCount: 1 }), 15000, 'Places text search');
+            const place = places[0];
+            report('Places API (New): text search', !!place?.location, place ? `${place.displayName} (${place.id})` : 'No place found.');
+        } catch (error) {
+            report('Places API (New): text search', false, error.message + ' (is Places API (New) enabled for this key?)');
+        }
+
+        try {
+            const { AutocompleteSuggestion } = await google.maps.importLibrary('places');
+            const { suggestions } = await withTimeout(AutocompleteSuggestion.fetchAutocompleteSuggestions({ input: 'Jouni', includedRegionCodes: ['lb'] }), 15000, 'Places autocomplete');
+            report('Places API (New): autocomplete', suggestions.length > 0, suggestions[0]?.placePrediction?.text?.text || 'No suggestions.');
+        } catch (error) {
+            report('Places API (New): autocomplete', false, error.message);
+        }
+
+        finish();
+    }
+
+    if (key) run().catch(error => { report('The check itself', false, error.message); finish(); });
+</script>
+</body>
+</html>

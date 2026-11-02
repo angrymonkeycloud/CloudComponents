@@ -28,6 +28,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudComponents.Tests", "CloudComponents.Tests\CloudComponents.Tests.csproj", "{A52847A3-8796-41FC-94AC-FD7F28C411C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -203,6 +205,24 @@ Global
 		{4561E402-B12F-D2B0-D60B-6D3505C02B55}.Release|x64.Build.0 = Release|Any CPU
 		{4561E402-B12F-D2B0-D60B-6D3505C02B55}.Release|x86.ActiveCfg = Release|Any CPU
 		{4561E402-B12F-D2B0-D60B-6D3505C02B55}.Release|x86.Build.0 = Release|Any CPU
+		{A52847A3-8796-41FC-94AC-FD7F28C411C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A52847A3-8796-41FC-94AC-FD7F28C411C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A52847A3-8796-41FC-94AC-FD7F28C411C8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A52847A3-8796-41FC-94AC-FD7F28C411C8}.Debug|x64.Build.0 = Debug|Any CPU
+		{A52847A3-8796-41FC-94AC-FD7F28C411C8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A52847A3-8796-41FC-94AC-FD7F28C411C8}.Debug|x86.Build.0 = Debug|Any CPU
+		{A52847A3-8796-41FC-94AC-FD7F28C411C8}.Release_Server|Any CPU.ActiveCfg = Debug|Any CPU
+		{A52847A3-8796-41FC-94AC-FD7F28C411C8}.Release_Server|Any CPU.Build.0 = Debug|Any CPU
+		{A52847A3-8796-41FC-94AC-FD7F28C411C8}.Release_Server|x64.ActiveCfg = Debug|Any CPU
+		{A52847A3-8796-41FC-94AC-FD7F28C411C8}.Release_Server|x64.Build.0 = Debug|Any CPU
+		{A52847A3-8796-41FC-94AC-FD7F28C411C8}.Release_Server|x86.ActiveCfg = Debug|Any CPU
+		{A52847A3-8796-41FC-94AC-FD7F28C411C8}.Release_Server|x86.Build.0 = Debug|Any CPU
+		{A52847A3-8796-41FC-94AC-FD7F28C411C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A52847A3-8796-41FC-94AC-FD7F28C411C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A52847A3-8796-41FC-94AC-FD7F28C411C8}.Release|x64.ActiveCfg = Release|Any CPU
+		{A52847A3-8796-41FC-94AC-FD7F28C411C8}.Release|x64.Build.0 = Release|Any CPU
+		{A52847A3-8796-41FC-94AC-FD7F28C411C8}.Release|x86.ActiveCfg = Release|Any CPU
+		{A52847A3-8796-41FC-94AC-FD7F28C411C8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
