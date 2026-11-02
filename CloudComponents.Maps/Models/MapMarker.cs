@@ -20,6 +20,9 @@ public sealed record MapMarker(
     /// <summary>Headline shown in the popup (falls back to <see cref="Label"/>).</summary>
     public string? Title { get; init; }
 
+    /// <summary>Short contextual detail shown with the marker title at close zoom levels.</summary>
+    public string? Subtitle { get; init; }
+
     /// <summary>City / locality name.</summary>
     public string? City { get; init; }
 

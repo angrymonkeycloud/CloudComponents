@@ -131,6 +131,13 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
     /// <summary>Shows each marker's title directly above its pin once the map reaches <see cref="MarkerTitleMinZoom"/>.</summary>
     [Parameter] public bool ShowMarkerTitlesOnZoom { get; set; }
 
+    /// <summary>
+    /// Shows the marker's compact <see cref="MapMarker.Label"/> before the title zoom threshold,
+    /// then replaces it with the full title and details. This keeps useful summary information
+    /// visible while the map is zoomed out without crowding the detailed view.
+    /// </summary>
+    [Parameter] public bool ShowMarkerLabelsBeforeTitleZoom { get; set; }
+
     /// <summary>Minimum zoom level at which marker title labels become visible.</summary>
     [Parameter] public double MarkerTitleMinZoom { get; set; } = 15;
 
@@ -353,6 +360,7 @@ public partial class AzureMap : ComponentBase, IAsyncDisposable
         allowMarkerRemoval = AllowMarkerRemoval,
         showMarkerPopups = ShowMarkerPopups,
         showMarkerTitlesOnZoom = ShowMarkerTitlesOnZoom,
+        showMarkerLabelsBeforeTitleZoom = ShowMarkerLabelsBeforeTitleZoom,
         markerTitleMinZoom = MarkerTitleMinZoom,
         addMarkerTrigger = TriggerToString(AddMarkerTrigger),
         interactive = Interactive,

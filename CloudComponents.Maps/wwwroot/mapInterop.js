@@ -730,16 +730,20 @@ class AzureMapController {
 
     _buildTitledMarkerContent(info) {
         const title = this._escapeHtml(info.title || info.label || '');
+        const compactLabel = this._options.showMarkerLabelsBeforeTitleZoom === true && info.label
+            ? `<span class="cloud-map-marker-summary">${this._escapeHtml(info.label)}</span>`
+            : '';
         const color = /^#[0-9a-f]{3,8}$/i.test(info.color || '') ? info.color : '#e81123';
 
         // The price and size go on their own line beneath the title; a marker with neither says where it is instead.
-        const details = [info.price, info.area].filter(Boolean);
+        const details = [info.subtitle, info.price, info.area].filter(Boolean);
         if (details.length === 0 && info.city) details.push(info.city);
         const detailsHtml = details.length
             ? `<span class="cloud-map-marker-details">${this._escapeHtml(details.join(' · '))}</span>`
             : '';
 
         return `<div class="cloud-map-marker" style="--cloud-map-marker-color:${color}">
+                    ${compactLabel}
                     <span class="cloud-map-marker-title"><span class="cloud-map-marker-name">${title}</span>${detailsHtml}</span>
                     <span class="cloud-map-marker-pin" aria-hidden="true"><span></span></span>
                 </div>`;
