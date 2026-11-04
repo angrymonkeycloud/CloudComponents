@@ -6,8 +6,18 @@
       "minify": false
     },
     {
+      "input": "src/js/googleMapInterop.js",
+      "output": "wwwroot/googleMapInterop.js",
+      "minify": false
+    },
+    {
       "input": "Components/AzureMap.razor.less",
       "output": "Components/AzureMap.razor.css",
+      "minify": false
+    },
+    {
+      "input": "Components/GoogleMap.razor.less",
+      "output": "Components/GoogleMap.razor.css",
       "minify": false
     }
   ]

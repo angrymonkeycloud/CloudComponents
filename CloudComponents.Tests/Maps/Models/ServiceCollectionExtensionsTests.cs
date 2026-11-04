@@ -10,6 +10,48 @@ public sealed class ServiceCollectionExtensionsTests
     private static AzureMapsOptions Resolve(IServiceCollection services) =>
         services.BuildServiceProvider().GetRequiredService<IOptions<AzureMapsOptions>>().Value;
 
+    private static GoogleMapsOptions ResolveGoogle(IServiceCollection services) =>
+        services.BuildServiceProvider().GetRequiredService<IOptions<GoogleMapsOptions>>().Value;
+
+    [Fact]
+    public void Google_key_and_map_id_overload_registers_both_values()
+    {
+        ServiceCollection services = new();
+
+        services.AddGoogleMaps("browser-key", "map-id");
+
+        GoogleMapsOptions options = ResolveGoogle(services);
+        Assert.Equal("browser-key", options.ApiKey);
+        Assert.Equal("map-id", options.MapId);
+    }
+
+    [Fact]
+    public void Google_configure_overload_registers_the_options()
+    {
+        ServiceCollection services = new();
+
+        services.AddGoogleMaps(options =>
+        {
+            options.ApiKey = "configured-key";
+            options.MapId = "configured-map";
+        });
+
+        GoogleMapsOptions options = ResolveGoogle(services);
+        Assert.Equal("configured-key", options.ApiKey);
+        Assert.Equal("configured-map", options.MapId);
+    }
+
+    [Fact]
+    public void Google_null_configure_action_is_refused()
+    {
+        ServiceCollection services = new();
+
+        ArgumentNullException exception = Assert.Throws<ArgumentNullException>(
+            () => services.AddGoogleMaps((Action<GoogleMapsOptions>)null!));
+
+        Assert.Equal("configure", exception.ParamName);
+    }
+
     [Fact]
     public void The_key_overload_registers_the_key_in_IOptions()
     {

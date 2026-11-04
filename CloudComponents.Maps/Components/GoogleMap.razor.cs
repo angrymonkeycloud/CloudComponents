@@ -1,0 +1,860 @@
+using AngryMonkey.CloudComponents.Maps.Models;
+using AngryMonkey.CloudComponents.Maps.Options;
+using AngryMonkey.CloudComponents.Maps.Services;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Options;
+using Microsoft.JSInterop;
+
+namespace AngryMonkey.CloudComponents.Maps.Components;
+
+/// <summary>
+/// Google Maps Blazor component. Encapsulates the Google Maps Web SDK behind a
+/// strongly-typed C# surface with full options, runtime setters, and events.
+/// </summary>
+public partial class GoogleMap : ComponentBase, IAsyncDisposable
+{
+    private const string ModulePath = "./_content/AngryMonkey.CloudComponents.Maps/googleMapInterop.js";
+
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _controller;
+    private DotNetObjectReference<GoogleMap>? _selfRef;
+    private bool _isLocating;
+    private bool _isInitializing = true;
+    private bool _showPermissionPrompt;
+    private TaskCompletionSource<bool>? _permissionPromptTcs;
+    private MapStyle _appliedStyle;
+    private MapStyle _styleParameter;
+    private bool _appliedTrafficFlow;
+    private bool _appliedTrafficIncidents;
+    private (bool DragPan, bool DragRotate, bool ScrollZoom, bool DblClickZoom, bool BoxZoom, bool Keyboard, bool Touch) _appliedInteractions;
+    private (MapControlOption Zoom, MapControlOption Compass, MapControlOption Pitch, MapControlOption Style, MapControlOption Fullscreen, MapControlOption Scale) _appliedControls = default!;
+    private MarkerAddTrigger _appliedAddMarkerTrigger;
+
+    private readonly Dictionary<string, MapMarker> _markersById = [];
+    private readonly List<RegionLegendItem> _regionLegendEntries = [];
+
+    private sealed record RegionLegendItem(string Label, string Fill, string Stroke);
+
+    [Inject] private IJSRuntime JS { get; set; } = default!;
+    [Inject] private IOptions<GoogleMapsOptions>? GlobalOptions { get; set; }
+
+    /// <summary>Optional. When registered, the built-in "locate me" button is enabled.</summary>
+    [Inject] private ILocationService? Locator { get; set; }
+
+    /// <summary>Unique DOM id for the map container.</summary>
+    public string MapId { get; } = $"gmap-{Guid.NewGuid():N}";
+
+    /// <summary>
+    /// Google Maps browser API key. Optional — when omitted, the value is taken from
+    /// <see cref="GoogleMapsOptions"/> registered via <c>AddGoogleMaps(...)</c>.
+    /// </summary>
+    [Parameter] public string? ApiKey { get; set; }
+
+    /// <summary>
+    /// Google Maps cloud Map ID used by vector maps, Advanced Markers, and data-driven
+    /// styling. Optional when it is registered globally through <c>AddGoogleMaps(...)</c>.
+    /// </summary>
+    [Parameter] public string? GoogleMapId { get; set; }
+
+    [Parameter] public string Height { get; set; } = "500px";
+    [Parameter] public string Width { get; set; } = "100%";
+
+    /// <summary>
+    /// Initial camera (center + zoom). When <c>null</c>, the component asks the
+    /// browser for the current location; if that fails, it falls back to
+    /// <see cref="InitialMapView.World"/>.
+    /// </summary>
+    [Parameter] public InitialMapView? InitialView { get; set; }
+
+    /// <summary>
+    /// The base map to start with; <see cref="ShowStyleToggle"/> lets the user switch between road and satellite. Changing this
+    /// value later restyles the map, but re-rendering the host with the same value does not undo a style the user picked.
+    /// </summary>
+    [Parameter] public MapStyle Style { get; set; } = MapStyle.Satellite;
+
+    /// <summary>Shows the Road / Satellite switch on the map. On by default; turn it off where the host draws its own.</summary>
+    [Parameter] public bool ShowStyleToggle { get; set; } = true;
+    [Parameter] public string Language { get; set; } = "en-US";
+    [Parameter] public string View { get; set; } = "Auto";
+
+    [Parameter] public double Pitch { get; set; } = 0;
+    [Parameter] public double Bearing { get; set; } = 0;
+    [Parameter] public double? MinZoom { get; set; }
+    [Parameter] public double? MaxZoom { get; set; }
+
+    [Parameter] public bool ShowTrafficFlow { get; set; }
+    [Parameter] public bool ShowTrafficIncidents { get; set; }
+
+    [Parameter] public MapControlOption ZoomControl { get; set; } = new(true, MapControlPosition.TopRight);
+    [Parameter] public MapControlOption CompassControl { get; set; } = new(false, MapControlPosition.TopRight);
+    [Parameter] public MapControlOption PitchControl { get; set; } = new(false, MapControlPosition.TopRight);
+    [Parameter] public MapControlOption StyleControl { get; set; } = new(false, MapControlPosition.TopLeft);
+    [Parameter] public MapControlOption FullscreenControl { get; set; } = new(false, MapControlPosition.TopRight);
+    [Parameter] public MapControlOption ScaleControl { get; set; } = new(false, MapControlPosition.BottomLeft);
+
+    [Parameter] public bool Interactive { get; set; } = true;
+    [Parameter] public bool DragPanInteraction { get; set; } = true;
+    [Parameter] public bool DragRotateInteraction { get; set; } = true;
+
+    /// <summary>
+    /// Enables zoom via mouse wheel / trackpad scroll. Defaults to <c>false</c> so an embedded
+    /// map doesn't hijack page scrolling; set to <c>true</c> for a full-page/dedicated map view.
+    /// </summary>
+    [Parameter] public bool ScrollZoomInteraction { get; set; } = false;
+    [Parameter] public bool DblClickZoomInteraction { get; set; } = true;
+    [Parameter] public bool BoxZoomInteraction { get; set; } = true;
+    [Parameter] public bool KeyboardInteraction { get; set; } = true;
+    [Parameter] public bool TouchInteraction { get; set; } = true;
+
+    [Parameter] public IReadOnlyList<MapMarker>? Markers { get; set; }
+
+    /// <summary>Optional region overlays rendered directly on the map as boundary polygons.
+    /// For address-based zones that are resolved and rendered automatically, use <see cref="Zones"/> instead.</summary>
+    [Parameter] public IReadOnlyList<MapRegion>? Regions { get; set; }
+
+    /// <summary>
+    /// Shows the region/zone legend (swatch + label) in the corner of the map when any
+    /// labelled region or zone is drawn. Defaults to <c>true</c>; set to <c>false</c> to
+    /// keep the map clean where the legend is redundant.
+    /// </summary>
+    [Parameter] public bool ShowLegend { get; set; } = true;
+
+    /// <summary>
+    /// How users add markers by interacting with the map. Opt-in: defaults to
+    /// <see cref="MarkerAddTrigger.Disabled"/> so the map doesn't create markers unless you ask it to.
+    /// </summary>
+    [Parameter] public MarkerAddTrigger AddMarkerTrigger { get; set; } = MarkerAddTrigger.Disabled;
+
+    /// <summary>If true, double-clicking a marker removes it. Defaults to <c>false</c> (opt-in).</summary>
+    [Parameter] public bool AllowMarkerRemoval { get; set; } = false;
+
+    /// <summary>
+    /// When true (default), clicking a marker opens the built-in details popup. Set to <c>false</c>
+    /// when the host shows its own details for <see cref="OnMarkerClick"/>; the click is still raised.
+    /// </summary>
+    [Parameter] public bool ShowMarkerPopups { get; set; } = true;
+
+    /// <summary>Shows each marker's title directly above its pin once the map reaches <see cref="MarkerTitleMinZoom"/>.</summary>
+    [Parameter] public bool ShowMarkerTitlesOnZoom { get; set; }
+
+    /// <summary>
+    /// Shows the marker's compact <see cref="MapMarker.Label"/> before the title zoom threshold,
+    /// then replaces it with the full title and details. This keeps useful summary information
+    /// visible while the map is zoomed out without crowding the detailed view.
+    /// </summary>
+    [Parameter] public bool ShowMarkerLabelsBeforeTitleZoom { get; set; }
+
+    /// <summary>Minimum zoom level at which marker title labels become visible.</summary>
+    [Parameter] public double MarkerTitleMinZoom { get; set; } = 15;
+
+    [Parameter] public bool ShowCurrentLocationButton { get; set; } = true;
+    [Parameter] public bool LocateOnOpen { get; set; } = false;
+
+    /// <summary>Title shown in the location-permission popup.</summary>
+    [Parameter] public string LocationPromptTitle { get; set; } = "Use your location?";
+
+    /// <summary>Message shown in the location-permission popup.</summary>
+    [Parameter] public string LocationPromptMessage { get; set; } =
+        "Allow this app to access your current location so the map can center on you.";
+
+    [Parameter] public string LocationPromptConfirmText { get; set; } = "Allow";
+    [Parameter] public string LocationPromptCancelText { get; set; } = "Cancel";
+
+    [Parameter] public EventCallback OnMapReady { get; set; }
+    [Parameter] public EventCallback<MapCoordinate> OnMapClick { get; set; }
+    /// <summary>Double-click (or double-tap) on the map background, not on a marker. Both clicks also raise <see cref="OnMapClick"/>.</summary>
+    [Parameter] public EventCallback<MapCoordinate> OnMapDoubleClick { get; set; }
+    /// <summary>Touch press-and-hold (about half a second, without moving) on the map background. Touch devices use this instead of <see cref="OnMapDoubleClick"/>.</summary>
+    [Parameter] public EventCallback<MapCoordinate> OnMapLongPress { get; set; }
+    [Parameter] public EventCallback<MapMarker> OnMarkerAdded { get; set; }
+    [Parameter] public EventCallback<MapMarker> OnMarkerClick { get; set; }
+    [Parameter] public EventCallback<MapMarker> OnMarkerRemoved { get; set; }
+    [Parameter] public EventCallback<MapCoordinate> OnCenterPinChanged { get; set; }
+    [Parameter] public EventCallback<string> OnMapError { get; set; }
+
+    /// <summary>Raised after "pin my location" (button or <see cref="PinMyLocationAsync"/>) successfully recenters the map.</summary>
+    [Parameter] public EventCallback<MapCoordinate> OnMyLocationFound { get; set; }
+
+    public bool IsReady { get; private set; }
+    public IReadOnlyDictionary<string, MapMarker> CurrentMarkers => _markersById;
+
+    private string ResolvedKey =>
+        !string.IsNullOrWhiteSpace(ApiKey)
+            ? ApiKey!
+            : GlobalOptions?.Value.ApiKey is { Length: > 0 } k
+                ? k
+                : throw new InvalidOperationException(
+                    "Google Maps API key is not configured. Provide it via the ApiKey parameter or AddGoogleMaps(...) in DI.");
+
+    private string? ResolvedGoogleMapId =>
+        !string.IsNullOrWhiteSpace(GoogleMapId)
+            ? GoogleMapId
+            : GlobalOptions?.Value.MapId;
+
+    // ── Lifecycle ────────────────────────────────────────────────────────
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        // Render the map immediately so the user is never staring at a blank
+        // surface. If geolocation is needed, we handle it asynchronously and
+        // recenter the camera when (and if) coordinates arrive.
+        var startView = InitialView ?? InitialMapView.World;
+
+        _selfRef = DotNetObjectReference.Create(this);
+        _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath);
+
+        var options = BuildMapOptions(startView);
+        _controller = await _module.InvokeAsync<IJSObjectReference>("createMap", _selfRef, options);
+        _appliedStyle = Style;
+        _styleParameter = Style;
+        _appliedTrafficFlow = ShowTrafficFlow;
+        _appliedTrafficIncidents = ShowTrafficIncidents;
+        _appliedControls = (ZoomControl, CompassControl, PitchControl, StyleControl, FullscreenControl, ScaleControl);
+        _appliedInteractions = (DragPanInteraction, DragRotateInteraction, ScrollZoomInteraction, DblClickZoomInteraction, BoxZoomInteraction, KeyboardInteraction, TouchInteraction);
+        _appliedAddMarkerTrigger = AddMarkerTrigger;
+        _isInitializing = false;
+        StateHasChanged();
+
+        if (LocationLock is not null)
+            _ = SyncLocationLockAsync();
+
+        // Start the consent + locate flow only when the caller did not give
+        // us an explicit initial view.
+        if (InitialView is null && Locator is not null)
+            _ = TryAutoLocateAsync();
+    }
+
+    /// <summary>
+    /// Background flow: probe permission, show our consent popup if needed,
+    /// then fetch the location and recenter the already-rendered map.
+    /// Never blocks the initial render.
+    /// </summary>
+    private async Task TryAutoLocateAsync()
+    {
+        if (Locator is null) return;
+
+        var permission = await Locator.GetPermissionStateAsync();
+        if (permission is LocationPermissionState.Unsupported or LocationPermissionState.Denied)
+            return;
+
+        if (permission != LocationPermissionState.Granted)
+        {
+            var allow = await RequestLocationConsentAsync();
+            if (!allow) return;
+        }
+
+        _isLocating = true;
+        StateHasChanged();
+        try
+        {
+            await RecenterOnCurrentLocationAsync();
+        }
+        finally
+        {
+            _isLocating = false;
+            StateHasChanged();
+        }
+    }
+
+    private Task<bool> RequestLocationConsentAsync()
+    {
+        _permissionPromptTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        _showPermissionPrompt = true;
+        StateHasChanged();
+        return _permissionPromptTcs.Task;
+    }
+
+    private void ConfirmLocationConsent()
+    {
+        _showPermissionPrompt = false;
+        _permissionPromptTcs?.TrySetResult(true);
+    }
+
+    private void CancelLocationConsent()
+    {
+        _showPermissionPrompt = false;
+        _permissionPromptTcs?.TrySetResult(false);
+    }
+
+    // Bridges PopupComp's two-way IsOpen binding to our cancel path so that
+    // dismissing the popup via overlay click / back-button counts as "cancel".
+    private void OnPermissionPopupOpenChanged(bool isOpen)
+    {
+        if (isOpen) return;
+        if (_permissionPromptTcs is { Task.IsCompleted: false })
+            _permissionPromptTcs.TrySetResult(false);
+        _showPermissionPrompt = false;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_controller is null) return;
+
+        // The host's value is applied when the host changes it. Comparing with the style the map shows instead would undo
+        // what the user picked (the switch, or the in-map StyleControl) the next time the host re-rendered.
+        if (_styleParameter != Style)
+        {
+            _styleParameter = Style;
+            _appliedStyle = Style;
+            await _controller.InvokeVoidAsync("setStyle", StyleToString(Style));
+        }
+
+        if (_appliedTrafficFlow != ShowTrafficFlow || _appliedTrafficIncidents != ShowTrafficIncidents)
+        {
+            _appliedTrafficFlow = ShowTrafficFlow;
+            _appliedTrafficIncidents = ShowTrafficIncidents;
+            await _controller.InvokeVoidAsync("setTraffic", ShowTrafficFlow, ShowTrafficIncidents);
+        }
+
+        var currentControls = (ZoomControl, CompassControl, PitchControl, StyleControl, FullscreenControl, ScaleControl);
+        if (_appliedControls != currentControls)
+        {
+            _appliedControls = currentControls;
+            await _controller.InvokeVoidAsync("setControls", new
+            {
+                zoom = ControlToJs(ZoomControl),
+                compass = ControlToJs(CompassControl),
+                pitch = ControlToJs(PitchControl),
+                style = ControlToJs(StyleControl),
+                fullscreen = ControlToJs(FullscreenControl),
+                scale = ControlToJs(ScaleControl)
+            });
+        }
+
+        var currentInteractions = (DragPanInteraction, DragRotateInteraction, ScrollZoomInteraction, DblClickZoomInteraction, BoxZoomInteraction, KeyboardInteraction, TouchInteraction);
+        if (_appliedInteractions != currentInteractions)
+        {
+            _appliedInteractions = currentInteractions;
+            await _controller.InvokeVoidAsync("setInteractions", new
+            {
+                dragPan = DragPanInteraction,
+                dragRotate = DragRotateInteraction,
+                scrollZoom = ScrollZoomInteraction,
+                dblClickZoom = DblClickZoomInteraction,
+                boxZoom = BoxZoomInteraction,
+                keyboard = KeyboardInteraction,
+                touch = TouchInteraction
+            });
+        }
+
+        // Lets callers switch selection UX at runtime (e.g. a demo toggling between
+        // click-to-place and an always-visible center pin) without recreating the map.
+        if (_appliedAddMarkerTrigger != AddMarkerTrigger)
+        {
+            _appliedAddMarkerTrigger = AddMarkerTrigger;
+            await _controller.InvokeVoidAsync("setAddMarkerTrigger", TriggerToString(AddMarkerTrigger));
+        }
+
+        await SyncLocationLockAsync();
+        await SyncTimelinesAsync();
+        await SyncRoutesAsync();
+    }
+
+    private object BuildMapOptions(InitialMapView view) => new
+    {
+        elementId = MapId,
+        apiKey = ResolvedKey,
+        mapId = ResolvedGoogleMapId,
+        latitude = view.Latitude,
+        longitude = view.Longitude,
+        zoom = view.Zoom,
+        style = StyleToString(Style),
+        language = Language,
+        view = View,
+        pitch = Pitch,
+        bearing = Bearing,
+        minZoom = MinZoom,
+        maxZoom = MaxZoom,
+        showTrafficFlow = ShowTrafficFlow,
+        showTrafficIncidents = ShowTrafficIncidents,
+        allowMarkerRemoval = AllowMarkerRemoval,
+        showMarkerPopups = ShowMarkerPopups,
+        showMarkerTitlesOnZoom = ShowMarkerTitlesOnZoom,
+        showMarkerLabelsBeforeTitleZoom = ShowMarkerLabelsBeforeTitleZoom,
+        markerTitleMinZoom = MarkerTitleMinZoom,
+        addMarkerTrigger = TriggerToString(AddMarkerTrigger),
+        interactive = Interactive,
+        interactions = new
+        {
+            dragPan = DragPanInteraction,
+            dragRotate = DragRotateInteraction,
+            scrollZoom = ScrollZoomInteraction,
+            dblClickZoom = DblClickZoomInteraction,
+            boxZoom = BoxZoomInteraction,
+            keyboard = KeyboardInteraction,
+            touch = TouchInteraction
+        },
+        controls = new
+        {
+            zoom = ControlToJs(ZoomControl),
+            compass = ControlToJs(CompassControl),
+            pitch = ControlToJs(PitchControl),
+            style = ControlToJs(StyleControl),
+            fullscreen = ControlToJs(FullscreenControl),
+            scale = ControlToJs(ScaleControl)
+        }
+    };
+
+    private static object ControlToJs(MapControlOption c) => new
+    {
+        enabled = c.Enabled,
+        position = PositionToString(c.Position)
+    };
+
+    private static string TriggerToString(MarkerAddTrigger t) => t switch
+    {
+        MarkerAddTrigger.SingleClick => "single",
+        MarkerAddTrigger.DoubleClick => "double",
+        MarkerAddTrigger.CenterPin => "center",
+        _ => "disabled"
+    };
+
+    private static string StyleToString(MapStyle s) => s switch
+    {
+        MapStyle.Road => "road",
+        MapStyle.GrayscaleLight => "grayscale_light",
+        MapStyle.GrayscaleDark => "grayscale_dark",
+        MapStyle.Night => "night",
+        MapStyle.RoadShadedRelief => "road_shaded_relief",
+        MapStyle.Satellite => "satellite",
+        MapStyle.SatelliteRoadLabels => "satellite_road_labels",
+        MapStyle.HighContrastDark => "high_contrast_dark",
+        MapStyle.HighContrastLight => "high_contrast_light",
+        _ => "road"
+    };
+
+    private static string PositionToString(MapControlPosition p) => p switch
+    {
+        MapControlPosition.TopLeft => "top-left",
+        MapControlPosition.TopRight => "top-right",
+        MapControlPosition.BottomLeft => "bottom-left",
+        MapControlPosition.BottomRight => "bottom-right",
+        _ => "top-right"
+    };
+
+    // ?? Public API ??????????????????????????????????????????????????????????
+
+    public async Task AddMarkerAsync(MapMarker marker)
+    {
+        var c = EnsureController();
+        _markersById[marker.Id] = marker;
+        await c.InvokeVoidAsync("addMarker", marker);
+    }
+
+    public async Task AddMarkersAsync(IEnumerable<MapMarker> markers)
+    {
+        var c = EnsureController();
+        foreach (var m in markers)
+        {
+            _markersById[m.Id] = m;
+            await c.InvokeVoidAsync("addMarker", m);
+        }
+    }
+
+    public async Task RemoveMarkerAsync(string id)
+    {
+        if (_controller is null) return;
+        if (_markersById.Remove(id))
+            await _controller.InvokeVoidAsync("removeMarker", id);
+    }
+
+    public async Task ClearMarkersAsync()
+    {
+        if (_controller is null) return;
+        _markersById.Clear();
+        await _controller.InvokeVoidAsync("clearMarkers");
+    }
+
+    public async Task AddRegionsAsync(IEnumerable<MapRegion> regions)
+    {
+        var c = EnsureController();
+        foreach (var region in regions)
+        {
+            await c.InvokeVoidAsync("addRegion", region);
+
+            if (!string.IsNullOrWhiteSpace(region.Label)
+                && !_regionLegendEntries.Any(e => e.Label == region.Label))
+            {
+                _regionLegendEntries.Add(new RegionLegendItem(
+                    region.Label!, region.FillColor, region.StrokeColor));
+            }
+        }
+
+        if (_regionLegendEntries.Count > 0)
+            StateHasChanged();
+    }
+
+    /// <summary>
+    /// Draws several boundary polygons as one region: their union, outlined without fill. Use it when many neighbouring
+    /// areas would otherwise read as a patchwork of colours. Returns the region id.
+    /// </summary>
+    public async Task<string> AddMergedRegionAsync(
+        IEnumerable<double[][][]> polygons,
+        string strokeColor = "#0078d4",
+        double strokeWidth = 2,
+        string? label = null,
+        string? id = null)
+    {
+        var c = EnsureController();
+        string regionId = id ?? Guid.NewGuid().ToString("N");
+
+        await c.InvokeVoidAsync("addMergedRegion", new
+        {
+            id = regionId,
+            polygons = polygons.ToArray(),
+            strokeColor,
+            strokeWidth,
+            label
+        });
+
+        if (!string.IsNullOrWhiteSpace(label) && !_regionLegendEntries.Any(e => e.Label == label))
+        {
+            _regionLegendEntries.Add(new RegionLegendItem(label, "transparent", strokeColor));
+            StateHasChanged();
+        }
+
+        return regionId;
+    }
+
+    public async Task ClearRegionsAsync()
+    {
+        if (_controller is null) return;
+        await _controller.InvokeVoidAsync("clearRegions");
+        _regionLegendEntries.Clear();
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Geocode a query string (city name, address, etc.) using the Google Maps Search API.
+    /// Returns the center point, viewport, and geometry Id, or <c>null</c> when nothing is found.
+    /// </summary>
+    /// <param name="query">Free-text place name/address to resolve.</param>
+    /// <param name="entityType">
+    /// Optional Google Maps geography entity type filter (e.g. <c>"Country"</c>,
+    /// <c>"CountrySubdivision"</c>). Restricts matches to that administrative level only —
+    /// use this when resolving a known country/state so a same-named city or POI elsewhere
+    /// in the world can't outrank the actual boundary.
+    /// </param>
+    /// <param name="countrySet">Optional ISO 3166-1 alpha-2 country code(s) to further narrow results.</param>
+    public async Task<GeocodeResult?> GeocodeAsync(string query, string? entityType = null, string? countrySet = null)
+    {
+        var c = EnsureController();
+        return await c.InvokeAsync<GeocodeResult?>("geocode", query, entityType, countrySet);
+    }
+
+    /// <summary>
+    /// Reverse geocode a lat/lon pair using the Google Maps Reverse Search API.
+    /// Returns address components (country code, state code, county, city, postal code), or <c>null</c>.
+    /// </summary>
+    public async Task<ReverseGeocodeResult?> ReverseGeocodeAsync(double latitude, double longitude)
+    {
+        var c = EnsureController();
+        return await c.InvokeAsync<ReverseGeocodeResult?>("reverseGeocode", latitude, longitude);
+    }
+
+    /// <summary>
+    /// Searches Google Maps' geography index for municipalities in one country.
+    /// Results are paged so callers can import every municipality returned for
+    /// a country, state, province, or district query without truncating at the
+    /// first result page.
+    /// </summary>
+    public async Task<MunicipalitySearchPage> SearchMunicipalitiesAsync(
+        string query,
+        string countryCode,
+        int limit = 100,
+        int offset = 0,
+        bool useTypeahead = false)
+    {
+        IJSObjectReference controller = EnsureController();
+        return await controller.InvokeAsync<MunicipalitySearchPage>(
+            "searchMunicipalities",
+            query,
+            countryCode,
+            limit,
+            offset,
+            useTypeahead);
+    }
+
+    /// <summary>
+    /// Asks the browser for the current geolocation without showing a custom consent prompt.
+    /// Returns the coordinates or <c>null</c> when geolocation is unavailable or denied.
+    /// </summary>
+    public async Task<MapCoordinate?> GetBrowserLocationAsync()
+    {
+        var c = EnsureController();
+        return await c.InvokeAsync<MapCoordinate?>("getBrowserLocation");
+    }
+
+    /// <summary>
+    /// Fetch the actual administrative boundary polygon for a geometry Id.
+    /// Returns GeoJSON coordinate rings, or <c>null</c> when not available.
+    /// </summary>
+    public async Task<double[][][]?> GetPolygonAsync(string geometryId)
+    {
+        var c = EnsureController();
+        return await c.InvokeAsync<double[][][]?>("getPolygon", geometryId);
+    }
+
+    /// <summary>
+    /// Resolves a place name (city, district, state, country) to its boundary polygon: geocodes it,
+    /// tries the legacy geometry-id lookup, then falls back to the current Google Maps boundary API at
+    /// the administrative level of the match. Prefer this over <see cref="GeocodeAsync"/> +
+    /// <see cref="GetPolygonAsync"/>, which no longer return shapes for many places.
+    /// </summary>
+    /// <param name="query">Place to outline, e.g. <c>"Jounieh, Keserwan, Lebanon"</c>.</param>
+    /// <param name="entityType">Optional geography level to match (e.g. <c>"Municipality"</c>, <c>"CountrySubdivision"</c>).</param>
+    /// <param name="countrySet">Optional ISO 3166-1 alpha-2 country code(s).</param>
+    public async Task<double[][][]?> ResolveBoundaryAsync(string query, string? entityType = null, string? countrySet = null)
+    {
+        var c = EnsureController();
+        return await c.InvokeAsync<double[][][]?>("resolveBoundary", query, entityType, countrySet);
+    }
+
+    /// <summary>
+    /// Resolves a place name to its boundary at the first of <paramref name="entityTypes"/> whose
+    /// match is really that place (e.g. <c>["Municipality", "Neighbourhood"]</c> for a town that may be
+    /// a district of a city). When none matches, the place's point is outlined at the first level —
+    /// never the larger area a loose search returns instead.
+    /// </summary>
+    public async Task<double[][][]?> ResolveBoundaryAsync(string query, IReadOnlyList<string> entityTypes, string? countrySet = null)
+    {
+        var c = EnsureController();
+        return await c.InvokeAsync<double[][][]?>("resolveBoundary", query, entityTypes, countrySet);
+    }
+
+    public async Task SetCenterAsync(double latitude, double longitude, int? zoom = null)
+    {
+        var c = EnsureController();
+        await c.InvokeVoidAsync("setCenter", latitude, longitude, zoom);
+    }
+
+    public async Task SetStyleAsync(MapStyle style)
+    {
+        var c = EnsureController();
+        _appliedStyle = style;
+        await c.InvokeVoidAsync("setStyle", StyleToString(style));
+
+        if (ShowStyleToggle)
+            StateHasChanged();
+    }
+
+    public async Task SetTrafficAsync(bool showFlow, bool showIncidents)
+    {
+        var c = EnsureController();
+        await c.InvokeVoidAsync("setTraffic", showFlow, showIncidents);
+    }
+
+    public async Task SetCameraOrientationAsync(double? pitch = null, double? bearing = null)
+    {
+        var c = EnsureController();
+        await c.InvokeVoidAsync("setCameraOrientation", pitch, bearing);
+    }
+
+    public async Task SetBoundsAsync(double south, double west, double north, double east, int paddingPx = 40)
+    {
+        var c = EnsureController();
+        await c.InvokeVoidAsync("setBounds", south, west, north, east, paddingPx);
+    }
+
+    public async Task SetBoundsAsync(double south, double west, double north, double east, MapPadding padding)
+    {
+        ArgumentNullException.ThrowIfNull(padding);
+        IJSObjectReference controller = EnsureController();
+        await controller.InvokeVoidAsync("setBounds", south, west, north, east, padding);
+    }
+
+    public async Task ShowCurrentLocationAsync(double latitude, double longitude)
+    {
+        var c = EnsureController();
+        await c.InvokeVoidAsync("showCurrentLocation", latitude, longitude);
+    }
+
+    /// <summary>
+    /// Requests the device's current location (prompting for permission via the OS/browser
+    /// dialog if needed, through the registered <see cref="ILocationService"/>) and recenters
+    /// the map on it — the same flow triggered by the built-in "locate me" button. Honors
+    /// <see cref="LocationLock"/>: when the resolved location falls outside the locked area,
+    /// the map is not recentered and <see cref="OnLocationLockRejected"/> fires instead.
+    /// Returns <c>true</c> when the map was recentered.
+    /// </summary>
+    public async Task<bool> PinMyLocationAsync()
+    {
+        if (Locator is null || _isLocating) return false;
+
+        _isLocating = true;
+        StateHasChanged();
+        try
+        {
+            return await RecenterOnCurrentLocationAsync();
+        }
+        finally
+        {
+            _isLocating = false;
+            StateHasChanged();
+        }
+    }
+
+    private Task LocateMeAsync() => PinMyLocationAsync();
+
+    /// <summary>
+    /// Fetches the current device location and recenters the map, provided the coordinate is
+    /// allowed by <see cref="LocationLock"/> (when active). Returns <c>true</c> on success.
+    /// Caller is responsible for the <see cref="_isLocating"/> flag and <see cref="StateHasChanged"/>.
+    /// </summary>
+    private async Task<bool> RecenterOnCurrentLocationAsync()
+    {
+        if (Locator is null) return false;
+
+        var loc = await Locator.GetCurrentLocationAsync();
+        if (loc is not { } p) return false;
+
+        if (!await IsPointAllowedByLocationLockAsync(p.Lat, p.Lng))
+        {
+            await RaiseLocationLockRejectedAsync(p.Lat, p.Lng);
+            return false;
+        }
+
+        await ShowCurrentLocationAsync(p.Lat, p.Lng);
+        await OnMyLocationFound.InvokeAsync(new MapCoordinate(p.Lat, p.Lng));
+        return true;
+    }
+
+    // ?? JS callbacks ????????????????????????????????????????????????????????
+
+    [JSInvokable]
+    public async Task NotifyMapReadyAsync()
+    {
+        IsReady = true;
+        await OnMapReady.InvokeAsync();
+
+        if (Markers is { Count: > 0 })
+            await AddMarkersAsync(Markers);
+
+        if (Regions is { Count: > 0 })
+            await AddRegionsAsync(Regions);
+
+        if (Zones is { Count: > 0 })
+            _ = SyncZonesAsync();
+
+        if (Timelines is { Count: > 0 })
+            await SyncTimelinesAsync();
+
+        await SyncRoutesAsync();
+
+        if (LocateOnOpen)
+            await LocateMeAsync();
+    }
+
+    [JSInvokable]
+    public Task NotifyMapClickAsync(double latitude, double longitude)
+        => OnMapClick.InvokeAsync(new MapCoordinate(latitude, longitude));
+
+    [JSInvokable]
+    public Task NotifyMapDoubleClickAsync(double latitude, double longitude)
+        => OnMapDoubleClick.InvokeAsync(new MapCoordinate(latitude, longitude));
+
+    [JSInvokable]
+    public Task NotifyMapLongPressAsync(double latitude, double longitude)
+        => OnMapLongPress.InvokeAsync(new MapCoordinate(latitude, longitude));
+
+    [JSInvokable]
+    public async Task NotifyMapAddMarkerAsync(double latitude, double longitude)
+    {
+        if (AddMarkerTrigger == MarkerAddTrigger.Disabled) return;
+        var marker = new MapMarker(latitude, longitude);
+        await AddMarkerAsync(marker);
+        await OnMarkerAdded.InvokeAsync(marker);
+    }
+
+    [JSInvokable]
+    public async Task NotifyMarkerClickAsync(string id)
+    {
+        if (_markersById.TryGetValue(id, out var marker))
+            await OnMarkerClick.InvokeAsync(marker);
+    }
+
+    [JSInvokable]
+    public async Task NotifyMarkerRemovedAsync(string id)
+    {
+        if (_markersById.Remove(id, out var marker))
+            await OnMarkerRemoved.InvokeAsync(marker);
+    }
+
+    [JSInvokable]
+    public Task NotifyMapErrorAsync(string message)
+        => OnMapError.InvokeAsync(message);
+
+    [JSInvokable]
+    public Task NotifyCenterPinChangedAsync(double latitude, double longitude)
+        => OnCenterPinChanged.InvokeAsync(new MapCoordinate(latitude, longitude));
+
+    /// <summary>
+    /// Invoked by JS when the SDK's style changes for any reason (including the
+    /// user picking a value from the in-map StyleControl). Keeps the local
+    /// cache in sync so a subsequent C#-driven style change is honored.
+    /// </summary>
+    [JSInvokable]
+    public Task NotifyStyleChangedAsync(string style)
+    {
+        _appliedStyle = StyleFromString(style);
+
+        return ShowStyleToggle ? InvokeAsync(StateHasChanged) : Task.CompletedTask;
+    }
+
+    /// <summary>The style on screen: what the user last picked, or the host's value until the map exists.</summary>
+    private MapStyle CurrentStyle => _controller is null ? Style : _appliedStyle;
+
+    private bool IsSatellite => CurrentStyle is MapStyle.Satellite or MapStyle.SatelliteRoadLabels;
+
+    private async Task SwitchStyleAsync(MapStyle style)
+    {
+        // Already on that side of the switch (either satellite style counts as satellite): nothing to change.
+        if (_controller is null || CurrentStyle == style || (IsSatellite && style is MapStyle.SatelliteRoadLabels))
+            return;
+
+        _appliedStyle = style;
+        await _controller.InvokeVoidAsync("setStyle", StyleToString(style));
+    }
+
+    private static MapStyle StyleFromString(string s) => s switch
+    {
+        "road" => MapStyle.Road,
+        "grayscale_light" => MapStyle.GrayscaleLight,
+        "grayscale_dark" => MapStyle.GrayscaleDark,
+        "night" => MapStyle.Night,
+        "road_shaded_relief" => MapStyle.RoadShadedRelief,
+        "satellite" => MapStyle.Satellite,
+        "satellite_road_labels" => MapStyle.SatelliteRoadLabels,
+        "high_contrast_dark" => MapStyle.HighContrastDark,
+        "high_contrast_light" => MapStyle.HighContrastLight,
+        _ => MapStyle.Road
+    };
+
+    private IJSObjectReference EnsureController()
+        => _controller ?? throw new InvalidOperationException("Maps has not been initialized yet.");
+
+    public async ValueTask DisposeAsync()
+    {
+        CancelSearchDebounce();
+        CancelLocationLockWork();
+
+        try
+        {
+            if (_controller is not null)
+            {
+                await _controller.InvokeVoidAsync("dispose");
+                await _controller.DisposeAsync();
+            }
+            if (_module is not null)
+                await _module.DisposeAsync();
+        }
+        catch (JSDisconnectedException) { /* navigation */ }
+        catch (Exception) { /* best-effort */ }
+        finally
+        {
+            _selfRef?.Dispose();
+        }
+    }
+}

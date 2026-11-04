@@ -8,9 +8,9 @@
 [![Azure Maps](https://img.shields.io/badge/Maps-Azure%20Maps-0078D4?style=flat-square&logo=microsoftazure)](https://azure.microsoft.com/products/azure-maps)
 [![License](https://img.shields.io/badge/License-MIT-2F855A?style=flat-square)](../LICENSE)
 
-Blazor Azure Maps component for .NET 10 with typed C# APIs for map initialization, controls, markers, regions, address-driven zones, geocoding, polygon boundaries, place search, pin-my-location, geographic location lock, location consent flow, and runtime camera/style updates.
+Blazor Azure Maps and Google Maps components for .NET 10 with typed C# APIs for map initialization, controls, markers, regions, address-driven zones, geocoding, place search, pin-my-location, geographic location lock, location consent flow, routes, timelines, and runtime camera/style updates.
 
-> Main component: `AzureMap` (`CloudComponents.Maps.Components.AzureMap`)
+> Components: `AzureMap` and `GoogleMap` in `CloudComponents.Maps.Components`.
 
 ---
 
@@ -112,6 +112,31 @@ builder.Services.AddAzureMaps(options =>
 ```
 
 You can still override per component using the `SubscriptionKey` parameter.
+
+### Google Maps alternative
+
+Register a website-restricted Maps JavaScript API key and vector Map ID:
+
+```csharp
+builder.Services.AddGoogleMaps(options =>
+{
+    options.ApiKey = configuration["GoogleMaps:ApiKey"] ?? string.Empty;
+    options.MapId = configuration["GoogleMaps:MapId"] ?? string.Empty;
+});
+```
+
+Then use the same typed map models and operations with `GoogleMap`:
+
+```razor
+<GoogleMap InitialView="new InitialMapView(33.89, 35.50, 12)"
+           ShowSearchBox="true"
+           ScrollZoomInteraction="true"
+           OnMarkerClick="HandleMarkerClick" />
+```
+
+`ApiKey` and `GoogleMapId` can also be supplied directly on the component. Enable Maps JavaScript API, Geocoding API, Places API, and Routes API in the Google Cloud project. Route calculation should use a separate server/IP-restricted key and must not send that key to the browser.
+
+Google Geocoding returns administrative viewports rather than Azure Search Polygon geometry. `GoogleMap` therefore uses the returned viewport for zone and location-lock fallback outlines. For exact Google administrative shapes, configure data-driven boundary layers in the cloud map style attached to the Map ID.
 
 ### 2) Import namespaces
 

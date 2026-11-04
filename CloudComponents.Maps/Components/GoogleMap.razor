@@ -1,0 +1,141 @@
+@namespace AngryMonkey.CloudComponents.Maps.Components
+@using AngryMonkey.CloudComponents.Maps.Options
+@using  AngryMonkey.CloudComponents
+
+<div class="map-host" style="height:@Height; width:@Width;">
+    <div id="@MapId" class="map-canvas"></div>
+
+    @if (ShowSearchBox)
+    {
+        <div class="map-search">
+            <div class="map-search-box @(_isSearching ? "_busy" : null)">
+                <svg class="map-search-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8" />
+                    <path d="M15.5 15.5L21 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+                <input type="text"
+                       class="map-search-input"
+                       placeholder="@SearchPlaceholder"
+                       @bind="SearchQuery"
+                       @bind:event="oninput"
+                       @onkeydown="HandleSearchKeyDown"
+                       @onfocus="HandleSearchFocus"
+                       @onblur="HandleSearchBlurAsync"
+                       aria-label="Search for a place"
+                       autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       spellcheck="false"
+                       name="@($"{MapId}-search")"
+                       readonly="@_searchInputReadOnly" />
+                @if (_isSearching)
+                {
+                    <span class="map-search-spinner" aria-hidden="true"></span>
+                }
+                else if (!string.IsNullOrEmpty(_searchQuery))
+                {
+                    <button type="button" class="map-search-clear" @onclick="ClearSearch" aria-label="Clear search">
+                        <svg viewBox="0 0 16 16" aria-hidden="true">
+                            <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                        </svg>
+                    </button>
+                }
+            </div>
+
+            @if (_searchDropdownOpen && _searchResults.Count > 0)
+            {
+                <ul class="map-search-results" role="listbox">
+                    @for (var i = 0; i < _searchResults.Count; i++)
+                    {
+                        var index = i;
+                        var result = _searchResults[index];
+
+                        <li class="map-search-result @(index == _searchHighlightIndex ? "_active" : null)"
+                            role="option"
+                            aria-selected="@(index == _searchHighlightIndex)"
+                            @onmousedown="@(() => SelectSearchResultAsync(result))">
+                            <span class="map-search-result-address">@result.Address</span>
+                            @if (!string.IsNullOrEmpty(result.Description))
+                            {
+                                <span class="map-search-result-description">@result.Description</span>
+                            }
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    }
+
+    @if (ShowStyleToggle)
+    {
+        <div class="map-style-switch @(ShowSearchBox ? "_below-search" : null)" role="group" aria-label="Map style">
+            <button type="button" class="@(IsSatellite ? null : "_active")" aria-pressed="@(IsSatellite ? "false" : "true")" @onclick="() => SwitchStyleAsync(MapStyle.Road)">Road</button>
+            <button type="button" class="@(IsSatellite ? "_active" : null)" aria-pressed="@(IsSatellite ? "true" : "false")" @onclick="() => SwitchStyleAsync(MapStyle.SatelliteRoadLabels)">Satellite</button>
+        </div>
+    }
+
+    @if (AddMarkerTrigger == MarkerAddTrigger.CenterPin)
+    {
+        <div class="map-pin @(_isLocating ? "_loading" : null)" aria-hidden="true">
+            <svg viewBox="0 0 24 36" class="icon">
+                <path d="M12 0C5.4 0 0 5.4 0 12c0 8.5 12 24 12 24s12-15.5 12-24C24 5.4 18.6 0 12 0z" fill="#e81123" />
+                <circle cx="12" cy="12" r="4.5" fill="#fff" />
+            </svg>
+        </div>
+    }
+
+    @if (ShowLegend && _regionLegendEntries.Count > 0)
+    {
+        <div class="map-legend">
+            @foreach (var entry in _regionLegendEntries)
+            {
+                <div class="map-legend-item">
+                    <span class="map-legend-swatch" style="background: @entry.Fill; border-color: @entry.Stroke;"></span>
+                    <span class="map-legend-label">@entry.Label</span>
+                </div>
+            }
+        </div>
+    }
+
+    @if (ShowCurrentLocationButton && Locator is not null)
+    {
+        <button type="button"
+                class="btn @(_isLocating ? "_loading" : null)"
+                title="Show my location"
+                aria-label="Show my location"
+                disabled="@_isLocating"
+                @onclick="LocateMeAsync">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke-linecap="round" />
+                <circle cx="12" cy="12" r="8" fill="none" />
+            </svg>
+        </button>
+    }
+
+    @if (_showLockRestrictionToast)
+    {
+        <div class="map-lock-toast" role="alert">@LockRestrictionMessage</div>
+    }
+</div>
+
+<PopupComp IsOpen="_showPermissionPrompt"
+           IsOpenChanged="OnPermissionPopupOpenChanged"
+           Title="@LocationPromptTitle"
+           Size="_small"
+           HeaderClose="true">
+    <ChildContent>
+        <p class="map-permission-message">@LocationPromptMessage</p>
+    </ChildContent>
+    <Footer>
+        <button type="button" class="map-permission-cancel" @onclick="CancelLocationConsent">
+            @LocationPromptCancelText
+        </button>
+        <button type="button" class="map-permission-confirm" @onclick="ConfirmLocationConsent">
+            @LocationPromptConfirmText
+        </button>
+    </Footer>
+</PopupComp>
+
+
+
