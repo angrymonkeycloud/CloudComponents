@@ -508,8 +508,28 @@ async function reverseGeocode(controller, latitude, longitude) {
     return result ? reverseResult(result) : null;
 }
 
-async function search(controller, query, limit) {
-    const response = await controller.geocoder.geocode({ address: query });
+async function search(controller, query, limit, countries = [], usePlaces = false) {
+    if (usePlaces) {
+        const { AutocompleteSuggestion } = await google.maps.importLibrary("places");
+        const response = await AutocompleteSuggestion.fetchAutocompleteSuggestions({ input: query,
+            includedRegionCodes: countries.length ? countries : undefined });
+        const results = await Promise.all((response.suggestions ?? []).slice(0, limit).map(async suggestion => {
+            if (!suggestion.placePrediction) return null;
+            const place = suggestion.placePrediction.toPlace();
+            await place.fetchFields({ fields: ["location", "viewport", "formattedAddress", "displayName"] });
+            if (!place.location) return null;
+            const viewport = place.viewport?.toJSON();
+            return {
+                address: place.formattedAddress || place.displayName, description: place.displayName,
+                latitude: place.location.lat(), longitude: place.location.lng(),
+                north: viewport?.north ?? place.location.lat(), south: viewport?.south ?? place.location.lat(),
+                east: viewport?.east ?? place.location.lng(), west: viewport?.west ?? place.location.lng(), geometryId: place.id
+            };
+        }));
+        return results.filter(Boolean);
+    }
+    const response = await controller.geocoder.geocode({ address: query,
+        componentRestrictions: countries.length ? { country: countries[0] } : undefined });
     return (response.results ?? []).slice(0, limit).map(result => {
         const viewport = getViewport(result);
         const address = reverseResult(result);
@@ -756,7 +776,7 @@ export async function createMap(dotNet, options) {
         clearRegions: () => clearRegions(controller),
         geocode: (query, entityType, countrySet) => geocode(controller, query, entityType, countrySet),
         reverseGeocode: (latitude, longitude) => reverseGeocode(controller, latitude, longitude),
-        search: (query, limit) => search(controller, query, limit),
+        search: (query, limit, countries, usePlaces) => search(controller, query, limit, countries, usePlaces),
         searchMunicipalities: (query, countryCode, limit, offset) => searchMunicipalities(controller, query, countryCode, limit, offset),
         getBrowserLocation: () => new Promise(resolve => {
             if (!navigator.geolocation) {

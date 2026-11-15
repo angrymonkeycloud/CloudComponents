@@ -22,6 +22,10 @@ public partial class GoogleMap
     /// <summary>Shows the built-in search box (top-left). Opt-in: defaults to <c>false</c>.</summary>
     [Parameter] public bool ShowSearchBox { get; set; }
 
+    [Parameter] public string[] SearchCountryCodes { get; set; } = [];
+
+    [Parameter] public bool UsePlacesSearch { get; set; }
+
     /// <summary>Placeholder text for the search input.</summary>
     [Parameter] public string SearchPlaceholder { get; set; } = "Search for a place…";
 
@@ -92,7 +96,7 @@ public partial class GoogleMap
         try
         {
             var results = await _controller.InvokeAsync<List<MapSearchResult>>(
-                "search", cancellationToken, [query, SearchResultLimit]);
+                "search", cancellationToken, [query, SearchResultLimit, SearchCountryCodes, UsePlacesSearch]);
 
             if (cancellationToken.IsCancellationRequested)
                 return;
