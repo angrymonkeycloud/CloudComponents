@@ -292,7 +292,7 @@ Each demo's `wwwroot/index.html` includes proper base href for GitHub Pages:
 
 ### Build failures
 - Run `dotnet build` locally first
-- Check .NET 10 SDK installed
+- Check .NET 11 SDK installed
 - Review workflow logs for specific errors
 
 ---

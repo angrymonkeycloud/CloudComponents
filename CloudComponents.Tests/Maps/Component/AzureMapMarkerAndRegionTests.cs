@@ -33,7 +33,7 @@ public sealed class AzureMapMarkerAndRegionTests : AzureMapTestContext
 
         JsonElement sent = Controller.Single("addMarker").Json(0);
         Assert.Equal(
-            """{"latitude":33.9,"longitude":35.5,"label":"Label","color":"#00ff00","id":"m1","title":"T","city":"Jounieh","district":"Keserwan","subdivision":"Mount Lebanon","country":"Lebanon","imageUrl":"https://img/x.png","area":"120 sqm","price":"$150,000","detailsUrl":"/p/1","detailsLabel":"Open"}""",
+            """{"latitude":33.9,"longitude":35.5,"label":"Label","color":"#00ff00","id":"m1","title":"T","subtitle":null,"city":"Jounieh","district":"Keserwan","subdivision":"Mount Lebanon","country":"Lebanon","imageUrl":"https://img/x.png","area":"120 sqm","price":"$150,000","detailsUrl":"/p/1","detailsLabel":"Open"}""",
             sent.GetRawText());
     }
 

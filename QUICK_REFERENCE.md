@@ -88,7 +88,7 @@ dotnet publish CloudComponents.Icons.Demo/CloudComponents.Icons.Demo.csproj -c R
 
 | Issue | Solution |
 |-------|----------|
-| Build fails | Run `dotnet build` locally, check .NET 10 SDK |
+| Build fails | Run `dotnet build` locally, check .NET 11 SDK |
 | Demos not loading | Clear cache, check GitHub Actions logs |
 | Wrong paths | Verify base href in `wwwroot/index.html` |
 | Styling broken | Check CSS files in artifact, refresh |

@@ -10,7 +10,7 @@ For general AI-assisted development guidance, C# style, static assets, and docum
 
 ## Architecture
 
-Multi-project Blazor Razor Class Library solution targeting **net10.0**. Each component is a standalone NuGet package (`AngryMonkey.CloudComponents.*`) with a paired demo app.
+Multi-project Blazor Razor Class Library solution targeting **net11.0**. Each component is a standalone NuGet package (`AngryMonkey.CloudComponents.*`) with a paired demo app.
 
 | Library | Entry Component | Demo |
 |---------|----------------|------|

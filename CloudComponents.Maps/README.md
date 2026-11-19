@@ -8,7 +8,7 @@
 [![Azure Maps](https://img.shields.io/badge/Maps-Azure%20Maps-0078D4?style=flat-square&logo=microsoftazure)](https://azure.microsoft.com/products/azure-maps)
 [![License](https://img.shields.io/badge/License-MIT-2F855A?style=flat-square)](../LICENSE)
 
-Blazor Azure Maps and Google Maps components for .NET 10 with typed C# APIs for map initialization, controls, markers, regions, address-driven zones, geocoding, place search, pin-my-location, geographic location lock, location consent flow, routes, timelines, and runtime camera/style updates.
+Blazor Azure Maps and Google Maps components for .NET 11 with typed C# APIs for map initialization, controls, markers, regions, address-driven zones, geocoding, place search, pin-my-location, geographic location lock, location consent flow, routes, timelines, and runtime camera/style updates.
 
 > Components: `AzureMap` and `GoogleMap` in `CloudComponents.Maps.Components`.
 
@@ -74,7 +74,7 @@ Blazor Azure Maps and Google Maps components for .NET 10 with typed C# APIs for 
 
 ## Requirements
 
-- .NET 10 Blazor app
+- .NET 11 Blazor app
 - Valid Azure Maps subscription key
 - Browser with JavaScript enabled
 
