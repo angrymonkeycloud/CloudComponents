@@ -469,6 +469,43 @@ function removeRegion(controller, id) {
 function clearRegions(controller) {
     for (const id of [...controller.regions.keys()])
         removeRegion(controller, id);
+    for (const layer of controller.boundaryLayers?.values() ?? [])
+        layer.style = null;
+    controller.boundaries?.clear();
+}
+
+async function addAdministrativeBoundary(controller, id, query, entityTypes, countrySet, color) {
+    controller.boundaryGeocodes ??= new Map();
+    controller.boundaries ??= new Map();
+    controller.boundaryLayers ??= new Map();
+    const key = JSON.stringify([query, entityTypes, countrySet]);
+    let result = controller.boundaryGeocodes.get(key);
+    if (!result) {
+        const request = { address: query };
+        if (countrySet) request.componentRestrictions = { country: countrySet.split(",")[0].trim() };
+        const response = await controller.geocoder.geocode(request);
+        result = entityTypes.map(type => response.results?.find(item => matchesEntityType(item, type))).find(Boolean);
+        if (!result) return { found: false, canDisplay: false, south: 0, west: 0, north: 0, east: 0 };
+        controller.boundaryGeocodes.set(key, result);
+    }
+    const viewport = getViewport(result);
+    const bounds = { found: true, canDisplay: false, south: viewport?.south ?? result.geometry.location.lat(),
+        west: viewport?.west ?? result.geometry.location.lng(), north: viewport?.north ?? result.geometry.location.lat(), east: viewport?.east ?? result.geometry.location.lng() };
+    const types = result.types ?? [];
+    const featureType = types.includes("country") ? "COUNTRY" : types.includes("administrative_area_level_1") ? "ADMINISTRATIVE_AREA_LEVEL_1"
+        : types.includes("administrative_area_level_2") ? "ADMINISTRATIVE_AREA_LEVEL_2" : types.includes("locality") ? "LOCALITY" : null;
+    const country = addressComponent(result, "country")?.short_name;
+    if (!featureType || country === "LB" && featureType === "LOCALITY")
+        return { ...bounds, message: "Google does not provide a boundary for this type of area in Lebanon." };
+    const layer = controller.map.getFeatureLayer(featureType);
+    if (!layer?.isAvailable)
+        return { ...bounds, message: "Enable Google boundary feature layers on the vector Map ID's cloud map style." };
+    controller.boundaryLayers.set(featureType, layer);
+    controller.boundaries.set(id, { featureType, placeId: result.place_id, color });
+    const styles = new Map([...controller.boundaries.values()].filter(item => item.featureType === featureType)
+        .map(item => [item.placeId, { strokeColor: item.color, strokeOpacity: 1, strokeWeight: 2, fillColor: item.color, fillOpacity: .1 }]));
+    layer.style = options => styles.get(options.feature.placeId);
+    return { ...bounds, canDisplay: true };
 }
 
 async function geocode(controller, query, entityType, countrySet) {
@@ -497,6 +534,7 @@ function matchesEntityType(result, entityType) {
     const normalized = entityType.toLowerCase();
     if (normalized === "country") return result.types.includes("country");
     if (normalized === "countrysubdivision") return result.types.includes("administrative_area_level_1");
+    if (normalized === "countrysecondarysubdivision") return result.types.includes("administrative_area_level_2");
     if (normalized === "municipality") return result.types.some(type => ["locality", "postal_town", "administrative_area_level_3"].includes(type));
     if (normalized === "neighbourhood" || normalized === "neighborhood") return result.types.some(type => type.startsWith("sublocality") || type === "neighborhood");
     return true;
@@ -774,6 +812,7 @@ export async function createMap(dotNet, options) {
         addMergedRegion: region => addMergedRegion(controller, region),
         removeRegion: id => removeRegion(controller, id),
         clearRegions: () => clearRegions(controller),
+        addAdministrativeBoundary: (id, query, types, country, color) => addAdministrativeBoundary(controller, id, query, types, country, color),
         geocode: (query, entityType, countrySet) => geocode(controller, query, entityType, countrySet),
         reverseGeocode: (latitude, longitude) => reverseGeocode(controller, latitude, longitude),
         search: (query, limit, countries, usePlaces) => search(controller, query, limit, countries, usePlaces),

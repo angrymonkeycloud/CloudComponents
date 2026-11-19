@@ -12,6 +12,12 @@ namespace AngryMonkey.CloudComponents.Maps.Components;
 /// </summary>
 public partial class GoogleMap
 {
+    public async Task<MapBoundaryResult?> AddAdministrativeBoundaryAsync(string id, string query, IReadOnlyList<string> entityTypes, string? countryCode, string strokeColor)
+    {
+        IJSObjectReference controller = EnsureController();
+        return await controller.InvokeAsync<MapBoundaryResult?>("addAdministrativeBoundary", id, query, entityTypes, countryCode, strokeColor);
+    }
+
     // Tracks zone id → the MapRegion ids it produced so we can remove selectively.
     private readonly Dictionary<string, List<string>> _zoneRegionMap = [];
 
