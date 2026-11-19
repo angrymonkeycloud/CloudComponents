@@ -319,7 +319,7 @@ public sealed class AzureMapCreateOptionsTests : AzureMapTestContext
         string[] expected =
         [
             "addMarkerTrigger", "allowMarkerRemoval", "bearing", "controls", "elementId", "interactions", "interactive", "language",
-            "latitude", "longitude", "markerTitleMinZoom", "maxZoom", "minZoom", "pitch", "showMarkerPopups", "showMarkerTitlesOnZoom",
+            "latitude", "longitude", "markerTitleMinZoom", "maxZoom", "minZoom", "pitch", "showMarkerLabelsBeforeTitleZoom", "showMarkerPopups", "showMarkerTitlesOnZoom",
             "showTrafficFlow", "showTrafficIncidents", "style", "subscriptionKey", "view", "zoom"
         ];
 

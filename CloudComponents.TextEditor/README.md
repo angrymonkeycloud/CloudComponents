@@ -7,7 +7,7 @@
 [![Blazor](https://img.shields.io/badge/UI-Blazor-5C2D91?style=flat-square&logo=blazor&logoColor=white)](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor)
 [![License](https://img.shields.io/badge/License-MIT-2F855A?style=flat-square)](../LICENSE)
 
-Rich text editor for Blazor on .NET 10. Semantic HTML output, configurable toolbar, media embedding (images, YouTube/Vimeo/file video), and an HTML code view with built-in validation — all without JavaScript dependencies beyond the bundled module.
+Rich text editor for Blazor on .NET 11. Semantic HTML output, configurable toolbar, media embedding (images, YouTube/Vimeo/file video), and an HTML code view with built-in validation — all without JavaScript dependencies beyond the bundled module.
 
 > `CloudTextEditor` is the single entry point. Bind `@bind-Value` to an HTML string and configure everything else through parameters.
 
@@ -253,7 +253,7 @@ Additional variables: `--cloudcomponents-editor-font-size`, `--cloudcomponents-e
 - No font-family controls by design.
 
 
-Rich text editor for Blazor on .NET 10. Semantic HTML output, configurable toolbar, media embedding (images, YouTube/Vimeo/file video), and an HTML code view with built-in validation — all without JavaScript dependencies beyond the bundled module.
+Rich text editor for Blazor on .NET 11. Semantic HTML output, configurable toolbar, media embedding (images, YouTube/Vimeo/file video), and an HTML code view with built-in validation — all without JavaScript dependencies beyond the bundled module.
 
 > `CloudTextEditor` is the single entry point. Bind `@bind-Value` to an HTML string and configure everything else through parameters.
 

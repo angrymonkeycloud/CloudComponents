@@ -126,7 +126,7 @@ public sealed class MapMarkerTests
         JsonElement json = JsonSerializer.SerializeToElement(marker, FakeMapJs.Wire);
 
         Assert.Equal(
-            ["latitude", "longitude", "label", "color", "id", "title", "city", "district", "subdivision", "country", "imageUrl", "area", "price", "detailsUrl", "detailsLabel"],
+            ["latitude", "longitude", "label", "color", "id", "title", "subtitle", "city", "district", "subdivision", "country", "imageUrl", "area", "price", "detailsUrl", "detailsLabel"],
             json.EnumerateObject().Select(p => p.Name));
         Assert.Equal("x", json.GetProperty("id").GetString());
         Assert.Equal("dl", json.GetProperty("detailsLabel").GetString());

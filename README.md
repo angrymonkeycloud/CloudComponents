@@ -7,7 +7,7 @@
 [![Blazor](https://img.shields.io/badge/UI-Blazor-5C2D91?style=flat-square&logo=blazor&logoColor=white)](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor)
 [![License](https://img.shields.io/badge/License-MIT-2F855A?style=flat-square)](LICENSE)
 
-Free, open-source Blazor component libraries for .NET 10.
+Free, open-source Blazor component libraries for .NET 11.
 
 ---
 

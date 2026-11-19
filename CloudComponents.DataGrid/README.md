@@ -7,7 +7,7 @@
 [![Blazor](https://img.shields.io/badge/UI-Blazor-5C2D91?style=flat-square&logo=blazor&logoColor=white)](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor)
 [![License](https://img.shields.io/badge/License-MIT-2F855A?style=flat-square)](../LICENSE)
 
-Production-ready Blazor data grid for .NET 10 with strongly typed models, server-driven data loading, paging modes, sorting, selection, row actions, reordering, export, and theme-friendly CSS variables.
+Production-ready Blazor data grid for .NET 11 with strongly typed models, server-driven data loading, paging modes, sorting, selection, row actions, reordering, export, and theme-friendly CSS variables.
 
 > `CloudDataGrid` is the single entry point. It composes header, body, and footer internally and is driven by one required `DataProvider` callback.
 

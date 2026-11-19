@@ -313,7 +313,7 @@ Once complete, access your demos at the URLs listed above.
 
 **Build failures?**
 - Run `dotnet build` locally
-- Check .NET 10 SDK installed
+- Check .NET 11 SDK installed
 - Review workflow error messages
 
 **Styling issues?**
@@ -341,5 +341,5 @@ This implementation provides:
 ---
 
 *Implementation Date: 2025*  
-*Framework: .NET 10 | Blazor WebAssembly*  
+*Framework: .NET 11 | Blazor WebAssembly*  
 *Hosting: GitHub Pages | Automation: GitHub Actions*
